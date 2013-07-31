@@ -12332,8 +12332,8 @@ Sk.ffi.remapToPy = function(obj)
     else if (typeof obj === "string")
         return new Sk.builtin.str(obj);
     else if (typeof obj === "number")
-		return new Sk.builtin.nmber(obj, undefined);
-	else if (typeof obj === "boolean")
+        return new Sk.builtin.nmber(obj, undefined);
+    else if (typeof obj === "boolean")
         return obj;
     goog.asserts.fail("unhandled remap type " + typeof(obj));
 };
@@ -12382,18 +12382,26 @@ Sk.ffi.remapToJs = function(obj)
             ret.push(Sk.ffi.remapToJs(obj.v[i]));
         return ret;
     }
-	else if (obj instanceof Sk.builtin.nmber)
-	{
-		return Sk.builtin.asnum$(obj);
-	}
-	else if (obj instanceof Sk.builtin.lng)
-	{
-		return Sk.builtin.asnum$(obj);
-	}
+    else if (obj instanceof Sk.builtin.nmber)
+    {
+        return Sk.builtin.asnum$(obj);
+    }
+    else if (obj instanceof Sk.builtin.lng)
+    {
+        return Sk.builtin.asnum$(obj);
+    }
     else if (typeof obj === "number" || typeof obj === "boolean")
+    {
         return obj;
+    }
+    else if (typeof obj === "undefined")
+    {
+        return obj;
+    }
     else
+    {
         return obj.v;
+    }
 };
 goog.exportSymbol("Sk.ffi.remapToJs", Sk.ffi.remapToJs);
 
@@ -12420,10 +12428,10 @@ goog.exportSymbol("Sk.ffi.stdwrap", Sk.ffi.stdwrap);
  */
 Sk.ffi.basicwrap = function(obj)
 {
-	if (obj instanceof Sk.builtin.nmber)
-		return Sk.builtin.asnum$(obj);
-	if (obj instanceof Sk.builtin.lng)
-		return Sk.builtin.asnum$(obj);
+    if (obj instanceof Sk.builtin.nmber)
+        return Sk.builtin.asnum$(obj);
+    if (obj instanceof Sk.builtin.lng)
+        return Sk.builtin.asnum$(obj);
     if (typeof obj === "number" || typeof obj === "boolean")
         return obj;
     if (typeof obj === "string")
