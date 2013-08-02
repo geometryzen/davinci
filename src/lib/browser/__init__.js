@@ -10,7 +10,7 @@ var $builtinmodule = function(name) {
   var CANVAS_GRADIENT_CLASS       = "CanvasGradient";
   var CANVAS_RENDERING_CONTEXT_2D = "CanvasRenderingContext2D";
   var DOCUMENT_CLASS              = "Document";
-  var EVENT                 = "Event";
+  var EVENT                       = "Event";
   var NODE                        = "Node";
   var WINDOW_CLASS                = "Window";
   
