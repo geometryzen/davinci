@@ -4400,6 +4400,12 @@ Sk.builtin.range = function range(start, stop, step)
 Sk.builtin.asnum$ = function(a) {
 	if (a === undefined) return a;
 	if (a === null) return a;
+	if (a.constructor === Sk.builtin.none) return null;
+	if (a.constructor === Sk.builtin.bool) {
+	    if (a.v)
+		return 1;
+	    return 0;
+	}
 	if (typeof a === "number") return a;
 	if (typeof a === "string") return a;
 	if (a.constructor === Sk.builtin.nmber) return a.v;
@@ -4429,6 +4435,12 @@ goog.exportSymbol("Sk.builtin.assk$", Sk.builtin.assk$);
 Sk.builtin.asnum$nofloat = function(a) {
 	if (a === undefined) return a;
 	if (a === null) return a;
+	if (a.constructor === Sk.builtin.none) return null;
+	if (a.constructor === Sk.builtin.bool) {
+	    if (a.v)
+		return 1;
+	    return 0;
+	}
 	if (typeof a === "number") a = a.toString();
 	if (a.constructor === Sk.builtin.nmber) a = a.v.toString();
 	if (a.constructor === Sk.builtin.lng)   a = a.str$(10, true);
@@ -4722,7 +4734,7 @@ Sk.builtin.ord = function ord(x)
     {
         throw "ord() expected string of length 1";
     }
-    return (x.v).charCodeAt(0);
+    return new Sk.builtin.nmber((x.v).charCodeAt(0), Sk.builtin.nmber.int$);
 };
 
 Sk.builtin.chr = function chr(x)
@@ -4909,12 +4921,8 @@ Sk.builtin.isinstance = function isinstance(obj, type)
         return (obj.tp$name === 'number') && (obj.skType === Sk.builtin.nmber.float$); 
     }
 
-    if (type === Sk.builtin.NoneObj.prototype.ob$type) {
-        return obj === null;
-    }
-
-    if (type === Sk.builtin.bool.prototype.ob$type) {
-        return (obj === true) || (obj === false);
+    if (type === Sk.builtin.none.prototype.ob$type) {
+        return (obj instanceof Sk.builtin.none);
     }
 
     // Normal case
@@ -4963,6 +4971,16 @@ Sk.builtin.hash = function hash(value)
     else if ((value instanceof Object) && (value.__hash__ !== undefined))
     {
         return Sk.misceval.callsim(value.__hash__, value);
+    }
+    else if (value instanceof Sk.builtin.bool)
+    {
+	if (value.v)
+	    return 1;
+	return 0;
+    }
+    else if (value instanceof Sk.builtin.none)
+    {
+	return 0;
     }
     else if (value instanceof Object)
     {
@@ -5046,7 +5064,7 @@ Sk.builtin.eval_ =  function eval_()
 Sk.builtin.map = function map(fun, seq) {
     Sk.builtin.pyCheckArgs("map", arguments, 2);
 
-    if (fun === null){
+    if (fun instanceof Sk.builtin.none){
         fun = { func_code: function (x) { return x; } }
     }
 
@@ -5067,7 +5085,7 @@ Sk.builtin.map = function map(fun, seq) {
             for (var i in iterables){
                 var next = iterables[i].tp$iternext()
                 if (next === undefined) {
-                    args.push(null);
+                    args.push(Sk.builtin.none.none$);
                     nones++;
                 }
                 else{
@@ -5128,7 +5146,7 @@ Sk.builtin.filter = function filter(fun, iterable) {
 	}
 	
 	//simulate default identity function
-	if (fun === null) {
+	if (fun instanceof Sk.builtin.none) {
 		fun = { func_code: function (x) { return Sk.builtin.bool(x); } } 
 	}
 	
@@ -5153,7 +5171,7 @@ Sk.builtin.filter = function filter(fun, iterable) {
 	}
 	
 	while (next !== undefined){
-		if (fun.func_code(next)){
+		if (Sk.misceval.isTrue(fun.func_code(next))){
 			retval = add(retval, next);
 		}
 		next = iter.tp$iternext();
@@ -5205,10 +5223,10 @@ Sk.builtin.quit = function quit(msg) {
 Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
 	var compare_func;
 	var list;
-	if (key !== undefined && key !== null) {
-        if (cmp === null) {
+	if (key !== undefined && !(key instanceof Sk.builtin.none)) {
+		if (cmp instanceof Sk.builtin.none) {
 			compare_func = { func_code: function(a,b){
-				return Sk.misceval.richCompareBool(a[0], b[0], "Lt") ? -1 : 0;
+			    return Sk.misceval.richCompareBool(a[0], b[0], "Lt") ? new Sk.builtin.nmber(-1, Sk.builtin.nmber.int$) : new Sk.builtin.nmber(0, Sk.builtin.nmber.int$);
 			}};
 		}
         else {
@@ -5224,7 +5242,7 @@ Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
         list = new Sk.builtin.list(arr);
 	}
 	else {
-		if (cmp !== null && cmp !== undefined) {
+		if (!(cmp instanceof Sk.builtin.none) && cmp !== undefined) {
 			compare_func = cmp;
 		}
         list = new Sk.builtin.list(iterable);
@@ -5241,7 +5259,7 @@ Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
 		list.list_reverse_(list);
 	}
 	
-	if (key !== undefined && key !== null) {
+	if (key !== undefined && !(key instanceof Sk.builtin.none)) {
 		var iter = list.tp$iter();
 		var next = iter.tp$iternext()
 		var arr = [];
@@ -5619,7 +5637,8 @@ Sk.builtin.type = function(name, bases, dict)
         // 1 arg version of type()
         var obj = name;
         if (obj === true || obj === false) return Sk.builtin.bool.prototype.ob$type;
-        if (obj === null) return Sk.builtin.NoneObj.prototype.ob$type;
+        if ((obj === null) || (obj instanceof Sk.builtin.none))
+	    return Sk.builtin.none.prototype.ob$type;
         if (typeof obj === "number")
         {
 	    if (Math.floor(obj) === obj)
@@ -5790,7 +5809,7 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
         if (mod) cname = mod.v + ".";
 		var ctype = "class";
 		if (!mod)
-			if (name === 'float' || name === 'int' || name === 'long' || name === 'bool' || name === 'str')
+			if (name === 'float' || name === 'int' || name === 'long' || name === 'bool' || name === 'str' || name === 'NoneType')
 				ctype = "type";
         return new Sk.builtin.str("<" + ctype + " '" + cname + t.tp$name + "'>");
     };
@@ -6083,9 +6102,39 @@ Sk.builtin.type.makeIntoTypeObj('object', Sk.builtin.object);
 /**
  * @constructor
  */
-Sk.builtin.NoneObj = function() {};
-Sk.builtin.NoneObj.prototype.ob$type = Sk.builtin.type.makeTypeObj('None', new Sk.builtin.NoneObj());
-/**
+Sk.builtin.none = function() {};
+Sk.builtin.none.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('NoneType', Sk.builtin.none);
+Sk.builtin.none.prototype.tp$name = "None";
+Sk.builtin.none.none$ = Object.create(Sk.builtin.none.prototype, {v: {value: null, enumerable: true}});
+
+goog.exportSymbol("Sk.builtin.none", Sk.builtin.none);
+Sk.builtin.bool = function(x)
+{
+    Sk.builtin.pyCheckArgs("bool", arguments, 1);
+    if (Sk.misceval.isTrue(x))
+    {
+	return Sk.builtin.bool.true$;
+    }
+    else
+    {
+	return Sk.builtin.bool.false$;
+    }
+};
+
+Sk.builtin.bool.prototype.tp$name = "bool";
+Sk.builtin.bool.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('bool', Sk.builtin.bool);
+
+Sk.builtin.bool.prototype['$r'] = function()
+{
+    if (this.v)
+	return new Sk.builtin.str('True');
+    return new Sk.builtin.str('False');
+}
+
+Sk.builtin.bool.true$ = Object.create(Sk.builtin.bool.prototype, {v: {value: true, enumerable: true}});
+Sk.builtin.bool.false$ = Object.create(Sk.builtin.bool.prototype, {v: {value: false, enumerable: true}});
+
+goog.exportSymbol("Sk.builtin.bool", Sk.builtin.bool);/**
  * Check arguments to Python functions to ensure the correct number of
  * arguments are passed.
  * 
@@ -6552,149 +6601,131 @@ Sk.misceval.richCompareBool = function(v, w, op)
             return v !== w;
     }
 
-    if ((typeof v === "number" || typeof v === "boolean") && (typeof w === "number" || typeof w === "boolean"))
+    if (op === "In") return Sk.abstr.sequenceContains(w, v);
+    if (op === "NotIn") return !Sk.abstr.sequenceContains(w, v);
+
+
+    var res;
+    //print("  -- rcb:", JSON.stringify(v), JSON.stringify(w), op);
+    if (v && w && v.tp$richcompare && (res = v.tp$richcompare(w, op)) !== undefined)
     {
-        switch (op)
-        {
-            case 'Lt': return v < w;
-            case 'LtE': return v <= w;
-            case 'Gt': return v > w;
-            case 'GtE': return v >= w;
-            case 'NotEq': return v != w;
-            case 'Eq': return v == w;
-            case 'In':
-            case 'NotIn':  {
-                throw new Sk.builtin.TypeError("argument of type '" + Sk.abstr.typeName(w) + "' is not iterable");
-            };
-            default: throw "assert";
-        }
+        return res;
+    }
+    else if (w && v && w.tp$richcompare && (res = w.tp$richcompare(v, Sk.misceval.swappedOp_[op])) !== undefined)
+    {
+        return res;
     }
     else
     {
-
-        if (op === "In") return Sk.abstr.sequenceContains(w, v);
-        if (op === "NotIn") return !Sk.abstr.sequenceContains(w, v);
-
-
-        var res;
-        //print("  -- rcb:", JSON.stringify(v), JSON.stringify(w), op);
-        if (v && w && v.tp$richcompare && (res = v.tp$richcompare(w, op)) !== undefined)
-        {
-            return res;
+        // depending on the op, try left:op:right, and if not, then
+        // right:reversed-top:left
+        // yeah, a macro or 3 would be nice...
+        if (op === 'Eq') {
+            if (v && v['__eq__']) 
+                return Sk.misceval.callsim(v['__eq__'], v, w);
+            else if (w && w['__eq__'])
+                return Sk.misceval.callsim(w['__eq__'], w, v);
         }
-        else if (w && v && w.tp$richcompare && (res = w.tp$richcompare(v, Sk.misceval.swappedOp_[op])) !== undefined)
-        {
-            return res;
+        else if (op === 'NotEq') {
+            if (v && v['__ne__'])
+                return Sk.misceval.callsim(v['__ne__'], v, w);
+            else if (w && w['__ne__'])
+                return Sk.misceval.callsim(w['__ne__'], w, v);
         }
-        else
-        {
-            // depending on the op, try left:op:right, and if not, then
-            // right:reversed-top:left
-            // yeah, a macro or 3 would be nice...
-            if (op === 'Eq') {
-                if (v && v['__eq__']) 
-                    return Sk.misceval.callsim(v['__eq__'], v, w);
-                else if (w && w['__eq__'])
-                    return Sk.misceval.callsim(w['__eq__'], w, v);
-                }
-            else if (op === 'NotEq') {
-                if (v && v['__ne__'])
-                    return Sk.misceval.callsim(v['__ne__'], v, w);
-                else if (w && w['__ne__'])
-                    return Sk.misceval.callsim(w['__ne__'], w, v);
-                }
-            else if (op === 'Gt') {
-                if (v && v['__gt__'])
-                    return Sk.misceval.callsim(v['__gt__'], v, w);
-                else if (w && w['__le__'])
-                    return Sk.misceval.callsim(w['__le__'], w, v);
-                }
-            else if (op === 'Lt') {
-                if (v && v['__lt__'])
-                    return Sk.misceval.callsim(v['__lt__'], v, w);
-                else if (w && w['__ge__'])
-                    return Sk.misceval.callsim(w['__ge__'], w, v);
-                }
-            else if (op === 'GtE') {
-                if (v && v['__ge__'])
-                    return Sk.misceval.callsim(v['__ge__'], v, w);
-                else if (w && w['__lt__'])
-                    return Sk.misceval.callsim(w['__lt__'], w, v);
-                }
-            else if (op === 'LtE') {
-                if (v && v['__le__'])
-                    return Sk.misceval.callsim(v['__le__'], v, w);
-                else if (w && w['__gt__'])
-                    return Sk.misceval.callsim(w['__gt__'], w, v);
-                }
-
-/*	Fix by BM -- old version
-            if (op === 'Eq')
-                if (v && v['__eq__'])
-                    return Sk.misceval.callsim(v['__eq__'], v, w);
-                else if (w && w['__ne__'])
-                    return Sk.misceval.callsim(w['__ne__'], w, v);
-            else if (op === 'NotEq')
-                if (v && v['__ne__'])
-                    return Sk.misceval.callsim(v['__ne__'], v, w);
-                else if (w && w['__eq__'])
-                    return Sk.misceval.callsim(w['__eq__'], w, v);
-            else if (op === 'Gt')
-                if (v && v['__gt__'])
-                    return Sk.misceval.callsim(v['__gt__'], v, w);
-                else if (w && w['__lt__'])
-                    return Sk.misceval.callsim(w['__lt__'], w, v);
-            else if (op === 'Lt')
-                if (v && v['__lt__'])
-                    return Sk.misceval.callsim(v['__lt__'], v, w);
-                else if (w && w['__gt__'])
-                    return Sk.misceval.callsim(w['__gt__'], w, v);
-            else if (op === 'GtE')
-                if (v && v['__ge__'])
-                    return Sk.misceval.callsim(v['__ge__'], v, w);
-                else if (w && w['__le__'])
-                    return Sk.misceval.callsim(w['__le__'], w, v);
-            else if (op === 'LtE')
-                if (v && v['__le__'])
-                    return Sk.misceval.callsim(v['__le__'], v, w);
-                else if (w && w['__ge__'])
-                    return Sk.misceval.callsim(w['__ge__'], w, v);
-*/
-
-            // if those aren't defined, fallback on the __cmp__ method if it
-            // exists
-            if (v && v['__cmp__'])
-            {
-                var ret = Sk.misceval.callsim(v['__cmp__'], v, w);
-		ret = Sk.builtin.asnum$(ret);
-                if (op === 'Eq') return ret === 0;
-                else if (op === 'NotEq') return ret !== 0;
-                else if (op === 'Lt') return ret < 0;
-                else if (op === 'Gt') return ret > 0;
-                else if (op === 'LtE') return ret <= 0;
-                else if (op === 'GtE') return ret >= 0;
-            }
-            else if (w && w['__cmp__'])
-            {
-                // note, flipped on return value and call
-                var ret = Sk.misceval.callsim(w['__cmp__'], w, v);
-		ret = Sk.builtin.asnum$(ret);
-                if (op === 'Eq') return ret === 0;
-                else if (op === 'NotEq') return ret !== 0;
-                else if (op === 'Lt') return ret > 0;
-                else if (op === 'Gt') return ret < 0;
-                else if (op === 'LtE') return ret >= 0;
-                else if (op === 'GtE') return ret <= 0;
-            }
-
+        else if (op === 'Gt') {
+            if (v && v['__gt__'])
+                return Sk.misceval.callsim(v['__gt__'], v, w);
+            else if (w && w['__le__'])
+                return Sk.misceval.callsim(w['__le__'], w, v);
         }
-        if (typeof v !== typeof w) {
-            if (op === 'NotEq') return true;
-            else
-                return false;
+        else if (op === 'Lt') {
+            if (v && v['__lt__'])
+                return Sk.misceval.callsim(v['__lt__'], v, w);
+            else if (w && w['__ge__'])
+                return Sk.misceval.callsim(w['__ge__'], w, v);
+        }
+        else if (op === 'GtE') {
+            if (v && v['__ge__'])
+                return Sk.misceval.callsim(v['__ge__'], v, w);
+            else if (w && w['__lt__'])
+                return Sk.misceval.callsim(w['__lt__'], w, v);
+        }
+        else if (op === 'LtE') {
+            if (v && v['__le__'])
+                return Sk.misceval.callsim(v['__le__'], v, w);
+            else if (w && w['__gt__'])
+                return Sk.misceval.callsim(w['__gt__'], w, v);
+        }
+
+        if (v && v['__cmp__'])
+        {
+            var ret = Sk.misceval.callsim(v['__cmp__'], v, w);
+	    ret = Sk.builtin.asnum$(ret);
+            if (op === 'Eq') return ret === 0;
+            else if (op === 'NotEq') return ret !== 0;
+            else if (op === 'Lt') return ret < 0;
+            else if (op === 'Gt') return ret > 0;
+            else if (op === 'LtE') return ret <= 0;
+            else if (op === 'GtE') return ret >= 0;
+        }
+        else if (w && w['__cmp__'])
+        {
+            // note, flipped on return value and call
+            var ret = Sk.misceval.callsim(w['__cmp__'], w, v);
+	    ret = Sk.builtin.asnum$(ret);
+            if (op === 'Eq') return ret === 0;
+            else if (op === 'NotEq') return ret !== 0;
+            else if (op === 'Lt') return ret > 0;
+            else if (op === 'Gt') return ret < 0;
+            else if (op === 'LtE') return ret >= 0;
+            else if (op === 'GtE') return ret <= 0;
         }
 
     }
+    if (typeof v !== typeof w) {
+        if (op === 'NotEq') return true;
+        else
+            return false;
+    }
+
+    if (((v instanceof Sk.builtin.none) || (v instanceof Sk.builtin.bool))
+	&& ((w instanceof Sk.builtin.none) || (w instanceof Sk.builtin.bool)))
+    {
+
+	if ((v.v === false) && (w.v === null))
+	{
+	    if (op === 'Gt')
+		return true;
+	    if (op === 'LtE')
+		return false;
+	}
+
+	if ((v.v === null) && (w.v === false))
+	{
+	    if (op === 'GtE')
+		return false;
+	    if (op === 'Lt')
+		return true;
+	}
+
+	// Except for the above special case with None and False,
+	// Javascript happens to return the same values when comparing null,
+	// true, and false as Python does when comparing None, True, and False
+
+	if (op === 'Eq')
+	    return v.v === w.v;
+	if (op === 'NotEq')
+	    return v.v !== w.v;
+	if (op === 'Gt')
+	    return v.v > w.v;
+	if (op === 'GtE')
+	    return v.v >= w.v;
+	if (op === 'Lt')
+	    return v.v < w.v;
+	if (op === 'LtE')
+	    return v.v <= w.v;
+    }
+
 
     // todo; some defaults, mostly to handle diff types -> false. are these ok?
     if (op === 'Eq') return v === w;
@@ -6709,7 +6740,7 @@ goog.exportSymbol("Sk.misceval.richCompareBool", Sk.misceval.richCompareBool);
 Sk.misceval.objectRepr = function(v)
 {
     goog.asserts.assert(v !== undefined, "trying to repr undefined");
-    if (v === null)
+    if ((v === null) || (v instanceof Sk.builtin.none))
         return new Sk.builtin.str("None"); // todo; these should be consts
     else if (v === true)
         return new Sk.builtin.str("True");
@@ -6749,6 +6780,8 @@ Sk.misceval.isTrue = function(x)
     if (x === true) return true;
     if (x === false) return false;
     if (x === null) return false;
+    if (x.constructor === Sk.builtin.none) return false;
+    if (x.constructor === Sk.builtin.bool) return x.v;
     if (typeof x === "number") return x !== 0;
     if (x instanceof Sk.builtin.lng) return x.nb$nonzero();
     if (x.constructor === Sk.builtin.nmber) return x.v !== 0;
@@ -6895,7 +6928,7 @@ goog.exportSymbol("Sk.misceval.callsim", Sk.misceval.callsim);
  */
 Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
 {
-    if (func === null)
+    if (func === null || func instanceof Sk.builtin.none)
     {
         throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(func) + "' object is not callable");
     }
@@ -7004,9 +7037,9 @@ Sk.abstr = {};
 
 Sk.abstr.typeName = function(v) {
     var vtypename;
-    if (v === null) {
+    if (v instanceof Sk.builtin.none) {
         vtypename = "NoneType";
-    } else if ((v === true) || (v === false)) {
+    } else if (v instanceof Sk.builtin.bool) {
         vtypename = "bool";
     } else if (typeof v === "number") {
         vtypename = "number";
@@ -7336,14 +7369,8 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
 
 Sk.abstr.numberUnaryOp = function(v, op)
 {
-    if (op === "Not") return Sk.misceval.isTrue(v) ? false : true;
-    else if (typeof v === "number" || typeof v === "boolean")
-    {
-        if (op === "USub") return -v;
-        if (op === "UAdd") return v;
-        if (op === "Invert") return ~v;
-    }
-    else if (v instanceof Sk.builtin.nmber) {
+    if (op === "Not") return Sk.misceval.isTrue(v) ? Sk.builtin.bool.false$ : Sk.builtin.bool.true$;
+    else if (v instanceof Sk.builtin.nmber || v instanceof Sk.builtin.bool) {
 	var value = Sk.builtin.asnum$(v);
 	if (op === "USub") return new Sk.builtin.nmber(-value, value.skType);
         if (op === "UAdd") return new Sk.builtin.nmber(value, value.skType);
@@ -8083,7 +8110,7 @@ Sk.builtin.list.prototype.__getitem__ = new Sk.builtin.func(function(self, index
 });
 
 /**
- * @param {?=} self optional
+ * @param {?=} self
  * @param {?=} cmp optional
  * @param {?=} key optional
  * @param {?=} reverse optional
@@ -8293,7 +8320,12 @@ Sk.builtin.str = function(x)
     var ret;
     if (x === true) ret = "True";
     else if (x === false) ret = "False";
-    else if (x === null) ret = "None";
+    else if ((x === null) || (x instanceof Sk.builtin.none)) ret = "None";
+    else if (x instanceof Sk.builtin.bool)
+    {
+	if (x.v) ret = "True";
+	else ret = "False";
+    }
     else if (typeof x === "number")
     {
         ret = x.toString();
@@ -8390,7 +8422,6 @@ Sk.builtin.str.prototype.sq$contains = function(ob) {
     } else {
         return false;
     }
-
 }
 
 Sk.builtin.str.prototype.tp$name = "str";
@@ -8570,7 +8601,7 @@ Sk.builtin.str.prototype['join'] = new Sk.builtin.func(function(self, seq)
 Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howmany)
 {
     Sk.builtin.pyCheckArgs("split", arguments, 1, 3);
-    if (on === undefined) {
+    if ((on === undefined) || (on instanceof Sk.builtin.none)) {
         on = null;
     }
     if ((on !== null) && !Sk.builtin.checkString(on)) { 
@@ -8910,14 +8941,14 @@ Sk.builtin.str.prototype['rindex'] = new Sk.builtin.func(function(self, tgt, sta
 Sk.builtin.str.prototype['startswith'] = new Sk.builtin.func(function(self, tgt) {
     Sk.builtin.pyCheckArgs("startswith", arguments, 2, 2);
     Sk.builtin.pyCheckType("tgt", "string", Sk.builtin.checkString(tgt));
-   return 0 == self.v.indexOf(tgt.v);
+    return Sk.builtin.bool(0 == self.v.indexOf(tgt.v));
 });
 
 // http://stackoverflow.com/questions/280634/endswith-in-javascript
 Sk.builtin.str.prototype['endswith'] = new Sk.builtin.func(function(self, tgt) {
     Sk.builtin.pyCheckArgs("endswith", arguments, 2, 2);
     Sk.builtin.pyCheckType("tgt", "string", Sk.builtin.checkString(tgt));
-    return self.v.indexOf(tgt.v, self.v.length - tgt.v.length) !== -1;
+    return Sk.builtin.bool(self.v.indexOf(tgt.v, self.v.length - tgt.v.length) !== -1);
 });
 
 Sk.builtin.str.prototype['replace'] = new Sk.builtin.func(function(self, oldS, newS, count)
@@ -8949,15 +8980,15 @@ Sk.builtin.str.prototype['replace'] = new Sk.builtin.func(function(self, oldS, n
 
 Sk.builtin.str.prototype['isdigit'] = new Sk.builtin.func(function(self) {
     Sk.builtin.pyCheckArgs("isdigit", arguments, 1, 1);
-    if (self.v.length === 0) { return false; }
+    if (self.v.length === 0) { return Sk.builtin.bool(false); }
     var i;
     for (i=0; i<self.v.length; i++) {
         var ch = self.v.charAt(i);
         if (ch < '0' || ch > '9') {
-            return false;
+            return Sk.builtin.bool(false);
         };
     };
-    return true;
+    return Sk.builtin.bool(true);
 });
 
 Sk.builtin.str.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('str', Sk.builtin.str);
@@ -11766,11 +11797,11 @@ Sk.builtin.nmber.prototype.nb$ispositive = function() { return this.v >= 0 };
 
 Sk.builtin.nmber.prototype.numberCompare = function(other)
 {
-	if (typeof other === "boolean")
-		if (other)
-			other = 1;
-		else
-			other = 0;
+	if (other instanceof Sk.builtin.bool)
+	    other = Sk.builtin.asnum$(other);
+
+	if (other instanceof Sk.builtin.none)
+		other = 0;
 
 	if (typeof other === "number") {
 		return this.v - other;
@@ -11917,6 +11948,17 @@ Sk.builtin.lng = function(x, base)	/* long is a reserved word */
     else if (x instanceof Sk.builtin.str)
 	return Sk.longFromStr(x.v, base);
     else {
+	if ((x !== undefined) && (!Sk.builtin.checkString(x)
+			      && !Sk.builtin.checkNumber(x)))
+	{
+	    if (x === true)
+		x = 1;
+	    else if (x === false)
+		x = 0;
+	    else
+		throw new Sk.builtin.TypeError("long() argument must be a string or a number, not '" + Sk.abstr.typeName(x) + "'");
+	}
+
 	x = Sk.builtin.asnum$nofloat(x);
 	this.biginteger = new Sk.builtin.biginteger(x);
     }
@@ -12443,14 +12485,6 @@ Sk.builtin.lng.prototype.str$ = function(base, sign)
 	//	Another base... convert...
 	return work.toString(base);
 };
-Sk.builtin.bool = function(x)
-{
-    Sk.builtin.pyCheckArgs("bool", arguments, 1);
-    return Sk.misceval.isTrue(x);    
-}
-
-Sk.builtin.bool.prototype.tp$name = "bool";
-Sk.builtin.bool.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('bool', Sk.builtin.bool);
 // Takes a JavaScript string and returns a number using the
 // parser and negater functions (for int/long right now)
 //
@@ -12560,6 +12594,15 @@ Sk.str2number = function(s, base, parser, negater, fname)
 
 Sk.builtin.int_ = function(x, base)
 {
+    if ((x !== undefined) && (!Sk.builtin.checkString(x)
+			      && !Sk.builtin.checkNumber(x)))
+    {
+	if (x instanceof Sk.builtin.bool)
+	    x = Sk.builtin.asnum$(x);
+	else
+	    throw new Sk.builtin.TypeError("int() argument must be a string or a number, not '" + Sk.abstr.typeName(x) + "'");
+    }
+
     if (x instanceof Sk.builtin.str)
     {
 		base = Sk.builtin.asnum$(base);
@@ -12634,13 +12677,10 @@ Sk.builtin.float_ = function(x)
     }
 
     // Convert booleans
-    if (x === true) 
+    if (x instanceof Sk.builtin.bool)
     {
-        return new Sk.builtin.nmber(1.0, Sk.builtin.nmber.float$);
-    }
-    if (x === false)
-    {
-        return new Sk.builtin.nmber(0.0, Sk.builtin.nmber.float$);
+	x = Sk.builtin.asnum$(x);
+	return new Sk.builtin.nmber(x, Sk.builtin.nmber.float$);
     }
 
     throw new Sk.builtin.TypeError("float() argument must be a string or a number");
@@ -12882,10 +12922,10 @@ Sk.builtin.set.prototype['isdisjoint'] = new Sk.builtin.func(function(self, othe
         var isIn = Sk.abstr.sequenceContains(other, item);
         if (isIn)
         {
-            return false;
+            return Sk.builtin.bool(false);
         }
     }
-    return true;
+    return Sk.builtin.bool(true);
 });
 
 Sk.builtin.set.prototype['issubset'] = new Sk.builtin.func(function(self, other)
@@ -12895,17 +12935,17 @@ Sk.builtin.set.prototype['issubset'] = new Sk.builtin.func(function(self, other)
     if (selfLength > otherLength)
     {
         // every item in this set can't be in other if it's shorter!
-        return false;
+        return Sk.builtin.bool(false);
     }
     for (var it = self.tp$iter(), item = it.tp$iternext(); item !== undefined; item = it.tp$iternext())
     {
         var isIn = Sk.abstr.sequenceContains(other, item);
         if (!isIn)
         {
-            return false;
+            return Sk.builtin.bool(false);
         }
     }
-    return true;
+    return Sk.builtin.bool(true);
 });
 
 Sk.builtin.set.prototype['issuperset'] = new Sk.builtin.func(function(self, other)
@@ -20190,7 +20230,7 @@ Compiler.prototype.ccompare = function(e)
     for (var i = 0; i < n; ++i)
     {
         var rhs = this.vexpr(e.comparators[i]);
-        var res = this._gr('compare', "Sk.misceval.richCompareBool(", cur, ",", rhs, ",'", e.ops[i].prototype._astname, "')");
+        var res = this._gr('compare', "Sk.builtin.bool(Sk.misceval.richCompareBool(", cur, ",", rhs, ",'", e.ops[i].prototype._astname, "'))");
         out(fres, '=', res, ';');
         this._jumpfalse(res, done);
         cur = rhs;
@@ -21187,7 +21227,7 @@ Compiler.prototype.cfunction = function(s)
     var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, function(scopename)
             {
                 this.vseqstmt(s.body);
-                out("return null;"); // if we fall off the bottom, we want the ret to be None
+                out("return Sk.builtin.none.none$;"); // if we fall off the bottom, we want the ret to be None
             });
     this.nameop(s.name, Store, funcorgen);
 };
@@ -21458,9 +21498,9 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
     if ((ctx === Store || ctx === AugStore || ctx === Del) && name.v === "None")
         throw new Sk.builtin.SyntaxError("can not assign to None");
 
-    if (name.v === "None") return "null";
-    if (name.v === "True") return "true";
-    if (name.v === "False") return "false";
+    if (name.v === "None") return "Sk.builtin.none.none$";
+    if (name.v === "True") return "Sk.builtin.bool.true$";
+    if (name.v === "False") return "Sk.builtin.bool.false$";
 
     var mangled = mangleName(this.u.private_, name).v;
     // Have to do this before looking it up in the scope
@@ -22744,9 +22784,6 @@ Sk.builtins = {
 'jsmillis': Sk.builtin.jsmillis,
 'quit': Sk.builtin.quit,
 'exit': Sk.builtin.quit,
-//'timSort': Sk.builtin.timSort,
-//'listSlice': Sk.builtin.listSlice,
-
 
 // Functions below are not implemented
 'bytearray': Sk.builtin.bytearray,
