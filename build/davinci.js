@@ -4528,9 +4528,11 @@ Sk.builtin.round = function round(number, ndigits)
     var result, multiplier;
 
     Sk.builtin.pyCheckArgs("round", arguments, 1, 2);
-    Sk.builtin.pyCheckType("number", "number", Sk.builtin.checkNumber(number));
-    if (ndigits !== undefined) {
-        Sk.builtin.pyCheckType("ndigits", "number", Sk.builtin.checkNumber(ndigits));
+    if (!Sk.builtin.checkNumber(number)) {
+	throw new Sk.builtin.TypeError("a float is required");
+    }
+    if ((ndigits !== undefined) && !Sk.misceval.isIndex(ndigits)) {
+        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(ndigits) + "' object cannot be interpreted as an index");
     };
 
     if (ndigits === undefined) {
@@ -4538,7 +4540,7 @@ Sk.builtin.round = function round(number, ndigits)
     };
 
     number = Sk.builtin.asnum$(number);
-    ndigits = Sk.builtin.asnum$(ndigits);
+    ndigits = Sk.misceval.asIndex(ndigits);
 
     multiplier = Math.pow(10, ndigits);
     result = Math.round(number * multiplier) / multiplier;
@@ -4595,10 +4597,9 @@ Sk.builtin.any = function any(iter)
     var it, i;
 
     Sk.builtin.pyCheckArgs("any", arguments, 1);
-    Sk.builtin.pyCheckType("iter", "iterable", Sk.builtin.checkIterable(iter));
-
-    if (!iter.tp$iter) {
-        throw "TypeError: object is not iterable";
+    if (!Sk.builtin.checkIterable(iter)) {
+	throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter)
+				       + "' object is not iterable");
     }
 
     it = iter.tp$iter();
@@ -4616,10 +4617,9 @@ Sk.builtin.all = function all(iter)
     var it, i;
 
     Sk.builtin.pyCheckArgs("all", arguments, 1);
-    Sk.builtin.pyCheckType("iter", "iterable", Sk.builtin.checkIterable(iter));
-
-    if (!iter.tp$iter) {
-        throw "TypeError: object is not iterable";
+     if (!Sk.builtin.checkIterable(iter)) {
+	throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter)
+				       + "' object is not iterable");
     }
 
     it = iter.tp$iter();
@@ -4640,22 +4640,19 @@ Sk.builtin.sum = function sum(iter,start)
 
     Sk.builtin.pyCheckArgs("sum", arguments, 1, 2);
     Sk.builtin.pyCheckType("iter", "iterable", Sk.builtin.checkIterable(iter));
-    if (start !== undefined) {        
-        Sk.builtin.pyCheckType("start", "number", Sk.builtin.checkNumber(start));
-	start = Sk.builtin.asnum$(start);
+    if (start !== undefined && Sk.builtin.checkString(start)) {
+	throw new Sk.builtin.TypeError("sum() can't sum strings [use ''.join(seq) instead]");
     };
 
     if (start === undefined ) {
-        start = 0;
+	tot = new Sk.builtin.nmber(0, Sk.builtin.nmber.int$);
     }
-
-    tot = new Sk.builtin.nmber(start, Sk.builtin.nmber.int$);
+    else {
+	tot = start;
+    }
 
     it = iter.tp$iter();
     for (i = it.tp$iternext(); i !== undefined; i = it.tp$iternext()) {
-        if (!Sk.builtin.checkNumber(i)) {
-            throw new Sk.builtin.TypeError("a number is required");
-        }
 	if (i.skType === Sk.builtin.nmber.float$) {
 	    has_float = true;
 	    if (tot.skType !== Sk.builtin.nmber.float$) {
@@ -4670,7 +4667,13 @@ Sk.builtin.sum = function sum(iter,start)
 	    }
 	}
 
-	tot = tot.nb$add(i);
+	if (tot.nb$add(i) !== undefined) {
+	    tot = tot.nb$add(i);
+	} else {
+	    throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '"
+					   + Sk.abstr.typeName(tot) + "' and '"
+					   + Sk.abstr.typeName(i)+"'");
+	}
     }
 
     return tot;
@@ -4730,9 +4733,12 @@ Sk.builtin.ord = function ord(x)
 {
     Sk.builtin.pyCheckArgs("ord", arguments, 1, 1);
 
-    if (x.constructor !== Sk.builtin.str || x.v.length !== 1)
+    if (!Sk.builtin.checkString(x))
     {
-        throw "ord() expected string of length 1";
+        throw new Sk.builtin.TypeError("ord() expected a string of length 1, but " + Sk.abstr.typeName(x) + " found");
+    }
+    else if (x.v.length !== 1) {
+	throw new Sk.builtin.TypeError("ord() expected a character, but string of length " + x.v.length + " found");
     }
     return new Sk.builtin.nmber((x.v).charCodeAt(0), Sk.builtin.nmber.int$);
 };
@@ -4740,8 +4746,9 @@ Sk.builtin.ord = function ord(x)
 Sk.builtin.chr = function chr(x)
 {
     Sk.builtin.pyCheckArgs("chr", arguments, 1, 1);
-    Sk.builtin.pyCheckType("x", "integer", Sk.builtin.checkInt(x));
-
+    if (!Sk.builtin.checkInt(x)) {
+	throw new Sk.builtin.TypeError("an integer is required");
+    }
 	x = Sk.builtin.asnum$(x);
 
 
@@ -4767,7 +4774,7 @@ Sk.builtin.int2str_ = function helper_(x, radix, prefix)
 	}
 	return new Sk.builtin.str(prefix+str+suffix);
     } else {
-	x = Sk.builtin.asnum$(x);
+	x = Sk.misceval.asIndex(x);
 	str = x.toString(radix);
 	if (x < 0) {
 	    return new Sk.builtin.str('-'+prefix+str.slice(1));
@@ -4779,21 +4786,27 @@ Sk.builtin.int2str_ = function helper_(x, radix, prefix)
 Sk.builtin.hex = function hex(x)
 {
     Sk.builtin.pyCheckArgs("hex", arguments, 1, 1);
-    Sk.builtin.pyCheckType("x", "integer", Sk.builtin.checkInt(x));
+    if (!Sk.misceval.isIndex(x)) {
+	throw new Sk.builtin.TypeError("hex() argument can't be converted to hex");
+    }
     return Sk.builtin.int2str_(x, 16, "0x");
 };
 
 Sk.builtin.oct = function oct(x)
 {
     Sk.builtin.pyCheckArgs("oct", arguments, 1, 1);
-    Sk.builtin.pyCheckType("x", "integer", Sk.builtin.checkInt(x));
+    if (!Sk.misceval.isIndex(x)) {
+	throw new Sk.builtin.TypeError("oct() argument can't be converted to hex");
+    }
     return Sk.builtin.int2str_(x, 8, "0");
 };
 
 Sk.builtin.bin = function bin(x)
 {
     Sk.builtin.pyCheckArgs("bin", arguments, 1, 1);
-    Sk.builtin.pyCheckType("x", "integer", Sk.builtin.checkInt(x));
+    if (!Sk.misceval.isIndex(x)) {
+	throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(x) + "' object can't be interpreted as an index");
+    }
     return Sk.builtin.int2str_(x, 2, "0b");
 };
 
@@ -4904,6 +4917,7 @@ Sk.builtin.repr = function repr(x)
 
 Sk.builtin.open = function open(filename, mode, bufsize)
 {
+    Sk.builtin.pyCheckArgs("open", arguments, 1, 3);
     if (mode === undefined) mode = new Sk.builtin.str("r");
     if (mode.v !== "r" && mode.v !== "rb") throw "todo; haven't implemented non-read opens";
     return new Sk.builtin.file(filename, mode, bufsize);
@@ -5015,7 +5029,9 @@ Sk.builtin.hash = function hash(value)
 Sk.builtin.getattr = function getattr(obj, name, default_)
 {
     Sk.builtin.pyCheckArgs("getattr", arguments, 2, 3);
-    Sk.builtin.pyCheckType("name", "string", Sk.builtin.checkString(name));
+    if (!Sk.builtin.checkString(name)) {
+	throw new Sk.builtin.TypeError("attribute name must be string");
+    }
 
     var ret = obj.tp$getattr(name.v);
     if (ret === undefined)
@@ -5023,7 +5039,7 @@ Sk.builtin.getattr = function getattr(obj, name, default_)
         if (default_ !== undefined)
             return default_;
         else
-            throw new Sk.builtin.AttributeError();
+            throw new Sk.builtin.AttributeError("'" + Sk.abstr.typeName(obj) + "' object has no attribute '" + name.v + "'");
     }
     return ret;
 };
@@ -5198,21 +5214,67 @@ Sk.builtin.hasattr = function hasattr(obj,attr) {
 
 Sk.builtin.pow = function pow(a, b, c) {
     Sk.builtin.pyCheckArgs("pow", arguments, 2, 3);
-    Sk.builtin.pyCheckType("a", "number", Sk.builtin.checkNumber(a));
-    Sk.builtin.pyCheckType("b", "number", Sk.builtin.checkNumber(b));
-    var b = Sk.builtin.asnum$(b);
-    var type = a.skType;
-    if (b < 0 || b.skType === Sk.builtin.nmber.float$) {
-        type = Sk.builtin.nmber.float$;
+
+    var a_num = Sk.builtin.asnum$(a);
+    var b_num = Sk.builtin.asnum$(b);
+    var c_num = Sk.builtin.asnum$(c);
+
+    if (!Sk.builtin.checkNumber(a) || !Sk.builtin.checkNumber(b))
+    {
+	if (c === undefined)
+	{
+	    throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.abstr.typeName(a) + "' and '" + Sk.abstr.typeName(b) + "'");
+	}
+	else
+	{
+	    throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.abstr.typeName(a) + "', '" + Sk.abstr.typeName(b) + "', '" + Sk.abstr.typeName(c) + "'");
+	}
     }
-    if (c==undefined) {
-        return new Sk.builtin.nmber(Math.pow(Sk.builtin.asnum$(a),b), type);
+    if (a_num < 0 && b.skType === Sk.builtin.nmber.float$)
+    {
+	throw new Sk.builtin.ValueError("negative number cannot be raised to a fractional power");
     }
-    Sk.builtin.pyCheckType("c", "number", Sk.builtin.checkNumber(c));
-    if (a.skType !== Sk.builtin.nmber.int$ || b.skType !== Sk.builtin.nmber.int$ || c.skType !== Sk.builtin.nmber.int$) {
-        throw new Sk.builtin.TypeError("TypeError: pow() 3rd argument not allowed unless all arguments are integers")
+
+    if (c === undefined)
+    {
+	var res = Math.pow(a_num, b_num);
+	if ((a.skType === Sk.builtin.nmber.float$ || b.skType === Sk.builtin.nmber.float$) || (b_num < 0))
+	{
+	    return new Sk.builtin.nmber(res, Sk.builtin.nmber.float$);
+	}
+	else if (a instanceof Sk.builtin.lng || b instanceof Sk.builtin.lng)
+	{
+	    return new Sk.builtin.lng(res);
+	}
+	else
+	{
+	    return new Sk.builtin.nmber(res, Sk.builtin.nmber.int$);
+	}
     }
-    return new Sk.builtin.nmber(Math.pow(Sk.builtin.asnum$(a),Sk.builtin.asnum$(b)) % Sk.builtin.asnum$(c), Sk.builtin.nmber.int$);
+    else
+    {
+	if (!Sk.builtin.checkInt(a) || !Sk.builtin.checkInt(b) || !Sk.builtin.checkInt(c))
+	{
+	    throw new Sk.builtin.TypeError("pow() 3rd argument not allowed unless all arguments are integers");
+	}
+	if (b_num < 0)
+	{
+	    throw new Sk.builtin.TypeError("pow() 2nd argument cannot be negative when 3rd argument specified");
+	}
+
+	if (a instanceof Sk.builtin.lng || b instanceof Sk.builtin.lng || c instanceof Sk.builtin.lng)
+	{
+	    // convert a to a long so that we can use biginteger's modPowInt method
+	    a = new Sk.builtin.lng(a);
+	    return a.nb$power(b, c);
+	}
+	else
+	{
+	    var ret = new Sk.builtin.nmber(Math.pow(a_num, b_num), Sk.builtin.nmber.int$);
+	    return ret.nb$remainder(c);
+	}
+    }
+
 }
 
 Sk.builtin.quit = function quit(msg) {
@@ -7144,14 +7206,6 @@ Sk.abstr.binary_op_ = function(v, w, opname)
 		}
         if (ret !== undefined) return ret;
     }
-
-    if (opname === "Add" && v && v.sq$concat)
-        return v.sq$concat(w);
-    else if (opname === "Mult" && v && v.sq$repeat)
-        return Sk.abstr.sequenceRepeat(v.sq$repeat, v, w);
-    else if (opname === "Mult" && w && w.sq$repeat)
-        return Sk.abstr.sequenceRepeat(w.sq$repeat, w, v);
-
     Sk.abstr.binop_type_error(v, w, opname);
 };
 
@@ -7178,25 +7232,6 @@ Sk.abstr.binary_iop_ = function(v, w, opname)
 		}
         if (ret !== undefined) return ret;
     }
-
-    if (opname === "Add")
-    {
-        if (v.sq$inplace_concat)
-            return v.sq$inplace_concat(w);
-        else if (v.sq$concat)
-            return v.sq$concat(w);
-    }
-    else if (opname === "Mult")
-    {
-        if (v.sq$inplace_repeat)
-            return Sk.abstr.sequenceRepeat(v.sq$inplace_repeat, v, w);
-        else if (v.sq$repeat)
-            return Sk.abstr.sequenceRepeat(v.sq$repeat, v, w);
-        // note, don't use w inplace_repeat because we don't want to mutate rhs
-        else if (w.sq$repeat)
-            return Sk.abstr.sequenceRepeat(w.sq$repeat, w, v);
-    }
-
     Sk.abstr.binop_type_error(v, w, opname);
 };
 
@@ -7981,6 +8016,8 @@ Sk.builtin.list.prototype.tp$richcompare = function(w, op)
 Sk.builtin.list.prototype.tp$iter = Sk.builtin.list.prototype.list_iter_;
 Sk.builtin.list.prototype.sq$length = function() { return this.v.length; };
 Sk.builtin.list.prototype.sq$concat = Sk.builtin.list.prototype.list_concat_;
+Sk.builtin.list.prototype.nb$add = Sk.builtin.list.prototype.list_concat_;
+Sk.builtin.list.prototype.nb$inplace_add = Sk.builtin.list.prototype.list_concat_;
 Sk.builtin.list.prototype.sq$repeat = function(n)
 {
 	n = Sk.builtin.asnum$(n);
@@ -7990,6 +8027,8 @@ Sk.builtin.list.prototype.sq$repeat = function(n)
             ret.push(this.v[j]);
     return new Sk.builtin.list(ret);
 };
+Sk.builtin.list.prototype.nb$multiply = Sk.builtin.list.prototype.sq$repeat;
+Sk.builtin.list.prototype.nb$inplace_multiply = Sk.builtin.list.prototype.sq$repeat;
 /*
 Sk.builtin.list.prototype.sq$item = list_item;
 Sk.builtin.list.prototype.sq$slice = list_slice;
@@ -8396,6 +8435,8 @@ Sk.builtin.str.prototype.sq$concat = function(other)
     }
     return new Sk.builtin.str(this.v + other.v); 
 };
+Sk.builtin.str.prototype.nb$add = Sk.builtin.str.prototype.sq$concat;
+Sk.builtin.str.prototype.nb$inplace_add = Sk.builtin.str.prototype.sq$concat;
 Sk.builtin.str.prototype.sq$repeat = function(n)
 {
 	n = Sk.builtin.asnum$(n);
@@ -8404,6 +8445,8 @@ Sk.builtin.str.prototype.sq$repeat = function(n)
         ret += this.v;
     return new Sk.builtin.str(ret);
 };
+Sk.builtin.str.prototype.nb$multiply = Sk.builtin.str.prototype.sq$repeat;
+Sk.builtin.str.prototype.nb$inplace_multiply = Sk.builtin.str.prototype.sq$repeat;
 Sk.builtin.str.prototype.sq$item = function() { goog.asserts.fail(); };
 Sk.builtin.str.prototype.sq$slice = function(i1, i2)
 {
@@ -9316,12 +9359,15 @@ Sk.builtin.tuple.prototype.tp$hash = function()
 
 Sk.builtin.tuple.prototype.sq$repeat = function(n)
 {
+    n = Sk.builtin.asnum$(n);
     var ret = [];
     for (var i = 0; i < n; ++i)
         for (var j = 0; j < this.v.length; ++ j)
             ret.push(this.v[j]);
     return new Sk.builtin.tuple(ret);
 };
+Sk.builtin.tuple.prototype.nb$multiply = Sk.builtin.tuple.prototype.sq$repeat;
+Sk.builtin.tuple.prototype.nb$inplace_multiply = Sk.builtin.tuple.prototype.sq$repeat;
 
 
 Sk.builtin.tuple.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('tuple', Sk.builtin.tuple);
@@ -9402,6 +9448,9 @@ Sk.builtin.tuple.prototype.sq$concat = function(other)
 {
     return new Sk.builtin.tuple(this.v.concat(other.v));
 };
+
+Sk.builtin.tuple.prototype.nb$add = Sk.builtin.tuple.prototype.sq$concat;
+Sk.builtin.tuple.prototype.nb$inplace_add = Sk.builtin.tuple.prototype.sq$concat;
 
 Sk.builtin.tuple.prototype.sq$length = function() { return this.v.length; };
 
@@ -12236,8 +12285,20 @@ Sk.builtin.lng.prototype.nb$remainder = function(other)
 
 Sk.builtin.lng.prototype.nb$inplace_remainder = Sk.builtin.lng.prototype.nb$remainder;
 
-Sk.builtin.lng.prototype.nb$power = function(n)
+/**
+ * @param {number|Object} n
+ * @param {number|Object=} mod
+ * @suppress {checkTypes}
+ */
+Sk.builtin.lng.prototype.nb$power = function(n, mod)
 {
+    if (mod !== undefined)
+    {
+	n = new Sk.builtin.biginteger(Sk.builtin.asnum$(n));
+	mod = new Sk.builtin.biginteger(Sk.builtin.asnum$(mod));
+
+	return new Sk.builtin.lng(this.biginteger.modPowInt(n, mod));
+    }
 	if (typeof n === "number") {
 		if (n < 0) {
 			var thisAsFloat = new Sk.builtin.nmber(this.str$(10, true), Sk.builtin.nmber.float$);

@@ -258,38 +258,6 @@ var $builtinmodule = function(name) {
     }
   }
 
-  function booleanFromArg(arg, argName, functionName, lax) {
-    if (isUndefined(argName)) {
-      throw new Error("argName must be specified")
-    }
-    if (isUndefined(functionName)) {
-      throw new Error("functionName must be specified")
-    }
-    lax = isUndefined(lax) ? true : (isBoolean(lax) ? lax : true);
-    if (isUndefined(arg)) {
-      if (lax) {
-        return arg;
-      }
-      else {
-        throw new Sk.builtin.TypeError(functionName + "." + argName + " must be convertible to a Boolean, but was Missing.");
-      }
-    }
-    else if (isNull(arg)) {
-      if (lax) {
-        return arg;
-      }
-      else {
-        throw new Sk.builtin.TypeError(functionName + "." + argName + " must be convertible to a Boolean, but was None.");
-      }
-    }
-    if (isBoolean(arg)) {
-      return arg;
-    }
-    else {
-      throw new Sk.builtin.TypeError(functionName + "." + argName + " must be a Boolean.");
-    }
-  }
-
   function numberFromArg(arg, argName, functionName, lax) {
     if (isUndefined(argName)) {
       throw new Error("argName must be specified")
@@ -2765,7 +2733,7 @@ var $builtinmodule = function(name) {
       height         = numberFromArg(height,                PROP_HEIGHT,          CYLINDER_GEOMETRY);
       radiusSegments = numberFromIntegerArg(radiusSegments, PROP_RADIUS_SEGMENTS, CYLINDER_GEOMETRY);
       heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, CYLINDER_GEOMETRY);
-      openEnded      = booleanFromArg(openEnded,            PROP_OPEN_ENDED,      CYLINDER_GEOMETRY);
+      openEnded      = Sk.ffi.remapToJs(openEnded);
       self.v = new THREE[CYLINDER_GEOMETRY](radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded);
       self.tp$name = CYLINDER_GEOMETRY;
     });

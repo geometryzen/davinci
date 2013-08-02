@@ -13,6 +13,8 @@ var $builtinmodule = function(name) {
   var METHOD_CLONE   = "clone";
   var METHOD_LENGTH  = "length";
 
+  var POINT          = "Point";
+
   var EASE                    = "Ease";
   var PROP_BOUNCE_OUT         = "bounceOut";
 
@@ -34,12 +36,15 @@ var $builtinmodule = function(name) {
   var STAGE              = "Stage";
   var PROP_CANVAS        = "canvas";
   var PROP_AUTO_CLEAR    = "autoClear";
+  var PROP_MOUSE_X       = "mouseX";
+  var PROP_MOUSE_Y       = "mouseY";
   var METHOD_ADD_CHILD   = "addChild";
   var METHOD_UPDATE      = "update";
 
   var SHAPE              = "Shape";
   var PROP_ALPHA         = "alpha";
   var PROP_GRAPHICS      = "graphics";
+  var METHOD_HIT_TEST    = "hitTest";
 
   var TICKER                    = "Ticker";
   var METHOD_ADD_EVENT_LISTENER = "addEventListener";
@@ -342,19 +347,39 @@ var $builtinmodule = function(name) {
   }, MOVIE_CLIP, []);
 
   mod[SHAPE] = Sk.misceval.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = new Sk.builtin.func(function(self, graphicsPy) {
-      var graphics = Sk.ffi.remapToJs(graphicsPy);
+    $loc.__init__ = new Sk.builtin.func(function(self, argPy) {
       self.tp$name = SHAPE;
-      if (typeof createjs[SHAPE] === 'undefined') {
-        throw new Error("Missing " + SHAPE + " JavaScript implementation.");
+      if (typeof argPy === 'undefined') {
+        self.v = new createjs[SHAPE]();
       }
-      self.v = new createjs[SHAPE](graphics);
+      else {
+        console.log("typeof argPy => " + typeof argPy);
+        var name = argPy.tp$name;
+        if (typeof name === 'string') {
+          switch(name) {
+            case SHAPE: {
+              self.v = Sk.ffi.remapToJs(argPy);
+            }
+            break;
+            case GRAPHICS: {
+              self.v = new createjs[SHAPE](Sk.ffi.remapToJs(argPy));
+            }
+            break;
+            default: {
+              throw new Error(name);
+            }
+          }
+        }
+        else {
+          throw new Error(typeof name);
+        }
+      }
     });
     $loc.__getattr__ = new Sk.builtin.func(function(shapePy, name) {
       var shape = Sk.ffi.remapToJs(shapePy);
       switch(name) {
         case PROP_GRAPHICS: {
-          return Sk.misceval.callsim(mod[GRAPHICS], Sk.ffi.referenceToPy(shape.graphics));
+          return Sk.misceval.callsim(mod[GRAPHICS], Sk.ffi.referenceToPy(shape.graphics, GRAPHICS));
         }
         break;
         case PROP_ALPHA: {
@@ -367,6 +392,18 @@ var $builtinmodule = function(name) {
         break;
         case PROP_Y: {
           return Sk.builtin.assk$(shape[PROP_Y], Sk.builtin.nmber.int$);
+        }
+        break;
+        case METHOD_HIT_TEST: {
+          return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
+            $loc.__init__ = new Sk.builtin.func(function(self) {
+              self.tp$name = METHOD_HIT_TEST;
+              self.v = shape[METHOD_HIT_TEST];
+            });
+            $loc.__call__ = new Sk.builtin.func(function(methodPy, x, y) {
+              return Sk.ffi.remapToPy(shape[METHOD_HIT_TEST](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y)));
+            });
+          }, METHOD_HIT_TEST, []));
         }
         break;
       }
@@ -410,6 +447,14 @@ var $builtinmodule = function(name) {
           return Sk.builtin.assk$(5, Sk.builtin.nmber.int$);
         }
         break;
+        case PROP_MOUSE_X: {
+          return Sk.builtin.assk$(stage[PROP_MOUSE_X], Sk.builtin.nmber.int$);
+        }
+        break;
+        case PROP_MOUSE_Y: {
+          return Sk.builtin.assk$(stage[PROP_MOUSE_Y], Sk.builtin.nmber.int$);
+        }
+        break;
         case METHOD_ADD_CHILD: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = new Sk.builtin.func(function(self) {
@@ -417,8 +462,8 @@ var $builtinmodule = function(name) {
               self.v = stage[METHOD_ADD_CHILD];
             });
             $loc.__call__ = new Sk.builtin.func(function(self, childPy) {
-              var child = Sk.ffi.remapToJs(childPy);
-              stage.addChild(child);
+              var child = stage.addChild(Sk.ffi.remapToJs(childPy));
+              return Sk.misceval.callsim(mod[SHAPE], Sk.ffi.referenceToPy(child, SHAPE));
             });
           }, METHOD_ADD_CHILD, []));
         }
@@ -473,8 +518,7 @@ var $builtinmodule = function(name) {
               }
               else {
                 var listener = function(event) {
-  //              var eventPy = Sk.misceval.callsim(mod[EVENT], Sk.ffi.referenceToPy(event));
-                  Sk.misceval.callsim(listenerPy/*, eventPy*/);
+                  Sk.misceval.callsim(listenerPy);
                 };
                 ticker[METHOD_ADD_EVENT_LISTENER](type, listener, useCapture);
               }
@@ -583,6 +627,24 @@ var $builtinmodule = function(name) {
       }
     });
   }, EASE, []));
+
+  mod[POINT] = Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
+    $loc.__init__ = new Sk.builtin.func(function(self, x, y) {
+      x = Sk.ffi.remapToJs(x);
+      y = Sk.ffi.remapToJs(y);
+      self.tp$name = POINT;
+      self.v = createjs[POINT](x, y);
+    });
+    $loc.__str__ = new Sk.builtin.func(function(point) {
+      point = Sk.ffi.remapToJs(point);
+      if (typeof point !== 'undefined') {
+        return new Sk.builtin.str(point.toString());
+      }
+      else {
+        return new Sk.builtin.str("<type '" + POINT + "'>");
+      }
+    });
+  }, POINT, []));
 
   mod[EUCLIDEAN_2] = Sk.misceval.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = new Sk.builtin.func(function(self, x00, x01, x10, x11) {
