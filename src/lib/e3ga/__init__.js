@@ -210,7 +210,7 @@ var $builtinmodule = function(name) {
       });
       $loc.__getitem__ = new Sk.builtin.func(function(verticesPy, indexPy) {
         var index = Sk.ffi.remapToJs(indexPy);
-        return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(vertices[index]));
+        return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(vertices[index], EUCLIDEAN_3));
       });
       $loc.mp$length = function() {return vertices.length;};
       $loc.__str__ = new Sk.builtin.func(function(self) {
@@ -1384,7 +1384,7 @@ var $builtinmodule = function(name) {
       }
       else {
         var ab = new THREE[QUATERNION]().multiplyQuaternions(a, b);
-        return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(ab));
+        return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(ab, QUATERNION));
       }
     });
     $loc.__rmul__ = new Sk.builtin.func(function(b, a) {
@@ -1718,22 +1718,22 @@ var $builtinmodule = function(name) {
       var scene = Sk.ffi.remapToJs(scenePy);
       switch(name) {
         case PROP_POSITION: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_POSITION]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_POSITION], EUCLIDEAN_3));
         }
         case PROP_QUATERNION: {
-          return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(scene[PROP_QUATERNION]));
+          return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(scene[PROP_QUATERNION], QUATERNION));
         }
         case PROP_ROTATION: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_ROTATION]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_ROTATION], EUCLIDEAN_3));
         }
         case PROP_EULER_ORDER: {
           return new Sk.builtin.str(scene[PROP_EULER_ORDER]);
         }
         case PROP_SCALE: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_SCALE]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_SCALE], EUCLIDEAN_3));
         }
         case PROP_UP: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_UP]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(scene[PROP_UP], EUCLIDEAN_3));
         }
         case PROP_USE_QUATERNION: {
           return scene[PROP_USE_QUATERNION];
@@ -1873,7 +1873,7 @@ var $builtinmodule = function(name) {
               self.tp$name = METHOD_GET_CLEAR_COLOR;
             });
             $loc.__call__ = new Sk.builtin.func(function(self) {
-              return Sk.misceval.callsim(mod[COLOR], Sk.ffi.referenceToPy(renderer.getClearColor()));
+              return Sk.misceval.callsim(mod[COLOR], Sk.ffi.referenceToPy(renderer.getClearColor(), COLOR));
             });
             $loc.__str__ = new Sk.builtin.func(function(self) {
               return new Sk.builtin.str(METHOD_GET_CLEAR_COLOR);
@@ -2291,22 +2291,22 @@ var $builtinmodule = function(name) {
           return Sk.builtin.assk$(camera.aspect, Sk.builtin.nmber.float$);
         }
         case PROP_POSITION: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_POSITION]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_POSITION], EUCLIDEAN_3));
         }
         case PROP_QUATERNION: {
-          return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(camera[PROP_QUATERNION]));
+          return Sk.misceval.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(camera[PROP_QUATERNION], QUATERNION));
         }
         case PROP_ROTATION: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_ROTATION]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_ROTATION], EUCLIDEAN_3));
         }
         case PROP_EULER_ORDER: {
           return new Sk.builtin.str(camera[PROP_EULER_ORDER]);
         }
         case PROP_SCALE: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_SCALE]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_SCALE], EUCLIDEAN_3));
         }
         case PROP_UP: {
-          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_UP]));
+          return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(camera[PROP_UP], EUCLIDEAN_3));
         }
         case PROP_USE_QUATERNION: {
           return camera[PROP_USE_QUATERNION];

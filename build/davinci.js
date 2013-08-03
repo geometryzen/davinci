@@ -4263,7 +4263,10 @@ Sk.configure = function(options)
 
     Sk.python3 = options["python3"] || Sk.python3;
     goog.asserts.assert(typeof Sk.python3 === "boolean");
-    
+
+    Sk.inputfun = options["inputfun"] || Sk.inputfun;
+    goog.asserts.assert(typeof Sk.inputfun === "function")
+
     if (options["syspath"])
     {
         Sk.syspath = options["syspath"];
@@ -4343,7 +4346,9 @@ if (!Sk.inBrowser)
 
 
 Sk.python3 = false;
+Sk.inputfun = function(args) { return prompt(args); };
 goog.exportSymbol("Sk.python3",Sk.python3)
+goog.exportSymbol("Sk.inputfun",Sk.inputfun)
 
 goog.require("goog.asserts");
 
@@ -4926,6 +4931,9 @@ Sk.builtin.open = function open(filename, mode, bufsize)
 Sk.builtin.isinstance = function isinstance(obj, type)
 {
     Sk.builtin.pyCheckArgs("isinstance", arguments, 2, 2);
+    if (!Sk.builtin.checkClass(type) && !(type instanceof Sk.builtin.tuple)) {
+	throw new Sk.builtin.TypeError("isinstance() arg 2 must be a class, type, or tuple of classes and types");
+    }
 
     if (type === Sk.builtin.int_.prototype.ob$type) {
 	return (obj.tp$name === 'number') && (obj.skType === Sk.builtin.nmber.int$);
@@ -5046,13 +5054,13 @@ Sk.builtin.getattr = function getattr(obj, name, default_)
 
 Sk.builtin.raw_input = function(obj, name, default_)
 {
-    var x = prompt(obj.v);
+    var x = Sk.inputfun(obj.v);
     return new Sk.builtin.str(x);
 };
 
 Sk.builtin.input = function(obj, name, default_)
 {
-    var x = prompt(obj.v);
+    var x = Sk.inputfun(obj.v);
     return new Sk.builtin.str(x);
 };
 
@@ -5727,20 +5735,22 @@ Sk.builtin.type = function(name, bases, dict)
         /**
          * @constructor
          */
-        var klass = (function(args)
+        var klass = (function(kwdict, varargseq, kws, args)
                 {
-                    if (!(this instanceof klass)) return new klass(Array.prototype.slice.call(arguments, 0));
+                    if (!(this instanceof klass))
+		    {
+			return new klass(kwdict, varargseq, kws, args);
+		    }
 
                     args = args || [];
-                    goog.asserts.assert(Sk.builtin.dict !== undefined);
                     this['$d'] = new Sk.builtin.dict([]);
 
                     var init = Sk.builtin.type.typeLookup(this.ob$type, "__init__");
                     if (init !== undefined)
                     {
-                        // return ignored I guess?
+                        // return should be None or throw a TypeError otherwise
                         args.unshift(this);
-                        Sk.misceval.apply(init, undefined, undefined, undefined, args);
+                        Sk.misceval.apply(init, kwdict, varargseq, kws, args);
                     }
 
                     return this;
@@ -5752,6 +5762,7 @@ Sk.builtin.type = function(name, bases, dict)
             klass[v] = dict[v];
         }
         klass['__class__'] = klass;
+        klass.sk$klass = true;
         klass.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
         klass.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
         klass.prototype.tp$descr_get = function() { goog.asserts.fail("in type tp$descr_get"); };
@@ -5869,16 +5880,16 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
         var mod = t.__module__;
         var cname = "";
         if (mod) cname = mod.v + ".";
-		var ctype = "class";
-		if (!mod)
-			if (name === 'float' || name === 'int' || name === 'long' || name === 'bool' || name === 'str' || name === 'NoneType')
-				ctype = "type";
+	var ctype = "class";
+	if (!mod && !t.sk$klass)
+	    ctype = "type";
         return new Sk.builtin.str("<" + ctype + " '" + cname + t.tp$name + "'>");
     };
     t.tp$str = undefined;
     t.tp$getattr = Sk.builtin.type.prototype.tp$getattr;
     t.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
-	t.tp$richcompare = Sk.builtin.type.prototype.tp$richcompare;
+    t.tp$richcompare = Sk.builtin.type.prototype.tp$richcompare;
+    t.sk$type = true;
     return t;
 };
 
@@ -6159,7 +6170,7 @@ Sk.builtin.object.prototype.HashNotImplemented = function()
 
 Sk.builtin.object.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 Sk.builtin.object.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
-Sk.builtin.type.makeIntoTypeObj('object', Sk.builtin.object);
+Sk.builtin.object.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('object', Sk.builtin.object);
 
 /**
  * @constructor
@@ -6275,6 +6286,11 @@ Sk.builtin.checkString = function (arg) {
     return (arg !== null && arg.__class__ == Sk.builtin.str);
 };
 goog.exportSymbol("Sk.builtin.checkString", Sk.builtin.checkString);
+
+Sk.builtin.checkClass = function (arg) {
+    return (arg !== null && arg.sk$type);
+};
+goog.exportSymbol("Sk.builtin.checkClass", Sk.builtin.checkClass);
 
 Sk.builtin.checkFunction = function (arg) {
     return (arg !== null && arg.tp$call !== undefined);  
@@ -7007,12 +7023,22 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
         // builtin.js, for example) as they are javascript functions,
         // not Sk.builtin.func objects.
 
+	if (func.sk$klass)
+	{
+	    // klass wrapper around __init__ requires special handling
+	    return func.apply(null, [kwdict, varargseq, kws, args]);
+	}
+
         if (varargseq)
         {
             for (var it = varargseq.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
             {
                 args.push(i);
             }
+        }
+	if (kwdict)
+        {
+            goog.asserts.fail("kwdict not implemented;");
         }
         goog.asserts.assert(((kws === undefined) || (kws.length === 0)));
         return func.apply(null, args);
@@ -7031,7 +7057,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
             }
             if (kwdict)
             {
-                goog.asserts.fail("todo;");
+                goog.asserts.fail("kwdict not implemented;");
             }
             return fcall.call(func, args, kws, kwdict);
         }
@@ -13255,6 +13281,28 @@ Sk.builtin.generator.prototype['send'] = new Sk.builtin.func(function(self, valu
 });
 
 /**
+ * Creates a generator with the specified next function and additional
+ * instance data. Useful in Javascript-implemented modules to implement
+ * the __iter__ method.
+ */
+Sk.builtin.makeGenerator = function(next, data)
+{
+  var gen = new Sk.builtin.generator(null,null,null);
+  gen.tp$iternext = next;
+
+  for (var key in data)
+  {
+    if (data.hasOwnProperty(key))
+    {
+      gen[key] = data[key];
+    }
+  }
+
+  return gen;
+};
+goog.exportSymbol("Sk.builtin.makeGenerator", Sk.builtin.makeGenerator);
+
+/**
  * @constructor
  * @param {Sk.builtin.str} name
  * @param {Sk.builtin.str} mode
@@ -13439,12 +13487,12 @@ goog.exportSymbol("Sk.ffi.remapToPy", Sk.ffi.remapToPy);
  *
  * This is used in conjuction with invocations of Sk.misceval.callsim.
  */
-Sk.ffi.referenceToPy = function(obj) {
+Sk.ffi.referenceToPy = function(obj, name) {
   if (typeof obj === 'object') {
-    return {"v": obj};
+    return {"v": obj, "tp$name": name};
   }
   else {
-    goog.asserts.fail("unhandled reference type " + typeof(obj));
+    goog.asserts.fail("unhandled reference");
   }
 };
 goog.exportSymbol("Sk.ffi.referenceToPy", Sk.ffi.referenceToPy);
