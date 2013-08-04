@@ -5,64 +5,67 @@
  */
 var $builtinmodule = function(name) {
 
-  var CONTAINER                 = "Container";
-  var EASE                      = "Ease";
-  var EUCLIDEAN_2               = "Euclidean2";
-  var EVENT                     = "Event";
-  var GRAPHICS                  = "Graphics";
-  var MOVIE_CLIP                = "MovieClip";
-  var POINT                     = "Point";
-  var SHAPE                     = "Shape";
-  var STAGE                     = "Stage";
-  var TEXT                      = "Text";
-  var TICKER                    = "Ticker";
-  var TWEEN                     = "Tween";
+  var CONTAINER                  = "Container";
+  var EASE                       = "Ease";
+  var EUCLIDEAN_2                = "Euclidean2";
+  var EVENT                      = "Event";
+  var GRAPHICS                   = "Graphics";
+  var MOVIE_CLIP                 = "MovieClip";
+  var POINT                      = "Point";
+  var SHAPE                      = "Shape";
+  var STAGE                      = "Stage";
+  var TEXT                       = "Text";
+  var TICKER                     = "Ticker";
+  var TWEEN                      = "Tween";
 
-  var PROP_ALPHA                = "alpha";
-  var PROP_AUTO_CLEAR           = "autoClear";
-  var PROP_BOUNCE_OUT           = "bounceOut";
-  var PROP_CANVAS               = "canvas";
-  var PROP_GRAPHICS             = "graphics";
-  var PROP_MOUSE_IN_BOUNDS      = "mouseInBounds";
-  var PROP_MOUSE_MOVE_OUTSIDE   = "mouseMoveOutside";
-  var PROP_MOUSE_X              = "mouseX";
-  var PROP_MOUSE_Y              = "mouseY";
-  var PROP_NAME                 = "name";
-  var PROP_ROTATION             = "rotation";
-  var PROP_TEXT                 = "text";
-  var PROP_TEXT_ALIGN           = "textAlign";
-  var PROP_TIMELINE             = "timeline";
-  var PROP_W                    = "w";
-  var PROP_X                    = "x";
-  var PROP_Y                    = "y";
-  var PROP_XY                   = "xy";
+  var PROP_ALPHA                 = "alpha";
+  var PROP_AUTO_CLEAR            = "autoClear";
+  var PROP_BOUNCE_OUT            = "bounceOut";
+  var PROP_CANVAS                = "canvas";
+  var PROP_GRAPHICS              = "graphics";
+  var PROP_HIT_AREA              = "hitArea";
+  var PROP_MOUSE_IN_BOUNDS       = "mouseInBounds";
+  var PROP_MOUSE_MOVE_OUTSIDE    = "mouseMoveOutside";
+  var PROP_MOUSE_X               = "mouseX";
+  var PROP_MOUSE_Y               = "mouseY";
+  var PROP_NAME                  = "name";
+  var PROP_ROTATION              = "rotation";
+  var PROP_TEXT                  = "text";
+  var PROP_TEXT_ALIGN            = "textAlign";
+  var PROP_TIMELINE              = "timeline";
+  var PROP_W                     = "w";
+  var PROP_X                     = "x";
+  var PROP_Y                     = "y";
+  var PROP_XY                    = "xy";
 
-  var METHOD_ADD_CHILD          = "addChild";
-  var METHOD_ADD_EVENT_LISTENER = "addEventListener";
-  var METHOD_ADD_TWEEN          = "addTween";
-  var METHOD_BEGIN_FILL         = "beginFill";
-  var METHOD_BEGIN_STROKE       = "beginStroke";
-  var METHOD_CALL               = "onComplete";
-  var METHOD_CLONE              = "clone";
-  var METHOD_DRAW_CIRCLE        = "drawCircle";
-  var METHOD_DRAW_RECT          = "drawRect";
-  var METHOD_ENABLE_MOUSE_OVER  = "enableMouseOver";
-  var METHOD_END_FILL           = "endFill";
-  var METHOD_END_STROKE         = "endStroke";
-  var METHOD_GET                = "get";
-  var METHOD_GET_CHILD_AT       = "getChildAt";
-  var METHOD_GET_NUM_CHILDREN   = "getNumChildren";
-  var METHOD_GLOBAL_TO_LOCAL    = "globalToLocal";
-  var METHOD_GOTO_AND_PLAY      = "gotoAndPlay";
-  var METHOD_HIT_TEST           = "hitTest";
-  var METHOD_LENGTH             = "length";
-  var METHOD_LOCAL_TO_LOCAL     = "localToLocal";
-  var METHOD_LINE_TO            = "lineTo";
-  var METHOD_MOVE_TO            = "moveTo";
-  var METHOD_SET_STROKE_STYLE   = "setStrokeStyle";
-  var METHOD_TO                 = "to";
-  var METHOD_UPDATE             = "update";
-  var METHOD_WAIT               = "wait";
+  var METHOD_ADD_CHILD           = "addChild";
+  var METHOD_ADD_EVENT_LISTENER  = "addEventListener";
+  var METHOD_ADD_TWEEN           = "addTween";
+  var METHOD_BEGIN_FILL          = "beginFill";
+  var METHOD_BEGIN_STROKE        = "beginStroke";
+  var METHOD_CALL                = "onComplete";
+  var METHOD_CLONE               = "clone";
+  var METHOD_DRAW_CIRCLE         = "drawCircle";
+  var METHOD_DRAW_RECT           = "drawRect";
+  var METHOD_ENABLE_MOUSE_OVER   = "enableMouseOver";
+  var METHOD_END_FILL            = "endFill";
+  var METHOD_END_STROKE          = "endStroke";
+  var METHOD_GET                 = "get";
+  var METHOD_GET_CHILD_AT        = "getChildAt";
+  var METHOD_GET_NUM_CHILDREN    = "getNumChildren";
+  var METHOD_GET_MEASURED_HEIGHT = "getMeasuredHeight";
+  var METHOD_GET_MEASURED_WIDTH  = "getMeasuredWidth";
+  var METHOD_GLOBAL_TO_LOCAL     = "globalToLocal";
+  var METHOD_GOTO_AND_PLAY       = "gotoAndPlay";
+  var METHOD_HIT_TEST            = "hitTest";
+  var METHOD_LENGTH              = "length";
+  var METHOD_LOCAL_TO_LOCAL      = "localToLocal";
+  var METHOD_LINE_TO             = "lineTo";
+  var METHOD_MOVE_TO             = "moveTo";
+  var METHOD_SET_STROKE_STYLE    = "setStrokeStyle";
+  var METHOD_TO                  = "to";
+  var METHOD_UPDATE              = "update";
+  var METHOD_WAIT                = "wait";
 
   var mod = {};
 
@@ -577,6 +580,9 @@ var $builtinmodule = function(name) {
     $loc.__getattr__ = new Sk.builtin.func(function(textPy, name) {
       var text = Sk.ffi.remapToJs(textPy);
       switch(name) {
+        case PROP_ALPHA: {
+          return Sk.builtin.assk$(text[PROP_ALPHA], Sk.builtin.nmber.float$);
+        }
         case PROP_X: {
           return Sk.builtin.assk$(text[PROP_X], Sk.builtin.nmber.float$);
         }
@@ -595,12 +601,43 @@ var $builtinmodule = function(name) {
         case METHOD_ADD_EVENT_LISTENER: {
           return Sk.builtin.addEventListener(mod, text);
         }
+        case METHOD_GET_MEASURED_WIDTH: {
+          return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
+            $loc.__init__ = new Sk.builtin.func(function(methodPy) {
+              methodPy.tp$name = METHOD_GET_MEASURED_WIDTH;
+              methodPy.v = text[METHOD_GET_MEASURED_WIDTH];
+            });
+            $loc.__call__ = new Sk.builtin.func(function(methodPy, childPy) {
+              return Sk.builtin.assk$(text[METHOD_GET_MEASURED_WIDTH](), Sk.builtin.nmber.float$);
+            });
+          }, METHOD_GET_MEASURED_WIDTH, []));
+        }
+        case METHOD_GET_MEASURED_HEIGHT: {
+          return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
+            $loc.__init__ = new Sk.builtin.func(function(methodPy) {
+              methodPy.tp$name = METHOD_GET_MEASURED_HEIGHT;
+              methodPy.v = text[METHOD_GET_MEASURED_HEIGHT];
+            });
+            $loc.__call__ = new Sk.builtin.func(function(methodPy, childPy) {
+              return Sk.builtin.assk$(text[METHOD_GET_MEASURED_HEIGHT](), Sk.builtin.nmber.float$);
+            });
+          }, METHOD_GET_MEASURED_HEIGHT, []));
+        }
       }
     });
     $loc.__setattr__ = new Sk.builtin.func(function(textPy, name, valuePy) {
       var text = Sk.ffi.remapToJs(textPy);
       var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
+        case PROP_ALPHA: {
+          Sk.builtin.pyCheckType(PROP_ALPHA, "Number", Sk.builtin.checkNumber(valuePy));
+          text[PROP_ALPHA] = value;
+        }
+        break;
+        case PROP_HIT_AREA: {
+          text[PROP_HIT_AREA] = value;
+        }
+        break;
         case PROP_X: {
           text[PROP_X] = value;
         }
