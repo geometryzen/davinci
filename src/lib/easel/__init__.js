@@ -778,6 +778,9 @@ var $builtinmodule = function(name) {
     $loc.__getattr__ = new Sk.builtin.func(function(containerPy, name) {
       var container = Sk.ffi.remapToJs(containerPy);
       switch(name) {
+        case PROP_NAME: {
+          return new Sk.builtin.str(container[PROP_NAME]);
+        }
         case PROP_X: {
           return Sk.builtin.assk$(container[PROP_X], Sk.builtin.nmber.float$);
         }
@@ -831,6 +834,10 @@ var $builtinmodule = function(name) {
       var container = Sk.ffi.remapToJs(containerPy);
       var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
+        case PROP_NAME: {
+          container[PROP_NAME] = value;
+        }
+        break;
         case PROP_X: {
           container[PROP_X] = value;
         }

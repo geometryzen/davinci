@@ -151,11 +151,13 @@ Sk.builtin.event = function(mod) {
         }
       }
     });
-    $loc.__str__ = new Sk.builtin.func(function(self) {
-      return new Sk.builtin.str(EVENT)
+    $loc.__str__ = new Sk.builtin.func(function(eventPy) {
+      var event = Sk.ffi.remapToJs(eventPy);
+      return new Sk.builtin.str("" + event)
     })
-    $loc.__repr__ = new Sk.builtin.func(function(self) {
-      return new Sk.builtin.str(EVENT)
+    $loc.__repr__ = new Sk.builtin.func(function(eventPy) {
+      var event = Sk.ffi.remapToJs(eventPy);
+      return new Sk.builtin.str("" + event)
     })
   }, EVENT, []);
 };
