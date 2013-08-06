@@ -25083,7 +25083,8 @@ Sk.builtin.defineEuclidean2 = function(mod) {
       }
     });
   }, EUCLIDEAN_2, []);
-};/**
+};
+/**
  * Convenience function for incorporating a Euclidean3 class into a module.
  *
  * Usage:
