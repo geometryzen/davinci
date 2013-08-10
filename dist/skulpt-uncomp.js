@@ -4267,6 +4267,9 @@ Sk.configure = function(options)
     Sk.inputfun = options["inputfun"] || Sk.inputfun;
     goog.asserts.assert(typeof Sk.inputfun === "function")
 
+    Sk.throwSystemExit = options["systemexit"] || false;
+    goog.asserts.assert(typeof Sk.throwSystemExit === "boolean")
+
     if (options["syspath"])
     {
         Sk.syspath = options["syspath"];
@@ -5429,14 +5432,13 @@ Sk.builtin.Exception = function(args)
         // probably needs to be fixed.
         this.filename = "<unknown>";
     }
-
-    if (Sk.currLineNo > 0) 
-    {
-        this.lineno = Sk.currLineNo;
-    }
-    else if (this.args.sq$length() >= 3)
+    if (this.args.sq$length() >= 3)
     {
         this.lineno = this.args.v[2];
+    }
+    else if (Sk.currLineNo > 0) 
+    {
+        this.lineno = Sk.currLineNo;
     }
     else
     {
@@ -22037,7 +22039,7 @@ Compiler.prototype.cmod = function(mod)
 
     // New Code:
     this.u.switchCode = "try { while(true){try{ switch($blk){";
-    this.u.suffixCode = "} }catch(err){if ($exc.length>0) { $err = err; $blk=$exc.pop(); continue; } else { throw err; }} } }catch(err){ if (err instanceof Sk.builtin.SystemExit) { Sk.misceval.print_(err.toString() + '\\n'); return $loc; } else { throw err; } } });";
+    this.u.suffixCode = "} }catch(err){if ($exc.length>0) { $err = err; $blk=$exc.pop(); continue; } else { throw err; }} } }catch(err){ if (err instanceof Sk.builtin.SystemExit && !Sk.throwSystemExit) { Sk.misceval.print_(err.toString() + '\\n'); return $loc; } else { throw err; } } });";
 
     // Note - this change may need to be adjusted for all the other instances of
     // switchCode and suffixCode in this file.  Not knowing how to test those
