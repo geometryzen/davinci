@@ -577,6 +577,10 @@ def run3(fn):
 def shell(fn):
     run(fn, "--shell")
 
+
+def repl():
+    os.system("%s dist/skulpt.js repl/repl.js" % jsengine)
+
 def nrt():
     """open a new run test"""
     for i in range(100000):
@@ -775,5 +779,7 @@ Where command is one of:
         host()
     elif cmd == "shell":
         shell(sys.argv[2]);
+    elif cmd == "repl":
+        repl()
     else:
         usage()

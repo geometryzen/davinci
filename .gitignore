@@ -8,3 +8,6 @@ vendor/
 
 /.d8_history
 /.idea
+/.vagrant
+
+Vagrantfile
