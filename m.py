@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 
 #
-#   Note:  python2.6 is specified because that is what the davinci parser
+#   Note:  python2.6 is specified because that is what the cross compiler
 #          used as a reference.  This is only important when you are doing
 #          things like regenerating tests and/or regenerating symtabs
 #          If you do not have python 2.6 and you ARE NOT creating new tests
@@ -17,6 +17,11 @@ import shutil
 import re
 import pprint
 import json
+OUTFILE_REG = "davinci.js"
+OUTFILE_MIN = "davinci.min.js"
+OUTFILE_LIB = "davinciLib.js"
+OUTFILE_MAP = "davinciLineMap.txt"
+OUTFILE_DIR = "build/"
 try:
     from git import *
 except:
@@ -334,14 +339,14 @@ def build():
 
 
     # print ". Nuking old build/"
-    os.system("rm -rf build/")
+    os.system("rm -rf " + OUTFILE_DIR)
     if not os.path.exists("build"): os.mkdir("build")
 
 
     if len(sys.argv) > 2 and sys.argv[2] == '-u':
         # print ". Writing combined version..."
         combined = ''
-        linemap = open("build/davinciLineMap.txt", "w")
+        linemap = open(OUTFILE_DIR + OUTFILE_MAP, "w")
         curline = 1
         for file in getFileList('build'):
             curfiledata = open(file).read()
@@ -349,17 +354,17 @@ def build():
             print >>linemap, "%d:%s" % (curline, file)
             curline += len(curfiledata.split("\n")) - 1
         linemap.close()
-        uncompfn = "build/davinci.js"
+        uncompfn = OUTFILE_DIR + OUTFILE_REG
         open(uncompfn, "w").write(combined)
-        os.system("chmod 444 build/davinci.js") # just so i don't mistakenly edit it all the time
+        os.system("chmod 444 " + OUTFILE_DIR + OUTFILE_REG) # just so i don't mistakenly edit it all the time
 
 
     # make combined version
-    #uncompfn = "build/davinci.js"
-    compfn = "build/davinci.min.js"
-    builtinfn = "build/davinciLib.js"
+    #uncompfn = OUTFILE_DIR + OUTFILE_REG
+    compfn = OUTFILE_DIR + OUTFILE_MIN
+    builtinfn = OUTFILE_DIR + OUTFILE_LIB
     #open(uncompfn, "w").write(combined)
-    #os.system("chmod 444 build/davinci.js") # just so i don't mistakenly edit it all the time
+    #os.system("chmod 444 " + OUTFILE_DIR + OUTFILE_REG) # just so i don't mistakenly edit it all the time
 
     #buildBrowserTests()
 
@@ -393,26 +398,26 @@ def build():
         print "Tests failed on compressed version."
         raise SystemExit()
 
-    ret = os.system("cp %s build/tmp.js" % compfn)
+    ret = os.system(("cp %s " + OUTFILE_DIR + "tmp.js") % compfn)
     if ret != 0:
         print "Couldn't copy for gzip test."
         raise SystemExit()
 
-    ret = os.system("gzip -9 build/tmp.js")
+    ret = os.system("gzip -9 " + OUTFILE_DIR + "tmp.js")
     if ret != 0:
         print "Couldn't gzip to get final size."
         raise SystemExit()
 
-    size = os.path.getsize("build/tmp.js.gz")
-    os.unlink("build/tmp.js.gz")
+    size = os.path.getsize(OUTFILE_DIR + "tmp.js.gz")
+    os.unlink(OUTFILE_DIR + "tmp.js.gz")
 
     with open(builtinfn, "w") as f:
         f.write(getBuiltinsAsJson())
         # print ". Wrote %s" % builtinfn
 
     # update doc copy
-    ret = os.system("cp %s doc/static/davinci.min.js" % compfn)
-    ret |= os.system("cp %s doc/static/davinciLib.js" % builtinfn)
+    ret  = os.system(("cp %s doc/static/" + OUTFILE_MIN) % compfn)
+    ret |= os.system(("cp %s doc/static/" + OUTFILE_LIB) % builtinfn)
     if ret != 0:
         print "Couldn't copy to docs dir."
         raise SystemExit()
@@ -532,7 +537,7 @@ def doctest():
     ret = os.system("python2.6 ~/Desktop/3rdparty/google_appengine/dev_appserver.py -p 20710 doc")
 
 def docbi():
-    builtinfn = "doc/static/davinciLib.js"
+    builtinfn = "doc/static/" + OUTFILE_LIB
     with open(builtinfn, "w") as f:
         f.write(getBuiltinsAsJson())
         # print ". Wrote %s" % builtinfn
@@ -560,7 +565,7 @@ print("-----");
     """ % (fn, os.path.split(fn)[0], p3on, modname))
     f.close()
     if opt:
-        os.system("%s build/davinci.min.js support/tmp/run.js" % jsengine)
+        os.system("%s " + OUTFILE_DIR + OUTFILE_MIN + " support/tmp/run.js" % jsengine)
     else:
         os.system("%s %s %s support/tmp/run.js" % (jsengine, shell, ' '.join(getFileList('test'))))
 
@@ -575,7 +580,7 @@ def shell(fn):
 
 
 def repl():
-    os.system("%s dist/skulpt.js repl/repl.js" % jsengine)
+    os.system(("%s " + OUTFILE_DIR + OUTFILE_REG + " repl/repl.js") % jsengine)
 
 def nrt():
     """open a new run test"""
@@ -696,11 +701,11 @@ if __name__ == "__main__":
         print '''USAGE: m [command] [options] [.py file]
 Where command is one of:
 
-        run   -- given a .py file run it using davinci  ./m run myprog.py
+        run   -- given a .py file run it using davinci  ./m.py run myprog.py
         test  -- run all test cases in test/run
-        build -- create davinci.min.js and davinciLib.js  with -u also build
-                 uncompressed davinci for debugging
-        docbi -- regenerate davinciLib.js only and copy to doc/static
+        build -- create minified output and JavaScript library with -u also build
+                 uncompressed output for debugging
+        docbi -- regenerate built-in JavaScript library only and copy to doc/static
 
         regenparser      -- regenerate parser tests
         regenasttests    -- regen abstract symbol table tests
@@ -716,7 +721,7 @@ Where command is one of:
         browser -- run all tests in the browser
         shell   -- run a python program but keep a shell open (like python -i)
                    ./m shell myprog.py
-        vfs     -- Build a virtual file system to support davinci read tests
+        vfs     -- Build a virtual file system to support cross compiler read tests
 
         debugbrowser  -- debug in the browser -- open your javascript console
         '''
