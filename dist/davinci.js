@@ -24964,7 +24964,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
   });
 
   mod[VECTOR_2] = new Sk.builtin.func(function(x, y) {
-    Sk.builtin.pyCheckArgs(VECTOR_2, arguments, 1, 1);
+    Sk.builtin.pyCheckArgs(VECTOR_2, arguments, 2, 2);
     Sk.builtin.pyCheckType("x", "Number", Sk.builtin.checkNumber(x));
     Sk.builtin.pyCheckType("y", "Number", Sk.builtin.checkNumber(y));
     x = Sk.ffi.remapToJs(x);
