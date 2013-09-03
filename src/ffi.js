@@ -59,7 +59,14 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
         var d = typeof defaultJs;
-        return undefined;
+        if (d === Sk.ffi.JsType.NUMBER)
+        {
+            return Sk.ffi.numberToPy(Number(defaultJs));
+        }
+        else
+        {
+            return undefined;
+        }
     }
     else
     {
