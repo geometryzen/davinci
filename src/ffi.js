@@ -571,10 +571,8 @@ Sk.ffi.typeName = function(valuePy)
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.OBJREF:
-        {
-            return Sk.abstr.typeName(valuePy);
-        }
         case Sk.ffi.PyType.BOOL:
+        case Sk.ffi.PyType.FLOAT:
         {
             return Sk.abstr.typeName(valuePy);
         }
