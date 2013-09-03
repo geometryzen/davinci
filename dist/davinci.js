@@ -13722,7 +13722,10 @@ Sk.ffi.booleanToPy = function(valueJs)
     }
     else
     {
-        throw Sk.ffi.assertionError("f5008183-bfce-4842-9496-30b936ff73f3");
+        throw Sk.ffi.err.
+            expectArg("valueJs").
+            inFunction("Sk.ffi.booleanToPy").
+            toHaveType([Sk.ffi.JsType.BOOLEAN, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
 goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
@@ -13761,12 +13764,18 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
         }
         else
         {
-            throw Sk.ffi.err.expectArg("defaultJs").inFunction("Sk.ffi.numberToPy").toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
+            throw Sk.ffi.err.
+                expectArg("defaultJs").
+                inFunction("Sk.ffi.numberToPy").
+                toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
         }
     }
     else
     {
-        throw Sk.ffi.err.expectArg("valueJs").inFunction("Sk.ffi.numberToPy").toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
+        throw Sk.ffi.err.
+            expectArg("valueJs").
+            inFunction("Sk.ffi.numberToPy").
+            toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
 goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
@@ -13835,12 +13844,18 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
         }
         else
         {
-            throw Sk.ffi.err.expectArg("defaultJs").inFunction("Sk.ffi.stringToPy").toHaveType([Sk.ffi.JsType.STRING, Sk.ffi.JsType.UNDEFINED, 'null'].join(" or "));
+            throw Sk.ffi.err.
+                expectArg("defaultJs").
+                inFunction("Sk.ffi.stringToPy").
+                toHaveType([Sk.ffi.JsType.STRING, Sk.ffi.JsType.UNDEFINED, 'null'].join(" or "));
         }
     }
     else
     {
-        throw Sk.ffi.assertionError("50730498-9d4c-4a28-ab50-fd6127dd6d8c, typeof valueJs => '" + t + "'");
+        throw Sk.ffi.err.
+            expectArg("valueJs").
+            inFunction("Sk.ffi.stringToPy").
+            toHaveType([Sk.ffi.JsType.STRING, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
 goog.exportSymbol("Sk.ffi.stringToPy", Sk.ffi.stringToPy);
