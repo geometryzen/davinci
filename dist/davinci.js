@@ -13705,20 +13705,37 @@ Sk.ffi.JsType = {
 };
 
 /**
+ * Enumeration for Python bool values.
+ *
+ * @enum {!Object}
+ */
+Sk.ffi.bool = {True: Sk.builtin.bool.true$, False: Sk.builtin.bool.false$};
+goog.exportSymbol("Sk.ffi.bool", Sk.ffi.bool);
+
+/**
+ * Singleton Python None value.
+ *
+ * @enum {!Object}
+ */
+Sk.ffi.none = {None: Sk.builtin.none.none$};
+goog.exportSymbol("Sk.ffi.none", Sk.ffi.none);
+
+/**
  * Converts a JavaScript boolean or null to the internal Python bool representation.
  *
  * @param {?boolean} valueJs
+ * @return {Sk.ffi.bool|Sk.ffi.none}
  */
 Sk.ffi.booleanToPy = function(valueJs)
 {
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.BOOLEAN)
     {
-        return valueJs ? Sk.builtin.bool.true$ : Sk.builtin.bool.false$;
+        return valueJs ? Sk.ffi.bool.True : Sk.ffi.bool.False;
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.builtin.none.none$;
+        return Sk.ffi.None;
     }
     else
     {
@@ -13735,6 +13752,7 @@ goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
  *
  * @param {?number} valueJs
  * @param {number=} defaultJs
+ * @return {Object|Sk.ffi.none|undefined}
  */
 Sk.ffi.numberToPy = function(valueJs, defaultJs)
 {
@@ -13745,7 +13763,7 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.builtin.none.none$;
+        return Sk.ffi.none.None;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -13760,7 +13778,7 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.builtin.none.none$;
+            return Sk.ffi.none.None;
         }
         else
         {
@@ -13794,7 +13812,7 @@ Sk.ffi.numberToIntPy = function(valueJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.builtin.none.none$;
+        return Sk.ffi.none.None;
     }
     else
     {
@@ -13825,7 +13843,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.builtin.none.none$;
+        return Sk.ffi.none.None;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -13840,7 +13858,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.builtin.none.none$;
+            return Sk.ffi.none.None;
         }
         else
         {
@@ -13969,7 +13987,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
         }
         else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
         {
-            return Sk.builtin.none.none$;
+            return Sk.ffi.none.None;
         }
         else
         {
@@ -14194,7 +14212,7 @@ Sk.ffi.getType = function(valuePy)
     {
         return Sk.ffi.PyType.BOOL;
     }
-    else if (valuePy === Sk.builtin.none.none$)
+    else if (valuePy === Sk.ffi.none.None)
     {
         return Sk.ffi.PyType.NONE;
     }
