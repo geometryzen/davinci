@@ -63,14 +63,22 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
         {
             return Sk.ffi.numberToPy(Number(defaultJs));
         }
-        else
+        else if (d === Sk.ffi.JsType.UNDEFINED)
         {
             return undefined;
+        }
+        else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
+        {
+            return Sk.builtin.none.none$;
+        }
+        else
+        {
+            throw Sk.ffi.err.expectArg("defaultJs").inFunction("Sk.ffi.numberToPy").toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
         }
     }
     else
     {
-        throw Sk.ffi.assertionError("3c68a6b8-0314-49ab-99ac-a818324417d8");
+        throw Sk.ffi.err.expectArg("valueJs").inFunction("Sk.ffi.numberToPy").toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
 goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
