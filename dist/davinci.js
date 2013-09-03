@@ -14261,6 +14261,7 @@ Sk.ffi.typeName = function(valuePy)
         case Sk.ffi.PyType.OBJREF:
         case Sk.ffi.PyType.BOOL:
         case Sk.ffi.PyType.FLOAT:
+        case Sk.ffi.PyType.STRING:
         {
             return Sk.abstr.typeName(valuePy);
         }
