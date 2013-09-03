@@ -14262,6 +14262,10 @@ Sk.ffi.typeName = function(valuePy)
         {
             return Sk.abstr.typeName(valuePy);
         }
+        case Sk.ffi.PyType.BOOL:
+        {
+            return Sk.abstr.typeName(valuePy);
+        }
         default:
         {
             throw Sk.ffi.assertionError("0d35490f-ac78-45d7-ac5e-af6ef09278b1, Sk.ffi.getType(valuePy) => " + Sk.ffi.getType(valuePy));
