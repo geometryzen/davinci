@@ -104,9 +104,13 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
         {
             return undefined;
         }
+        else if (d === 'object' && defaultJs === null)
+        {
+            return Sk.builtin.none.none$;
+        }
         else
         {
-            throw Sk.ffi.assertionError("f8db3019-c641-4ab2-8bbe-50aa9bfa8b39, defaultJs must be a string");
+            throw Sk.ffi.err.expectArg("defaultJs").inFunction("Sk.ffi.stringToPy").toHaveType(['string', 'undefined', 'null'].join(" or "));
         }
     }
     else
@@ -774,6 +778,13 @@ Sk.ffi.err =
     },
     expectArg: function(name) {
         return {
+            inFunction: function(functionName) {
+                return {
+                    toHaveType: function(expectedType) {
+                        return Sk.ffi.typeError("Expecting argument '" + name + "' in function '" + functionName + "' to have type '" + expectedType + "'.");
+                    }
+                };
+            },
             toHaveType: function(expectedType) {
                 return Sk.ffi.typeError("Expecting argument '" + name + "' to have type '" + expectedType + "'.");
             }
