@@ -13724,9 +13724,10 @@ goog.exportSymbol("Sk.ffi.none", Sk.ffi.none);
  * Converts a JavaScript boolean or null to the internal Python bool representation.
  *
  * @param {?boolean} valueJs
- * @return {Sk.ffi.bool|Sk.ffi.none}
+ * @param {boolean=} defaultJs
+ * @return {Sk.ffi.bool|Sk.ffi.none|undefined}
  */
-Sk.ffi.booleanToPy = function(valueJs)
+Sk.ffi.booleanToPy = function(valueJs, defaultJs)
 {
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.BOOLEAN)
@@ -13736,6 +13737,29 @@ Sk.ffi.booleanToPy = function(valueJs)
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
         return Sk.ffi.none.None;
+    }
+    else if (t === Sk.ffi.JsType.UNDEFINED)
+    {
+        var d = typeof defaultJs;
+        if (d === Sk.ffi.JsType.BOOLEAN)
+        {
+            return Sk.ffi.booleanToPy(Boolean(defaultJs));
+        }
+        else if (d === Sk.ffi.JsType.UNDEFINED)
+        {
+            return undefined;
+        }
+        else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
+        {
+            return Sk.ffi.none.None;
+        }
+        else
+        {
+            throw Sk.ffi.err.
+                expectArg("defaultJs").
+                inFunction("Sk.ffi.booleanToPy").
+                toHaveType([Sk.ffi.JsType.BOOLEAN, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
+        }
     }
     else
     {
