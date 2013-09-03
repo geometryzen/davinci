@@ -13786,7 +13786,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
     {
         if (d === 'string')
         {
-            return Sk.ffi.stringToPy(String(defaultJs));
+            return Sk.ffi.stringToPy(defaultJs.toString());
         }
         else if (d === 'undefined')
         {
