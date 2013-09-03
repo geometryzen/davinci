@@ -13766,6 +13766,7 @@ goog.exportSymbol("Sk.ffi.numberToIntPy", Sk.ffi.numberToIntPy);
 Sk.ffi.stringToPy = function(valueJs, defaultJs)
 {
     var t = typeof valueJs;
+    var d = typeof defaultJs;
     if (t === 'string')
     {
         if (valueJs.length > 0)
@@ -13783,9 +13784,13 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
     }
     else if (t === 'undefined')
     {
-        if (typeof defaultJs === 'string')
+        if (d === 'string')
         {
-            return Sk.ffi.stringToPy(defaultJs);
+            return Sk.ffi.stringToPy(String(defaultJs));
+        }
+        else if (d === 'undefined')
+        {
+            return undefined;
         }
         else
         {
@@ -14183,7 +14188,7 @@ Sk.ffi.typeName = function(valuePy)
         }
         default:
         {
-            goog.asserts.fail("Sk.ffi.typeName(valuePy) must be Sk.ffi.PyType.OBJREF");
+            throw Sk.ffi.assertionError("0d35490f-ac78-45d7-ac5e-af6ef09278b1, Sk.ffi.getType(valuePy) => " + Sk.ffi.getType(valuePy));
         }
     }
 };
