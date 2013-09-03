@@ -47,7 +47,7 @@ Sk.ffi.booleanToPy = function(valueJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.ffi.None;
+        return Sk.ffi.none.None;
     }
     else
     {
