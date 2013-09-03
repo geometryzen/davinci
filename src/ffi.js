@@ -138,8 +138,10 @@ goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
  * Converts a JavaScript number or null to the internal Python int representation.
  *
  * @param {?number} valueJs
+ * @param {number=} defaultJs
+ * @return {Object|Sk.ffi.none|undefined}
  */
-Sk.ffi.numberToIntPy = function(valueJs)
+Sk.ffi.numberToIntPy = function(valueJs, defaultJs)
 {
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.NUMBER)
@@ -150,9 +152,35 @@ Sk.ffi.numberToIntPy = function(valueJs)
     {
         return Sk.ffi.none.None;
     }
+    else if (t === Sk.ffi.JsType.UNDEFINED)
+    {
+        var d = typeof defaultJs;
+        if (d === Sk.ffi.JsType.NUMBER)
+        {
+            return Sk.ffi.numberToIntPy(Number(defaultJs));
+        }
+        else if (d === Sk.ffi.JsType.UNDEFINED)
+        {
+            return undefined;
+        }
+        else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
+        {
+            return Sk.ffi.none.None;
+        }
+        else
+        {
+            throw Sk.ffi.err.
+                expectArg("defaultJs").
+                inFunction("Sk.ffi.numberToIntPy").
+                toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
+        }
+    }
     else
     {
-        throw Sk.ffi.assertionError("b451b411-151c-4430-82f2-d548e5514303");
+        throw Sk.ffi.err.
+            expectArg("valueJs").
+            inFunction("Sk.ffi.numberToIntPy").
+            toHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
 goog.exportSymbol("Sk.ffi.numberToIntPy", Sk.ffi.numberToIntPy);
@@ -597,6 +625,7 @@ Sk.ffi.typeName = function(valuePy)
         case Sk.ffi.PyType.OBJREF:
         case Sk.ffi.PyType.BOOL:
         case Sk.ffi.PyType.FLOAT:
+        case Sk.ffi.PyType.INT:
         case Sk.ffi.PyType.STRING:
         {
             return Sk.abstr.typeName(valuePy);
