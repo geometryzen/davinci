@@ -862,6 +862,16 @@ goog.exportSymbol("Sk.ffi.assertionError", Sk.ffi.assertionError);
 
 /**
  * @param {...*} args
+ * @return {!Sk.builtin.AttributeError}
+ */
+Sk.ffi.attributeError = function(args)
+{
+    return new Sk.builtin.AttributeError(args);
+};
+goog.exportSymbol("Sk.ffi.attributeError", Sk.ffi.attributeError);
+
+/**
+ * @param {...*} args
  * @return {!Sk.builtin.IndexError}
  */
 Sk.ffi.indexError = function(args)
@@ -897,6 +907,16 @@ goog.exportSymbol("Sk.ffi.valueError", Sk.ffi.valueError);
  */
 Sk.ffi.err =
 {
+    attribute: function(name) {
+        return {
+            isNotGetableOnType: function(targetType) {
+                return Sk.ffi.attributeError(name + " is not a getable attribute of " + targetType);
+            },
+            isNotSetableOnType: function(targetType) {
+                return Sk.ffi.attributeError(name + " is not a setable attribute of " + targetType);
+            }
+        };
+    },
     argument: function(name) {
         return {
             mustBeA: function(expectedType) {
