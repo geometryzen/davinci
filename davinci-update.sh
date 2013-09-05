@@ -8,7 +8,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
   cd $HOME
 
   # clone davinci
-  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci.git davinci    # > /dev/null
+  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci.git      davinci      # > /dev/null
   # clone davinci-dist
   git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci-dist.git davinci-dist # > /dev/null
   
@@ -16,7 +16,9 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
   cd $HOME
   cd davinci
   git tag > ../tags-davinci
-  cd ../davinci-dist
+
+  cd $HOME
+  cd davinci-dist
   git tag > ../tags-davinci-dist
   cd ..
   
