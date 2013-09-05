@@ -21,16 +21,15 @@ DaVinci was created by David Holmes in early 2013.
 
 ## How can I help?
 
-There is plenty of work still to do in making improvements to DaVinci.  If you would like to contribute
+There is plenty of work still to do in making improvements to DaVinci.  If you would like to contribute...
 
-1. Create a Github account if you don't already have one
-2. Create a Fork of the davinci repository -- This will make a clone of the repository in your account. **DO NOT** clone this one.
+1. Create a GitHub account if you don't already have one.
+2. Create a Fork of the geometryzen/davinci repository -- This will make a clone of the repository in your account. **DO NOT** clone this one.
 3. Once you've made the fork you will clone the forked version in your account to your local machine for development.
 4. Check the issues list for something to do.
 5. Fix or add your own features.  Commit and push to your forked version of the repository.
    When everything is tested and ready to be incorporated into the master version...
 6. Make a Pull Request to get your feature(s) added to the main repository.
-
 
 ## Community
 
