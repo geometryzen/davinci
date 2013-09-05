@@ -11,7 +11,8 @@ doc/static/davinci.min.js
 doc/static/davinci-stdlib.js
 
 # Ignore Bower dependencies, as the node project is not "deployed" per se: http://www.mikealrogers.com/posts/nodemodules-in-git.html
-vendor/
+# But we do embed the BladeJS JavaScript library.
+vendor/threejs
 
 # Ignore tools dependencies
 /node_modules

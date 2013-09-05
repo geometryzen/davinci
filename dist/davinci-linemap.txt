@@ -51,4 +51,4 @@
 27784:src/three.js
 31264:src/vector3.js
 31606:src/fractions.js
-31865:../bladejs/generated/js/app.js
+31865:vendor/bladejs/dist/bladejs.js
