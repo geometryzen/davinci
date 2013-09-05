@@ -1,21 +1,23 @@
 # Welcome to DaVinci
 
 DaVinci is a Python to JavaScript cross-compiler.
-Python that runs in your browser!
-Python that runs on your iPad!
-Its being used by [GeometryZen](http://www.geometryzen.org).
+
+Its primary purpose is to allow Python to be run in a browser using the JavaScript engine.
+
+It is being used by [GeometryZen](http://www.geometryzen.org).
 
 [![Build Status](https://travis-ci.org/geometryzen/davinci.png)](https://travis-ci.org/geometryzen/davinci)
 
 ## Origins
 
 DaVinci is a fork of the Skulpt project.
+DaVinci provides Mathematical Physics and Computer Graphics extensions to Skulpt.
 
-Skulpt is the brainchild of Scott Graham.  See [Skulpt.org](http://skulpt.org) for some early demos of Skulpt in action.
+Skulpt is the brainchild of Scott Graham.  See [skulpt.org](http://skulpt.org) for some early demos of Skulpt in action.
 
 Brad Miller has been shepherding the development of Skulpt since sometime in 2010/2011.
 
-DaVinci is being developed by David Holmes since 2013. DaVinci provides Mathematical Physics and Computer Graphics extensions.
+DaVinci was created by David Holmes in early 2013.
 
 ## How can I help?
 
@@ -32,8 +34,8 @@ There is plenty of work still to do in making improvements to DaVinci.  If you w
 
 ## Community
 
-Check out the mailing list:  https://groups.google.com/forum/?hl=en#!forum/geometryzen
-Check out the Google+ community:  https://plus.google.com/u/0/s/Geometry%20Zen/communities
+* Check out the mailing list:  https://groups.google.com/forum/?hl=en#!forum/geometryzen
+* Check out the Google+ community:  https://plus.google.com/u/0/s/Geometry%20Zen/communities
 
 ## Acknowledgements
 
