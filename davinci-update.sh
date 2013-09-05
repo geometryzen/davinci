@@ -1,11 +1,6 @@
 if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
-  # stop if google appengine isn't installed.
-  if [ ! -f ~/vendors/google_appengine/appcfg.py ]; then
-      echo "can't find appcfg.py"
-      exit 1
-  fi
 
-  echo -e "Starting to update distribution folder\n"
+  echo -e "Starting to update distribution folder...\n"
   # configure git to commit as Travis
   git config --global user.email "travis@travis-ci.org"
   git config --global user.name "Travis"
@@ -89,14 +84,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
   git add .
   git commit -m "Travis build $TRAVIS_BUILD_NUMBER pushed"
   git push -fq origin master > /dev/null
-  
-#  if [[ "$NEWTAG" == "true" ]]; then
-#    echo "Updating site"
-#    cd $HOME/davinci/doc
-#    ~/vendors/google_appengine/appcfg.py --oauth2_refresh_token=${GAE_REFRESH} update ./
-#    echo "Successfully updated skulpt.org"
-#  fi
-  
+
   echo -e "Done magic with coverage\n"
 else
   echo -e "Not updating distribution folder because TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST and TRAVIS_TEST_RESULT = $TRAVIS_TEST_RESULT"
