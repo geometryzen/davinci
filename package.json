@@ -1,5 +1,5 @@
 {
-  "name": "davinci",
+  "name": "davinci-tools",
   "version": "0.9.32",
   "description": "Python to JavaScript cross compiler",
   "author": {

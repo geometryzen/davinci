@@ -391,9 +391,13 @@ def dist(options):
         print "+----------------------------------------------------------------------------+"
 
     if options.verbose:
-        print ". Removing distribution directory, '{0}/'.".format(DIST_DIR)
+        print ". Cleaning distribution directory, '{0}'.".format(DIST_DIR)
 
-    os.system("rm -rf {0}/".format(DIST_DIR))
+    # We don't delete the entire distribution directory so as to leave the tools for testing.
+    os.system("rm -rf {0}/{1}".format(DIST_DIR, OUTFILE_REG))
+    os.system("rm -rf {0}/{1}".format(DIST_DIR, OUTFILE_MIN))
+    os.system("rm -rf {0}/{1}".format(DIST_DIR, OUTFILE_LIB))
+    os.system("rm -rf {0}/{1}".format(DIST_DIR, OUTFILE_MAP))
     if not os.path.exists(DIST_DIR): os.mkdir(DIST_DIR)
 
     if options.uncompressed:

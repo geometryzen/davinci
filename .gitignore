@@ -1,4 +1,6 @@
 support/tmp/
+dist/davinci-tools.js
+dist/davinci-tools.min.js
 doc/static/builtin.js
 doc/static/skulpt.js
 doc/static/davinci.js
