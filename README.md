@@ -2,7 +2,7 @@
 
 DaVinci is a Python to JavaScript cross-compiler.
 
-Its primary purpose is to allow Python to be run in a browser using the JavaScript engine.
+The primary purpose is to allow Python to be run in a browser using the JavaScript engine to support Mathematical Physics, Engineering, and Computer Graphics applications.
 
 It is being used by [GeometryZen](http://www.geometryzen.org).
 
