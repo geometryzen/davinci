@@ -1,7 +1,7 @@
 if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
 
   echo -e "Starting to update distribution folder...\n"
-  # configure git to commit as Travis
+  # configure Git to commit as Travis
   git config --global user.email "travis@travis-ci.org"
   git config --global user.name "Travis"
 
