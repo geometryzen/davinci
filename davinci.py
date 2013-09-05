@@ -111,7 +111,7 @@ Files = [
         'src/three.js',
         'src/vector3.js',
         'src/fractions.js',
-        "../bladejs/generated/js/app.js",
+        "vendor/bladejs/dist/bladejs.js",
         ("support/jsbeautify/beautify.js", FILE_TYPE_TEST),
         ]
 
