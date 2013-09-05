@@ -7,9 +7,9 @@ install:
 - wget http://googleappengine.googlecode.com/files/google_appengine_1.8.3.zip  -nv
 - unzip -qd ~/vendors google_appengine_1.8.3.zip
 script:
-- ./skulpt.py dist
+- ./davinci.py dist -u
 after_script:
-- ./dist-update.sh
+- ./davinci-update.sh
 env:
   global:
   - secure: c4X6Fg9g3Z27vweDsb6q4Is7cwt4TdKX/H0T9MaGRZEcBvA2ke05B2m7jcwz0Ml0JfwBq1fWzOEj+VNOkXD1CqtzQwKgd7hO094Jk/tXYtfSSHD4nmJ0HyrKMBZfic/Q9eYQoTfhuKez34dzxBiwI818q5B6oedo9ayzK3M7k6w=
