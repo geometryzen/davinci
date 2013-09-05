@@ -1,7 +1,7 @@
 {
   "name": "davinci",
-  "version": "0.9.32",
-  "main": "./build/davinci.min.js",
+  "version": "0.9.33",
+  "main": ["./build/davinci.js", "./build/davinci.min.js"],
   "description": "Python to JavaScript cross compiler",
   "author": {
     "name": "David Holmes",
