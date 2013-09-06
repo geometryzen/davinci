@@ -85,7 +85,7 @@
    * @const
    * @type {string}
    */
-  var METHOD_LENGTH              = "length_$rn$";
+  var METHOD_LENGTH              = Sk.ffi.mangleName("length");
   /**
    * @const
    * @type {string}

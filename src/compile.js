@@ -153,6 +153,12 @@ function fixReservedNames(name)
         return name + "_$rn$";
     return name;
 }
+/**
+ * @param {string} name
+ * @return {string} The mangled name.
+ */
+Sk.mangleName = function(name) {return fixReservedNames(name)};
+goog.exportSymbol("Sk.mangleName", Sk.mangleName);
 
 function mangleName(priv, ident)
 {
