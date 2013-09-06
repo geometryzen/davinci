@@ -85,7 +85,7 @@
    * @const
    * @type {string}
    */
-  var METHOD_LENGTH              = "length";
+  var METHOD_LENGTH              = "length_$rn$";
   /**
    * @const
    * @type {string}

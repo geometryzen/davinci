@@ -480,8 +480,6 @@ Sk.builtin.lng.prototype.nb$ispositive = function()
 	//return this.biginteger.trueCompare(Sk.builtin.biginteger.ZERO) >= 0;
 };
 
-Sk.builtin.lng.prototype.nb$invert = function() { throw new Sk.builtin.AssertionError(); };
-
 Sk.builtin.lng.prototype.longCompare = function(other)
 {
 	if (typeof other === "boolean")
@@ -525,11 +523,11 @@ Sk.builtin.lng.prototype.longCompare = function(other)
 }
 
 Sk.builtin.lng.prototype.__eq__ = function(me, other) {
-	return me.longCompare(other) == 0;
+	return me.longCompare(other) == 0 && !(other instanceof Sk.builtin.none);
 };
 
 Sk.builtin.lng.prototype.__ne__ = function(me, other) {
-	return me.longCompare(other) != 0;
+	return me.longCompare(other) != 0 || (other instanceof Sk.builtin.none);
 };
 
 Sk.builtin.lng.prototype.__lt__ = function(me, other) {

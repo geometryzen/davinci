@@ -58,7 +58,6 @@ var $builtinmodule = function(name) {
   var METHOD_GLOBAL_TO_LOCAL     = "globalToLocal";
   var METHOD_GOTO_AND_PLAY       = "gotoAndPlay";
   var METHOD_HIT_TEST            = "hitTest";
-  var METHOD_LENGTH              = "length";
   var METHOD_LOCAL_TO_LOCAL      = "localToLocal";
   var METHOD_LINE_TO             = "lineTo";
   var METHOD_MOVE_TO             = "moveTo";

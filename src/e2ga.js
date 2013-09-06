@@ -22,7 +22,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
   var PROP_Y         = "y";
   var PROP_XY        = "xy";
   var METHOD_CLONE   = "clone";
-  var METHOD_LENGTH  = "length";
+  var METHOD_LENGTH  = "length_$rn$";
 
   function isNumber(x)    { return typeof x === 'number'; }
 

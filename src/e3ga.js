@@ -31,7 +31,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
   var METHOD_CLONE               = "clone";
   var METHOD_CROSS               = "cross";
   var METHOD_DOT                 = "dot";
-  var METHOD_LENGTH              = "length";
+  var METHOD_LENGTH              = "length_$rn$";
   var METHOD_NORMALIZE           = "normalize";
   var METHOD_SET                 = "set";
   var METHOD_SET_X               = "setX";
@@ -1019,10 +1019,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_ADD);
+              return Sk.ffi.stringToPy(METHOD_ADD);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_ADD);
+              return Sk.ffi.stringToPy(METHOD_ADD);
             });
           }, METHOD_ADD, []));
         }
@@ -1036,10 +1036,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.remapToPy(mv.cross(vectorJs), EUCLIDEAN_3));
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_CROSS);
+              return Sk.ffi.stringToPy(METHOD_CROSS);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_CROSS);
+              return Sk.ffi.stringToPy(METHOD_CROSS);
             });
           }, METHOD_CROSS, []));
         }
@@ -1071,10 +1071,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_X);
+              return Sk.ffi.stringToPy(METHOD_SET_X);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_X);
+              return Sk.ffi.stringToPy(METHOD_SET_X);
             });
           }, METHOD_SET_X, []));
         }
@@ -1089,10 +1089,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_Y);
+              return Sk.ffi.stringToPy(METHOD_SET_Y);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_Y);
+              return Sk.ffi.stringToPy(METHOD_SET_Y);
             });
           }, METHOD_SET_Y, []));
         }
@@ -1107,10 +1107,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_Z);
+              return Sk.ffi.stringToPy(METHOD_SET_Z);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_Z);
+              return Sk.ffi.stringToPy(METHOD_SET_Z);
             });
           }, METHOD_SET_Z, []));
         }
@@ -1124,10 +1124,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return Sk.ffi.numberToPy(mv[METHOD_GET_COMPONENT](index));
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_GET_COMPONENT);
+              return Sk.ffi.stringToPy(METHOD_GET_COMPONENT);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_GET_COMPONENT);
+              return Sk.ffi.stringToPy(METHOD_GET_COMPONENT);
             });
           }, METHOD_GET_COMPONENT, []));
         }
@@ -1143,10 +1143,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_COMPONENT);
+              return Sk.ffi.stringToPy(METHOD_SET_COMPONENT);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET_COMPONENT);
+              return Sk.ffi.stringToPy(METHOD_SET_COMPONENT);
             });
           }, METHOD_SET_COMPONENT, []));
         }
@@ -1163,10 +1163,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET);
+              return Sk.ffi.stringToPy(METHOD_SET);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_SET);
+              return Sk.ffi.stringToPy(METHOD_SET);
             });
           }, METHOD_SET, []));
         }
@@ -1179,10 +1179,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return remapE3ToPy(mv.w, mv.x, mv.y, mv.z, mv.xy, mv.yz, mv.zx, mv.xyz);
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_CLONE);
+              return Sk.ffi.stringToPy(METHOD_CLONE);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_CLONE);
+              return Sk.ffi.stringToPy(METHOD_CLONE);
             });
           }, METHOD_CLONE, []));
         }
@@ -1195,10 +1195,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return Sk.ffi.numberToPy(mv.length());
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_LENGTH);
+              return Sk.ffi.stringToPy(METHOD_LENGTH);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_LENGTH);
+              return Sk.ffi.stringToPy(METHOD_LENGTH);
             });
           }, METHOD_LENGTH, []));
         }
@@ -1212,10 +1212,10 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               return mvPy;
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_NORMALIZE);
+              return Sk.ffi.stringToPy(METHOD_NORMALIZE);
             });
             $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return new Sk.builtin.str(METHOD_NORMALIZE);
+              return Sk.ffi.stringToPy(METHOD_NORMALIZE);
             });
           }, METHOD_NORMALIZE, []));
         }
@@ -1270,32 +1270,32 @@ Sk.builtin.defineEuclidean3 = function(mod) {
       var grade3 = m.xyz !== 0;
       if (grade0 && !grade1 && !grade2 && !grade3) {
         var args = [m.w];
-        return new Sk.builtin.str(SCALAR_E3 + "(" + args.join(", ") + ")");
+        return Sk.ffi.stringToPy(SCALAR_E3 + "(" + args.join(", ") + ")");
       }
       else if (!grade0 && grade1 && !grade2 && !grade3) {
         var args = [m.x, m.y, m.z];
-        return new Sk.builtin.str(VECTOR_E3 + "(" + args.join(", ") + ")");
+        return Sk.ffi.stringToPy(VECTOR_E3 + "(" + args.join(", ") + ")");
       }
       else if (!grade0 && !grade1 && grade2 && !grade3) {
         var args = [m.xy, m.yz, m.zx];
-        return new Sk.builtin.str(BIVECTOR_E3 + "(" + args.join(", ") + ")");
+        return Sk.ffi.stringToPy(BIVECTOR_E3 + "(" + args.join(", ") + ")");
       }
       else if (!grade0 && !grade1 && !grade2 && grade3) {
         var args = [m.xyz];
-        return new Sk.builtin.str(PSEUDOSCALAR_E3 + "(" + args.join(", ") + ")");
+        return Sk.ffi.stringToPy(PSEUDOSCALAR_E3 + "(" + args.join(", ") + ")");
       }
       else {
         var args = [m.w, m.x, m.y, m.z, m.xy, m.yz, m.zx, m.xyz];
-        return new Sk.builtin.str(EUCLIDEAN_3 + "(" + args.join(", ") + ")");
+        return Sk.ffi.stringToPy(EUCLIDEAN_3 + "(" + args.join(", ") + ")");
       }
     });
     $loc.__str__ = Sk.ffi.functionPy(function(mv) {
       mv = Sk.ffi.remapToJs(mv);
       if (isDefined(mv)) {
-        return new Sk.builtin.str(stringFromCoordinates([mv.w, mv.x, mv.y, mv.z, mv.xy, mv.yz, mv.zx, mv.xyz], ["1", "i", "j", "k", "ij", "jk", "ki", "I"]));
+        return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.z, mv.xy, mv.yz, mv.zx, mv.xyz], ["1", "i", "j", "k", "ij", "jk", "ki", "I"]));
       }
       else {
-        return new Sk.builtin.str("<type '" + EUCLIDEAN_3 + "'>");
+        return Sk.ffi.stringToPy("<type '" + EUCLIDEAN_3 + "'>");
       }
     });
   }, EUCLIDEAN_3, []);

@@ -112,8 +112,7 @@ Sk.builtin.AssertionError = function(args) {
     Sk.builtin.Exception.apply(this, arguments);
 }
 goog.inherits(Sk.builtin.AssertionError, Sk.builtin.Exception);
-Sk.builtin.AssertionError.prototype.name = "AssertionError";
-Sk.builtin.AssertionError.prototype.tp$name = Sk.builtin.AssertionError.prototype.name;
+Sk.builtin.AssertionError.prototype.tp$name = "AssertionError";
 goog.exportSymbol("Sk.builtin.AssertionError", Sk.builtin.AssertionError);
 
 /**

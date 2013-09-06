@@ -1079,7 +1079,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
               self.tp$name = METHOD_LENGTH;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
-              return Sk.builtin.assk$(quaternion[METHOD_LENGTH](), Sk.builtin.nmber.float$);
+              return Sk.builtin.assk$(quaternion.length(), Sk.builtin.nmber.float$);
             });
             $loc.__str__ = Sk.ffi.functionPy(function(self) {
               return Sk.ffi.stringToPy(METHOD_LENGTH);
