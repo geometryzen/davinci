@@ -1,118 +1,516 @@
 (function() {
 Sk.builtin.defineThree = function(mod, THREE) {
   Sk.ffi.checkFunctionArgs("defineFractions", arguments, 2, 2);
+
+/**
+ * @const
+ * @type {string}
+ */
   var NODE                       = "Node";
+/**
+ * @const
+ * @type {string}
+ */
   var NUMBER                     = "Number";
+/**
+ * @const
+ * @type {string}
+ */
   var VECTOR_3                   = "Vector3";
-
+/**
+ * @const
+ * @type {string}
+ */
   var QUATERNION                 = "Quaternion";
-
+/**
+ * @const
+ * @type {string}
+ */
   var SCENE                      = "Scene";
+/**
+ * @const
+ * @type {string}
+ */
   var CANVAS_RENDERER            = "CanvasRenderer";
+/**
+ * @const
+ * @type {string}
+ */
   var WEBGL_RENDERER             = "WebGLRenderer";
+/**
+ * @const
+ * @type {string}
+ */
   var COLOR                      = "Color";
+/**
+ * @const
+ * @type {string}
+ */
   var ORTHOGRAPHIC_CAMERA        = "OrthographicCamera";
+/**
+ * @const
+ * @type {string}
+ */
   var PERSPECTIVE_CAMERA         = "PerspectiveCamera";
-
+/**
+ * @const
+ * @type {string}
+ */
   var GEOMETRY                   = "Geometry";
+/**
+ * @const
+ * @type {string}
+ */
   var OBJECT_3D                  = "Object3D";
-
+/**
+ * @const
+ * @type {string}
+ */
   var AMBIENT_LIGHT              = "AmbientLight";
+/**
+ * @const
+ * @type {string}
+ */
   var DIRECTIONAL_LIGHT          = "DirectionalLight";
+/**
+ * @const
+ * @type {string}
+ */
   var POINT_LIGHT                = "PointLight";
-
+/**
+ * @const
+ * @type {string}
+ */
   var LINE                       = "Line";
+/**
+ * @const
+ * @type {string}
+ */
   var LINE_BASIC_MATERIAL        = "LineBasicMaterial";
-
+/**
+ * @const
+ * @type {string}
+ */
   var MESH                       = "Mesh";
+/**
+ * @const
+ * @type {string}
+ */
   var MESH_BASIC_MATERIAL        = "MeshBasicMaterial";
+/**
+ * @const
+ * @type {string}
+ */
   var MESH_LAMBERT_MATERIAL      = "MeshLambertMaterial";
+/**
+ * @const
+ * @type {string}
+ */
   var MESH_NORMAL_MATERIAL       = "MeshNormalMaterial";
+/**
+ * @const
+ * @type {string}
+ */
   var MESH_PHONG_MATERIAL        = "MeshPhongMaterial";
-
+/**
+ * @const
+ * @type {string}
+ */
   var ARROW_GEOMETRY             = "ArrowGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var CIRCLE_GEOMETRY            = "CircleGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var CUBE_GEOMETRY              = "CubeGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var CYLINDER_GEOMETRY          = "CylinderGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var ICOSAHEDRON_GEOMETRY       = "IcosahedronGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var LATHE_GEOMETRY             = "LatheGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var OCTAHEDRON_GEOMETRY        = "OctahedronGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var PLANE_GEOMETRY             = "PlaneGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var SPHERE_GEOMETRY            = "SphereGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var TEXT_GEOMETRY              = "TextGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var TETRAHEDRON_GEOMETRY       = "TetrahedronGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var TORUS_GEOMETRY             = "TorusGeometry";
-
+/**
+ * @const
+ * @type {string}
+ */
   var WORLD                      = "world";
+/**
+ * @const
+ * @type {string}
+ */
   var CUBE                       = "cube";
+/**
+ * @const
+ * @type {string}
+ */
   var CYLINDER                   = "cylinder";
+/**
+ * @const
+ * @type {string}
+ */
   var SPHERE                     = "sphere";
-
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_BOTTOM                = "bottom";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_COLOR                 = "color";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_DETAIL                = "detail";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_EULER_ORDER           = "eulerOrder";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_FAR                   = "far";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_GEOMETRY              = "geometry";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_ID                    = "id";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_LEFT                  = "left";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_MATERIAL              = "material";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_MATRIX_AUTO_UPDATE    = "matrixAutoUpdate";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_NAME                  = "name";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_NEAR                  = "near";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_NEEDS_UPDATE          = "needsUpdate";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_OPACITY               = "opacity";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_OVERDRAW              = "overdraw";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_POSITION              = "position";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_QUATERNION            = "quaternion";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_RADIUS                = "radius";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_RIGHT                 = "right";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_ROTATION              = "rotation";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_SCALE                 = "scale";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_SEGMENTS              = "segments";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_THETA_START           = "thetaStart";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_THETA_LENGTH          = "thetaLength";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_TOP                   = "top";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_TRANSPARENT           = "transparent";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_TYPE                  = "type";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_UP                    = "up";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_USE_QUATERNION        = "useQuaternion";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_VERTICES              = "vertices";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_VISIBLE               = "visible";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_WIREFRAME             = "wireframe";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_WIREFRAME_LINEWIDTH   = "wireframeLinewidth";
-
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_W                     = "w";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_X                     = "x";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_Y                     = "y";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_Z                     = "z";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_XY                    = "xy";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_YZ                    = "yz";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_ZX                    = "zx";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_XYZ                   = "xyz";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_X               = "setX";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_Y               = "setY";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_Z               = "setZ";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_GET_COMPONENT       = "getComponent";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_COMPONENT       = "setComponent";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET                 = "set";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_FROM_AXIS_ANGLE = "setFromAxisAngle";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_FROM_EULER      = "setFromEuler";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_GEOMETRY        = "setGeometry";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_UPDATE_MATRIX       = "updateMatrix";
-
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_ADD                 = "add";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_CLONE               = "clone";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_CONJUGATE           = "conjugate";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_COPY                = "copy";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_CROSS               = "cross";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_DOT                 = "dot";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_INVERSE             = "inverse";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_LENGTH              = "length";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_LENGTH_SQ           = "lengthSq";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_LOOK_AT             = "lookAt";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_NORMALIZE           = "normalize";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_REMOVE              = "remove";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_SET_RGB             = "setRGB";
 
   mod[NODE]  = Sk.builtin.buildNodeClass(mod);

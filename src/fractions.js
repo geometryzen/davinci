@@ -41,11 +41,6 @@ var PROP_DENOM       = "denom";
  * @const
  * @type {string}
  */
-var ARG_SELF         = "self";
-/**
- * @const
- * @type {string}
- */
 var ARG_OTHER        = "other";
 /**
  * @const
@@ -145,40 +140,30 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       }
     });
     $loc.__add__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_ADD, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, [RATIONAL, INT], isRational(otherPy) || Sk.ffi.isInt(otherPy));
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(a.add(b), RATIONAL));
     });
     $loc.__radd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_ADD, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, INT, Sk.ffi.isInt(otherPy));
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.add(self), RATIONAL));
     });
     $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_SUB, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, [RATIONAL, INT], isRational(otherPy) || Sk.ffi.isInt(otherPy));
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(a.sub(b), RATIONAL));
     });
     $loc.__rsub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_ADD, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, INT, Sk.ffi.isInt(otherPy));
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.sub(self), RATIONAL));
     });
     $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_MUL, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
       if (Sk.ffi.isNumber(otherPy)) {
@@ -191,16 +176,12 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       }
     });
     $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_ADD, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, INT, Sk.ffi.isInt(otherPy));
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.mul(self), RATIONAL));
     });
     $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_DIV, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       var numer = Sk.ffi.remapToJs(selfPy);
       var denom = Sk.ffi.remapToJs(otherPy);
       if (Sk.ffi.isNumber(otherPy)) {
@@ -223,8 +204,6 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       }
     });
     $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkFunctionArgs(OP_ADD, arguments, 2, 2);
-      Sk.ffi.checkArgType(ARG_SELF,  RATIONAL, isRational(selfPy));
       Sk.ffi.checkArgType(ARG_OTHER, INT, Sk.ffi.isInt(otherPy));
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
