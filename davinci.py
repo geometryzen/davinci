@@ -101,6 +101,7 @@ Files = [
         'src/import.js',
         'src/timsort.js',
         'src/builtindict.js',
+        'src/complex.js',
         'src/document.js',
         'src/event.js',
         'src/node.js',
