@@ -9,4 +9,4 @@ after_script:
 - ./davinci-deploy.sh
 env:
   global:
-    secure: VHJEs/VtlBWVTQ2SkF9euQTWzulMHuqtUhe36uK3SO4mxH8ZG88Mh27VpC1ubpF2V1I1drca4u6BTsaBjIimXYOP1D4lgxsRhh6m0ta5mYFRiUonyonmNobCwd7h0cdkRyijXn4HgDO2varHxG7HhD3tsjtFjFTMberxOb6Hbjk=
+    secure: LdMLsA8jRSaDaRD9YNhre0fmDdlREPTjzluD/VhcW5OvKJAbAfQLi4hciueHe970TsunWMT4J7GV5VZ2uZbRrTpR+/svwmgF9AhszjIOjV75zCGA/3uNrETmzXZqwgtI5qZk+ucbLj9lPVWQiV7GutMdYxKDdn+Z1GkRWpJr5i8=
