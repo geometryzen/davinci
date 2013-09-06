@@ -6,7 +6,7 @@ The primary purpose is to allow Python to be run in a browser using the JavaScri
 
 It is being used by [GeometryZen](http://www.geometryzen.org).
 
-[![Build Status](https://travis-ci.org/geometryzen/davinci.png)](https://travis-ci.org/geometryzen/davinci)
+[![Build Status](https://travis-ci.org/geometryzen/davinci-dev.png)](https://travis-ci.org/geometryzen/davinci-dev)
 
 ## Origins
 
