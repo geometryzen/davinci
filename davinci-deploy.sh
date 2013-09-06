@@ -7,19 +7,19 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
 
   cd $HOME
 
+  # clone davinci-dev
+  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci-dev.git davinci-dev
   # clone davinci
-  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci.git      davinci      # > /dev/null
-  # clone davinci-dist
-  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci-dist.git davinci-dist # > /dev/null
+  git clone --quiet https://${GH_TOKEN}@github.com/geometryzen/davinci.git     davinci
   
   # compare tags
   cd $HOME
-  cd davinci
-  git tag > ../tags-davinci
+  cd davinci-dev
+  git tag > ../tags-davinci-dev
 
   cd $HOME
-  cd davinci-dist
-  git tag > ../tags-davinci-dist
+  cd davinci
+  git tag > ../tags-davinci
   cd ..
   
   # compare two files per line.
@@ -31,7 +31,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
   #              Invert the sense of matching, to select non-matching lines.
   # -f FILE, --file=FILE
   #              Obtain patterns from FILE, one per line. The empty file contains zero patterns, and therefore matches nothing.
-  grep -Fxvf tags-davinci-dist tags-davinci > new-tags
+  grep -Fxvf tags-davinci tags-davinci-dev > new-tags
   
   for TAG in $(cut -d, -f2 < new-tags)
   do
@@ -39,7 +39,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
     # we have a new tag
     export NEWTAG=true
     # build davinci at this tag
-    cd $HOME/davinci
+    cd $HOME/davinci-dev
     git checkout tags/$TAG
     ./davinci.py dist -u
     # create zip and tarbals
@@ -52,37 +52,38 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
     # update davinci for the site.
     cp davinci.min.js ../doc/static/
     cp davinci-stdlib.js ../doc/static/
-    cp *.js ../../davinci-dist/
+    cp *.js ../../davinci/
     cd ..
-    cp bower.json ../davinci-dist
-    cp .bowerrc ../davinci-dist
-    # put the new version in the dist repository
-    cd ../davinci-dist
+    cp bower.json ../davinci
+    cp .bowerrc ../davinci
+    # put the new version in the distribution repository
+    cd ../davinci
     git add .
     git commit -m "DaVinci version: $TAG"
     git tag $TAG
     git push -fq --tags origin master > /dev/null
   done
 
-  # reset davinci-dist repository to HEAD just to be sure
+  # reset davinci distribution repository to HEAD just to be sure
   cd $HOME
-  cd davinci-dist
+  cd davinci
   git reset HEAD --hard
   cd $HOME
 
   # build DaVinci
-  cd davinci
+  cd davinci-dev
   git reset HEAD --hard
   ./davinci.py dist -u
   cd dist
-  cp *.js ../../davinci-dist/
+  cp *.js ../../davinci/
 
   cd ..
-  cp bower.json ../davinci-dist
-  cp .bowerrc ../davinci-dist
+  cp bower.json ../davinci
+  cp .bowerrc ../davinci
 
   # add, commit and push files to the distribution repository
-  cd ../davinci-dist
+  cd $HOME
+  cd davinci
   git add .
   git commit -m "Travis build $TRAVIS_BUILD_NUMBER pushed"
   git push -fq origin master > /dev/null

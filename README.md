@@ -31,6 +31,8 @@ There is plenty of work still to do in making improvements to DaVinci.  If you w
    When everything is tested and ready to be incorporated into the master version...
 6. Make a Pull Request to get your feature(s) added to the main repository.
 
+Details are in CONTRIBUTING.md
+
 ## Community
 
 * Check out the mailing list:  https://groups.google.com/forum/?hl=en#!forum/geometryzen
@@ -42,4 +44,3 @@ There is plenty of work still to do in making improvements to DaVinci.  If you w
 * Bob Lacatena for lots of work on Python longs.
 * Charles Severence for bug fixes and the re module.
 * Brad Miller for maintaining Skulpt. 
-
