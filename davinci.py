@@ -111,6 +111,7 @@ Files = [
         'src/units.js',
         'src/three.js',
         'src/vector3.js',
+        'src/visual.js',
         'src/fractions.js',
         "vendor/bladejs/dist/bladejs.js",
         ("support/jsbeautify/beautify.js", FILE_TYPE_TEST),
