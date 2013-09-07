@@ -1199,9 +1199,18 @@ Sk.builtin.defineThree = function(mod, THREE) {
   */
 
   mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
-      Sk.ffi.checkMethodArgs(SCENE, arguments, 0, 0);
-      Sk.ffi.referenceToPy(new THREE[SCENE](), SCENE, undefined, selfPy);
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, sceneRefPy) {
+      if (Sk.ffi.isUndefined(sceneRefPy)) {
+        Sk.ffi.checkMethodArgs(SCENE, arguments, 0, 0);
+        Sk.ffi.referenceToPy(new THREE[SCENE](), SCENE, undefined, selfPy);
+      }
+      else if (Sk.ffi.isObjectRef(sceneRefPy) && Sk.ffi.typeName(sceneRefPy) === SCENE) {
+        Sk.ffi.referenceToPy(Sk.ffi.remapToJs(sceneRefPy), SCENE, undefined, selfPy);
+      }
+      else
+      {
+        Sk.ffi.checkMethodArgs(SCENE, arguments, 0, 0);
+      }
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(scenePy, name) {
       var scene = Sk.ffi.remapToJs(scenePy);

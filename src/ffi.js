@@ -1,3 +1,15 @@
+/**
+ * Sk.ffi is the Foreign Function Interface.
+ *
+ * Extension builders should use this interface to protect their code from changes.
+ *
+ * @type
+ * {
+ *   {
+ *     remapToJs: function(Object, Object=)
+ *   }
+ * }
+ */
 Sk.ffi = Sk.ffi || {};
 
 /**
@@ -884,6 +896,11 @@ goog.exportSymbol("Sk.ffi.callsim", Sk.ffi.callsim);
 
 /**
  * Convenience function for implementing callable attributes.
+ *
+ * @param {Object} mod
+ * @param {Object} targetJs
+ * @param {string} nameJs
+ * @param {function()} functionJs
  */
 Sk.ffi.callableToPy = function(mod, targetJs, nameJs, functionJs)
 {
@@ -893,12 +910,7 @@ Sk.ffi.callableToPy = function(mod, targetJs, nameJs, functionJs)
       {
         // Tucking away the reference is not critical. Other approaches are possible.
         // Would be nice to have a default implementation that maps the arguments.
-        if (targetJs[nameJs]) {
-            Sk.ffi.referenceToPy(targetJs[nameJs], nameJs, undefined, selfPy);
-        }
-        else {
-            throw Sk.ffi.assertionError("c308ee41-f856-41a4-9aef-abd302b6a5aa nameJs => " + nameJs);
-        }
+        Sk.ffi.referenceToPy({}, nameJs, undefined, selfPy);
       });
       $loc.__call__ = Sk.ffi.functionPy(functionJs);
       $loc.__str__ = Sk.ffi.functionPy(function(self)
@@ -1030,7 +1042,7 @@ Sk.ffi.err =
         };
     }
 }
-goog.exportSymbol("Sk.ffi.message", Sk.ffi.message);
+goog.exportSymbol("Sk.ffi.err", Sk.ffi.err);
 
 /**
  * @deprecated Use Sk.ffi.remapToJs
