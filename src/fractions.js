@@ -6,7 +6,6 @@
  * Sk.builtin.defineFractions(mod);
  */
 (function() {
-
 /**
  * @const
  * @type {string}

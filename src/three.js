@@ -546,7 +546,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
     if (!isFunction(target[METHOD_ADD])) {
       throw new Sk.builtin.AssertionError("target must have an 'add' function.");
     }
-    return Sk.ffi.callableToPy(mod, target, METHOD_ADD, function(methodPy, childPy) {
+    return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, childPy) {
       var child = Sk.ffi.remapToJs(childPy);
       target.add(child);
     });
@@ -559,7 +559,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
     if (!isFunction(target[METHOD_REMOVE])) {
       throw new Sk.builtin.AssertionError("target must have a 'remove' function.");
     }
-    return Sk.ffi.callableToPy(mod, target, METHOD_ADD, function(methodPy, childPy) {
+    return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, childPy) {
       var child = Sk.ffi.remapToJs(childPy);
       target.remove(child);
     });
@@ -1591,7 +1591,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return {v: renderer[PROP_DOM_ELEMENT]};
         }
         case METHOD_RENDER: {
-          return Sk.ffi.callableToPy(mod, renderer, METHOD_RENDER, function(selfPy, scenePy, cameraPy) {
+          return Sk.ffi.callableToPy(mod, METHOD_RENDER, function(selfPy, scenePy, cameraPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_CLEAR_COLOR, arguments, 2, 2);
             var scene  = Sk.ffi.remapToJs(scenePy);
             var camera = Sk.ffi.remapToJs(cameraPy);
@@ -1599,13 +1599,13 @@ Sk.builtin.defineThree = function(mod, THREE) {
           });
         }
         case METHOD_GET_CLEAR_COLOR: {
-          return Sk.ffi.callableToPy(mod, renderer, METHOD_GET_CLEAR_COLOR, function(selfPy) {
+          return Sk.ffi.callableToPy(mod, METHOD_GET_CLEAR_COLOR, function(selfPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_CLEAR_COLOR, arguments, 0, 0);
             return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(renderer[METHOD_GET_CLEAR_COLOR](), COLOR));
           });
         }
         case METHOD_SET_CLEAR_COLOR: {
-          return Sk.ffi.callableToPy(mod, renderer, METHOD_SET_CLEAR_COLOR, function(self, color, alpha) {
+          return Sk.ffi.callableToPy(mod, METHOD_SET_CLEAR_COLOR, function(self, color, alpha) {
             Sk.ffi.checkMethodArgs(METHOD_GET_CLEAR_COLOR, arguments, 2, 2);
             color  = Sk.ffi.remapToJs(color);
             alpha = Sk.ffi.remapToJs(alpha);

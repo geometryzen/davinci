@@ -13,19 +13,66 @@
  *
  */
 Sk.builtin.buildDocumentClass = function(mod) {
-
+  /**
+   * @const
+   * @type {string}
+   */
   var DOCUMENT_CLASS                        = "Document";
+  /**
+   * @const
+   * @type {string}
+   */
   var EVENT                                 = "Event";
+  /**
+   * @const
+   * @type {string}
+   */
   var NODE                                  = "Node";
-
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_BODY                             = "body";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_WEBKIT_HIDDEN                    = "webkitHidden";
-
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_ADD_EVENT_LISTENER             = "addEventListener";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_CREATE_ELEMENT                 = "createElement";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_GET_ELEMENT_BY_ID              = "getElementById";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_GET_ELEMENTS_BY_TAG_NAME       = "getElementsByTagName";
+  /**
+   * @const
+   * @type {string}
+   */
+  var METHOD_REMOVE_ELEMENTS_BY_TAG_NAME    = "removeElementsByTagName";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_REMOVE_EVENT_LISTENER          = "removeEventListener";
+  /**
+   * @const
+   * @type {string}
+   */
+ var ARG_TAG_NAME                          = "tagName";
 
   var nodeToPy = function(node) {
     if (node) {
@@ -56,7 +103,6 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_ADD_EVENT_LISTENER: {
           return Sk.ffi.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_ADD_EVENT_LISTENER;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, typePy, listenerPy, useCapture) {
               var type = Sk.ffi.remapToJs(typePy);
@@ -67,18 +113,11 @@ Sk.builtin.buildDocumentClass = function(mod) {
               docListeners[type] = listener;
               document[METHOD_ADD_EVENT_LISTENER](type, listener, useCapture);
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_ADD_EVENT_LISTENER)
-            })
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_ADD_EVENT_LISTENER)
-            })
           }, METHOD_ADD_EVENT_LISTENER, []));
         }
         case METHOD_REMOVE_EVENT_LISTENER: {
           return Sk.ffi.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_REMOVE_EVENT_LISTENER;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, typePy, listener, useCapture) {
               var type = Sk.ffi.remapToJs(typePy);
@@ -86,18 +125,12 @@ Sk.builtin.buildDocumentClass = function(mod) {
               delete docListeners[type];
               document[METHOD_REMOVE_EVENT_LISTENER](type, listener, useCapture);
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_REMOVE_EVENT_LISTENER)
-            })
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_REMOVE_EVENT_LISTENER)
-            })
           }, METHOD_REMOVE_EVENT_LISTENER, []));
         }
         case METHOD_CREATE_ELEMENT: {
-          return Sk.ffi.callableToPy(mod, document, METHOD_CREATE_ELEMENT, function(methodPy, tagNamePy, attributesPy) {
+          return Sk.ffi.callableToPy(mod, METHOD_CREATE_ELEMENT, function(methodPy, tagNamePy, attributesPy) {
             Sk.ffi.checkMethodArgs(METHOD_CREATE_ELEMENT, arguments, 1, 2);
-            Sk.ffi.checkArgType("tagName", "string", Sk.ffi.isString(tagNamePy));
+            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
             var element = document.createElement(Sk.ffi.remapToJs(tagNamePy));
             if (attributesPy instanceof Sk.builtin.dict) {
               for (var iter = attributesPy.tp$iter(), k = iter.tp$iternext(); k !== undefined; k = iter.tp$iternext()) {
@@ -114,23 +147,40 @@ Sk.builtin.buildDocumentClass = function(mod) {
           });
         }
         case METHOD_GET_ELEMENT_BY_ID: {
-          return Sk.ffi.callableToPy(mod, document, METHOD_GET_ELEMENT_BY_ID, function(methodPy, idPy) {
+          return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENT_BY_ID, function(methodPy, idPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENT_BY_ID, arguments, 1, 1);
             Sk.ffi.checkArgType("id", "string", Sk.ffi.isString(idPy));
             return nodeToPy(document.getElementById(Sk.ffi.remapToJs(idPy)));
           });
         }
         case METHOD_GET_ELEMENTS_BY_TAG_NAME: {
-          return Sk.ffi.callableToPy(mod, document, name, function(methodPy, tagNamePy) {
-            Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-            Sk.ffi.checkArgType("tagName", "string", Sk.ffi.isString(tagNamePy));
-            var elements = document.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy))
+          return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
+            Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
+            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
+            var elements = document.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
             var valuesPy = [];
             for (var i = elements.length - 1; i >= 0; i--) {
               valuesPy.push(nodeToPy(elements[i]));
             }
             return Sk.ffi.listPy(valuesPy);
           });
+        }
+        case METHOD_REMOVE_ELEMENTS_BY_TAG_NAME: {
+          return Sk.ffi.callableToPy(mod, METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
+            Sk.ffi.checkMethodArgs(METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
+            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
+            var elements = document.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
+            var valuesPy = [];
+            for (var i = elements.length - 1; i >= 0; i--) {
+              var e = elements[i];
+              e.parentNode.removeChild(e);
+              valuesPy.push(nodeToPy(e));
+            }
+            return Sk.ffi.listPy(valuesPy);
+          });
+        }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(DOCUMENT_CLASS);
         }
       }
     });

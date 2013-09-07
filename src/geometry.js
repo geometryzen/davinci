@@ -133,13 +133,13 @@
             return Sk.ffi.gattr(space.scenePy, METHOD_ADD);
           }
           case METHOD_RENDER: {
-            return Sk.ffi.callableToPy(mod, space, METHOD_RENDER, function() {
+            return Sk.ffi.callableToPy(mod, METHOD_RENDER, function() {
               var methodPy = Sk.ffi.gattr(space.rendererPy, METHOD_RENDER);
               return Sk.ffi.callsim(methodPy, space.scenePy, space.cameraPy);
             });
           }
           case METHOD_VIEW_SIZE: {
-            return Sk.ffi.callableToPy(mod, space, METHOD_RENDER, function(methodPy, widthPy, heightPy) {
+            return Sk.ffi.callableToPy(mod, METHOD_RENDER, function(methodPy, widthPy, heightPy) {
                 Sk.ffi.checkMethodArgs(METHOD_VIEW_SIZE, arguments, 2, 2);
                 Sk.ffi.checkArgType(PROP_WIDTH, Sk.ffi.PyType.INT, Sk.ffi.isInt(widthPy));
                 Sk.ffi.checkArgType(PROP_HEIGHT, Sk.ffi.PyType.INT, Sk.ffi.isInt(heightPy));

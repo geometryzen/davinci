@@ -510,7 +510,6 @@ Sk.builtin.defineEuclidean3 = function(mod) {
 
   mod[EUCLIDEAN_3] = Sk.misceval.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(self, w, x, y, z, xy, yz, zx, xyz) {
-      self.tp$name = EUCLIDEAN_3;
       Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 1, 8);
       switch(Sk.ffi.getType(w)) {
         case Sk.ffi.PyType.FLOAT:
@@ -532,7 +531,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
           yz  = Sk.ffi.remapToJs(yz);
           zx  = Sk.ffi.remapToJs(zx);
           xyz = Sk.ffi.remapToJs(xyz);
-          self.v = new BLADE.Euclidean3(w, x, y, z, xy, yz, zx, xyz);
+          Sk.ffi.referenceToPy(new BLADE.Euclidean3(w, x, y, z, xy, yz, zx, xyz), EUCLIDEAN_3, undefined, self);
         }
         break;
         case Sk.ffi.PyType.OBJREF: {
@@ -1004,7 +1003,6 @@ Sk.builtin.defineEuclidean3 = function(mod) {
         case METHOD_ADD: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_ADD;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, arg) {
               arg  = Sk.ffi.remapToJs(arg);
@@ -1018,123 +1016,74 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               mv.xyz += arg.xyz;
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_ADD);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_ADD);
-            });
           }, METHOD_ADD, []));
         }
         case METHOD_CROSS: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_CROSS;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, vectorPy) {
               var vectorJs  = Sk.ffi.remapToJs(vectorPy);
               return Sk.misceval.callsim(mod[EUCLIDEAN_3], Sk.ffi.remapToPy(mv.cross(vectorJs), EUCLIDEAN_3));
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_CROSS);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_CROSS);
             });
           }, METHOD_CROSS, []));
         }
         case METHOD_DOT: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_DOT;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, vPy) {
               var v  = Sk.ffi.remapToJs(vPy);
               return Sk.ffi.numberToPy(mv.dot(v));
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_DOT);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_DOT);
             });
           }, METHOD_DOT, []));
         }
         case METHOD_SET_X: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_SET_X;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, x) {
               x  = Sk.ffi.remapToJs(x);
               mv[METHOD_SET_X](x);
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_X);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_X);
-            });
           }, METHOD_SET_X, []));
         }
         case METHOD_SET_Y: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_SET_Y;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, y) {
               y  = Sk.ffi.remapToJs(y);
               mv[METHOD_SET_Y](y);
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_Y);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_Y);
-            });
           }, METHOD_SET_Y, []));
         }
         case METHOD_SET_Z: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_SET_Z;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, z) {
               z  = Sk.ffi.remapToJs(z);
               mv[METHOD_SET_Z](z);
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_Z);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_Z);
-            });
           }, METHOD_SET_Z, []));
         }
         case METHOD_GET_COMPONENT: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_GET_COMPONENT;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, index) {
               index  = Sk.ffi.remapToJs(index);
               return Sk.ffi.numberToPy(mv[METHOD_GET_COMPONENT](index));
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_GET_COMPONENT);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_GET_COMPONENT);
             });
           }, METHOD_GET_COMPONENT, []));
         }
         case METHOD_SET_COMPONENT: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_SET_COMPONENT;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, index, value) {
               index  = Sk.ffi.remapToJs(index);
@@ -1142,18 +1091,11 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               mv[METHOD_SET_COMPONENT](index, value);
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_COMPONENT);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET_COMPONENT);
-            });
           }, METHOD_SET_COMPONENT, []));
         }
         case METHOD_SET: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_SET;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, x, y, z) {
               x  = Sk.ffi.remapToJs(x);
@@ -1162,60 +1104,33 @@ Sk.builtin.defineEuclidean3 = function(mod) {
               mv[METHOD_SET](x, y, z);
               return mvPy;
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_SET);
-            });
           }, METHOD_SET, []));
         }
         case METHOD_CLONE: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_CLONE;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
               return remapE3ToPy(mv.w, mv.x, mv.y, mv.z, mv.xy, mv.yz, mv.zx, mv.xyz);
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_CLONE);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_CLONE);
             });
           }, METHOD_CLONE, []));
         }
         case METHOD_LENGTH: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_LENGTH;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
               return Sk.ffi.numberToPy(mv.length());
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_LENGTH);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_LENGTH);
             });
           }, METHOD_LENGTH, []));
         }
         case METHOD_NORMALIZE: {
           return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_NORMALIZE;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
               mv[METHOD_NORMALIZE]();
               return mvPy;
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_NORMALIZE);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_NORMALIZE);
             });
           }, METHOD_NORMALIZE, []));
         }

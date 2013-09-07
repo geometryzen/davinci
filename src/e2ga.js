@@ -9,19 +9,65 @@
 this.BLADE = this.BLADE || {};
 var BLADE = this.BLADE;
 Sk.builtin.defineEuclidean2 = function(mod) {
-
+/**
+ * @const
+ * @type {string}
+ */
   var EUCLIDEAN_2    = "Euclidean2";
+/**
+ * @const
+ * @type {string}
+ */
   var SCALAR_2       = "Scalar2";
+/**
+ * @const
+ * @type {string}
+ */
   var VECTOR_2       = "Vector2";
+/**
+ * @const
+ * @type {string}
+ */
   var PSEUDOSCALAR_2 = "Pseudoscalar2";
+/**
+ * @const
+ * @type {string}
+ */
   var UNIT           = "Unit";
+/**
+ * @const
+ * @type {string}
+ */
   var MEASURE        = "Measure";
-
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_W         = "w";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_X         = "x";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_Y         = "y";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_XY        = "xy";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_CLONE   = "clone";
+/**
+ * @const
+ * @type {string}
+ */
   var METHOD_LENGTH  = Sk.ffi.mangleName("length");
 
   function isNumber(x)    { return typeof x === 'number'; }
@@ -112,15 +158,15 @@ Sk.builtin.defineEuclidean2 = function(mod) {
 
   mod[SCALAR_2] = Sk.ffi.functionPy(function(w) {
     Sk.ffi.checkFunctionArgs(SCALAR_2, arguments, 1, 1);
-    Sk.ffi.checkArgType("w", "Number", Sk.ffi.isNumber(w));
+    Sk.ffi.checkArgType(PROP_W, "Number", Sk.ffi.isNumber(w));
     w = Sk.ffi.remapToJs(w);
     return remapE2ToPy(w, 0, 0, 0);
   });
 
   mod[VECTOR_2] = Sk.ffi.functionPy(function(x, y) {
     Sk.ffi.checkFunctionArgs(VECTOR_2, arguments, 2, 2);
-    Sk.ffi.checkArgType("x", "Number", Sk.ffi.isNumber(x));
-    Sk.ffi.checkArgType("y", "Number", Sk.ffi.isNumber(y));
+    Sk.ffi.checkArgType(PROP_X, "Number", Sk.ffi.isNumber(x));
+    Sk.ffi.checkArgType(PROP_Y, "Number", Sk.ffi.isNumber(y));
     x = Sk.ffi.remapToJs(x);
     y = Sk.ffi.remapToJs(y);
     return remapE2ToPy(0, x, y, 0);
@@ -128,33 +174,32 @@ Sk.builtin.defineEuclidean2 = function(mod) {
 
   mod[PSEUDOSCALAR_2] = Sk.ffi.functionPy(function(xy) {
     Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_2, arguments, 1, 1);
-    Sk.ffi.checkArgType("xy", "Number", Sk.ffi.isNumber(xy));
+    Sk.ffi.checkArgType(PROP_XY, "Number", Sk.ffi.isNumber(xy));
     xy = Sk.ffi.remapToJs(xy);
     return remapE2ToPy(0, 0, 0, xy);
   });
 
   mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(self, x00, x01, x10, x11) {
-      self.tp$name = EUCLIDEAN_2;
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, x00, x01, x10, x11) {
       Sk.ffi.checkMethodArgs(EUCLIDEAN_2, arguments, 1, 4);
       switch(Sk.ffi.getType(x00)) {
         case Sk.ffi.PyType.FLOAT:
         case Sk.ffi.PyType.INT: {
           Sk.ffi.checkMethodArgs(EUCLIDEAN_2, arguments, 4, 4);
-          Sk.ffi.checkArgType("w",  "Number", Sk.ffi.isNumber(x00));
-          Sk.ffi.checkArgType("x",  "Number", Sk.ffi.isNumber(x01));
-          Sk.ffi.checkArgType("y",  "Number", Sk.ffi.isNumber(x10));
-          Sk.ffi.checkArgType("xy", "Number", Sk.ffi.isNumber(x11));
+          Sk.ffi.checkArgType(PROP_W,  "Number", Sk.ffi.isNumber(x00));
+          Sk.ffi.checkArgType(PROP_X,  "Number", Sk.ffi.isNumber(x01));
+          Sk.ffi.checkArgType(PROP_Y,  "Number", Sk.ffi.isNumber(x10));
+          Sk.ffi.checkArgType(PROP_XY, "Number", Sk.ffi.isNumber(x11));
           x00 = Sk.ffi.remapToJs(x00);
           x01 = Sk.ffi.remapToJs(x01);
           x10 = Sk.ffi.remapToJs(x10);
           x11 = Sk.ffi.remapToJs(x11);
-          self.v = new BLADE.Euclidean2(x00, x01, x10, x11);
+          Sk.ffi.referenceToPy(new BLADE.Euclidean2(x00, x01, x10, x11), EUCLIDEAN_2, undefined, selfPy);
         }
         break;
         case Sk.ffi.PyType.OBJREF: {
           Sk.ffi.checkMethodArgs(EUCLIDEAN_2, arguments, 1, 1);
-          self.v = Sk.ffi.remapToJs(x00);
+          Sk.ffi.referenceToPy(Sk.ffi.remapToJs(x00), EUCLIDEAN_2, undefined, selfPy);
         }
         break;
         default: {
@@ -589,59 +634,39 @@ Sk.builtin.defineEuclidean2 = function(mod) {
         case METHOD_CLONE: {
           return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(methodPy) {
-              methodPy.tp$name = METHOD_CLONE;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
               return remapE2ToPy(mv.w, mv.x, mv.y, mv.xy);
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(methodPy) {
-              return Sk.ffi.stringToPy(METHOD_CLONE);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(methodPy) {
-              return Sk.ffi.stringToPy(METHOD_CLONE);
             });
           }, METHOD_CLONE, []));
         }
         case METHOD_LENGTH: {
           return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_LENGTH;
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
               return Sk.ffi.numberToIntPy(4);
             });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_LENGTH);
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_LENGTH);
-            });
           }, METHOD_LENGTH, []));
+        }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(EUCLIDEAN_2);
         }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
       var self = Sk.ffi.remapToJs(selfPy);
-      var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
-        case PROP_W: {
-          self.w = value;
-        }
-        break;
-        case PROP_X: {
-          self.x = value;
-        }
-        break;
-        case PROP_Y: {
-          self.y = value;
-        }
-        break;
+        case PROP_W:
+        case PROP_X:
+        case PROP_Y:
         case PROP_XY: {
-          self.xy = value;
+          Sk.ffi.checkArgType(name, [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG], Sk.ffi.isNumber(valuePy));
+          self[name] = Sk.ffi.remapToJs(valuePy);
         }
         break;
         default: {
-          throw new Sk.builtin.AttributeError(name + " is not a writeable attribute of " + EUCLIDEAN_2);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(EUCLIDEAN_2);
         }
       }
     });

@@ -897,30 +897,18 @@ goog.exportSymbol("Sk.ffi.callsim", Sk.ffi.callsim);
 /**
  * Convenience function for implementing callable attributes.
  *
- * @param {Object} mod
- * @param {Object} targetJs
- * @param {string} nameJs
- * @param {function()} functionJs
+ * @param {Object} mod The module object.
+ * @param {string} nameJs The name of the attribute.
+ * @param {function()} functionJs A JavaScript function in which the arguments and return type are in the Python value space.
  */
-Sk.ffi.callableToPy = function(mod, targetJs, nameJs, functionJs)
+Sk.ffi.callableToPy = function(mod, nameJs, functionJs)
 {
     return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc)
     {
-      $loc.__init__ = Sk.ffi.functionPy(function(selfPy)
-      {
-        // Tucking away the reference is not critical. Other approaches are possible.
-        // Would be nice to have a default implementation that maps the arguments.
-        Sk.ffi.referenceToPy({}, nameJs, undefined, selfPy);
-      });
-      $loc.__call__ = Sk.ffi.functionPy(functionJs);
-      $loc.__str__ = Sk.ffi.functionPy(function(self)
-      {
-        return Sk.ffi.stringToPy(nameJs);
-      });
-      $loc.__repr__ = Sk.ffi.functionPy(function(self)
-      {
-        return Sk.ffi.stringToPy(nameJs);
-      });
+        $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {});
+        $loc.__call__ = Sk.ffi.functionPy(functionJs);
+        $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {return Sk.ffi.stringToPy(nameJs);});
+        $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {return Sk.ffi.stringToPy(nameJs);});
     }, nameJs, []));
 };
 goog.exportSymbol("Sk.ffi.callableToPy", Sk.ffi.callableToPy);

@@ -246,7 +246,7 @@
             }, METHOD_CLONE, []));
           }
           case METHOD_GET_COMPONENT: {
-            return Sk.ffi.callableToPy(mod, vector, METHOD_GET_COMPONENT, function(methodPy, indexPy) {
+            return Sk.ffi.callableToPy(mod, METHOD_GET_COMPONENT, function(methodPy, indexPy) {
               Sk.ffi.checkMethodArgs(METHOD_GET_COMPONENT, arguments, 1, 1);
               Sk.ffi.checkArgType("index", INT, Sk.ffi.isNumber(indexPy));
               return Sk.ffi.remapToPy(vector[METHOD_GET_COMPONENT](Sk.ffi.remapToJs(indexPy)));
@@ -275,7 +275,7 @@
             }, METHOD_NORMALIZE, []));
           }
           case METHOD_SET: {
-            return Sk.ffi.callableToPy(mod, vector, METHOD_SET, function(methodPy, x, y, z) {
+            return Sk.ffi.callableToPy(mod, METHOD_SET, function(methodPy, x, y, z) {
               Sk.ffi.checkMethodArgs(METHOD_SET, arguments, 3, 3);
               Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x));
               Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y));
@@ -288,7 +288,7 @@
             });
           }
           case METHOD_SET_COMPONENT: {
-            return Sk.ffi.callableToPy(mod, vector, METHOD_SET_COMPONENT, function(methodPy, indexPy, valuePy) {
+            return Sk.ffi.callableToPy(mod, METHOD_SET_COMPONENT, function(methodPy, indexPy, valuePy) {
               Sk.ffi.checkMethodArgs(METHOD_SET_COMPONENT, arguments, 2, 2);
               Sk.ffi.checkArgType("index", INT, Sk.ffi.isInt(indexPy));
               Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNumber(valuePy));
@@ -301,7 +301,7 @@
           case METHOD_SET_X:
           case METHOD_SET_Y:
           case METHOD_SET_Z: {
-            return Sk.ffi.callableToPy(mod, vector, name, function(methodPy, valuePy) {
+            return Sk.ffi.callableToPy(mod, name, function(methodPy, valuePy) {
               Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
               Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNumber(valuePy));
               vector[name](Sk.ffi.remapToJs(valuePy));

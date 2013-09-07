@@ -78,7 +78,7 @@ var $builtinmodule = function(name) {
       var war = Sk.ffi.remapToJs(selfPy);
       switch(name) {
         case METHOD_START: {
-          return Sk.ffi.callableToPy(mod, war, METHOD_START, function(methodPy) {
+          return Sk.ffi.callableToPy(mod, METHOD_START, function(methodPy) {
             Sk.ffi.checkMethodArgs(METHOD_START, arguments, 0, 0);
             war.start();
           });
