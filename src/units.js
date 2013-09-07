@@ -42,7 +42,7 @@ Sk.builtin.defineUnits = function(mod) {
   var TESLA            = "tesla";
 
   var isUnit = function(valuePy) {
-    return Sk.ffi.isObjectRef(valuePy) && Sk.ffi.typeName(valuePy) === UNIT;
+    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === UNIT;
   }
 
   Sk.builtin.defineFractions(mod, RATIONAL, function(n, d) {return new BLADE.Rational(n, d)});
@@ -127,7 +127,7 @@ Sk.builtin.defineUnits = function(mod) {
           Sk.ffi.referenceToPy(new BLADE.Unit(scale, dimensions, labels), UNIT, undefined, selfPy);
         }
         break;
-        case Sk.ffi.PyType.OBJREF: {
+        case Sk.ffi.PyType.CLASS: {
           Sk.ffi.checkMethodArgs(UNIT, arguments, 1, 1);
           Sk.ffi.referenceToPy(Sk.ffi.remapToJs(scalePy), UNIT, undefined, selfPy);
         }

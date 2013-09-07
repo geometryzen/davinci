@@ -72,6 +72,11 @@ Sk.builtin.buildDocumentClass = function(mod) {
    * @const
    * @type {string}
    */
+ var ARG_ID                                = "id";
+  /**
+   * @const
+   * @type {string}
+   */
  var ARG_TAG_NAME                          = "tagName";
 
   var nodeToPy = function(node) {
@@ -130,7 +135,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_CREATE_ELEMENT: {
           return Sk.ffi.callableToPy(mod, METHOD_CREATE_ELEMENT, function(methodPy, tagNamePy, attributesPy) {
             Sk.ffi.checkMethodArgs(METHOD_CREATE_ELEMENT, arguments, 1, 2);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(tagNamePy));
             var element = document.createElement(Sk.ffi.remapToJs(tagNamePy));
             if (attributesPy instanceof Sk.builtin.dict) {
               for (var iter = attributesPy.tp$iter(), k = iter.tp$iternext(); k !== undefined; k = iter.tp$iternext()) {
@@ -149,14 +154,14 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_GET_ELEMENT_BY_ID: {
           return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENT_BY_ID, function(methodPy, idPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENT_BY_ID, arguments, 1, 1);
-            Sk.ffi.checkArgType("id", "string", Sk.ffi.isString(idPy));
+            Sk.ffi.checkArgType(ARG_ID, Sk.ffi.PyType.STR, Sk.ffi.isString(idPy));
             return nodeToPy(document.getElementById(Sk.ffi.remapToJs(idPy)));
           });
         }
         case METHOD_GET_ELEMENTS_BY_TAG_NAME: {
           return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(tagNamePy));
             var elements = document.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
             var valuesPy = [];
             for (var i = elements.length - 1; i >= 0; i--) {
@@ -168,7 +173,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_REMOVE_ELEMENTS_BY_TAG_NAME: {
           return Sk.ffi.callableToPy(mod, METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
             Sk.ffi.checkMethodArgs(METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, "string", Sk.ffi.isString(tagNamePy));
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(tagNamePy));
             var elements = document.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
             var valuesPy = [];
             for (var i = elements.length - 1; i >= 0; i--) {
@@ -181,6 +186,13 @@ Sk.builtin.buildDocumentClass = function(mod) {
         }
         default: {
           throw Sk.ffi.err.attribute(name).isNotGetableOnType(DOCUMENT_CLASS);
+        }
+      }
+    });
+    $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+      switch(name) {
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(DOCUMENT_CLASS);
         }
       }
     });

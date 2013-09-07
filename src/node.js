@@ -6,71 +6,325 @@
  * mod['Node'] = Sk.builtin.buildNodeClass(mod);
  */
 Sk.builtin.buildNodeClass = function(mod) {
-
+  /**
+   * @const
+   * @type {string}
+   */
   var NODE                                  = "Node";
+  /**
+   * @const
+   * @type {string}
+   */
   var CANVAS_GRADIENT_CLASS                 = "CanvasGradient";
+  /**
+   * @const
+   * @type {string}
+   */
   var CANVAS_RENDERING_CONTEXT_2D           = "CanvasRenderingContext2D";
-
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_CLIENT_HEIGHT                    = "clientHeight";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_CLIENT_WIDTH                     = "clientWidth";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_DIR                              = "dir";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_FILL_STYLE                       = "fillStyle";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_FIRST_CHILD                      = "firstChild";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_FONT                             = "font";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_HEIGHT                           = "height";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_INNER_HTML                       = "innerHTML";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LAST_CHILD                       = "lastChild";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LEFT                             = "left";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LINE_CAP                         = "lineCap";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LINE_JOIN                        = "lineJoin";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LINE_WIDTH                       = "lineWidth";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_NEXT_SIBLING                     = "nextSibling";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_OFFSET_HEIGHT                    = "offsetHeight";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_OFFSET_WIDTH                     = "offsetWidth";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_PARENT_NODE                      = "parentNode";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_POSITION                         = "position";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_PREVIOUS_SIBLING                 = "previousSibling";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_SHADOW_BLUR                      = "shadowBlur";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_SHADOW_COLOR                     = "shadowColor";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_SHADOW_OFFSET_X                  = "shadowOffsetX";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_SHADOW_OFFSET_Y                  = "shadowOffsetY";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_STYLE                            = "style";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_STROKE_STYLE                     = "strokeStyle";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_TEXT_ALIGN                       = "textAlign";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_TEXT_BASELINE                    = "textBaseline";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_TOP                              = "top";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_WEBKIT_BACKING_STORE_PIXEL_RATIO = "webkitBackingStorePixelRatio";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_WIDTH                            = "width";
-
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_ADD_COLOR_STOP                 = "addColorStop";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_APPEND_CHILD                   = "appendChild";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_ARC                            = "arc";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_ARC_TO                         = "arcTo";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_BEGIN_PATH                     = "beginPath";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_BEZIER_CURVE_TO                = "bezierCurveTo";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_CLEAR_RECT                     = "clearRect";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_CLIP                           = "clip";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_CLOSE_PATH                     = "closePath";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_CREATE_LINEAR_GRADIENT         = "createLinearGradient";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_FILL                           = "fill";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_FILL_RECT                      = "fillRect";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_FILL_TEXT                      = "fillText";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_GET_CONTEXT                    = "getContext";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_INSERT_BEFORE                  = "insertBefore";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_LINE_TO                        = "lineTo";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_MOVE_TO                        = "moveTo";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_QUADRATIC_CURVE_TO             = "quadraticCurveTo";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_RECT                           = "rect";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_REMOVE_CHILD                   = "removeChild";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_RESTORE                        = "restore";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_ROTATE                         = "rotate";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_SAVE                           = "save";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_SCALE                          = "scale";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_SET_ATTRIBUTE                  = "setAttribute";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_SET_TRANSFORM                  = "setTransform";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_STROKE                         = "stroke";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_STROKE_RECT                    = "strokeRect";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_STROKE_TEXT                    = "strokeText";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_TRANSFORM                      = "transform";
+  /**
+   * @const
+   * @type {string}
+   */
   var METHOD_TRANSLATE                      = "translate";
 
   var nodeToPy = function(node) {
@@ -130,7 +384,7 @@ Sk.builtin.buildNodeClass = function(mod) {
   return Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, nodePy) {
       Sk.ffi.checkMethodArgs(NODE, arguments, 1, 1);
-      Sk.ffi.checkArgType("node", NODE, Sk.ffi.isObjectRef(nodePy));
+      Sk.ffi.checkArgType("node", NODE, Sk.ffi.isClass(nodePy));
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(nodePy), NODE, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(nodePy, name) {
@@ -977,12 +1231,18 @@ Sk.builtin.buildNodeClass = function(mod) {
           node[PROP_HEIGHT] = value;
         }
         break;
+        case PROP_INNER_HTML: {
+          Sk.ffi.checkArgType(PROP_INNER_HTML, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy));
+          node[PROP_INNER_HTML] = Sk.ffi.remapToJs(valuePy);
+        }
+        break;
         case PROP_WIDTH: {
           node[PROP_WIDTH] = value;
         }
         break;
         default: {
-          node.setAttribute(name, stringFromArg(value));
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(NODE);
+          // node.setAttribute(name, stringFromArg(value));
         }
       }
     });

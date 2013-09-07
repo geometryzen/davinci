@@ -8,7 +8,7 @@ var $builtinmodule = function(name) {
   var mod = {};
 
   var EVENT                    = 'Event';
-  var FUNCTION                 = 'function';
+  var FUNCTION                 = Sk.ffi.PyType.FUNCTION;
   var NODE                     = 'Node';
   var WINDOW                   = 'Window';
   var WINDOW_ANIMATION_RUNNER  = 'WindowAnimationRunner';
@@ -25,7 +25,7 @@ var $builtinmodule = function(name) {
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, windowPy, tickPy, terminatePy, setUpPy, tearDownPy) {
       Sk.ffi.checkMethodArgs(WINDOW_ANIMATION_RUNNER, arguments, 5, 5);
-      Sk.ffi.checkArgType("window",    WINDOW,   Sk.ffi.isObjectRef(windowPy) && Sk.ffi.typeName(windowPy) === WINDOW);
+      Sk.ffi.checkArgType("window",    WINDOW,   Sk.ffi.isClass(windowPy) && Sk.ffi.typeName(windowPy) === WINDOW);
       Sk.ffi.checkArgType("tick",      FUNCTION, Sk.ffi.isFunction(tickPy));
       Sk.ffi.checkArgType("terminate", FUNCTION, Sk.ffi.isFunction(terminatePy));
       Sk.ffi.checkArgType("setUp",     FUNCTION, Sk.ffi.isFunction(setUpPy));

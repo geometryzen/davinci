@@ -20,9 +20,9 @@
     var PROP_IMAG = "imag";
   /**
    * @const
-   * @type {string}
+   * @type {!Array.<Sk.ffi.PyType>}
    */
-    var NUMBER   = "Number";
+    var NUMBER   = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
     /**
      * @const
      * @type {string}
@@ -49,7 +49,7 @@
      */
     var OP_DIV           = "/";
 
-    function isComplex(valuePy) {return Sk.ffi.isObjectRef(valuePy) && Sk.ffi.typeName(valuePy) === COMPLEX;};
+    function isComplex(valuePy) {return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === COMPLEX;};
 
     function phase(x, y) {return Math.atan2(y, x);}
 

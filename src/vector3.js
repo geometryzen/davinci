@@ -63,14 +63,14 @@
   var PROP_Z                     = "z";
   /**
    * @const
-   * @type {string}
+   * @type {!Array.<Sk.ffi.PyType>}
    */
-  var NUMBER                     = "Number";
+  var NUMBER                     = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
   /**
    * @const
-   * @type {string}
+   * @type {Sk.ffi.PyType}
    */
-  var INT                        = "int";
+  var INT                        = Sk.ffi.PyType.INT;
   /**
    * @const
    * @type {string}
@@ -155,7 +155,7 @@
         }
         else {
           switch(Sk.ffi.getType(x)) {
-            case Sk.ffi.PyType.OBJREF: {
+            case Sk.ffi.PyType.CLASS: {
               Sk.ffi.checkMethodArgs(VECTOR_3, arguments, 1, 1);
               Sk.ffi.checkArgType(PROP_X, VECTOR_3, isVector(x));
               Sk.ffi.referenceToPy(Sk.ffi.remapToJs(x), VECTOR_3, undefined, selfPy);
