@@ -384,7 +384,7 @@ Sk.builtin.buildNodeClass = function(mod) {
   return Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, nodePy) {
       Sk.ffi.checkMethodArgs(NODE, arguments, 1, 1);
-      Sk.ffi.checkArgType("node", NODE, Sk.ffi.isClass(nodePy));
+      Sk.ffi.checkArgType("node", NODE, Sk.ffi.isClass(nodePy), nodePy);
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(nodePy), NODE, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(nodePy, name) {
@@ -1213,6 +1213,9 @@ Sk.builtin.buildNodeClass = function(mod) {
             });
           }, METHOD_SET_ATTRIBUTE, []));
         }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(NODE);
+        }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(nodePy, name, valuePy) {
@@ -1232,7 +1235,7 @@ Sk.builtin.buildNodeClass = function(mod) {
         }
         break;
         case PROP_INNER_HTML: {
-          Sk.ffi.checkArgType(PROP_INNER_HTML, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy));
+          Sk.ffi.checkArgType(PROP_INNER_HTML, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy), valuePy);
           node[PROP_INNER_HTML] = Sk.ffi.remapToJs(valuePy);
         }
         break;
@@ -1242,7 +1245,6 @@ Sk.builtin.buildNodeClass = function(mod) {
         break;
         default: {
           throw Sk.ffi.err.attribute(name).isNotSetableOnType(NODE);
-          // node.setAttribute(name, stringFromArg(value));
         }
       }
     });

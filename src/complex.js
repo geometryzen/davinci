@@ -101,8 +101,8 @@
     mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       $loc.__init__ = Sk.ffi.functionPy(function(selfPy, rePy, imPy) {
         Sk.ffi.checkMethodArgs(COMPLEX, arguments, 2, 2);
-        Sk.ffi.checkArgType(PROP_REAL, NUMBER, Sk.ffi.isNumber(rePy));
-        Sk.ffi.checkArgType(PROP_IMAG, NUMBER, Sk.ffi.isNumber(imPy));
+        Sk.ffi.checkArgType(PROP_REAL, NUMBER, Sk.ffi.isNumber(rePy), rePy);
+        Sk.ffi.checkArgType(PROP_IMAG, NUMBER, Sk.ffi.isNumber(imPy), imPy);
         Sk.ffi.referenceToPy({x: Sk.ffi.remapToJs(rePy), y: Sk.ffi.remapToJs(imPy)}, COMPLEX, undefined, selfPy);
       });
       $loc.__getattr__ = Sk.ffi.functionPy(function(z, name) {
@@ -130,7 +130,7 @@
         }
       });
       $loc.__radd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-        Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNumber(otherPy));
+        Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
         var a = Sk.ffi.remapToJs(otherPy);
         var b = Sk.ffi.remapToJs(selfPy);
         return cartesianToComplexPy(a + b.x, b.y);
@@ -266,11 +266,11 @@
           return cartesianToComplexPy(a.x / b, a.y / b);
         }
         else {
-          Sk.ffi.checkArgType(ARG_OTHER, [COMPLEX, NUMBER], false);
+          Sk.ffi.checkArgType(ARG_OTHER, [COMPLEX, NUMBER], false, otherPy);
         }
       });
       $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-        Sk.ffi.checkArgType(ARG_OTHER, NUMBER,  Sk.ffi.isNumber(otherPy));
+        Sk.ffi.checkArgType(ARG_OTHER, NUMBER,  Sk.ffi.isNumber(otherPy), otherPy);
         var a = Sk.ffi.remapToJs(otherPy);
         var b = Sk.ffi.remapToJs(selfPy);
         if (Sk.ffi.isNumber(otherPy)) {
@@ -339,7 +339,7 @@
         return Sk.ffi.numberToPy(Math.atan2(0, Sk.ffi.remapToJs(xPy)));
       }
       else {
-        Sk.ffi.checkArgType("x", COMPLEX, false);
+        Sk.ffi.checkArgType("x", COMPLEX, false, xPy);
       }
     });
 
@@ -353,7 +353,7 @@
         return Sk.ffi.tuplePy([Sk.ffi.remapToPy(norm(Sk.ffi.remapToJs(xPy), 0)), Sk.ffi.remapToPy(0)]);
       }
       else {
-        Sk.ffi.checkArgType("x", COMPLEX, false);
+        Sk.ffi.checkArgType("x", COMPLEX, false, xPy);
       }
     });
 

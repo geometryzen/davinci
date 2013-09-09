@@ -521,7 +521,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
    * @return {boolean} The JavaScript value of the Python argument.
    */
   function checkArgBoolean(name, valuePy) {
-    Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy));
+    Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
     return Sk.ffi.remapToJs(valuePy);
   }
 
@@ -1558,7 +1558,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
     var PROP_SORT_OBJECTS = "sortObjects";
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy) {
       if (Sk.ffi.checkMethodArgs(WEBGL_RENDERER, arguments, 0, 1) > 0) {
-        Sk.ffi.checkArgType("parameters", Sk.ffi.PyType.DICT, Sk.ffi.isDict(parametersPy));
+        Sk.ffi.checkArgType("parameters", Sk.ffi.PyType.DICT, Sk.ffi.isDict(parametersPy), parametersPy);
       }
       var parameters = Sk.ffi.remapToJs(parametersPy);
       Sk.ffi.referenceToPy(new THREE[WEBGL_RENDERER](parameters), WEBGL_RENDERER, undefined, selfPy);
@@ -3351,7 +3351,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
   mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
       Sk.ffi.checkMethodArgs(MESH, arguments, 1, 2);
-      Sk.ffi.checkArgType("geometry", GEOMETRY, Sk.ffi.isClass(geometryPy));
+      Sk.ffi.checkArgType("geometry", GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy);
       Sk.ffi.referenceToPy(new THREE[MESH](Sk.ffi.remapToJs(geometryPy), Sk.ffi.remapToJs(materialPy)), MESH, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(meshPy, name) {
@@ -3463,7 +3463,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         }
         break;
         case PROP_NAME: {
-          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy));
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy), valuePy);
           mesh[PROP_NAME] = value;
         }
         break;
@@ -3480,7 +3480,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         }
         break;
         case PROP_POSITION: {
-          Sk.ffi.checkArgType(PROP_POSITION, VECTOR_3, isVector(valuePy));
+          Sk.ffi.checkArgType(PROP_POSITION, VECTOR_3, isVector(valuePy), valuePy);
           mesh[PROP_POSITION] = value;
         }
         break;
@@ -3514,7 +3514,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         }
         break;
         case PROP_VISIBLE: {
-          Sk.ffi.checkArgType(PROP_VISIBLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy));
+          Sk.ffi.checkArgType(PROP_VISIBLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
           mesh[PROP_VISIBLE] = value;
         }
         break;

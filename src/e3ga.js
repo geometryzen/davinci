@@ -149,11 +149,33 @@ Sk.builtin.defineEuclidean3 = function(mod) {
    * @type {string}
    */
   var METHOD_SET_COMPONENT       = "setComponent";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_ADD                     = "add";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_SUB                     = "subtract";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_MUL                     = "multiply";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_DIV                     = "divide";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_EQ                      = "equal";
 
-  function clamp( x, a, b ) { return ( x < a ) ? a : ( ( x > b ) ? b : x ); }
   function isNumber(x)    { return typeof x === 'number'; }
-  function isUndefined(x) { return typeof x === 'undefined'; }
-  function isDefined(x)   { return typeof x !== 'undefined'; }
 
   function stringFromCoordinates(coordinates, labels) {
     var append, i, sb, str, _i, _ref;
@@ -584,16 +606,16 @@ Sk.builtin.defineEuclidean3 = function(mod) {
 
   mod[SCALAR_E3] = Sk.ffi.functionPy(function(w) {
     Sk.ffi.checkFunctionArgs(SCALAR_E3, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNumber(w));
+    Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNumber(w), w);
     w = Sk.ffi.numberToJs(w);
     return remapE3ToPy(w, 0, 0, 0, 0, 0, 0, 0);
   });
 
   mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z) {
     Sk.ffi.checkFunctionArgs(VECTOR_E3, arguments, 3, 3);
-    Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x));
-    Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y));
-    Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z));
+    Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
+    Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
+    Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
     x = Sk.ffi.numberToJs(x);
     y = Sk.ffi.numberToJs(y);
     z = Sk.ffi.numberToJs(z);
@@ -602,9 +624,9 @@ Sk.builtin.defineEuclidean3 = function(mod) {
 
   mod[BIVECTOR_E3] = Sk.ffi.functionPy(function(xy, yz, zx) {
     Sk.ffi.checkFunctionArgs(BIVECTOR_E3, arguments, 3, 3);
-    Sk.ffi.checkArgType(PROP_XY, NUMBER, Sk.ffi.isNumber(xy));
-    Sk.ffi.checkArgType(PROP_YZ, NUMBER, Sk.ffi.isNumber(yz));
-    Sk.ffi.checkArgType(PROP_ZX, NUMBER, Sk.ffi.isNumber(zx));
+    Sk.ffi.checkArgType(PROP_XY, NUMBER, Sk.ffi.isNumber(xy), xy);
+    Sk.ffi.checkArgType(PROP_YZ, NUMBER, Sk.ffi.isNumber(yz), yz);
+    Sk.ffi.checkArgType(PROP_ZX, NUMBER, Sk.ffi.isNumber(zx), zx);
     xy = Sk.ffi.numberToJs(xy);
     yz = Sk.ffi.numberToJs(yz);
     zx = Sk.ffi.numberToJs(zx);
@@ -613,7 +635,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
 
   mod[PSEUDOSCALAR_E3] = Sk.ffi.functionPy(function(xyz) {
     Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_E3, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_XYZ, NUMBER, Sk.ffi.isNumber(xyz));
+    Sk.ffi.checkArgType(PROP_XYZ, NUMBER, Sk.ffi.isNumber(xyz), xyz);
     xyz = Sk.ffi.numberToJs(xyz);
     return remapE3ToPy(0, 0, 0, 0, 0, 0, 0, xyz);
   });
@@ -625,14 +647,14 @@ Sk.builtin.defineEuclidean3 = function(mod) {
         case Sk.ffi.PyType.FLOAT:
         case Sk.ffi.PyType.INT: {
           Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 8, 8);
-          Sk.ffi.checkArgType(PROP_W,    NUMBER, Sk.ffi.isNumber(w));
-          Sk.ffi.checkArgType(PROP_X,    NUMBER, Sk.ffi.isNumber(x));
-          Sk.ffi.checkArgType(PROP_Y,    NUMBER, Sk.ffi.isNumber(y));
-          Sk.ffi.checkArgType(PROP_Z,    NUMBER, Sk.ffi.isNumber(z));
-          Sk.ffi.checkArgType(PROP_XY,   NUMBER, Sk.ffi.isNumber(xy));
-          Sk.ffi.checkArgType(PROP_YZ,   NUMBER, Sk.ffi.isNumber(yz));
-          Sk.ffi.checkArgType(PROP_ZX,   NUMBER, Sk.ffi.isNumber(zx));
-          Sk.ffi.checkArgType(PROP_XYZ,  NUMBER, Sk.ffi.isNumber(xyz));
+          Sk.ffi.checkArgType(PROP_W,    NUMBER, Sk.ffi.isNumber(w), w);
+          Sk.ffi.checkArgType(PROP_X,    NUMBER, Sk.ffi.isNumber(x), x);
+          Sk.ffi.checkArgType(PROP_Y,    NUMBER, Sk.ffi.isNumber(y), y);
+          Sk.ffi.checkArgType(PROP_Z,    NUMBER, Sk.ffi.isNumber(z), z);
+          Sk.ffi.checkArgType(PROP_XY,   NUMBER, Sk.ffi.isNumber(xy), xy);
+          Sk.ffi.checkArgType(PROP_YZ,   NUMBER, Sk.ffi.isNumber(yz), yz);
+          Sk.ffi.checkArgType(PROP_ZX,   NUMBER, Sk.ffi.isNumber(zx), zx);
+          Sk.ffi.checkArgType(PROP_XYZ,  NUMBER, Sk.ffi.isNumber(xyz), xyz);
           w   = Sk.ffi.remapToJs(w);
           x   = Sk.ffi.remapToJs(x);
           y   = Sk.ffi.remapToJs(y);
@@ -1244,6 +1266,9 @@ Sk.builtin.defineEuclidean3 = function(mod) {
             });
           }, METHOD_NORMALIZE, []));
         }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(EUCLIDEAN_3);
+        }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(mv, name, value) {
@@ -1283,7 +1308,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
         }
         break;
         default: {
-          throw new Sk.builtin.AttributeError(name + " is not an attribute of " + EUCLIDEAN_3);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(EUCLIDEAN_3);
         }
       }
     });

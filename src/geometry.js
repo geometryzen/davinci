@@ -11,7 +11,6 @@
    */
   Sk.builtin.defineGeometry = function(mod, THREE, moduleName) {
     Sk.ffi.checkFunctionArgs("defineGeometry", arguments, 3, 3);
-    Sk.ffi.checkArgType("moduleName", Sk.ffi.JsType.STRING, typeof moduleName === Sk.ffi.JsType.STRING);
     /**
      * A Euclidean space described by Cartesian coordinates with 3 dimensions.
      *
@@ -141,8 +140,8 @@
           case METHOD_VIEW_SIZE: {
             return Sk.ffi.callableToPy(mod, METHOD_RENDER, function(methodPy, widthPy, heightPy) {
                 Sk.ffi.checkMethodArgs(METHOD_VIEW_SIZE, arguments, 2, 2);
-                Sk.ffi.checkArgType(PROP_WIDTH, Sk.ffi.PyType.INT, Sk.ffi.isInt(widthPy));
-                Sk.ffi.checkArgType(PROP_HEIGHT, Sk.ffi.PyType.INT, Sk.ffi.isInt(heightPy));
+                Sk.ffi.checkArgType(PROP_WIDTH, Sk.ffi.PyType.INT, Sk.ffi.isInt(widthPy), widthPy);
+                Sk.ffi.checkArgType(PROP_HEIGHT, Sk.ffi.PyType.INT, Sk.ffi.isInt(heightPy), heightPy);
                 var width  = Sk.ffi.remapToJs(widthPy);
                 var height = Sk.ffi.remapToJs(heightPy);
                 var renderer = Sk.ffi.remapToJs(space.rendererPy);

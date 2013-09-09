@@ -571,8 +571,9 @@ Sk.ffi.FunctionReturningTypeError
  * @param {string} name The argument name.
  * @param {Sk.ffi.UnionType} expectedType A string representation of the expected type or types.
  * @param {boolean} condition The condition that must be true for the check to pass.
+ * @param {Object} valuePy The actual value of the operand.
  */
-Sk.ffi.checkArgType = function(name, expectedType, condition)
+Sk.ffi.checkArgType = function(name, expectedType, condition, valuePy)
 {
     if (!condition)
     {
@@ -580,6 +581,42 @@ Sk.ffi.checkArgType = function(name, expectedType, condition)
     }
 };
 goog.exportSymbol("Sk.ffi.checkArgType", Sk.ffi.checkArgType);
+
+/**
+ * Convenience function for asserting the type of the LHS operand to a binary operator.
+ *
+ * @param {string} opName The operator name.
+ * @param {Sk.ffi.UnionType} expectedType A string representation of the expected type or types.
+ * @param {boolean} condition The condition that must be true for the check to pass.
+ * @param {Object} valuePy The actual value of the operand.
+ */
+Sk.ffi.checkLhsOperandType = function(opName, expectedType, condition, valuePy)
+{
+    if (!condition)
+    {
+        // TODO: Push string literal down into the Sk.ffi.err structure.
+        throw Sk.ffi.err.operand("Left").toOperation(opName).mustHaveType(expectedType);
+    }
+};
+goog.exportSymbol("Sk.ffi.checkLhsOperandType", Sk.ffi.checkLhsOperandType);
+
+/**
+ * Convenience function for asserting the type of the RHS operand to a binary operator.
+ *
+ * @param {string} opName The operator name.
+ * @param {Sk.ffi.UnionType} expectedType A string representation of the expected type or types.
+ * @param {boolean} condition The condition that must be true for the check to pass.
+ * @param {Object} valuePy The actual value of the operand.
+ */
+Sk.ffi.checkRhsOperandType = function(opName, expectedType, condition, valuePy)
+{
+    if (!condition)
+    {
+        // TODO: Push string literal down into the Sk.ffi.err structure.
+        throw Sk.ffi.err.operand("Right").toOperation(opName).mustHaveType(expectedType);
+    }
+};
+goog.exportSymbol("Sk.ffi.checkRhsOperandType", Sk.ffi.checkRhsOperandType);
 
 /**
  * Enumeration for internal Python types.
@@ -1114,6 +1151,36 @@ Sk.ffi.err =
              */
             mustHaveType: function(expectedType) {
                 return Sk.ffi.typeError(name + " must be a " + Sk.ffi.typeString(expectedType));
+            }
+        };
+    },
+    /**
+     * @param {string} name The name of the operand.
+     * @return
+     * {
+     *   {
+     *     toOperator: function(string):{
+     *       mustHaveType: function(Sk.ffi.UnionType): Sk.ffi.TypeError
+     *     }
+     *   }
+     * }
+     */
+    operand: function(name) {
+        return {
+            /**
+             * @param {string} opName The name of the function.
+             * @return {{mustHaveType: Sk.ffi.FunctionReturningTypeError}}
+             */
+            toOperation: function(opName) {
+                return {
+                    /**
+                     * @param {Sk.ffi.UnionType} expectedType The name of the type.
+                     * @return {Sk.ffi.TypeError}
+                     */
+                    mustHaveType: function(expectedType) {
+                        return Sk.ffi.typeError("Expecting operand '" + name + "' to operation '" + opName + "' to have type " + Sk.ffi.typeString(expectedType) + ".");
+                    }
+                };
             }
         };
     }

@@ -28,6 +28,31 @@ Sk.builtin.defineUnits = function(mod) {
   var PROP_L           = "L";
   var PROP_T           = "T";
   var PROP_Q           = "Q";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_ADD           = "add";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_SUB           = "subtract";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_MUL           = "multiply";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_DIV           = "divide";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_EQ            = "equal";
 
   var KILOGRAM         = "kilogram";
   var METER            = "meter";
@@ -50,7 +75,7 @@ Sk.builtin.defineUnits = function(mod) {
   mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, M, L, T, Q) {
       Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 4);
-      Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), Sk.ffi.isReference(M));
+      Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), Sk.ffi.isReference(M), M);
       switch(Sk.ffi.typeName(M)) {
         case RATIONAL: {
           Sk.ffi.referenceToPy(new BLADE.Dimensions(Sk.ffi.remapToJs(M), Sk.ffi.remapToJs(L), Sk.ffi.remapToJs(T), Sk.ffi.remapToJs(Q)), DIMENSIONS, undefined, selfPy);
@@ -61,7 +86,7 @@ Sk.builtin.defineUnits = function(mod) {
         }
         break;
         default: {
-          Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), false);
+          Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), false, M);
         }
       }
     });
@@ -169,8 +194,8 @@ Sk.builtin.defineUnits = function(mod) {
       return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
     });
     $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkArgType("other", NUMBER, Sk.ffi.isNumber(otherPy));
-      Sk.ffi.checkArgType("self",  UNIT, isUnit(selfPy));
+      Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+      Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnit(selfPy), selfPy);
       var lhs = Sk.ffi.remapToJs(otherPy);
       var rhs = Sk.ffi.remapToJs(selfPy);
       return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(lhs * rhs.scale), Sk.ffi.remapToPy(rhs.dimensions, DIMENSIONS), Sk.ffi.remapToPy(rhs.labels));
@@ -206,7 +231,7 @@ Sk.builtin.defineUnits = function(mod) {
   mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, quantityPy, unitPy) {
       Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 2);
-      Sk.ffi.checkArgType("quantityPy", ["Reference", MEASURE].join(" or "), Sk.ffi.isReference(quantityPy));
+      Sk.ffi.checkArgType("quantityPy", ["Reference", MEASURE].join(" or "), Sk.ffi.isReference(quantityPy), quantityPy);
       if (Sk.ffi.typeName(quantityPy) === MEASURE)
       {
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(quantityPy), MEASURE, quantityPy.custom, selfPy);

@@ -1,5 +1,5 @@
 describe("Sk", function() {
-  describe("mangleName", function() {
+  xdescribe("mangleName", function() {
     it("x => x", function() {
       expect(Sk.mangleName("x")).toBe("x");
     });
