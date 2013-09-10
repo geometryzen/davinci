@@ -1469,7 +1469,7 @@ var $builtinmodule = function(name) {
           }, COLOR, []));
         }
         case DOWN: {
-          return Sk.ffi.callableToPy(mod, DOWN, function(self) {
+          return Sk.ffi.callableToPy(mod, DOWN, function(methodPy) {
             Sk.ffi.checkMethodArgs(DOWN, arguments, 0, 0);
             target.pen_down();
           });
@@ -1722,7 +1722,7 @@ var $builtinmodule = function(name) {
           }, STAMP, []));
         }
         case UP: {
-          return Sk.ffi.callableToPy(mod, UP, function(self) {
+          return Sk.ffi.callableToPy(mod, UP, function(methodPy) {
             Sk.ffi.checkMethodArgs(UP, arguments, 0, 0);
             target.pen_up();
           });

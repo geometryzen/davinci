@@ -12,21 +12,73 @@ var  BLADE = this.BLADE;
 
 Sk.builtin.defineUnits = function(mod) {
 
+  /**
+   * @const
+   * @type {string}
+   */
   var DIMENSIONS       = "Dimensions";
+  /**
+   * @const
+   * @type {string}
+   */
   var MEASURE          = "Measure";
+  /**
+   * @const
+   * @type {string}
+   */
   var RATIONAL         = "Rational";
+  /**
+   * @const
+   * @type {string}
+   */
   var UNIT             = "Unit";
   var INT              = "int";
   var NUMBER           = "Number";
 
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_QUANTITY    = "quantity";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_UOM         = "uom";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_SCALE       = "scale";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_DIMENSIONS  = "dimensions";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_LABELS      = "labels";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_M           = "M";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_L           = "L";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_T           = "T";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_Q           = "Q";
   /**
    * @const
@@ -65,6 +117,10 @@ Sk.builtin.defineUnits = function(mod) {
   var AMPERE           = "ampere";
   var VOLT             = "volt";
   var TESLA            = "tesla";
+
+  var isDimensions = function(valuePy) {
+    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === DIMENSIONS;
+  }
 
   var isUnit = function(valuePy) {
     return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === UNIT;
@@ -107,9 +163,10 @@ Sk.builtin.defineUnits = function(mod) {
         }
       }
     });
-    $loc.__mul__ = Sk.ffi.functionPy(function(aPy, bPy) {
-      var a = Sk.ffi.remapToJs(aPy);
-      var b = Sk.ffi.remapToJs(bPy);
+    $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      Sk.ffi.checkRhsOperandType(OP_MUL, DIMENSIONS, isDimensions(otherPy), otherPy);
+      var a = Sk.ffi.remapToJs(selfPy);
+      var b = Sk.ffi.remapToJs(otherPy);
       var c = a.mul(b);
       return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.remapToPy(c.M, RATIONAL), Sk.ffi.remapToPy(c.L, RATIONAL), Sk.ffi.remapToPy(c.T, RATIONAL), Sk.ffi.remapToPy(c.Q, RATIONAL));
     });
@@ -187,15 +244,15 @@ Sk.builtin.defineUnits = function(mod) {
         throw Sk.ffi.assertionError(e.message)
       }
     });
-    $loc.__mul__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
-      var lhs = Sk.ffi.remapToJs(lhsPy);
-      var rhs = Sk.ffi.remapToJs(rhsPy);
+    $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnit(otherPy), otherPy);
+      var lhs = Sk.ffi.remapToJs(selfPy);
+      var rhs = Sk.ffi.remapToJs(otherPy);
       var c = lhs.mul(rhs);
       return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
     });
     $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
-      Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnit(selfPy), selfPy);
       var lhs = Sk.ffi.remapToJs(otherPy);
       var rhs = Sk.ffi.remapToJs(selfPy);
       return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(lhs * rhs.scale), Sk.ffi.remapToPy(rhs.dimensions, DIMENSIONS), Sk.ffi.remapToPy(rhs.labels));
