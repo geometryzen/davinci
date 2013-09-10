@@ -224,7 +224,7 @@ mod[CUBE] = Sk.nativejs.func(function box(width, height, depth) {
 mod[CYLINDER] = Sk.nativejs.func(function box(radiusTop, radiusBottom, height) {
   Sk.ffi.checkFunctionArgs(CYLINDER, arguments, 0, 3);
   var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy({"color": 0x00FF00}));
-  radiusBottom = Sk.ffi.remapToJs(radiusBottom) || 1;
+  radiusBottom = Sk.ffi.remapToJs(radiusBottom) || 0.682784063;
   radiusTop  = Sk.ffi.remapToJs(radiusTop,  radiusBottom);
   height  = Sk.ffi.remapToJs(height) || 1;
   radiusTop          = Sk.ffi.remapToPy(radiusTop);
@@ -238,7 +238,7 @@ mod[CYLINDER] = Sk.nativejs.func(function box(radiusTop, radiusBottom, height) {
 mod[SPHERE] = Sk.nativejs.func(function box(radius) {
   Sk.ffi.checkFunctionArgs(SPHERE, arguments, 0, 1);
   var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy({"color": 0xFF0000}));
-  radius = Sk.ffi.remapToJs(radius) || 1;
+  radius = Sk.ffi.remapToJs(radius) || 0.620350491;
   radius = Sk.ffi.remapToPy(radius);
   var widthSegments = Sk.ffi.remapToPy(24);
   var heightSegments = Sk.ffi.remapToPy(18);

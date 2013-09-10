@@ -566,15 +566,19 @@ Sk.builtin.defineThree = function(mod, THREE) {
   function isNull(x)      { return typeof x === 'object' && x === null; }
 
   function isVector3(valuePy) {
-    return Sk.ffi.isReference(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
+    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
+  }
+  function isGeometry(valuePy) {
+    // TODO: Need to include sub-classes too.
+    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY;
   }
 
   function methodAdd(target) {
     if (!isObject(target)) {
-      throw new Sk.builtin.AssertionError("target must be an object.");
+      throw Sk.ffi.assertionError("target must be an object.");
     }
     if (!isFunction(target[METHOD_ADD])) {
-      throw new Sk.builtin.AssertionError("target must have an 'add' function.");
+      throw Sk.ffi.assertionError("target must have an 'add' function.");
     }
     return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, childPy) {
       var child = Sk.ffi.remapToJs(childPy);
@@ -584,10 +588,10 @@ Sk.builtin.defineThree = function(mod, THREE) {
 
   function methodRemove(target) {
     if (!isObject(target)) {
-      throw new Sk.builtin.AssertionError("target must be an object.");
+      throw Sk.ffi.assertionError("target must be an object.");
     }
     if (!isFunction(target[METHOD_REMOVE])) {
-      throw new Sk.builtin.AssertionError("target must have a 'remove' function.");
+      throw Sk.ffi.assertionError("target must have a 'remove' function.");
     }
     return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, childPy) {
       var child = Sk.ffi.remapToJs(childPy);
@@ -597,9 +601,8 @@ Sk.builtin.defineThree = function(mod, THREE) {
 
   function verticesPy(vertices) {
     return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-      $loc.__init__ = Sk.ffi.functionPy(function(self) {
-        self.tp$name = PROP_VERTICES;
-        self.v = vertices;
+      $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
+        Sk.ffi.referenceToPy(vertices, PROP_VERTICES, undefined, selfPy);
       });
       $loc.__getattr__ = Sk.ffi.functionPy(function(verticesPy, name) {
         var METHOD_APPEND = "append";
@@ -3317,7 +3320,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
   mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
       Sk.ffi.checkMethodArgs(MESH, arguments, 1, 2);
-      Sk.ffi.checkArgType("geometry", GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy);
+      Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy);
       Sk.ffi.referenceToPy(new THREE[MESH](Sk.ffi.remapToJs(geometryPy), Sk.ffi.remapToJs(materialPy)), MESH, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(meshPy, name) {
@@ -3391,6 +3394,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
             Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
             Sk.ffi.checkArgType("angle", NUMBER, Sk.ffi.isNumber(anglePy), anglePy);
             mesh[METHOD_ROTATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(anglePy));
+            return meshPy;
           });
         }
         case METHOD_ROTATE_X:
@@ -3400,6 +3404,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
             Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
             Sk.ffi.checkArgType(ARG_AXIS, NUMBER, Sk.ffi.isNumber(axisPy), axisPy);
             mesh[name](Sk.ffi.remapToJs(axisPy));
+            return meshPy;
           });
         }
         case METHOD_SET_GEOMETRY: {
@@ -3425,6 +3430,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
             Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
             Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(distancePy), distancePy);
             mesh[METHOD_TRANSLATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(distancePy));
+            return meshPy;
           });
         }
         case METHOD_TRANSLATE_X:
@@ -3434,6 +3440,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
             Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
             Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(distancePy), distancePy);
             mesh[name](Sk.ffi.remapToJs(distancePy));
+            return meshPy;
           });
         }
         case METHOD_UPDATE_MATRIX: {
