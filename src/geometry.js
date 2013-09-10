@@ -483,11 +483,13 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionCone();
-          var radiusTop      = Sk.ffi.remapToPy(0);
-          var radiusBottom   = Sk.ffi.remapToPy(dimensions[PROP_RADIUS]);
-          var height         = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
-          var radialSegments = Sk.ffi.remapToPy(32);
-          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments);
+          var radiusTop      = Sk.ffi.numberToPy(0);
+          var radiusBottom   = Sk.ffi.numberToPy(dimensions[PROP_RADIUS]);
+          var height         = Sk.ffi.numberToPy(dimensions[PROP_HEIGHT]);
+          var radialSegments = Sk.ffi.numberToIntPy(32);
+          var heightSegments = Sk.ffi.numberToIntPy(1);
+          var openEnded      = Sk.ffi.booleanToPy(false);
+          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
           var parameters = {};
           parameters[PROP_COLOR]     = self[PROP_COLOR];
           parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
@@ -718,11 +720,13 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionCylinder();
-          var radiusTop      = Sk.ffi.remapToPy(dimensions.a);
-          var radiusBottom   = Sk.ffi.remapToPy(dimensions.b);
-          var height         = Sk.ffi.remapToPy(dimensions.h);
-          var radialSegments = Sk.ffi.remapToPy(32);
-          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments);
+          var radiusTop      = Sk.ffi.numberToPy(dimensions.a);
+          var radiusBottom   = Sk.ffi.numberToPy(dimensions.b);
+          var height         = Sk.ffi.numberToPy(dimensions.h);
+          var radialSegments = Sk.ffi.numberToIntPy(32);
+          var heightSegments = Sk.ffi.numberToIntPy(1);
+          var openEnded      = Sk.ffi.booleanToPy(false);
+          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
           var parameters = {};
           parameters[PROP_COLOR]     = self[PROP_COLOR];
           parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
