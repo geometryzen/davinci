@@ -143,9 +143,9 @@
   var OP_EQ            = "equal";
   /**
    * @param {string} VECTOR_3
-   * @param {function(number, number, number): string} vector3
+   * @param {function(number, number, number): string} factory
    */
-  Sk.builtin.defineVector3 = function(mod, VECTOR_3, vector3) {
+  Sk.builtin.defineVector3 = function(mod, VECTOR_3, factory) {
     Sk.ffi.checkFunctionArgs("defineVector3", arguments, 3, 3);
     /**
      * @param {Object} valuePy
@@ -166,7 +166,7 @@
       $loc.__init__ = Sk.ffi.functionPy(function(selfPy, x, y, z) {
         Sk.ffi.checkMethodArgs(VECTOR_3, arguments, 0, 4);
         if (Sk.ffi.isUndefined(x) && Sk.ffi.isUndefined(y) && Sk.ffi.isUndefined(z)) {
-          Sk.ffi.referenceToPy(vector3(0, 0, 0), VECTOR_3, undefined, selfPy);
+          Sk.ffi.referenceToPy(factory(0, 0, 0), VECTOR_3, undefined, selfPy);
         }
         else {
           switch(Sk.ffi.getType(x)) {
@@ -183,7 +183,7 @@
               Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
               Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
               Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
-              Sk.ffi.referenceToPy(vector3(Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), Sk.ffi.remapToJs(z)), VECTOR_3, undefined, selfPy);
+              Sk.ffi.referenceToPy(factory(Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), Sk.ffi.remapToJs(z)), VECTOR_3, undefined, selfPy);
             }
             break
             default: {

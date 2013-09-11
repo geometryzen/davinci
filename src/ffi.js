@@ -1030,7 +1030,7 @@ Sk.ffi.callableToPy = function(mod, nameJs, functionJs)
 {
     return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc)
     {
-        $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {});
+        $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {Sk.ffi.referenceToPy(null, nameJs, null, selfPy);});
         $loc.__call__ = Sk.ffi.functionPy(functionJs);
         $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {return Sk.ffi.stringToPy(nameJs);});
         $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {return Sk.ffi.stringToPy(nameJs);});

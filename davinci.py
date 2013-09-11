@@ -102,6 +102,7 @@ Files = [
         'src/timsort.js',
         'src/builtindict.js',
         'src/complex.js',
+        'src/quaternion.js',
         'src/document.js',
         'src/event.js',
         'src/geometry.js',
