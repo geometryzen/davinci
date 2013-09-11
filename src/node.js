@@ -1235,7 +1235,7 @@ Sk.builtin.buildNodeClass = function(mod) {
         }
         break;
         case PROP_INNER_HTML: {
-          Sk.ffi.checkArgType(PROP_INNER_HTML, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy), valuePy);
+          Sk.ffi.checkArgType(PROP_INNER_HTML, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
           node[PROP_INNER_HTML] = Sk.ffi.remapToJs(valuePy);
         }
         break;

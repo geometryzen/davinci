@@ -580,7 +580,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
    * @param {Object} valuePy
    * @return {boolean} The JavaScript value of the Python argument.
    */
-  function checkArgBoolean(name, valuePy) {
+  function checkArgBool(name, valuePy) {
     Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
     return Sk.ffi.remapToJs(valuePy);
   }
@@ -3495,11 +3495,11 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
         case PROP_MATRIX_AUTO_UPDATE: {
-          mesh[PROP_MATRIX_AUTO_UPDATE] = checkArgBoolean(PROP_MATRIX_AUTO_UPDATE, valuePy);
+          mesh[PROP_MATRIX_AUTO_UPDATE] = checkArgBool(PROP_MATRIX_AUTO_UPDATE, valuePy);
         }
         break;
         case PROP_NAME: {
-          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isString(valuePy), valuePy);
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
           mesh[PROP_NAME] = value;
         }
         break;

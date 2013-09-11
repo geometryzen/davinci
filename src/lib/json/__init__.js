@@ -7,8 +7,8 @@ var $builtinmodule = function(name)
 
     mod[FUNCTION_PARSE] = Sk.ffi.functionPy(function(textPy, reviverPy) {
         Sk.ffi.checkFunctionArgs(FUNCTION_PARSE, arguments, 1, 1);
-        Sk.ffi.checkArgType("text",    "string",   Sk.ffi.isString(textPy));
-        Sk.ffi.checkArgType("reviver", "function", Sk.ffi.isUndefined(reviverPy) || isFunction(reviverPy));
+        Sk.ffi.checkArgType("text",    Sk.ffi.PyType.STR,   Sk.ffi.isStr(textPy));
+        Sk.ffi.checkArgType("reviver", Sk.ffi.PyType.FUNCTION, Sk.ffi.isUndefined(reviverPy) || isFunction(reviverPy));
         var text = Sk.ffi.remapToJs(textPy);
         var reviver = Sk.ffi.remapToJs(reviverPy);
         return Sk.ffi.remapToPy(JSON.parse(text, reviver));

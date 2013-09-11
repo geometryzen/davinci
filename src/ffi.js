@@ -468,8 +468,8 @@ goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 Sk.ffi.isReference = function(valuePy) { return Sk.ffi.isClass(valuePy) || Sk.ffi.isFunctionRef(valuePy); };
 goog.exportSymbol("Sk.ffi.isReference", Sk.ffi.isReference);
 
-Sk.ffi.isString = function(valuePy) { return Sk.builtin.checkString(valuePy); };
-goog.exportSymbol("Sk.ffi.isString", Sk.ffi.isString);
+Sk.ffi.isStr = function(valuePy) { return Sk.builtin.checkString(valuePy); };
+goog.exportSymbol("Sk.ffi.isStr", Sk.ffi.isStr);
 
 Sk.ffi.isUndefined = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.UNDEFINED; };
 goog.exportSymbol("Sk.ffi.isUndefined", Sk.ffi.isUndefined);

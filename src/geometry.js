@@ -82,6 +82,16 @@ var PROP_HEIGHT                     = "height";
  * @const
  * @type {string}
  */
+var PROP_MATERIAL                   = "material";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_NAME                       = "name";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_RADIUS                     = "radius";
 /**
  * @const
@@ -238,12 +248,31 @@ var OBJECT_3D                       = "Object3D";
  * @type {string}
  */
 var VECTOR_3                        = "Vector3";
+/**
+ * @const
+ * @type {!Array.<Sk.ffi.PyType>}
+ */
 var NUMBER                          = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
  * @const
  * @type {number}
  */
-var DEFAULT_LENGTH                  = 1;
+var DEFAULT_CUBE_LENGTH             = 1.0;
+/**
+ * @const
+ * @type {number}
+ */
+var DEFAULT_CYLINDER_RADIUS         = 0.5;
+/**
+ * @const
+ * @type {number}
+ */
+var DEFAULT_CYLINDER_HEIGHT         = 1.0;
+/**
+ * @const
+ * @type {number}
+ */
+var DEFAULT_SPHERE_RADIUS           = 0.5;
 /**
  * @const
  * @type {number}
@@ -262,6 +291,24 @@ var e3 = new THREE[VECTOR_3](0, 0, 1);
 
 function isVector3(valuePy) {
   return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
+}
+
+function methodName(targetPy) {
+  var target = Sk.ffi.remapToJs(targetPy);
+  return Sk.ffi.callableToPy(mod, PROP_NAME, function(methodPy, namePy) {
+    Sk.ffi.checkMethodArgs(PROP_NAME, arguments, 1, 1);
+    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+    target[PROP_NAME] = Sk.ffi.remapToJs(namePy);
+    return targetPy;
+  });
+}
+
+function modifyMesh(meshPy, parameters) {
+  var mesh = Sk.ffi.remapToJs(meshPy);
+  if (parameters[PROP_NAME]) {
+    mesh.name = parameters[PROP_NAME];
+  }
+  return meshPy;
 }
 
 mod[WORLD] = Sk.ffi.functionPy(function() {
@@ -411,21 +458,21 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy(self, CONE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var self = Sk.ffi.remapToJs(selfPy);
+    var cone = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_AXIS: {
         return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
           Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
-          self[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+          cone[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
           return selfPy;
         });
       }
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isString(colorPy), colorPy);
-          self[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
+          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+          cone[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
           return selfPy;
         });
       }
@@ -433,15 +480,16 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
-          self[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
+          cone[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
       }
+      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
-          self[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
+          cone[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
       }
@@ -449,7 +497,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
           Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          cone[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
           return selfPy;
         });
       }
@@ -457,7 +505,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
           Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          self[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
+          cone[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -468,16 +516,16 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionCone() {
             var dims = {};
-            if (self.volume) {
-              var r = (self.radius) ? self.radius : DEFAULT_LENGTH * 0.5;
-              var h = (self.height) ? self.height : DEFAULT_LENGTH;
+            if (cone.volume) {
+              var r = (cone.radius) ? cone.radius : DEFAULT_CYLINDER_RADIUS;
+              var h = (cone.height) ? cone.height : DEFAULT_CYLINDER_HEIGHT;
               var alpha = r / h;
-              dims.radius = Math.pow(3 * alpha * self.volume / Math.PI, 1 / 3);
+              dims.radius = Math.pow(3 * alpha * cone.volume / Math.PI, 1 / 3);
               dims.height = dims.radius / alpha;
             }
             else {
-              dims.radius = (self.radius) ? self.radius : DEFAULT_LENGTH * 0.5;
-              dims.height = (self.height) ? self.height : DEFAULT_LENGTH;
+              dims.radius = (cone.radius) ? cone.radius : DEFAULT_CYLINDER_RADIUS;
+              dims.height = (cone.height) ? cone.height : DEFAULT_CYLINDER_HEIGHT;
             }
             return dims;
           }
@@ -491,12 +539,10 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
           var parameters = {};
-          parameters[PROP_COLOR]     = self[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
+          parameters[PROP_COLOR]     = cone[PROP_COLOR];
+          parameters[PROP_WIREFRAME] = cone[PROP_WIREFRAME];
           var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          var meshPy = Sk.ffi.callsim(mod[MESH], geometryPy, materialPy);
-          var mesh = Sk.ffi.remapToJs(meshPy);
-          return meshPy;
+          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cone);
         });
       }
       default: {
@@ -522,29 +568,13 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy(self, CUBE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var self = Sk.ffi.remapToJs(selfPy);
+    var cube = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isString(colorPy), colorPy);
-          self[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
-      case PROP_WIDTH: {
-        return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
-          Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
-          self[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
-          return selfPy;
-        });
-      }
-      case PROP_HEIGHT: {
-        return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
-          Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
-          self[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
+          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+          cube[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
           return selfPy;
         });
       }
@@ -552,15 +582,32 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_DEPTH, function(methodPy, depthPy) {
           Sk.ffi.checkMethodArgs(PROP_DEPTH, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_DEPTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(depthPy) || Sk.ffi.isNone(depthPy), depthPy);
-          self[PROP_DEPTH] = Sk.ffi.remapToJs(depthPy);
+          cube[PROP_DEPTH] = Sk.ffi.remapToJs(depthPy);
           return selfPy;
         });
       }
+      case PROP_HEIGHT: {
+        return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
+          Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
+          cube[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
+          return selfPy;
+        });
+      }
+      case PROP_NAME: { return methodName(selfPy); }
       case PROP_VOLUME: {
         return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
           Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          cube[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          return selfPy;
+        });
+      }
+      case PROP_WIDTH: {
+        return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
+          Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
+          cube[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
           return selfPy;
         });
       }
@@ -568,7 +615,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
           Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          self[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
+          cube[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -579,19 +626,19 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionCube() {
             var dims = {};
-            if (self[PROP_VOLUME]) {
-              var w = (self.width)  ? self.width  : DEFAULT_LENGTH;
-              var h = (self.height) ? self.height : DEFAULT_LENGTH;
-              var d = (self.depth)  ? self.depth  : DEFAULT_LENGTH;
-              var alpha = Math.pow(self[PROP_VOLUME] / (w * h * d), 1 / 3);
+            if (cube[PROP_VOLUME]) {
+              var w = (cube.width)  ? cube.width  : DEFAULT_CUBE_LENGTH;
+              var h = (cube.height) ? cube.height : DEFAULT_CUBE_LENGTH;
+              var d = (cube.depth)  ? cube.depth  : DEFAULT_CUBE_LENGTH;
+              var alpha = Math.pow(cube[PROP_VOLUME] / (w * h * d), 1 / 3);
               dims.width  = alpha * w;
               dims.height = alpha * h;
               dims.depth  = alpha * d;
             }
             else {
-              dims.width  = (self.width)  ? self.width  : DEFAULT_LENGTH;
-              dims.height = (self.height) ? self.height : DEFAULT_LENGTH;
-              dims.depth  = (self.depth)  ? self.depth  : DEFAULT_LENGTH;
+              dims.width  = (cube.width)  ? cube.width  : DEFAULT_CUBE_LENGTH;
+              dims.height = (cube.height) ? cube.height : DEFAULT_CUBE_LENGTH;
+              dims.depth  = (cube.depth)  ? cube.depth  : DEFAULT_CUBE_LENGTH;
             }
             return dims;
           }
@@ -602,12 +649,10 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var depth      = Sk.ffi.remapToPy(dimensions[PROP_DEPTH]);
           var geometryPy = Sk.ffi.callsim(mod[CUBE_GEOMETRY], width, height, depth);
           var parameters = {};
-          parameters[PROP_COLOR]     = self[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
+          parameters[PROP_COLOR]     = cube[PROP_COLOR];
+          parameters[PROP_WIREFRAME] = cube[PROP_WIREFRAME];
           var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          var meshPy = Sk.ffi.callsim(mod[MESH], geometryPy, materialPy);
-          var mesh = Sk.ffi.remapToJs(meshPy);
-          return meshPy;
+          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cube);
         });
       }
       default: {
@@ -628,21 +673,21 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(CYLINDER_BUILDER, arguments, 0, 0);
     var self = {};
-    self[PROP_RADIUS_TOP]    = DEFAULT_LENGTH * 0.5;
-    self[PROP_RADIUS_BOTTOM] = DEFAULT_LENGTH * 0.5;
-    self[PROP_HEIGHT]        = DEFAULT_LENGTH;
+    self[PROP_RADIUS_TOP]    = DEFAULT_CYLINDER_RADIUS;
+    self[PROP_RADIUS_BOTTOM] = DEFAULT_CYLINDER_RADIUS;
+    self[PROP_HEIGHT]        = DEFAULT_CYLINDER_HEIGHT;
     self[PROP_COLOR]         = DEFAULT_COLOR;
     self[PROP_WIREFRAME]     = false;
     Sk.ffi.referenceToPy(self, CYLINDER_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var self = Sk.ffi.remapToJs(selfPy);
+    var cylinder = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isString(colorPy), colorPy);
-          self[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
+          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+          cylinder[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
           return selfPy;
         });
       }
@@ -650,16 +695,25 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
-          self[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
+          cylinder[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
       }
+      case PROP_MATERIAL: {
+        return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
+          Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy);
+          cylinder[PROP_MATERIAL] = materialPy;
+          return selfPy;
+        });
+      }
+      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
-          self[PROP_RADIUS_TOP]    = Sk.ffi.remapToJs(radiusPy);
-          self[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusPy);
+          cylinder[PROP_RADIUS_TOP]    = Sk.ffi.remapToJs(radiusPy);
+          cylinder[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
       }
@@ -667,7 +721,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS_TOP, function(methodPy, radiusTopPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS_TOP, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS_TOP, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusTopPy) || Sk.ffi.isNone(radiusTopPy), radiusTopPy);
-          self[PROP_RADIUS_TOP] = Sk.ffi.remapToJs(radiusTopPy);
+          cylinder[PROP_RADIUS_TOP] = Sk.ffi.remapToJs(radiusTopPy);
           return selfPy;
         });
       }
@@ -675,7 +729,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS_BOTTOM, function(methodPy, radiusBottomPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS_BOTTOM, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusBottomPy) || Sk.ffi.isNone(radiusBottomPy), radiusBottomPy);
-          self[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusBottomPy);
+          cylinder[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusBottomPy);
           return selfPy;
         });
       }
@@ -683,7 +737,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
           Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          cylinder[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
           return selfPy;
         });
       }
@@ -691,7 +745,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
           Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          self[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
+          cylinder[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -702,19 +756,19 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionCylinder() {
             var dims = {};
-            if (self.volume) {
-              var a = (typeof self.radiusTop    === 'number') ? self.radiusTop    : DEFAULT_LENGTH * 0.5;
-              var b = (typeof self.radiusBottom === 'number') ? self.radiusBottom : DEFAULT_LENGTH * 0.5;
-              var h = (typeof self.height === 'number')       ? self.height       : DEFAULT_LENGTH;
-              var alpha = Math.pow(3 * self.volume / (b * (b + a) * h * Math.PI), 1 / 3);
+            if (cylinder.volume) {
+              var a = (typeof cylinder.radiusTop    === 'number') ? cylinder.radiusTop    : DEFAULT_CYLINDER_RADIUS;
+              var b = (typeof cylinder.radiusBottom === 'number') ? cylinder.radiusBottom : DEFAULT_CYLINDER_RADIUS;
+              var h = (typeof cylinder.height === 'number')       ? cylinder.height       : DEFAULT_CYLINDER_HEIGHT;
+              var alpha = Math.pow(3 * cylinder.volume / (b * (b + a) * h * Math.PI), 1 / 3);
               dims.a = alpha * a;
               dims.b = alpha * b;
               dims.h = alpha * h;
             }
             else {
-              dims.a = (typeof self.radiusTop === 'number')    ? self.radiusTop    : DEFAULT_LENGTH * 0.5;
-              dims.b = (typeof self.radiusBottom === 'number') ? self.radiusBottom : DEFAULT_LENGTH * 0.5;
-              dims.h = (typeof self.height === 'number')       ? self.height       : DEFAULT_LENGTH;
+              dims.a = (typeof cylinder.radiusTop === 'number')    ? cylinder.radiusTop    : DEFAULT_CYLINDER_RADIUS;
+              dims.b = (typeof cylinder.radiusBottom === 'number') ? cylinder.radiusBottom : DEFAULT_CYLINDER_RADIUS;
+              dims.h = (typeof cylinder.height === 'number')       ? cylinder.height       : DEFAULT_CYLINDER_HEIGHT;
             }
             return dims;
           }
@@ -727,13 +781,16 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
-          var parameters = {};
-          parameters[PROP_COLOR]     = self[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
-          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          var meshPy = Sk.ffi.callsim(mod[MESH], geometryPy, materialPy);
-          var mesh = Sk.ffi.remapToJs(meshPy);
-          return meshPy;
+          if (cylinder[PROP_MATERIAL]) {
+            return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, cylinder[PROP_MATERIAL]), cylinder);
+          }
+          else {
+            var parameters = {};
+            parameters[PROP_COLOR]     = cylinder[PROP_COLOR];
+            parameters[PROP_WIREFRAME] = cylinder[PROP_WIREFRAME];
+            var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
+            return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cylinder);
+          }
         });
       }
       default: {
@@ -760,29 +817,30 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy(self, SPHERE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var self = Sk.ffi.remapToJs(selfPy);
+    var sphere = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_AXIS: {
         return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
           Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
-          self[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+          sphere[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
           return selfPy;
         });
       }
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isString(colorPy), colorPy);
-          self[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
+          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+          sphere[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
           return selfPy;
         });
       }
+      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
-          self[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
+          sphere[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
       }
@@ -790,7 +848,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
           Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          sphere[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
           return selfPy;
         });
       }
@@ -798,7 +856,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
           Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          self[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
+          sphere[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -809,12 +867,12 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionSphere() {
             var dims = {};
-            if (self[PROP_VOLUME]) {
-              var r = (self.radius) ? self.radius : DEFAULT_LENGTH * 0.5;
-              dims.radius = Math.pow(3 * self[PROP_VOLUME] / (4 * Math.PI), 1 / 3);
+            if (sphere[PROP_VOLUME]) {
+              var r = (sphere.radius) ? sphere.radius : DEFAULT_SPHERE_RADIUS;
+              dims.radius = Math.pow(3 * sphere[PROP_VOLUME] / (4 * Math.PI), 1 / 3);
             }
             else {
-              dims.radius = (self.radius) ? self.radius : DEFAULT_LENGTH * 0.5;
+              dims.radius = (sphere.radius) ? sphere.radius : DEFAULT_SPHERE_RADIUS;
             }
             return dims;
           }
@@ -825,12 +883,10 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var heightSegments = Sk.ffi.remapToPy(18);
           var geometryPy = Sk.ffi.callsim(mod[SPHERE_GEOMETRY], radius, widthSegments, heightSegments);
           var parameters = {};
-          parameters[PROP_COLOR]     = self[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = self[PROP_WIREFRAME];
+          parameters[PROP_COLOR]     = sphere[PROP_COLOR];
+          parameters[PROP_WIREFRAME] = sphere[PROP_WIREFRAME];
           var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          var meshPy = Sk.ffi.callsim(mod[MESH], geometryPy, materialPy);
-          var mesh = Sk.ffi.remapToJs(meshPy);
-          return meshPy;
+          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), sphere);
         });
       }
       default: {
