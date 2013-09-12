@@ -458,8 +458,41 @@ goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
 Sk.ffi.isNumber = function(valuePy) { return Sk.builtin.checkNumber(valuePy); };
 goog.exportSymbol("Sk.ffi.isNumber", Sk.ffi.isNumber);
-
-Sk.ffi.isClass = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.CLASS; };
+/**
+ * Determines whether the Python value is an instance of a class with a specified class name.
+ *
+ * @nosideeffects
+ * @param {Object} valuePy
+ * @param {Sk.ffi.UnionType=} className An optional class name.
+ * @return {boolean} Returns true if the value has the type CLASS and if the name matches the type name.
+ */
+Sk.ffi.isClass = function(valuePy, className)
+{
+    if (Sk.ffi.getType(valuePy) === Sk.ffi.PyType.CLASS)
+    {
+        var t = typeof className;
+        if (t === Sk.ffi.JsType.STRING)
+        {
+            return Sk.ffi.typeName(valuePy) === className;
+        }
+        else if (t === Sk.ffi.JsType.UNDEFINED)
+        {
+            return true;
+        }
+        else if (Object.prototype.toString.call(className) === '[object Array]') {
+            var name = Sk.ffi.typeName(valuePy)
+            return className.some(function(x) {return name === x;});
+        }
+        else
+        {
+            throw Sk.ffi.assertionError("caa41602-62da-4850-8f76-38d013f45a6c, typeof className => " + t);
+        }
+    }
+    else
+    {
+        return false;
+    }
+};
 goog.exportSymbol("Sk.ffi.isClass", Sk.ffi.isClass);
 
 Sk.ffi.isFunctionRef = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNREF; };

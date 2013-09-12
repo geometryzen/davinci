@@ -108,9 +108,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
      * @param {Object} valuePy
      * @return {boolean} true if the value is a Euclidean2, otherwise false.
      */
-    var isEuclidean2 = function(valuePy) {
-      return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === EUCLIDEAN_2;
-    };
+    var isEuclidean2Py = function(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_2);};
 
   function remapE2ToPy(x00, x01, x10, x11) {
     return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToPy(x00), Sk.ffi.numberToPy(x01), Sk.ffi.numberToPy(x10), Sk.ffi.numberToPy(x11));
@@ -232,7 +230,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
         break;
         case Sk.ffi.PyType.CLASS: {
           Sk.ffi.checkMethodArgs(EUCLIDEAN_2, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_W, NUMBER, isEuclidean2(x00), x00);
+          Sk.ffi.checkArgType(PROP_W, NUMBER, isEuclidean2Py(x00), x00);
           Sk.ffi.referenceToPy(Sk.ffi.remapToJs(x00), EUCLIDEAN_2, undefined, selfPy);
         }
         break;
@@ -247,7 +245,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
       if (Sk.ffi.isNumber(otherPy)) {
         return remapE2ToPy(lhs.w + rhs, lhs.x, lhs.y, lhs.xy);
       }
-      else if (isEuclidean2(otherPy)) {
+      else if (isEuclidean2Py(otherPy)) {
         return remapE2ToPy(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.xy + rhs.xy);
       }
       else {
@@ -267,7 +265,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
         self.w += other;
         return selfPy;
       }
-      else if (isEuclidean2(otherPy)) {
+      else if (isEuclidean2Py(otherPy)) {
         self.w  += other.w;
         self.x  += other.x;
         self.y  += other.y;
@@ -284,7 +282,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
       if (Sk.ffi.isNumber(otherPy)) {
         return remapE2ToPy(lhs.w - rhs, lhs.x, lhs.y, lhs.xy);
       }
-      else if (isEuclidean2(otherPy)) {
+      else if (isEuclidean2Py(otherPy)) {
         return remapE2ToPy(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.xy - rhs.xy);
       }
       else {

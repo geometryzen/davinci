@@ -49,7 +49,7 @@
      */
     var OP_DIV           = "/";
 
-    function isComplex(valuePy) {return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === COMPLEX;};
+    function isComplexPy(valuePy) {return Sk.ffi.isClass(valuePy, COMPLEX);};
 
     function phase(x, y) {return Math.atan2(y, x);}
 
@@ -119,7 +119,7 @@
       $loc.__add__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        if (isComplex(otherPy)) {
+        if (isComplexPy(otherPy)) {
           return cartesianToComplexPy(a.x + b.x, a.y + b.y);
         }
         else if (Sk.ffi.isNumber(otherPy)) {
@@ -141,7 +141,7 @@
         if (Sk.ffi.isNumber(otherPy)) {
           a.x += b;
         }
-        else if (isComplex(otherPy)) {
+        else if (isComplexPy(otherPy)) {
           a.x += b.x;
           a.y += b.y;
         }
@@ -153,7 +153,7 @@
       $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        if (isComplex(otherPy)) {
+        if (isComplexPy(otherPy)) {
           return cartesianToComplexPy(a.x - b.x, a.y - b.y);
         }
         else if (Sk.ffi.isNumber(otherPy)) {
@@ -233,10 +233,10 @@
       // TODO: Use of nb$* will require fixes in abstract.js
       /*
       $loc.nb$divide = function(otherPy) {
-        Sk.ffi.checkArgType("self",  COMPLEX, isComplex(this));
+        Sk.ffi.checkArgType("self",  COMPLEX, isComplexPy(this));
         var a = Sk.ffi.remapToJs(this);
         var b = Sk.ffi.remapToJs(otherPy);
-        if (isComplex(otherPy)) {
+        if (isComplexPy(otherPy)) {
           var factor = b.x * b.x + b.y * b.y;
           return cartesianToComplexPy((a.x * b.x + a.y * b.y) / factor, (a.y * b.x - a.x * b.y) / factor);
         }
@@ -258,7 +258,7 @@
       $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        if (isComplex(otherPy)) {
+        if (isComplexPy(otherPy)) {
           var factor = b.x * b.x + b.y * b.y;
           return cartesianToComplexPy((a.x * b.x + a.y * b.y) / factor, (a.y * b.x - a.x * b.y) / factor);
         }
@@ -331,7 +331,7 @@
     // Conversions to and from polar coordinates
     mod.phase = Sk.ffi.functionPy(function(xPy) {
       Sk.ffi.checkFunctionArgs("phase", arguments, 1, 1);
-      if (isComplex(xPy)) {
+      if (isComplexPy(xPy)) {
         var z = Sk.ffi.remapToJs(xPy);
         return Sk.ffi.numberToPy(phase(z.x, z.y));
       }
@@ -345,7 +345,7 @@
 
     mod.polar = Sk.ffi.functionPy(function(xPy) {
       Sk.ffi.checkFunctionArgs("polar", arguments, 1, 1);
-      if (isComplex(xPy)) {
+      if (isComplexPy(xPy)) {
         var z = Sk.ffi.remapToJs(xPy);
         return Sk.ffi.tuplePy([Sk.ffi.remapToPy(norm(z.x, z.y)), Sk.ffi.remapToPy(phase(z.x, z.y))]);
       }

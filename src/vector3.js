@@ -166,16 +166,12 @@
      * @param {Object} valuePy
      * @return {boolean} true if the thing is a quaternion, otherwise false.
      */
-    var isQuaternionPy = function(valuePy) {
-      return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === QUATERNION;
-    };
+    var isQuaternionPy = function(valuePy) {return Sk.ffi.isClass(valuePy, QUATERNION);};
     /**
      * @param {Object} valuePy
      * @return {boolean} true if the thing is a vector, otherwise false.
      */
-    var isVector3Py = function(valuePy) {
-      return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
-    };
+    var isVector3Py = function(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);};
     /**
      * @param {number} x The x-coordinate of the vector.
      * @param {number} y The y-coordinate of the vector.

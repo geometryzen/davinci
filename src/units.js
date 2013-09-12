@@ -16,115 +16,118 @@ Sk.builtin.defineUnits = function(mod) {
    * @const
    * @type {string}
    */
-  var DIMENSIONS       = "Dimensions";
+  var DIMENSIONS        = "Dimensions";
   /**
    * @const
    * @type {string}
    */
-  var MEASURE          = "Measure";
+  var MEASURE           = "Measure";
   /**
    * @const
    * @type {string}
    */
-  var RATIONAL         = "Rational";
+  var RATIONAL          = "Rational";
   /**
    * @const
    * @type {string}
    */
-  var UNIT             = "Unit";
-  var INT              = "int";
-  var NUMBER           = "Number";
+  var UNIT              = "Unit";
+  /**
+   * @const
+   * @type {!Array.<Sk.ffi.PyType>}
+   */
+  var NUMBER            = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_QUANTITY     = "quantity";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_UOM          = "uom";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_SCALE        = "scale";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_DIMENSIONS   = "dimensions";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_LABELS       = "labels";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_M            = "M";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_L            = "L";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_T            = "T";
+  /**
+   * @const
+   * @type {string}
+   */
+  var PROP_Q            = "Q";
+  /**
+   * @const
+   * @type {string}
+   */
+  var METHOD_COMPATIBLE = "compatible";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_ADD            = "add";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_SUB            = "subtract";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_MUL            = "multiply";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_DIV            = "divide";
+  /**
+   * @const
+   * @type {string}
+   */
+  var OP_EQ             = "equal";
 
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_QUANTITY    = "quantity";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_UOM         = "uom";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_SCALE       = "scale";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_DIMENSIONS  = "dimensions";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_LABELS      = "labels";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_M           = "M";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_L           = "L";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_T           = "T";
-  /**
-   * @const
-   * @type {string}
-   */
-  var PROP_Q           = "Q";
-  /**
-   * @const
-   * @type {string}
-   */
-  var OP_ADD           = "add";
-  /**
-   * @const
-   * @type {string}
-   */
-  var OP_SUB           = "subtract";
-  /**
-   * @const
-   * @type {string}
-   */
-  var OP_MUL           = "multiply";
-  /**
-   * @const
-   * @type {string}
-   */
-  var OP_DIV           = "divide";
-  /**
-   * @const
-   * @type {string}
-   */
-  var OP_EQ            = "equal";
+  var KILOGRAM          = "kilogram";
+  var METER             = "meter";
+  var SECOND            = "second";
+  var COULOMB           = "coulomb";
+  var SI_LABELS         = ["kg", "m", "s", "C"];
+  var NEWTON            = "newton";
+  var JOULE             = "joule";
+  var WATT              = "watt";
+  var AMPERE            = "ampere";
+  var VOLT              = "volt";
+  var TESLA             = "tesla";
 
-  var KILOGRAM         = "kilogram";
-  var METER            = "meter";
-  var SECOND           = "second";
-  var COULOMB          = "coulomb";
-  var SI_LABELS        = ["kg", "m", "s", "C"];
-  var NEWTON           = "newton";
-  var JOULE            = "joule";
-  var WATT             = "watt";
-  var AMPERE           = "ampere";
-  var VOLT             = "volt";
-  var TESLA            = "tesla";
-
-  var isDimensions = function(valuePy) {
-    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === DIMENSIONS;
-  }
-
-  var isUnit = function(valuePy) {
-    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === UNIT;
-  }
+  var isMeasurePy    = function(valuePy) {return Sk.ffi.isClass(valuePy, MEASURE);};
+  var isDimensionsPy = function(valuePy) {return Sk.ffi.isClass(valuePy, DIMENSIONS);};
+  var isUnitPy       = function(valuePy) {return Sk.ffi.isClass(valuePy, UNIT);};
 
   Sk.builtin.defineFractions(mod, RATIONAL, function(n, d) {return new BLADE.Rational(n, d)});
 
@@ -164,7 +167,7 @@ Sk.builtin.defineUnits = function(mod) {
       }
     });
     $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkRhsOperandType(OP_MUL, DIMENSIONS, isDimensions(otherPy), otherPy);
+      Sk.ffi.checkRhsOperandType(OP_MUL, DIMENSIONS, isDimensionsPy(otherPy), otherPy);
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
       var c = a.mul(b);
@@ -231,6 +234,20 @@ Sk.builtin.defineUnits = function(mod) {
         case PROP_LABELS: {
           return Sk.ffi.remapToPy(unit[PROP_LABELS]);
         }
+        case METHOD_COMPATIBLE: {
+          return Sk.ffi.callableToPy(mod, METHOD_COMPATIBLE, function(methodPy, otherPy) {
+            Sk.ffi.checkMethodArgs(METHOD_COMPATIBLE, arguments, 1, 1);
+            Sk.ffi.checkArgType("other", UNIT, isUnitPy(otherPy), otherPy);
+            var other = Sk.ffi.remapToJs(otherPy);
+            try {
+              unit.compatible(other);
+            }
+            catch(e) {
+              throw Sk.ffi.assertionError(e.message)
+            }
+            return unitPy;
+          });
+        }
       }
     });
     $loc.__add__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
@@ -245,7 +262,7 @@ Sk.builtin.defineUnits = function(mod) {
       }
     });
     $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnit(otherPy), otherPy);
+      Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnitPy(otherPy), otherPy);
       var lhs = Sk.ffi.remapToJs(selfPy);
       var rhs = Sk.ffi.remapToJs(otherPy);
       var c = lhs.mul(rhs);
@@ -288,13 +305,13 @@ Sk.builtin.defineUnits = function(mod) {
   mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, quantityPy, unitPy) {
       Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 2);
-      Sk.ffi.checkArgType("quantityPy", ["Reference", MEASURE].join(" or "), Sk.ffi.isReference(quantityPy), quantityPy);
-      if (Sk.ffi.typeName(quantityPy) === MEASURE)
-      {
+      Sk.ffi.checkArgType(PROP_QUANTITY, ["Reference", MEASURE].join(" or "), Sk.ffi.isReference(quantityPy), quantityPy);
+      if (Sk.ffi.typeName(quantityPy) === MEASURE) {
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(quantityPy), MEASURE, quantityPy.custom, selfPy);
       }
-      else
-      {
+      else {
+        var custom = {};
+        custom[PROP_QUANTITY] = Sk.ffi.typeName(quantityPy);
         Sk.ffi.referenceToPy(new BLADE.Measure(Sk.ffi.remapToJs(quantityPy), Sk.ffi.remapToJs(unitPy)), MEASURE, {"quantity": Sk.ffi.typeName(quantityPy)}, selfPy);
       }
     });
@@ -321,10 +338,11 @@ Sk.builtin.defineUnits = function(mod) {
         throw Sk.ffi.assertionError(e.message);
       }
     });
-    $loc.__sub__ = Sk.ffi.functionPy(function(aPy, bPy) {
-      var a = Sk.ffi.remapToJs(aPy);
-      var b = Sk.ffi.remapToJs(bPy);
-      var quantityPy = Sk.ffi.gattr(aPy, PROP_QUANTITY);
+    $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      Sk.ffi.checkArgType("other", MEASURE, isMeasurePy(otherPy), otherPy);
+      var a = Sk.ffi.remapToJs(selfPy);
+      var b = Sk.ffi.remapToJs(otherPy);
+      var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
       var custom = {"quantity": Sk.ffi.typeName(quantityPy)};
       try {
         return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(a.sub(b), MEASURE, custom));
@@ -333,19 +351,34 @@ Sk.builtin.defineUnits = function(mod) {
         throw Sk.ffi.assertionError(e.message);
       }
     });
-    $loc.__mul__ = Sk.ffi.functionPy(function(aPy, bPy) {
-      var a = Sk.ffi.remapToJs(aPy);
-      var b = Sk.ffi.remapToJs(bPy);
-      var quantityPy = Sk.ffi.gattr(aPy, PROP_QUANTITY);
+    $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      var lhs = Sk.ffi.remapToJs(selfPy);
+      var rhs = Sk.ffi.remapToJs(otherPy);
+      var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
       var custom = {"quantity": Sk.ffi.typeName(quantityPy)};
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(a.mul(b), MEASURE, custom));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(lhs.mul(rhs), MEASURE, custom));
     });
-    $loc.__div__ = Sk.ffi.functionPy(function(aPy, bPy) {
-      var a = Sk.ffi.remapToJs(aPy);
-      var b = Sk.ffi.remapToJs(bPy);
-      var quantityPy = Sk.ffi.gattr(aPy, PROP_QUANTITY);
+    $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      var lhs = Sk.ffi.remapToJs(otherPy);
+      Sk.ffi.checkArgType("other", NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+      var rhs = Sk.ffi.remapToJs(selfPy);
+      var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
+      var custom = {"quantity": Sk.ffi.typeName(quantityPy)};
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(rhs.mul(lhs), MEASURE, custom));
+    });
+    $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      var a = Sk.ffi.remapToJs(selfPy);
+      var b = Sk.ffi.remapToJs(otherPy);
+      var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
       var custom = {"quantity": Sk.ffi.typeName(quantityPy)};
       return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(a.div(b), MEASURE, custom));
+    });
+    $loc.__xor__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      var a = Sk.ffi.remapToJs(selfPy);
+      var b = Sk.ffi.remapToJs(otherPy);
+      var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
+      var custom = {"quantity": Sk.ffi.typeName(quantityPy)};
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(a.wedge(b), MEASURE, custom));
     });
     $loc.__str__ = Sk.ffi.functionPy(function(measurePy) {
       var quantityPy = Sk.ffi.gattr(measurePy, PROP_QUANTITY);

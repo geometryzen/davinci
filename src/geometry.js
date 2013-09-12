@@ -289,9 +289,7 @@ var e1 = new THREE[VECTOR_3](1, 0, 0);
 var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
 
-function isVector3(valuePy) {
-  return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
-}
+function isVector3(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
 
 function methodName(targetPy) {
   var target = Sk.ffi.remapToJs(targetPy);
@@ -702,7 +700,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_MATERIAL: {
         return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
           Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy);
+          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy); // TODO: MATERIALS
           cylinder[PROP_MATERIAL] = materialPy;
           return selfPy;
         });

@@ -77,9 +77,7 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
    * @param {Object} valuePy
    * @return {boolean} true if the thing is a vector, otherwise false.
    */
-  var isRational = function(valuePy) {
-    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === RATIONAL;
-  }
+  var isRational = function(valuePy) {return Sk.ffi.isClass(valuePy, RATIONAL);};
 
   var RATIONAL_OR_INT = [RATIONAL, Sk.ffi.PyType.INT];
   /**

@@ -545,12 +545,9 @@ Sk.builtin.defineThree = function(mod, THREE) {
   function isDefined(x)   { return typeof x !== 'undefined'; }
   function isNull(x)      { return typeof x === 'object' && x === null; }
 
-  function isVector3(valuePy) {
-    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === VECTOR_3;
-  }
-  function isGeometry(valuePy) {
-    // TODO: Need to include sub-classes too.
-    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY;
+  function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
+  function isGeometryPy(valuePy) {
+    return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
   }
 
   function methodAdd(target) {
@@ -830,7 +827,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         Sk.ffi.checkMethodArgs(SCENE, arguments, 0, 0);
         Sk.ffi.referenceToPy(new THREE[SCENE](), SCENE, undefined, selfPy);
       }
-      else if (Sk.ffi.isClass(sceneRefPy) && Sk.ffi.typeName(sceneRefPy) === SCENE) {
+      else if (Sk.ffi.isClass(sceneRefPy, SCENE)) {
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(sceneRefPy), SCENE, undefined, selfPy);
       }
       else
@@ -1811,7 +1808,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
 
   mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusTopPy, radiusBottomPy, heightPy, radialSegmentsPy, heightSegmentsPy, openEndedPy) {
-      if (Sk.ffi.isClass(radiusTopPy) && Sk.ffi.typeName(radiusTopPy) === CYLINDER_GEOMETRY) {
+      if (Sk.ffi.isClass(radiusTopPy, CYLINDER_GEOMETRY)) {
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(radiusTopPy), CYLINDER_GEOMETRY, undefined, selfPy);
       }
       else {
@@ -2919,7 +2916,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
   mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
       Sk.ffi.checkMethodArgs(MESH, arguments, 1, 2);
-      Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy);
+      Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy); // TODO GEOMETRIES
       var custom = {};
       custom[PROP_GEOMETRY] = Sk.ffi.typeName(geometryPy);
       Sk.ffi.referenceToPy(new THREE[MESH](Sk.ffi.remapToJs(geometryPy), Sk.ffi.remapToJs(materialPy)), MESH, custom, selfPy);
@@ -2993,7 +2990,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         case METHOD_ROTATE_ON_AXIS: {
           return Sk.ffi.callableToPy(mod, METHOD_ROTATE_ON_AXIS, function(methodPy, axisPy, anglePy) {
             Sk.ffi.checkMethodArgs(METHOD_ROTATE_ON_AXIS, arguments, 2, 2);
-            Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
+            Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
             Sk.ffi.checkArgType("angle", NUMBER, Sk.ffi.isNumber(anglePy), anglePy);
             mesh[METHOD_ROTATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(anglePy));
             return meshPy;
@@ -3029,7 +3026,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         case METHOD_TRANSLATE_ON_AXIS: {
           return Sk.ffi.callableToPy(mod, METHOD_TRANSLATE_ON_AXIS, function(methodPy, axisPy, distancePy) {
             Sk.ffi.checkMethodArgs(METHOD_TRANSLATE_ON_AXIS, arguments, 2, 2);
-            Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
+            Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
             Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(distancePy), distancePy);
             mesh[METHOD_TRANSLATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(distancePy));
             return meshPy;
@@ -3079,7 +3076,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
         }
         break;
         case PROP_POSITION: {
-          Sk.ffi.checkArgType(PROP_POSITION, VECTOR_3, isVector3(valuePy), valuePy);
+          Sk.ffi.checkArgType(PROP_POSITION, VECTOR_3, isVector3Py(valuePy), valuePy);
           mesh[PROP_POSITION] = value;
         }
         break;
