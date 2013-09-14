@@ -91,6 +91,21 @@ Sk.builtin.defineUnits = function(mod) {
    * @const
    * @type {string}
    */
+  var METHOD_COS        = "cos";
+  /**
+   * @const
+   * @type {string}
+   */
+  var METHOD_EXP        = "exp";
+  /**
+   * @const
+   * @type {string}
+   */
+  var METHOD_SIN        = "sin";
+  /**
+   * @const
+   * @type {string}
+   */
   var OP_ADD            = "add";
   /**
    * @const
@@ -248,6 +263,29 @@ Sk.builtin.defineUnits = function(mod) {
             return unitPy;
           });
         }
+        case METHOD_COS: {
+          return Sk.ffi.callableToPy(mod, METHOD_COS, function(methodPy) {
+            Sk.ffi.checkMethodArgs(METHOD_COS, arguments, 0, 0);
+            var angle = unit.scale;
+            var dimensions = unit.dimensions;
+            var labels = unit.labels;
+            var cosAngle = new BLADE[UNIT](Math.cos(angle), dimensions, labels);
+            return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(cosAngle, UNIT));
+          });
+        }
+        case METHOD_SIN: {
+          return Sk.ffi.callableToPy(mod, METHOD_SIN, function(methodPy) {
+            Sk.ffi.checkMethodArgs(METHOD_SIN, arguments, 0, 0);
+            var angle = unit.scale;
+            var dimensions = unit.dimensions;
+            var labels = unit.labels;
+            var cosAngle = new BLADE[UNIT](Math.sin(angle), dimensions, labels);
+            return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(cosAngle, UNIT));
+          });
+        }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(UNIT);
+        }
       }
     });
     $loc.__add__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
@@ -279,6 +317,21 @@ Sk.builtin.defineUnits = function(mod) {
       var rhs = Sk.ffi.remapToJs(rhsPy);
       var c = lhs.div(rhs);
       return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+    });
+    $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+      Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+      var other = Sk.ffi.remapToJs(otherPy);
+      var rhs = Sk.ffi.remapToJs(selfPy);
+      var scale = other / rhs.scale;
+      // TODO: Unary minus or negate() for Rational.
+      // TODO: Reciprocal or inverse() for Dimensions.
+      var M = new BLADE[RATIONAL](-rhs.dimensions.M.numer, rhs.dimensions.M.denom);
+      var L = new BLADE[RATIONAL](-rhs.dimensions.L.numer, rhs.dimensions.L.denom);
+      var T = new BLADE[RATIONAL](-rhs.dimensions.T.numer, rhs.dimensions.T.denom);
+      var Q = new BLADE[RATIONAL](-rhs.dimensions.Q.numer, rhs.dimensions.Q.denom);
+      var dimensions = new BLADE[DIMENSIONS](M, L, T, Q);
+      var labels = rhs.labels;
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(scale), Sk.ffi.remapToPy(dimensions, DIMENSIONS), Sk.ffi.remapToPy(labels));
     });
     $loc.__pow__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
       var lhs = Sk.ffi.remapToJs(lhsPy);
@@ -323,6 +376,13 @@ Sk.builtin.defineUnits = function(mod) {
         }
         case PROP_UOM: {
           return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(measure[PROP_UOM], UNIT));
+        }
+        case METHOD_EXP: {
+          return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy) {
+            Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
+            var quantityPy = Sk.ffi.callsim(Sk.ffi.gattr(Sk.ffi.gattr(measurePy, PROP_QUANTITY), METHOD_EXP));
+            return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(measurePy, PROP_UOM));
+          });
         }
       }
     });
