@@ -1105,17 +1105,17 @@ Sk.builtin.defineEuclidean3 = function(mod) {
       a.xyz = rcoE3(a0, a1, a2, a3, a4, a5, a6, a7, b0, b1, b2, b3, b4, b5, b6, b7, 7);
       return selfPy;
     });
-    $loc.nb$positive = function() {
-      return this;
-    };
-    $loc.nb$negative = function() {
-      var mv = Sk.ffi.remapToJs(this);
+    $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
+      return selfPy;
+    });
+    $loc.__neg__ = Sk.ffi.functionPy(function(selfPy) {
+      var mv = Sk.ffi.remapToJs(selfPy);
       return coordsJsToE3Py(-mv.w, -mv.x, -mv.y, -mv.z, -mv.xy, -mv.yz, -mv.zx, -mv.xyz);
-    };
-    $loc.nb$invert = function() {
-      var mv = Sk.ffi.remapToJs(this);
+    });
+    $loc.__invert__ = Sk.ffi.functionPy(function(selfPy) {
+      var mv = Sk.ffi.remapToJs(selfPy);
       return coordsJsToE3Py(mv.w, mv.x, mv.y, mv.z, -mv.xy, -mv.yz, -mv.zx, -mv.xyz);
-    };
+    });
     $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {
       a = Sk.ffi.remapToJs(a);
       b = Sk.ffi.remapToJs(b);
