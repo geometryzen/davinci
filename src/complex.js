@@ -12,17 +12,27 @@
    * @const
    * @type {string}
    */
-    var PROP_REAL = "real";
+    var PROP_REAL        = "real";
   /**
    * @const
    * @type {string}
    */
-    var PROP_IMAG = "imag";
+    var PROP_IMAG        = "imag";
+  /**
+   * @const
+   * @type {string}
+   */
+    var METHOD_ABS       = "abs";
+  /**
+   * @const
+   * @type {string}
+   */
+    var METHOD_EXP       = "exp";
   /**
    * @const
    * @type {!Array.<Sk.ffi.PyType>}
    */
-    var NUMBER   = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+    var NUMBER           = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
     /**
      * @const
      * @type {string}
@@ -113,6 +123,19 @@
           }
           case PROP_IMAG: {
             return Sk.ffi.numberToPy(z.y);
+          }
+          case METHOD_ABS: {
+            return Sk.ffi.callableToPy(mod, METHOD_ABS, function(methodPy) {
+              return Sk.ffi.numberToPy(Math.sqrt(z.x * z.x + z.y * z.y));
+            });
+          }
+          case METHOD_EXP: {
+            return Sk.ffi.callableToPy(mod, METHOD_ABS, function(methodPy) {
+              var e = Math.exp(z.x);
+              var c = Math.cos(z.y);
+              var s = Math.sin(z.y);
+              return cartesianToComplexPy(e * c, e * s);
+            });
           }
         }
       });
@@ -296,6 +319,10 @@
           a.y = (aY * b.x - aX * b.y) / factor;
         }
         return selfPy;
+      });
+      $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
+        var z = Sk.ffi.remapToJs(selfPy);
+        return Sk.ffi.numberToPy(Math.sqrt(z.x * z.x + z.y * z.y));
       });
       $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
         return selfPy;

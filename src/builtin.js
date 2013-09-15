@@ -372,12 +372,23 @@ Sk.builtin.zip = function zip()
     return new Sk.builtin.list(res);
 }
 
-Sk.builtin.abs = function abs(x)
+Sk.builtin.abs = function abs(xPy)
 {
-    Sk.builtin.pyCheckArgs("abs", arguments, 1, 1);
-    Sk.builtin.pyCheckType("x", "number", Sk.builtin.checkNumber(x));
-
-    return new Sk.builtin.nmber(Math.abs(Sk.builtin.asnum$(x)),x.skType);
+  Sk.ffi.checkFunctionArgs("abs", arguments, 1, 1);
+  if (Sk.ffi.isNumber(xPy)) {
+    return new Sk.builtin.nmber(Math.abs(Sk.ffi.remapToJs(xPy)), Sk.ffi.typeName(xPy));
+//  return new Sk.builtin.nmber(Math.abs(Sk.ffi.remapToJs(xPy)), xPy.skType);
+  }
+  else
+  {
+    try {
+      var methodPy = Sk.ffi.gattr(xPy, "abs");
+      return Sk.ffi.callsim(methodPy);
+    }
+    catch(e) {
+      throw Sk.ffi.err.argument("x").inFunction("abs").mustHaveType("number");
+    }
+  }
 };
 
 Sk.builtin.ord = function ord(x)
