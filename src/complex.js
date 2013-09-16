@@ -106,7 +106,7 @@
      * @param {number} y
      * @return {!Object}
      */
-    function cartesianToComplexPy(x, y) {return Sk.ffi.callsim(mod[COMPLEX], Sk.ffi.numberToPy(x), Sk.ffi.numberToPy(y));}
+    function cartesianToComplexPy(x, y) {return Sk.ffi.callsim(mod[COMPLEX], Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y));}
 
     mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       $loc.__init__ = Sk.ffi.functionPy(function(selfPy, rePy, imPy) {
@@ -119,18 +119,18 @@
         z = Sk.ffi.remapToJs(z);
         switch(name) {
           case PROP_REAL: {
-            return Sk.ffi.numberToPy(z.x);
+            return Sk.ffi.numberToFloatPy(z.x);
           }
           case PROP_IMAG: {
-            return Sk.ffi.numberToPy(z.y);
+            return Sk.ffi.numberToFloatPy(z.y);
           }
           case METHOD_ABS: {
             return Sk.ffi.callableToPy(mod, METHOD_ABS, function(methodPy) {
-              return Sk.ffi.numberToPy(Math.sqrt(z.x * z.x + z.y * z.y));
+              return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
             });
           }
           case METHOD_EXP: {
-            return Sk.ffi.callableToPy(mod, METHOD_ABS, function(methodPy) {
+            return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy) {
               var e = Math.exp(z.x);
               var c = Math.cos(z.y);
               var s = Math.sin(z.y);
@@ -322,7 +322,14 @@
       });
       $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
         var z = Sk.ffi.remapToJs(selfPy);
-        return Sk.ffi.numberToPy(Math.sqrt(z.x * z.x + z.y * z.y));
+        return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
+      });
+      $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+        var z = Sk.ffi.remapToJs(selfPy);
+        var e = Math.exp(z.x);
+        var c = Math.cos(z.y);
+        var s = Math.sin(z.y);
+        return cartesianToComplexPy(e * c, e * s);
       });
       $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
         return selfPy;
@@ -360,10 +367,10 @@
       Sk.ffi.checkFunctionArgs("phase", arguments, 1, 1);
       if (isComplexPy(xPy)) {
         var z = Sk.ffi.remapToJs(xPy);
-        return Sk.ffi.numberToPy(phase(z.x, z.y));
+        return Sk.ffi.numberToFloatPy(phase(z.x, z.y));
       }
       else if (Sk.ffi.isNumber(xPy)) {
-        return Sk.ffi.numberToPy(Math.atan2(0, Sk.ffi.remapToJs(xPy)));
+        return Sk.ffi.numberToFloatPy(Math.atan2(0, Sk.ffi.remapToJs(xPy)));
       }
       else {
         Sk.ffi.checkArgType("x", COMPLEX, false, xPy);
@@ -385,7 +392,7 @@
     });
 
     // Constants
-    mod.pi = Sk.ffi.numberToPy(Math.PI);
-    mod.e =  Sk.ffi.numberToPy(Math.E);
+    mod.pi = Sk.ffi.numberToFloatPy(Math.PI);
+    mod.e =  Sk.ffi.numberToFloatPy(Math.E);
   };
 }).call(this);

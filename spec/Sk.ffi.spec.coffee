@@ -78,22 +78,22 @@ describe "Sk.ffi", ->
       catch e
         expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.booleanToPy').mustHaveType("boolean or null or undefined").toString()
 
-  describe "numberToPy", ->
-    it "getType numberToPy number => PyType.FLOAT", -> expect(Sk.ffi.getType Sk.ffi.numberToPy 6) .toBe Sk.ffi.PyType.FLOAT
-    it "remapToJs numberToPy number => number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToPy 6).toBe 6
-    it "typeName numberToPy number => 'float'", -> expect(Sk.ffi.typeName Sk.ffi.numberToPy 6).toBe 'float'
-    it "null => None", -> expect(Sk.ffi.numberToPy null).toBe Sk.ffi.none.None
-    it "undefined => undefined", -> expect(Sk.ffi.numberToPy undefined).toBeUndefined()
-    it "getType numberToPy undefined, number => getType numberToPy number", -> expect(Sk.ffi.getType Sk.ffi.numberToPy undefined, 23).toBe Sk.ffi.getType Sk.ffi.numberToPy 23
-    it "remapToJs numberToPy undefined, number => remapToJs numberToPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToPy 23
-    it "undefined, null => None", -> expect(Sk.ffi.numberToPy undefined, null).toBe Sk.ffi.none.None
+  describe "numberToFloatPy", ->
+    it "getType numberToFloatPy number => PyType.FLOAT", -> expect(Sk.ffi.getType Sk.ffi.numberToFloatPy 6) .toBe Sk.ffi.PyType.FLOAT
+    it "remapToJs numberToFloatPy number => number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 6).toBe 6
+    it "typeName numberToFloatPy number => 'float'", -> expect(Sk.ffi.typeName Sk.ffi.numberToFloatPy 6).toBe 'float'
+    it "null => None", -> expect(Sk.ffi.numberToFloatPy null).toBe Sk.ffi.none.None
+    it "undefined => undefined", -> expect(Sk.ffi.numberToFloatPy undefined).toBeUndefined()
+    it "getType numberToFloatPy undefined, number => getType numberToFloatPy number", -> expect(Sk.ffi.getType Sk.ffi.numberToFloatPy undefined, 23).toBe Sk.ffi.getType Sk.ffi.numberToFloatPy 23
+    it "remapToJs numberToFloatPy undefined, number => remapToJs numberToFloatPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToFloatPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 23
+    it "undefined, null => None", -> expect(Sk.ffi.numberToFloatPy undefined, null).toBe Sk.ffi.none.None
     it "string throws TypeError", ->
-      foo = () -> Sk.ffi.numberToPy("s")
+      foo = () -> Sk.ffi.numberToFloatPy("s")
       expect(foo).toThrow()
       try
         foo()
       catch e
-        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.numberToPy').mustHaveType("number or null or undefined").toString()
+        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.numberToFloatPy').mustHaveType("number or null or undefined").toString()
 
   describe "numberToIntPy", ->
     it "getType numberToIntPy number => PyType.INT", -> expect(Sk.ffi.getType Sk.ffi.numberToIntPy 6) .toBe Sk.ffi.PyType.INT
@@ -102,15 +102,15 @@ describe "Sk.ffi", ->
     it "null => None", -> expect(Sk.ffi.numberToIntPy null).toBe Sk.ffi.none.None
     it "undefined => undefined", -> expect(Sk.ffi.numberToIntPy undefined).toBeUndefined()
     it "getType numberToIntPy undefined, number => getType numberToIntPy number", -> expect(Sk.ffi.getType Sk.ffi.numberToIntPy undefined, 23).toBe Sk.ffi.getType Sk.ffi.numberToIntPy 23
-    it "remapToJs numberToIntPy undefined, number => remapToJs numberToIntPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToIntPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToPy 23
+    it "remapToJs numberToIntPy undefined, number => remapToJs numberToIntPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToIntPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 23
     it "undefined, null => None", -> expect(Sk.ffi.numberToIntPy undefined, null).toBe Sk.ffi.none.None
     it "string throws TypeError", ->
-      foo = () -> Sk.ffi.numberToPy("s")
+      foo = () -> Sk.ffi.numberToFloatPy("s")
       expect(foo).toThrow()
       try
         foo()
       catch e
-        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.numberToPy').mustHaveType("number or null or undefined").toString()
+        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.numberToFloatPy').mustHaveType("number or null or undefined").toString()
 
   describe "stringToPy", ->
     it "getType stringToPy 'Hello' => Sk.ffi.PyType.STRING", -> expect(Sk.ffi.getType Sk.ffi.stringToPy 'Hello').toBe Sk.ffi.PyType.STR

@@ -577,16 +577,15 @@ Sk.abstr.gattr = function(obj, nameJS)
 
     if (obj['__getattr__']) {
         ret = Sk.misceval.callsim(obj['__getattr__'], obj, nameJS);
-    } else if (obj.tp$getattr !== undefined) {
+    }
+    else if (obj.tp$getattr !== undefined) {
         ret = obj.tp$getattr(nameJS);
     }
 
     if (ret === undefined) {
-        throw new Sk.builtin.AttributeError("'" + objname + "' object has no attribute '" + nameJS + "'");       
+        throw new Sk.builtin.AttributeError("'" + objname + "' object has no attribute '" + nameJS + "'");
     }
- 
     return ret;
-    
 };
 goog.exportSymbol("Sk.abstr.gattr", Sk.abstr.gattr);
 

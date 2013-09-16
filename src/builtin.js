@@ -375,18 +375,30 @@ Sk.builtin.zip = function zip()
 Sk.builtin.abs = function abs(xPy)
 {
   Sk.ffi.checkFunctionArgs("abs", arguments, 1, 1);
-  if (Sk.ffi.isNumber(xPy)) {
-    return new Sk.builtin.nmber(Math.abs(Sk.ffi.remapToJs(xPy)), Sk.ffi.typeName(xPy));
-//  return new Sk.builtin.nmber(Math.abs(Sk.ffi.remapToJs(xPy)), xPy.skType);
+  if (Sk.ffi.isNumber(xPy))
+  {
+    return Sk.ffi.numberToPy(Math.abs(Sk.ffi.remapToJs(xPy)), Sk.ffi.getType(xPy));
   }
   else
   {
-    try {
-      var methodPy = Sk.ffi.gattr(xPy, "abs");
-      return Sk.ffi.callsim(methodPy);
+      try
+      {
+        var methodPy = xPy['__abs__'];
+        if (methodPy)
+        {
+            return Sk.ffi.callsim(methodPy, xPy);
+        }
+        else
+        {
+            throw new Sk.builtin.NotImplementedError("abs");
+        }
+//      var methodPy = Sk.ffi.gattr(xPy, "abs");
+//      return Sk.ffi.callsim(methodPy);
     }
-    catch(e) {
-      throw Sk.ffi.err.argument("x").inFunction("abs").mustHaveType("number");
+    catch(e)
+    {
+        Sk.debugout("" + e);
+        throw Sk.ffi.err.argument("x").inFunction("abs").mustHaveType("number");
     }
   }
 };

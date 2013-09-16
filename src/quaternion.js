@@ -172,7 +172,7 @@ function stringFromCoordinates(coordinates, labels, multiplier) {
  */
 function wxyzToPy(w, x, y, z) {
   // The arguments to Quaternion in Python are in the order x, y, z, w!
-  return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.numberToPy(x), Sk.ffi.numberToPy(y), Sk.ffi.numberToPy(z), Sk.ffi.numberToPy(w));
+  return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y), Sk.ffi.numberToFloatPy(z), Sk.ffi.numberToFloatPy(w));
 }
 /**
  *
@@ -337,16 +337,16 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var quaternion = Sk.ffi.remapToJs(quaternionPy);
     switch(name) {
       case PROP_X: {
-        return Sk.ffi.numberToPy(quaternion.x);
+        return Sk.ffi.numberToFloatPy(quaternion.x);
       }
       case PROP_Y: {
-        return Sk.ffi.numberToPy(quaternion.y);
+        return Sk.ffi.numberToFloatPy(quaternion.y);
       }
       case PROP_Z: {
-        return Sk.ffi.numberToPy(quaternion.z);
+        return Sk.ffi.numberToFloatPy(quaternion.z);
       }
       case PROP_W: {
-        return Sk.ffi.numberToPy(quaternion.w);
+        return Sk.ffi.numberToFloatPy(quaternion.w);
       }
       case METHOD_COPY: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -445,7 +445,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             Sk.ffi.referenceToPy(null, METHOD_LENGTH, null, methodPy);
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            return Sk.ffi.numberToPy(quaternion.length());
+            return Sk.ffi.numberToFloatPy(quaternion.length());
           });
         }, METHOD_LENGTH, []));
       }
@@ -455,7 +455,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             Sk.ffi.referenceToPy(null, METHOD_LENGTH_SQ, null, methodPy);
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            return Sk.ffi.numberToPy(quaternion[METHOD_LENGTH_SQ]());
+            return Sk.ffi.numberToFloatPy(quaternion[METHOD_LENGTH_SQ]());
           });
         }, METHOD_LENGTH_SQ, []));
       }

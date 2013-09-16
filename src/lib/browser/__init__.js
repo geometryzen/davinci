@@ -12,6 +12,7 @@ var $builtinmodule = function(name) {
   var NODE                     = 'Node';
   var WINDOW                   = 'Window';
   var WINDOW_ANIMATION_RUNNER  = 'WindowAnimationRunner';
+  var WORKBENCH                = 'Workbench';
   var METHOD_START             = 'start';
 
   mod[EVENT] = Sk.builtin.buildEventClass(mod);
@@ -21,6 +22,8 @@ var $builtinmodule = function(name) {
   mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod));
 
   mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod));
+
+  Sk.builtin.defineWorkbench(mod);
 
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, windowPy, tickPy, terminatePy, setUpPy, tearDownPy) {

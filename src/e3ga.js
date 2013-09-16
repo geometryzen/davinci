@@ -547,14 +547,14 @@ Sk.builtin.defineEuclidean3 = function(mod) {
   }
 
   function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz) {
-    w   = Sk.ffi.numberToPy(w);
-    x   = Sk.ffi.numberToPy(x);
-    y   = Sk.ffi.numberToPy(y);
-    z   = Sk.ffi.numberToPy(z);
-    xy  = Sk.ffi.numberToPy(xy);
-    yz  = Sk.ffi.numberToPy(yz);
-    zx  = Sk.ffi.numberToPy(zx);
-    xyz = Sk.ffi.numberToPy(xyz);
+    w   = Sk.ffi.numberToFloatPy(w);
+    x   = Sk.ffi.numberToFloatPy(x);
+    y   = Sk.ffi.numberToFloatPy(y);
+    z   = Sk.ffi.numberToFloatPy(z);
+    xy  = Sk.ffi.numberToFloatPy(xy);
+    yz  = Sk.ffi.numberToFloatPy(yz);
+    zx  = Sk.ffi.numberToFloatPy(zx);
+    xyz = Sk.ffi.numberToFloatPy(xyz);
     return Sk.ffi.callsim(mod[EUCLIDEAN_3], w, x, y, z, xy, yz, zx, xyz);
   }
 
@@ -1148,28 +1148,28 @@ Sk.builtin.defineEuclidean3 = function(mod) {
       var mv = Sk.ffi.remapToJs(mvPy);
       switch(name) {
         case PROP_W: {
-          return Sk.ffi.numberToPy(mv.w);
+          return Sk.ffi.numberToFloatPy(mv.w);
         }
         case PROP_X: {
-          return Sk.ffi.numberToPy(mv.x);
+          return Sk.ffi.numberToFloatPy(mv.x);
         }
         case PROP_Y: {
-          return Sk.ffi.numberToPy(mv.y);
+          return Sk.ffi.numberToFloatPy(mv.y);
         }
         case PROP_Z: {
-          return Sk.ffi.numberToPy(mv.z);
+          return Sk.ffi.numberToFloatPy(mv.z);
         }
         case PROP_XY: {
-          return Sk.ffi.numberToPy(mv.xy);
+          return Sk.ffi.numberToFloatPy(mv.xy);
         }
         case PROP_YZ: {
-          return Sk.ffi.numberToPy(mv.yz);
+          return Sk.ffi.numberToFloatPy(mv.yz);
         }
         case PROP_ZX: {
-          return Sk.ffi.numberToPy(mv.zx);
+          return Sk.ffi.numberToFloatPy(mv.zx);
         }
         case PROP_XYZ: {
-          return Sk.ffi.numberToPy(mv.xyz);
+          return Sk.ffi.numberToFloatPy(mv.xyz);
         }
         case METHOD_ADD: {
           return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1205,7 +1205,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, vPy) {
               var v  = Sk.ffi.remapToJs(vPy);
-              return Sk.ffi.numberToPy(mv.dot(v));
+              return Sk.ffi.numberToFloatPy(mv.dot(v));
             });
           }, METHOD_DOT, []));
         }
@@ -1258,7 +1258,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, index) {
               index  = Sk.ffi.remapToJs(index);
-              return Sk.ffi.numberToPy(mv[METHOD_GET_COMPONENT](index));
+              return Sk.ffi.numberToFloatPy(mv[METHOD_GET_COMPONENT](index));
             });
           }, METHOD_GET_COMPONENT, []));
         }
@@ -1301,7 +1301,7 @@ Sk.builtin.defineEuclidean3 = function(mod) {
             $loc.__init__ = Sk.ffi.functionPy(function(self) {
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.numberToPy(mv.length());
+              return Sk.ffi.numberToFloatPy(mv.length());
             });
           }, METHOD_LENGTH, []));
         }
@@ -1360,6 +1360,15 @@ Sk.builtin.defineEuclidean3 = function(mod) {
           throw Sk.ffi.err.attribute(name).isNotSetableOnType(EUCLIDEAN_3);
         }
       }
+    });
+    $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+      Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
+      var mv = Sk.ffi.remapToJs(selfPy);
+      var angle = Math.sqrt(mv.xy * mv.xy + mv.yz * mv.yz + mv.zx * mv.zx);
+      var c = Math.cos(angle);
+      var s = Math.sin(angle);
+      var k = s / angle;
+      return coordsJsToE3Py(c, 0, 0, 0, k * mv.xy, k * mv.yz, k * mv.zx, 0);
     });
     $loc.__repr__ = Sk.ffi.functionPy(function(m) {
       m = Sk.ffi.remapToJs(m);

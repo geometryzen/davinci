@@ -111,7 +111,7 @@ Sk.builtin.defineEuclidean2 = function(mod) {
     var isEuclidean2Py = function(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_2);};
 
   function remapE2ToPy(x00, x01, x10, x11) {
-    return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToPy(x00), Sk.ffi.numberToPy(x01), Sk.ffi.numberToPy(x10), Sk.ffi.numberToPy(x11));
+    return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToFloatPy(x00), Sk.ffi.numberToFloatPy(x01), Sk.ffi.numberToFloatPy(x10), Sk.ffi.numberToFloatPy(x11));
   }
 
   function stringFromCoordinates(coordinates, labels, multiplier) {
@@ -627,6 +627,17 @@ Sk.builtin.defineEuclidean2 = function(mod) {
         }
       }
     });
+    $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
+      var mv = Sk.ffi.remapToJs(selfPy);
+      return Sk.ffi.numberToFloatPy(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y - mv.xy * mv.xy));
+    });
+    $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+      var mv = Sk.ffi.remapToJs(selfPy);
+      var e = Math.exp(mv.w);
+      var c = Math.cos(mv.xy);
+      var s = Math.sin(mv.xy);
+      return remapE2ToPy(e * c, 0, 0, e * s);
+    });
     $loc.__repr__ = Sk.ffi.functionPy(function(mv) {
       mv = Sk.ffi.remapToJs(mv);
       return Sk.ffi.stringToPy(EUCLIDEAN_2 + "(" + [mv.w, mv.x, mv.y, mv.xy].map(function(x) {return String(x);}).join(", ") + ")");
@@ -654,16 +665,16 @@ Sk.builtin.defineEuclidean2 = function(mod) {
       var mv = Sk.ffi.remapToJs(mvPy);
       switch(name) {
         case PROP_W: {
-          return Sk.ffi.numberToPy(mv[PROP_W]);
+          return Sk.ffi.numberToFloatPy(mv[PROP_W]);
         }
         case PROP_X: {
-          return Sk.ffi.numberToPy(mv[PROP_X]);
+          return Sk.ffi.numberToFloatPy(mv[PROP_X]);
         }
         case PROP_Y: {
-          return Sk.ffi.numberToPy(mv[PROP_Y]);
+          return Sk.ffi.numberToFloatPy(mv[PROP_Y]);
         }
         case PROP_XY: {
-          return Sk.ffi.numberToPy(mv[PROP_XY]);
+          return Sk.ffi.numberToFloatPy(mv[PROP_XY]);
         }
         case METHOD_CLONE: {
           return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {

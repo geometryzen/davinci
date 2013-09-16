@@ -83,7 +83,7 @@ Sk.builtin.buildWindowClass = function(mod) {
     $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
       switch(name) {
         case PROP_ANIMATION_TIME: {
-          return Sk.ffi.numberToPy(window[PROP_ANIMATION_TIME]);
+          return Sk.ffi.numberToFloatPy(window[PROP_ANIMATION_TIME]);
         }
         case PROP_DOCUMENT: {
           return mod[PROP_DOCUMENT];
@@ -145,9 +145,9 @@ Sk.builtin.buildWindowClass = function(mod) {
             });
             $loc.__call__ = Sk.ffi.functionPy(function(self, callback) {
               var requestID = window[METHOD_REQUEST_ANIMATION_FRAME](function(timestamp) {
-                Sk.misceval.callsim(callback, Sk.ffi.numberToPy(timestamp));
+                Sk.misceval.callsim(callback, Sk.ffi.numberToFloatPy(timestamp));
               });
-              return Sk.ffi.numberToPy(requestID);
+              return Sk.ffi.numberToFloatPy(requestID);
             });
           }, METHOD_REQUEST_ANIMATION_FRAME, []));
         }
@@ -162,7 +162,7 @@ Sk.builtin.buildWindowClass = function(mod) {
               var timeoutID = window[METHOD_SET_TIMEOUT](function() {
                 Sk.misceval.callsim(funcPy);
               }, delay, params);
-              return Sk.ffi.numberToPy(timeoutID);
+              return Sk.ffi.numberToFloatPy(timeoutID);
             });
           }, METHOD_SET_TIMEOUT, []));
         }

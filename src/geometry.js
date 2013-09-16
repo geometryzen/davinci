@@ -379,7 +379,7 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkMethodArgs(CARTESIAN_SPACE, arguments, 0, 0);
     var scenePy = Sk.ffi.callsim(mod[WORLD]);
     var scene = Sk.ffi.remapToJs(scenePy);
-    var cameraPy = Sk.ffi.callsim(mod[PERSPECTIVE_CAMERA], Sk.ffi.numberToPy(45), Sk.ffi.numberToPy(1.0), Sk.ffi.numberToPy(0.1), Sk.ffi.numberToPy(10000));
+    var cameraPy = Sk.ffi.callsim(mod[PERSPECTIVE_CAMERA], Sk.ffi.numberToFloatPy(45), Sk.ffi.numberToFloatPy(1.0), Sk.ffi.numberToFloatPy(0.1), Sk.ffi.numberToFloatPy(10000));
     var camera = Sk.ffi.remapToJs(cameraPy);
     camera[PROP_UP].set(0, 0, 1);
     camera[PROP_POSITION].set(+8, +4, +5);
@@ -529,9 +529,9 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionCone();
-          var radiusTop      = Sk.ffi.numberToPy(0);
-          var radiusBottom   = Sk.ffi.numberToPy(dimensions[PROP_RADIUS]);
-          var height         = Sk.ffi.numberToPy(dimensions[PROP_HEIGHT]);
+          var radiusTop      = Sk.ffi.numberToFloatPy(0);
+          var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
+          var height         = Sk.ffi.numberToFloatPy(dimensions[PROP_HEIGHT]);
           var radialSegments = Sk.ffi.numberToIntPy(32);
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
@@ -772,9 +772,9 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionCylinder();
-          var radiusTop      = Sk.ffi.numberToPy(dimensions.a);
-          var radiusBottom   = Sk.ffi.numberToPy(dimensions.b);
-          var height         = Sk.ffi.numberToPy(dimensions.h);
+          var radiusTop      = Sk.ffi.numberToFloatPy(dimensions.a);
+          var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions.b);
+          var height         = Sk.ffi.numberToFloatPy(dimensions.h);
           var radialSegments = Sk.ffi.numberToIntPy(32);
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);

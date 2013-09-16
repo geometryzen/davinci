@@ -1510,7 +1510,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var UPDATE_PROJECTION_MATRIX = "updateProjectionMatrix"
       switch(name) {
         case "aspect": {
-          return Sk.ffi.numberToPy(camera.aspect);
+          return Sk.ffi.numberToFloatPy(camera.aspect);
         }
         case PROP_POSITION: {
           return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_POSITION], VECTOR_3));
@@ -1832,13 +1832,13 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var cylinder = Sk.ffi.remapToJs(selfPy);
       switch(name) {
         case PROP_RADIUS_TOP: {
-          return Sk.ffi.numberToPy(cylinder[PROP_RADIUS_TOP]);
+          return Sk.ffi.numberToFloatPy(cylinder[PROP_RADIUS_TOP]);
         }
         case PROP_RADIUS_BOTTOM: {
-          return Sk.ffi.numberToPy(cylinder[PROP_RADIUS_BOTTOM]);
+          return Sk.ffi.numberToFloatPy(cylinder[PROP_RADIUS_BOTTOM]);
         }
         case PROP_HEIGHT: {
-          return Sk.ffi.numberToPy(cylinder[PROP_HEIGHT]);
+          return Sk.ffi.numberToFloatPy(cylinder[PROP_HEIGHT]);
         }
         case PROP_RADIAL_SEGMENTS: {
           return Sk.ffi.numberToIntPy(cylinder[PROP_RADIAL_SEGMENTS]);
@@ -2507,10 +2507,10 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
         }
         case PROP_DISTANCE: {
-          return Sk.ffi.numberToPy(light[PROP_DISTANCE]);
+          return Sk.ffi.numberToFloatPy(light[PROP_DISTANCE]);
         }
         case PROP_INTENSITY: {
-          return Sk.ffi.numberToPy(light[PROP_INTENSITY]);
+          return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
         }
         case PROP_POSITION: {
           return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_POSITION], VECTOR_3));
@@ -2652,10 +2652,10 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
         }
         case PROP_DISTANCE: {
-          return Sk.ffi.numberToPy(light[PROP_DISTANCE]);
+          return Sk.ffi.numberToFloatPy(light[PROP_DISTANCE]);
         }
         case PROP_INTENSITY: {
-          return Sk.ffi.numberToPy(light[PROP_INTENSITY]);
+          return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
         }
         case PROP_POSITION: {
           return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_POSITION], VECTOR_3));
@@ -2868,7 +2868,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(material[PROP_COLOR], COLOR));
         }
         case PROP_OPACITY: {
-          return Sk.ffi.numberToPy(material[PROP_OPACITY]);
+          return Sk.ffi.numberToFloatPy(material[PROP_OPACITY]);
         }
       }
     });
@@ -3155,7 +3155,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return material[PROP_NEEDS_UPDATE];
         }
         case PROP_OPACITY: {
-          return Sk.ffi.numberToPy(material[PROP_OPACITY]);
+          return Sk.ffi.numberToFloatPy(material[PROP_OPACITY]);
         }
         case PROP_OVERDRAW: {
           return material[PROP_OVERDRAW];
@@ -3167,7 +3167,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return material[PROP_WIREFRAME];
         }
         case PROP_WIREFRAME_LINEWIDTH: {
-          return Sk.ffi.numberToPy(material[PROP_WIREFRAME_LINEWIDTH]);
+          return Sk.ffi.numberToFloatPy(material[PROP_WIREFRAME_LINEWIDTH]);
         }
         case PROP_VISIBLE: {
           return material[PROP_VISIBLE];
@@ -3300,7 +3300,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
           return material[PROP_NEEDS_UPDATE];
         }
         case PROP_OPACITY: {
-          return Sk.ffi.numberToPy(material[PROP_OPACITY]);
+          return Sk.ffi.numberToFloatPy(material[PROP_OPACITY]);
         }
         case PROP_OVERDRAW: {
           return material[PROP_OVERDRAW];

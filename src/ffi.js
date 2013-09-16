@@ -41,6 +41,20 @@ Sk.ffi.attributeError = function(message) {return new Sk.builtin.AttributeError(
 goog.exportSymbol("Sk.ffi.attributeError", Sk.ffi.attributeError);
 
 /**
+ * NotImplementedError
+ * @typedef {!Sk.builtin.NotImplementedError}
+ */
+Sk.ffi.NotImplementedError
+goog.exportSymbol("Sk.ffi.NotImplementedError", Sk.ffi.NotImplementedError);
+/**
+ * Returns a new NotImplementedError.
+ * @param {string} message The message string.
+ * @return {Sk.ffi.NotImplementedError} The NotImplementedError.
+ */
+Sk.ffi.notImplementedError = function(message) {return new Sk.builtin.NotImplementedError(message);};
+goog.exportSymbol("Sk.ffi.notImplementedError", Sk.ffi.notImplementedError);
+
+/**
  * @typedef {!Sk.builtin.TypeError}
  */
 Sk.ffi.TypeError
@@ -136,6 +150,26 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
 };
 goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
 
+Sk.ffi.numberToPy = function(valueJs, kind)
+{
+    switch(kind)
+    {
+        case Sk.ffi.PyType.FLOAT:
+        {
+            return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.float$);
+        }
+        case Sk.ffi.PyType.INT:
+        {
+            return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.int$);
+        }
+        default:
+        {
+            throw Sk.ffi.assertionError("ead77baa-30b2-470a-bb18-9db949965e45, kind => " + kind);
+        }
+    }
+}
+goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
+
 /**
  * Converts a JavaScript number or null to the internal Python float representation.
  *
@@ -143,7 +177,7 @@ goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
  * @param {number=} defaultJs
  * @return {Object|Sk.ffi.none|undefined}
  */
-Sk.ffi.numberToPy = function(valueJs, defaultJs)
+Sk.ffi.numberToFloatPy = function(valueJs, defaultJs)
 {
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.NUMBER)
@@ -159,7 +193,7 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
         var d = typeof defaultJs;
         if (d === Sk.ffi.JsType.NUMBER)
         {
-            return Sk.ffi.numberToPy(Number(defaultJs));
+            return Sk.ffi.numberToFloatPy(Number(defaultJs));
         }
         else if (d === Sk.ffi.JsType.UNDEFINED)
         {
@@ -173,7 +207,7 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
         {
             throw Sk.ffi.err.
                 argument("defaultJs").
-                inFunction("Sk.ffi.numberToPy").
+                inFunction("Sk.ffi.numberToFloatPy").
                 mustHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
         }
     }
@@ -181,11 +215,11 @@ Sk.ffi.numberToPy = function(valueJs, defaultJs)
     {
         throw Sk.ffi.err.
             argument("valueJs").
-            inFunction("Sk.ffi.numberToPy").
+            inFunction("Sk.ffi.numberToFloatPy").
             mustHaveType([Sk.ffi.JsType.NUMBER, 'null', Sk.ffi.JsType.UNDEFINED].join(" or "));
     }
 };
-goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
+goog.exportSymbol("Sk.ffi.numberToFloatPy", Sk.ffi.numberToFloatPy);
 
 /**
  * Converts a JavaScript number or null to the internal Python int representation.
@@ -423,7 +457,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     }
     else if (t === Sk.ffi.JsType.NUMBER)
     {
-        return Sk.ffi.numberToPy(Number(valueJs));
+        return Sk.ffi.numberToFloatPy(Number(valueJs));
     }
     else if (t === Sk.ffi.JsType.BOOLEAN)
     {
@@ -1051,6 +1085,67 @@ Sk.ffi.callsim = function(func, args)
     return Sk.misceval.apply(func, undefined, undefined, undefined, args);
 };
 goog.exportSymbol("Sk.ffi.callsim", Sk.ffi.callsim);
+
+/**
+ * Computes the exponential of a value by either invoking the special __exp__ function or the native equivalent.
+ */
+Sk.ffi.exp = function(valuePy)
+{
+    if (valuePy['__exp__'])
+    {
+        return Sk.ffi.callsim(valuePy["__exp__"], valuePy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__exp__');
+    }
+};
+goog.exportSymbol("Sk.ffi.exp", Sk.ffi.exp);
+
+/**
+ * Computes the positive of a value by either invoking the special __pos__ function or the native equivalent.
+ */
+Sk.ffi.pos = function(valuePy)
+{
+    return Sk.ffi.callsim(valuePy["__pos__"], valuePy);
+};
+goog.exportSymbol("Sk.ffi.pos", Sk.ffi.pos);
+
+/**
+ * Computes the negative of a value by either invoking the special __neg__ function or the native equivalent.
+ */
+Sk.ffi.neg = function(valuePy)
+{
+    return Sk.ffi.callsim(valuePy["__neg__"], valuePy);
+};
+goog.exportSymbol("Sk.ffi.neg", Sk.ffi.neg);
+
+/**
+ * Computes the inverse of a value by either invoking the special __invert__ function or the native equivalent.
+ */
+Sk.ffi.invert = function(valuePy)
+{
+    return Sk.ffi.callsim(valuePy["__invert__"], valuePy);
+};
+goog.exportSymbol("Sk.ffi.invert", Sk.ffi.invert);
+
+/**
+ * Computes the programmatic representation of a value by either invoking the special __repr__ function or the native equivalent.
+ */
+Sk.ffi.repr = function(valuePy)
+{
+    return Sk.ffi.callsim(valuePy["__repr__"], valuePy);
+};
+goog.exportSymbol("Sk.ffi.repr", Sk.ffi.repr);
+
+/**
+ * Computes the string representation of a value by either invoking the special __str__ function or the native equivalent.
+ */
+Sk.ffi.str = function(valuePy)
+{
+    return Sk.ffi.callsim(valuePy["__str__"], valuePy);
+};
+goog.exportSymbol("Sk.ffi.str", Sk.ffi.str);
 
 /**
  * Convenience function for implementing callable attributes.

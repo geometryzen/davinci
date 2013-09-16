@@ -85,7 +85,7 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
    * @param {number} denominator
    */
   var rationalToPy = function(numerator, denominator) {
-    return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.numberToPy(numerator), Sk.ffi.numberToPy(denominator));
+    return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.numberToFloatPy(numerator), Sk.ffi.numberToFloatPy(denominator));
   };
   mod[RATIONAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, numerPy, denomPy) {

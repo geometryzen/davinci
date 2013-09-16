@@ -178,7 +178,7 @@
      * @param {number} z The z-coordinate of the vector.
      */
     var xyzJsToVector3Py = function(x, y, z) {
-      return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.numberToPy(x), Sk.ffi.numberToPy(y), Sk.ffi.numberToPy(z));
+      return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y), Sk.ffi.numberToFloatPy(z));
     };
     mod[VECTOR_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       $loc.__init__ = Sk.ffi.functionPy(function(selfPy, x, y, z) {
@@ -296,7 +296,7 @@
           case PROP_X:
           case PROP_Y:
           case PROP_Z: {
-            return Sk.ffi.numberToPy(vector[name]);
+            return Sk.ffi.numberToFloatPy(vector[name]);
           }
           case METHOD_APPLY_QUATERNION: {
             return Sk.ffi.callableToPy(mod, METHOD_APPLY_QUATERNION, function(methodPy, qPy) {
@@ -329,7 +329,7 @@
                 self.tp$name = METHOD_LENGTH;
               });
               $loc.__call__ = Sk.ffi.functionPy(function(self) {
-                return Sk.ffi.numberToPy(vector.length());
+                return Sk.ffi.numberToFloatPy(vector.length());
               });
             }, METHOD_LENGTH, []));
           }

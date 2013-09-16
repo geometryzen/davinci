@@ -14,26 +14,26 @@ Sk.builtin.defineUnits = function(mod) {
 /**
  * Prefixes.
  */
-mod.yocto = Sk.ffi.numberToPy(1e-24);
-mod.zepto = Sk.ffi.numberToPy(1e-21);
-mod.atto  = Sk.ffi.numberToPy(1e-18);
-mod.femto = Sk.ffi.numberToPy(1e-15);
-mod.pico  = Sk.ffi.numberToPy(1e-12);
-mod.nano  = Sk.ffi.numberToPy(1e-9);
-mod.micro = Sk.ffi.numberToPy(1e-6);
-mod.milli = Sk.ffi.numberToPy(1e-3);
-mod.centi = Sk.ffi.numberToPy(1e-2);
-mod.deci  = Sk.ffi.numberToPy(1e-1);
-mod.deka  = Sk.ffi.numberToPy(1e+1);
-mod.hecto = Sk.ffi.numberToPy(1e+2);
-mod.kilo  = Sk.ffi.numberToPy(1e+3);
-mod.mega  = Sk.ffi.numberToPy(1e+6);
-mod.giga  = Sk.ffi.numberToPy(1e+9);
-mod.tera  = Sk.ffi.numberToPy(1e+12);
-mod.peta  = Sk.ffi.numberToPy(1e+15);
-mod.exa   = Sk.ffi.numberToPy(1e+18);
-mod.zetta = Sk.ffi.numberToPy(1e+21);
-mod.yotta = Sk.ffi.numberToPy(1e+24);
+mod.yocto = Sk.ffi.numberToFloatPy(1e-24);
+mod.zepto = Sk.ffi.numberToFloatPy(1e-21);
+mod.atto  = Sk.ffi.numberToFloatPy(1e-18);
+mod.femto = Sk.ffi.numberToFloatPy(1e-15);
+mod.pico  = Sk.ffi.numberToFloatPy(1e-12);
+mod.nano  = Sk.ffi.numberToFloatPy(1e-9);
+mod.micro = Sk.ffi.numberToFloatPy(1e-6);
+mod.milli = Sk.ffi.numberToFloatPy(1e-3);
+mod.centi = Sk.ffi.numberToFloatPy(1e-2);
+mod.deci  = Sk.ffi.numberToFloatPy(1e-1);
+mod.deka  = Sk.ffi.numberToFloatPy(1e+1);
+mod.hecto = Sk.ffi.numberToFloatPy(1e+2);
+mod.kilo  = Sk.ffi.numberToFloatPy(1e+3);
+mod.mega  = Sk.ffi.numberToFloatPy(1e+6);
+mod.giga  = Sk.ffi.numberToFloatPy(1e+9);
+mod.tera  = Sk.ffi.numberToFloatPy(1e+12);
+mod.peta  = Sk.ffi.numberToFloatPy(1e+15);
+mod.exa   = Sk.ffi.numberToFloatPy(1e+18);
+mod.zetta = Sk.ffi.numberToFloatPy(1e+21);
+mod.yotta = Sk.ffi.numberToFloatPy(1e+24);
 
 /**
  * @const
@@ -517,26 +517,29 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.remapToPy(a.wedge(b), MEASURE, custom));
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
-    return selfPy;
+    var quantityPy = Sk.ffi.pos(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__neg__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
-    quantityPy = Sk.ffi.callsim(quantityPy["__neg__"], quantityPy);
+    var quantityPy = Sk.ffi.neg(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__invert__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffi.gattr(selfPy, PROP_QUANTITY);
-    quantityPy = Sk.ffi.callsim(quantityPy["__invert__"], quantityPy);
+    var quantityPy = Sk.ffi.invert(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(measurePy) {
-    var quantityPy = Sk.ffi.gattr(measurePy, PROP_QUANTITY);
-    var quantityStr = Sk.ffi.remapToJs(Sk.ffi.callsim(quantityPy["__str__"], quantityPy));
-    var uomPy = Sk.ffi.gattr(measurePy, PROP_UOM);
-    var uomStr = Sk.ffi.remapToJs(Sk.ffi.callsim(uomPy["__str__"], uomPy));
-    return Sk.ffi.remapToPy("" + quantityStr + " " + uomStr);
+  $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+    var quantityPy = Sk.ffi.exp(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
+  });
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var qtyStr = Sk.ffi.remapToJs(Sk.ffi.str(Sk.ffi.gattr(selfPy, PROP_QUANTITY)));
+    var uomStr = Sk.ffi.remapToJs(Sk.ffi.str(Sk.ffi.gattr(selfPy, PROP_UOM)));
+    return Sk.ffi.remapToPy("" + qtyStr + " " + uomStr);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(measurePy) {
     var quantityPy = Sk.ffi.gattr(measurePy, PROP_QUANTITY);
