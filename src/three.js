@@ -1640,7 +1640,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, ORTHOGRAPHIC_CAMERA, []);
 
   mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(self, length, segments, radiusShaft, radiusCone, lengthCone) {
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, length, segments, radiusShaft, radiusCone, lengthCone) {
       length = Sk.ffi.remapToJs(length) || 1;
       segments = Sk.ffi.remapToJs(segments);
       radiusShaft = Sk.ffi.remapToJs(radiusShaft) || 0.01;
@@ -1653,8 +1653,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var d = new THREE[VECTOR_3](radiusShaft, 0, 0);
       var e = new THREE[VECTOR_3](0, 0, 0);
       var points = [a, b, c, d, e];
-      self.v = new THREE[LATHE_GEOMETRY](points, segments);
-      self.tp$name = ARROW_GEOMETRY;
+      Sk.ffi.referenceToPy(new THREE[LATHE_GEOMETRY](points, segments), ARROW_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
       var geometry = Sk.ffi.remapToJs(geometryPy);

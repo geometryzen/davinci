@@ -82,6 +82,16 @@ var PROP_HEIGHT                     = "height";
  * @const
  * @type {string}
  */
+var PROP_LENGTH                     = "length";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_LENGTH_MANGLED             = Sk.ffi.mangleName(PROP_LENGTH);
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_MATERIAL                   = "material";
 /**
  * @const
@@ -177,6 +187,11 @@ var WORLD                           = "world";
  * @const
  * @type {string}
  */
+var ARROW_BUILDER                   = "ArrowBuilder";
+/**
+ * @const
+ * @type {string}
+ */
 var CONE_BUILDER                    = "ConeBuilder";
 /**
  * @const
@@ -208,6 +223,11 @@ var LINE_BASIC_MATERIAL             = "LineBasicMaterial";
  * @type {string}
  */
 var MESH_LAMBERT_MATERIAL           = "MeshLambertMaterial";
+/**
+ * @const
+ * @type {string}
+ */
+var ARROW_GEOMETRY                  = "ArrowGeometry";
 /**
  * @const
  * @type {string}
@@ -445,6 +465,117 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy("" + space);
   })
 }, CARTESIAN_SPACE, []);
+
+mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(ARROW_BUILDER, arguments, 0, 0);
+    var self = {};
+    self[PROP_COLOR]     = DEFAULT_COLOR;
+    self[PROP_WIREFRAME] = false;
+    self[PROP_AXIS]      = e3;
+    Sk.ffi.referenceToPy(self, ARROW_BUILDER, undefined, selfPy);
+  });
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var arrow = Sk.ffi.remapToJs(selfPy);
+    switch(name) {
+      case PROP_AXIS: {
+        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
+          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
+          arrow[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+          return selfPy;
+        });
+      }
+      case PROP_COLOR: {
+        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
+          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+          arrow[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
+          return selfPy;
+        });
+      }
+      case PROP_LENGTH_MANGLED: {
+        return Sk.ffi.callableToPy(mod, PROP_LENGTH, function(methodPy, lengthPy) {
+          Sk.ffi.checkMethodArgs(PROP_LENGTH, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_LENGTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+          arrow[PROP_LENGTH] = Sk.ffi.remapToJs(lengthPy);
+          return selfPy;
+        });
+      }
+      case PROP_NAME: { return methodName(selfPy); }
+      case PROP_RADIUS: {
+        return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
+          Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          arrow[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
+          return selfPy;
+        });
+      }
+      case PROP_VOLUME: {
+        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
+          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
+          arrow[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+          return selfPy;
+        });
+      }
+      case PROP_WIREFRAME: {
+        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
+          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
+          arrow[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
+          return selfPy;
+        });
+      }
+      case METHOD_BUILD: {
+        return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
+          /**
+           * @return {{length: number, radius: number}}
+           */
+          function dimensionArrow() {
+            var dims = {};
+            if (arrow.volume) {
+              var h = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
+              var r = (arrow.radius) ? arrow.radius : DEFAULT_CYLINDER_RADIUS;
+              var alpha = r / h;
+              dims.radius = Math.pow(3 * alpha * arrow.volume / Math.PI, 1 / 3);
+              dims.length = dims.radius / alpha;
+            }
+            else {
+              dims.length = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
+              dims.radius = (arrow.radius) ? arrow.radius : DEFAULT_CYLINDER_RADIUS;
+            }
+            return dims;
+          }
+          Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
+            var dimensions = dimensionArrow();
+            var length         = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
+//          var radiusTop      = Sk.ffi.numberToFloatPy(0);
+//          var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
+//          var radialSegments = Sk.ffi.numberToIntPy(32);
+//          var heightSegments = Sk.ffi.numberToIntPy(1);
+//          var openEnded      = Sk.ffi.booleanToPy(false);
+          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], length);
+          var parameters = {};
+          parameters[PROP_COLOR]     = arrow[PROP_COLOR];
+          parameters[PROP_WIREFRAME] = arrow[PROP_WIREFRAME];
+          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
+          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), arrow);
+        });
+      }
+      default: {
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(ARROW_BUILDER);
+      }
+    }
+  });
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var self = Sk.ffi.remapToJs(selfPy);
+    return Sk.ffi.stringToPy("" + self);
+  })
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffi.stringToPy(ARROW_BUILDER + "(" + ")");
+  })
+}, ARROW_BUILDER, []);
 
 mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
