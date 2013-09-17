@@ -1954,13 +1954,10 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, CYLINDER_GEOMETRY, []);
 
   mod[LATHE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(self, pointsPy, segmentsPy, phiStart, phiLength) {
-      var points = Sk.ffi.remapToJs(pointsPy);
-      var segments = Sk.ffi.remapToJs(segmentsPy);
-      phiStart = Sk.ffi.remapToJs(phiStart);
-      phiLength = Sk.ffi.remapToJs(phiLength);
-      self.v = new THREE[LATHE_GEOMETRY](points, segments, phiStart, phiLength);
-      self.tp$name = LATHE_GEOMETRY;
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStartPy, phiLengthPy) {
+      Sk.ffi.checkMethodArgs(LATHE_GEOMETRY, arguments, 1, 4);
+      // Temporary workaround until the THREE.LatheGeometry is fixed...
+      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](Sk.ffi.remapToJs(pointsPy), Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
       var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -1974,33 +1971,31 @@ Sk.builtin.defineThree = function(mod, THREE) {
         case PROP_VERTICES: {
           return verticesPy(geometry[PROP_VERTICES]);
         }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(LATHE_GEOMETRY);
+        }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
       var geometry = Sk.ffi.remapToJs(geometryPy);
       var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
-        case PROP_NAME: {
-          if (isString(value)) {
-            geometry[PROP_NAME] = value;
-          }
-          else {
-            throw new Error(name + " must be a string");
-          }
+        case PROP_NAME:
+        {
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+          geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
         }
         break;
         default: {
-          throw new Error(name + " is not an attribute of " + LATHE_GEOMETRY);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(LATHE_GEOMETRY);
         }
       }
     });
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      var latheGeometry = self.v;
+    $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var args = {};
       return Sk.ffi.stringToPy(LATHE_GEOMETRY + "(" + JSON.stringify(args) + ")");
     });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      var latheGeometry = self.v;
+    $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
       var args = [];
       return Sk.ffi.stringToPy(LATHE_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
     });
