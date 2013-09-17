@@ -159,12 +159,22 @@ var ARG_OTHER         = "other";
  * @const
  * @type {string}
  */
+var GRAM              = "gram";
+/**
+ * @const
+ * @type {string}
+ */
 var KILOGRAM          = "kilogram";
 /**
  * @const
  * @type {string}
  */
 var METER             = "meter";
+/**
+ * @const
+ * @type {string}
+ */
+var CM                = "cm";
 /**
  * @const
  * @type {string}
@@ -219,19 +229,24 @@ Sk.builtin.defineFractions(mod, RATIONAL, function(n, d) {return new BLADE.Ratio
 
 mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, M, L, T, Q) {
-    Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 4);
-    Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), Sk.ffi.isReference(M), M);
+    Sk.ffi.checkMethodArgs(DIMENSIONS, arguments, 1, 4);
+    Sk.ffi.checkArgType(PROP_M, RATIONAL, Sk.ffi.isClass(M, RATIONAL) || Sk.ffi.isClass(M, DIMENSIONS), M);
     switch(Sk.ffi.typeName(M)) {
       case RATIONAL: {
+        Sk.ffi.checkMethodArgs(DIMENSIONS, arguments, 4, 4);
+        Sk.ffi.checkArgType(PROP_L, RATIONAL, Sk.ffi.isClass(L, RATIONAL), L);
+        Sk.ffi.checkArgType(PROP_T, RATIONAL, Sk.ffi.isClass(T, RATIONAL), T);
+        Sk.ffi.checkArgType(PROP_Q, RATIONAL, Sk.ffi.isClass(Q, RATIONAL), Q);
         Sk.ffi.referenceToPy(new BLADE.Dimensions(Sk.ffi.remapToJs(M), Sk.ffi.remapToJs(L), Sk.ffi.remapToJs(T), Sk.ffi.remapToJs(Q)), DIMENSIONS, undefined, selfPy);
       }
       break;
       case DIMENSIONS: {
+        Sk.ffi.checkMethodArgs(DIMENSIONS, arguments, 1, 1);
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(M), DIMENSIONS, undefined, selfPy);
       }
       break;
       default: {
-        Sk.ffi.checkArgType("M", [RATIONAL, DIMENSIONS].join(" or "), false, M);
+        throw Sk.ffi.err.argument(PROP_M).inFunction(DIMENSIONS).mustHaveType([RATIONAL, DIMENSIONS]);
       }
     }
   });
@@ -429,7 +444,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, quantityPy, unitPy) {
     Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_QUANTITY, ["Reference", MEASURE].join(" or "), Sk.ffi.isReference(quantityPy), quantityPy);
+    Sk.ffi.checkArgType(PROP_QUANTITY, ["Reference", MEASURE], Sk.ffi.isClass(quantityPy), quantityPy);
     if (Sk.ffi.typeName(quantityPy) === MEASURE) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(quantityPy), MEASURE, quantityPy.custom, selfPy);
     }
@@ -556,6 +571,9 @@ mod[KILOGRAM] = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(
 mod[METER]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 mod[SECOND]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 0, 1, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 mod[COULOMB]  = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 0, 0, 1),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+
+mod[GRAM]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(0.001), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[CM]       = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(0.01),  Sk.ffi.remapToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 
 mod[NEWTON]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 1, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 mod[JOULE]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 2, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));

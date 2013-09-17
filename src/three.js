@@ -1,12 +1,16 @@
 (function() {
 Sk.builtin.defineThree = function(mod, THREE) {
   Sk.ffi.checkFunctionArgs("defineFractions", arguments, 2, 2);
-
 /**
  * @const
  * @type {string}
  */
   var NODE                       = "Node";
+/**
+ * @const
+ * @type {Sk.ffi.PyType}
+ */
+  var INT                        = Sk.ffi.PyType.INT;
 /**
  * @const
  * @type {!Array.<Sk.ffi.PyType>}
@@ -201,6 +205,16 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @const
  * @type {string}
  */
+  var PROP_DEPTH                 = "depth";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_DEPTH_SEGMENTS        = "depthSegments";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_DETAIL                = "detail";
 /**
  * @const
@@ -301,17 +315,17 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @const
  * @type {string}
  */
-  var PROP_RADIAL_SEGMENTS       = "radialSegments";
-/**
- * @const
- * @type {string}
- */
   var PROP_HEIGHT_SEGMENTS       = "heightSegments";
 /**
  * @const
  * @type {string}
  */
   var PROP_OPEN_ENDED            = "openEnded";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_RADIAL_SEGMENTS       = "radialSegments";
 /**
  * @const
  * @type {string}
@@ -377,6 +391,16 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @type {string}
  */
   var PROP_VISIBLE               = "visible";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_WIDTH                 = "width";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_WIDTH_SEGMENTS        = "widthSegments";
 /**
  * @const
  * @type {string}
@@ -1668,7 +1692,7 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var d = new THREE[VECTOR_3](radiusShaft, 0, 0);
       var e = new THREE[VECTOR_3](0, 0, 0);
       var points = [a, b, c, d, e];
-      Sk.ffi.referenceToPy(new THREE[LATHE_GEOMETRY](points, segments), ARROW_GEOMETRY, undefined, selfPy);
+      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments), ARROW_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
       var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -1752,63 +1776,57 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, CIRCLE_GEOMETRY, []);
 
    mod[CUBE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    var PROP_WIDTH           = "width";
-    var PROP_HEIGHT          = "height";
-    var PROP_DEPTH           = "depth";
-    var PROP_WIDTH_SEGMENTS  = "widthSegments";
-    var PROP_HEIGHT_SEGMENTS = "heightSegments";
-    var PROP_DEPTH_SEGMENTS  = "depthSegments";
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, width, height, depth, widthSegments, heightSegments, depthSegments) {
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, heightPy, depthPy, widthSegments, heightSegments, depthSegmentsPy) {
       Sk.ffi.checkMethodArgs(CUBE_GEOMETRY, arguments, 3, 6);
-      width          = numberFromArg(width,                 PROP_WIDTH,           CUBE_GEOMETRY);
-      height         = numberFromArg(height,                PROP_HEIGHT,          CUBE_GEOMETRY);
-      depth          = numberFromArg(depth,                 PROP_DEPTH,           CUBE_GEOMETRY);
+      Sk.ffi.checkArgType(PROP_WIDTH,  NUMBER, Sk.ffi.isNumber(widthPy),  widthPy);
+      Sk.ffi.checkArgType(PROP_HEIGHT, NUMBER, Sk.ffi.isNumber(heightPy), heightPy);
+      Sk.ffi.checkArgType(PROP_DEPTH,  NUMBER, Sk.ffi.isNumber(depthPy),  depthPy);
+      if (Sk.ffi.isDefined(depthSegmentsPy)) {
+        Sk.ffi.checkArgType(PROP_DEPTH_SEGMENTS, INT, Sk.ffi.isInt(depthSegmentsPy), depthSegmentsPy);
+      }
+      var width  = Sk.ffi.remapToJs(widthPy);
+      var height = Sk.ffi.remapToJs(heightPy);
+      var depth  = Sk.ffi.remapToJs(depthPy);
       widthSegments  = numberFromIntegerArg(widthSegments,  PROP_WIDTH_SEGMENTS,  CUBE_GEOMETRY);
       heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, CUBE_GEOMETRY);
-      depthSegments  = numberFromIntegerArg(depthSegments,  PROP_DEPTH_SEGMENTS,  CUBE_GEOMETRY);
+      var depthSegments = Sk.ffi.remapToJs(depthSegmentsPy);
       Sk.ffi.referenceToPy(new THREE[CUBE_GEOMETRY](width, height, depth, widthSegments, heightSegments, depthSegments), CUBE_GEOMETRY, undefined, selfPy);
     });
-    $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+    $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+      var cube = Sk.ffi.remapToJs(selfPy);
       switch(name) {
-        case PROP_WIDTH: {
-          return Sk.builtin.assk$(self.v[PROP_WIDTH], Sk.builtin.nmber.float$);
-        }
-        case PROP_HEIGHT: {
-          return Sk.builtin.assk$(self.v[PROP_HEIGHT], Sk.builtin.nmber.float$);
-        }
+        case PROP_WIDTH:
+        case PROP_HEIGHT:
         case PROP_DEPTH: {
-          return Sk.builtin.assk$(self.v[PROP_DEPTH], Sk.builtin.nmber.float$);
+          return Sk.ffi.numberToFloatPy(cube[name]);
         }
-        case PROP_WIDTH_SEGMENTS: {
-          return Sk.builtin.assk$(self.v[PROP_WIDTH_SEGMENTS], Sk.builtin.nmber.int$);
-        }
-        case PROP_HEIGHT_SEGMENTS: {
-          return Sk.builtin.assk$(self.v[PROP_HEIGHT_SEGMENTS], Sk.builtin.nmber.int$);
-        }
+        case PROP_WIDTH_SEGMENTS:
+        case PROP_HEIGHT_SEGMENTS:
         case PROP_DEPTH_SEGMENTS: {
-          return Sk.builtin.assk$(self.v[PROP_DEPTH_SEGMENTS], Sk.builtin.nmber.int$);
+          return Sk.ffi.numberToIntPy(cube[name]);
+        }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(CUBE_GEOMETRY);
         }
       }
     });
-    $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-      var geometry = Sk.ffi.remapToJs(geometryPy);
-      var value = Sk.ffi.remapToJs(valuePy);
+    $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
       switch(name) {
         default: {
-          throw new Error(name + " is not an attribute of " + CUBE_GEOMETRY);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(CUBE_GEOMETRY);
         }
       }
     });
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      var cube = self.v;
+    $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+      var cube = Sk.ffi.remapToJs(selfPy);
       var args = {};
       args[PROP_WIDTH]  = cube[PROP_WIDTH];
       args[PROP_HEIGHT] = cube[PROP_HEIGHT];
       args[PROP_DEPTH]  = cube[PROP_DEPTH];
       return Sk.ffi.stringToPy(CUBE_GEOMETRY + "(" + JSON.stringify(args) + ")");
     });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      var cube = self.v;
+    $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+      var cube = Sk.ffi.remapToJs(selfPy);
       var width          = cube[PROP_WIDTH];
       var height         = cube[PROP_HEIGHT];
       var depth          = cube[PROP_DEPTH];

@@ -478,20 +478,6 @@ goog.exportSymbol("Sk.ffi.remapToPy", Sk.ffi.remapToPy);
 Sk.ffi.isBool = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.BOOL;};
 goog.exportSymbol("Sk.ffi.isBool", Sk.ffi.isBool);
 
-Sk.ffi.isDict = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT; };
-goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
-
-Sk.ffi.isFunction = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION; };
-goog.exportSymbol("Sk.ffi.isFunction", Sk.ffi.isFunction);
-
-Sk.ffi.isInt = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT; };
-goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
-
-Sk.ffi.isNone = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE; };
-goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
-
-Sk.ffi.isNumber = function(valuePy) { return Sk.builtin.checkNumber(valuePy); };
-goog.exportSymbol("Sk.ffi.isNumber", Sk.ffi.isNumber);
 /**
  * Determines whether the Python value is an instance of a class with a specified class name.
  *
@@ -529,11 +515,26 @@ Sk.ffi.isClass = function(valuePy, className)
 };
 goog.exportSymbol("Sk.ffi.isClass", Sk.ffi.isClass);
 
+Sk.ffi.isDefined = function(valuePy) { return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED; };
+goog.exportSymbol("Sk.ffi.isDefined", Sk.ffi.isDefined);
+
+Sk.ffi.isDict = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT; };
+goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
+
+Sk.ffi.isFunction = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION; };
+goog.exportSymbol("Sk.ffi.isFunction", Sk.ffi.isFunction);
+
 Sk.ffi.isFunctionRef = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNREF; };
 goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 
-Sk.ffi.isReference = function(valuePy) { return Sk.ffi.isClass(valuePy) || Sk.ffi.isFunctionRef(valuePy); };
-goog.exportSymbol("Sk.ffi.isReference", Sk.ffi.isReference);
+Sk.ffi.isInt = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT; };
+goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
+
+Sk.ffi.isNone = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE; };
+goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
+
+Sk.ffi.isNumber = function(valuePy) { return Sk.builtin.checkNumber(valuePy); };
+goog.exportSymbol("Sk.ffi.isNumber", Sk.ffi.isNumber);
 
 Sk.ffi.isStr = function(valuePy) { return Sk.builtin.checkString(valuePy); };
 goog.exportSymbol("Sk.ffi.isStr", Sk.ffi.isStr);
