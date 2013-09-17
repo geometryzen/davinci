@@ -205,7 +205,7 @@
             }
             break
             default: {
-              Sk.ffi.checkArgType(PROP_X, [NUMBER, VECTOR_3].join(" or "), false, x);
+              Sk.ffi.checkArgType(PROP_X, [NUMBER, VECTOR_3], false, x);
             }
           }
         }

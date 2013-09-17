@@ -117,6 +117,11 @@ var PROP_RADIUS_BOTTOM              = "radiusBottom";
  * @const
  * @type {string}
  */
+var PROP_SCALE                      = "scale";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_VOLUME                     = "volume";
 /**
  * @const
@@ -321,12 +326,24 @@ function methodName(targetPy) {
   });
 }
 
-function modifyMesh(meshPy, parameters) {
-  var mesh = Sk.ffi.remapToJs(meshPy);
-  if (parameters[PROP_NAME]) {
-    mesh.name = parameters[PROP_NAME];
+function completeMesh(geometryPy, parameters) {
+  function modifyMesh(meshPy) {
+    var mesh = Sk.ffi.remapToJs(meshPy);
+    if (parameters[PROP_NAME]) {
+      mesh.name = parameters[PROP_NAME];
+    }
+    return meshPy;
   }
-  return meshPy;
+  if (parameters[PROP_MATERIAL]) {
+    return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, parameters[PROP_MATERIAL]));
+  }
+  else {
+    var args = {};
+    args[PROP_COLOR]     = parameters[PROP_COLOR];
+    args[PROP_WIREFRAME] = parameters[PROP_WIREFRAME];
+    var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(args));
+    return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy));
+  }
 }
 
 mod[WORLD] = Sk.ffi.functionPy(function() {
@@ -502,12 +519,28 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case PROP_MATERIAL: {
+        return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
+          Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy); // TODO: MATERIALS
+          arrow[PROP_MATERIAL] = materialPy;
+          return selfPy;
+        });
+      }
       case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           arrow[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
+          return selfPy;
+        });
+      }
+      case PROP_SCALE: {
+        return Sk.ffi.callableToPy(mod, PROP_SCALE, function(methodPy, lengthPy) {
+          Sk.ffi.checkMethodArgs(PROP_SCALE, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_SCALE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+          arrow[PROP_SCALE] = Sk.ffi.remapToJs(lengthPy);
           return selfPy;
         });
       }
@@ -530,11 +563,12 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
-           * @return {{length: number, radius: number}}
+           * @return {{scale: number, axis: Object, length: number, radius: number}}
            */
           function dimensionArrow() {
             var dims = {};
             if (arrow.volume) {
+              var s = (arrow.scale)  ? arrow.scale  : 1;
               var h = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
               var r = (arrow.radius) ? arrow.radius : DEFAULT_CYLINDER_RADIUS;
               var alpha = r / h;
@@ -542,6 +576,8 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
               dims.length = dims.radius / alpha;
             }
             else {
+              dims.scale  = (arrow.scale)  ? arrow.scale  : 1;
+              dims.axis   = (arrow.axis)   ? arrow.axis   : e3;
               dims.length = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
               dims.radius = (arrow.radius) ? arrow.radius : DEFAULT_CYLINDER_RADIUS;
             }
@@ -549,14 +585,12 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionArrow();
-          var length     = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
-          var segments   = Sk.ffi.numberToIntPy(32);
-          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], length, segments);
-          var parameters = {};
-          parameters[PROP_COLOR]     = arrow[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = arrow[PROP_WIREFRAME];
-          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), arrow);
+          var scalePy    = Sk.ffi.numberToFloatPy(dimensions[PROP_SCALE]);
+          var axisPy     = Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(dimensions[PROP_AXIS], VECTOR_3));
+          var segmentsPy = Sk.ffi.numberToIntPy(32);
+          var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
+          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, axisPy, segmentsPy, lengthPy);
+          return completeMesh(geometryPy, arrow);
         });
       }
       default: {
@@ -663,11 +697,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
-          var parameters = {};
-          parameters[PROP_COLOR]     = cone[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = cone[PROP_WIREFRAME];
-          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cone);
+          return completeMesh(geometryPy, cone);
         });
       }
       default: {
@@ -773,11 +803,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var height     = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
           var depth      = Sk.ffi.remapToPy(dimensions[PROP_DEPTH]);
           var geometryPy = Sk.ffi.callsim(mod[CUBE_GEOMETRY], width, height, depth);
-          var parameters = {};
-          parameters[PROP_COLOR]     = cube[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = cube[PROP_WIREFRAME];
-          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cube);
+          return completeMesh(geometryPy, cube);
         });
       }
       default: {
@@ -906,16 +932,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
-          if (cylinder[PROP_MATERIAL]) {
-            return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, cylinder[PROP_MATERIAL]), cylinder);
-          }
-          else {
-            var parameters = {};
-            parameters[PROP_COLOR]     = cylinder[PROP_COLOR];
-            parameters[PROP_WIREFRAME] = cylinder[PROP_WIREFRAME];
-            var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-            return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), cylinder);
-          }
+          return completeMesh(geometryPy, cylinder);
         });
       }
       default: {
@@ -1007,11 +1024,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var widthSegments  = Sk.ffi.remapToPy(24);
           var heightSegments = Sk.ffi.remapToPy(18);
           var geometryPy = Sk.ffi.callsim(mod[SPHERE_GEOMETRY], radius, widthSegments, heightSegments);
-          var parameters = {};
-          parameters[PROP_COLOR]     = sphere[PROP_COLOR];
-          parameters[PROP_WIREFRAME] = sphere[PROP_WIREFRAME];
-          var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(parameters));
-          return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy), sphere);
+          return completeMesh(geometryPy, sphere);
         });
       }
       default: {

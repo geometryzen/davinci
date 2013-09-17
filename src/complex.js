@@ -267,7 +267,7 @@
           return cartesianToComplexPy(a.x / b, a.y / b);
         }
         else {
-          throw Sk.ffi.err.expectArg("other").toHaveType([COMPLEX, NUMBER].join(" or "));
+          throw Sk.ffi.err.expectArg("other").toHaveType([COMPLEX, NUMBER]);
         }
       };
       $loc.nb$rdiv = function(otherPy) {

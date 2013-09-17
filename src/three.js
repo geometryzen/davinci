@@ -195,6 +195,11 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @const
  * @type {string}
  */
+  var PROP_AXIS                  = "axis";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_BOTTOM                = "bottom";
 /**
  * @const
@@ -281,6 +286,21 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @type {string}
  */
   var PROP_OVERDRAW              = "overdraw";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_PHI_START             = "phiStart";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_PHI_LENGTH            = "phiLength";
+/**
+ * @const
+ * @type {string}
+ */
+  var PROP_POINTS                = "points";
 /**
  * @const
  * @type {string}
@@ -1684,20 +1704,47 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, ORTHOGRAPHIC_CAMERA, []);
 
   mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, length, segments, radiusShaft, radiusCone, lengthCone) {
-      length = Sk.ffi.remapToJs(length) || 1;
-      segments = Sk.ffi.remapToJs(segments);
-      radiusShaft = Sk.ffi.remapToJs(radiusShaft) || 0.01;
-      radiusCone = Sk.ffi.remapToJs(radiusCone) || 0.08;
-      lengthCone = Sk.ffi.remapToJs(lengthCone) || 0.2;
-      var lengthShaft = 1 - lengthCone;
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scalePy, axisPy, segmentsPy, lengthPy, radiusShaft, radiusCone, lengthCone) {
+      Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 0, 6);
+      var scale;
+      var axis;
+      var length;
+      if (Sk.ffi.isDefined(scalePy)) {
+        Sk.ffi.checkArgType(PROP_SCALE, NUMBER, Sk.ffi.isNumber(scalePy), scalePy);
+        scale = Sk.ffi.remapToJs(scalePy);
+      }
+      else {
+        scale = 1;
+      }
+      if (Sk.ffi.isDefined(axisPy)) {
+        Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, Sk.ffi.isClass(axisPy, VECTOR_3), axisPy);
+        axis = Sk.ffi.remapToJs(axisPy);
+      }
+      else {
+        axis = new THREE[VECTOR_3](0, 0, 1);
+      }
+      if (Sk.ffi.isDefined(segmentsPy)) {
+        Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isNumber(segmentsPy), segmentsPy);
+      }
+      if (Sk.ffi.isDefined(lengthPy)) {
+        Sk.ffi.checkArgType(PROP_SCALE, NUMBER, Sk.ffi.isNumber(lengthPy), lengthPy);
+        length = Sk.ffi.remapToJs(lengthPy) * scale;
+      }
+      else {
+        length = scale;
+      }
+      var segments = Sk.ffi.remapToJs(segmentsPy);
+      radiusShaft  = (Sk.ffi.remapToJs(radiusShaft) || 0.01) * scale;
+      radiusCone   = (Sk.ffi.remapToJs(radiusCone) || 0.08) * scale;
+      lengthCone   = (Sk.ffi.remapToJs(lengthCone) || 0.2) * scale;
+      var lengthShaft = length - lengthCone;
       var a = new THREE[VECTOR_3](0, 0, length);
       var b = new THREE[VECTOR_3](radiusCone, 0, lengthShaft);
       var c = new THREE[VECTOR_3](radiusShaft, 0, lengthShaft);
       var d = new THREE[VECTOR_3](radiusShaft, 0, 0);
       var e = new THREE[VECTOR_3](0, 0, 0);
       var points = [a, b, c, d, e];
-      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments), ARROW_GEOMETRY, undefined, selfPy);
+      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments, 0, 2 * Math.PI, axis), ARROW_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
       var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -1733,13 +1780,11 @@ Sk.builtin.defineThree = function(mod, THREE) {
         }
       }
     });
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      var geometry = Sk.ffi.remapToJs(self);
+    $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var args = {};
       return Sk.ffi.stringToPy(ARROW_GEOMETRY + "(" + JSON.stringify(args) + ")");
     });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      var geometry = Sk.ffi.remapToJs(self);
+    $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
       var args = [];
       return Sk.ffi.stringToPy(ARROW_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
     });
@@ -2155,17 +2200,39 @@ Sk.builtin.defineThree = function(mod, THREE) {
   /**
    * @constructor
    * @param {!Array.<number>} points
-   * @param {number} segments
+   * @param {number=} segments
    * @param {number=} phiStart
    * @param {number=} phiLength
+   * @param {Object=} axis
    */
-  THREE.RevolutionGeometry = function ( points, segments, phiStart, phiLength ) {
+  THREE.RevolutionGeometry = function (points, segments, phiStart, phiLength, axis) {
 
     THREE[GEOMETRY].call( this );
 
+    var e3 = new THREE[VECTOR_3]( 0, 0, 1 );
     segments = segments || 12;
     phiStart = phiStart || 0;
     phiLength = phiLength || 2 * Math.PI;
+    axis = axis || e3;
+    function rotor(a, b) {
+      // TODO: This doesn't work when a is anti-parallel to b.
+      var ax = a.x;
+      var ay = a.y;
+      var az = a.z;
+      var bx = b.x;
+      var by = b.y;
+      var bz = b.z;
+      var sp = ax * bx + ay * by + az * bz;
+      var w0 = 1 + sp;
+      var scale = 1 / Math.sqrt(2 * w0);
+      var w = w0 * scale;
+      var x = (ay * bz - az * by) * scale;
+      var y = (az * bx - ax * bz) * scale;
+      var z = (ax * by - ay * bx) * scale;
+      return new THREE[QUATERNION](x, y, z, w);
+    }
+
+    var rotation = rotor(e3, axis);
 
     // Determine heuristically whether the user intended to make a complete revolution.
     var isClosed = Math.abs(2 * Math.PI - Math.abs(phiLength - phiStart)) < 0.0001;
@@ -2191,6 +2258,8 @@ Sk.builtin.defineThree = function(mod, THREE) {
         vertex.x = c * pt.x - s * pt.y;
         vertex.y = s * pt.x + c * pt.y;
         vertex.z = pt.z;
+
+        vertex['applyQuaternion'](rotation);
 
         this['vertices'].push( vertex );
 
@@ -2243,12 +2312,27 @@ Sk.builtin.defineThree = function(mod, THREE) {
   THREE.RevolutionGeometry.prototype = Object.create( THREE[GEOMETRY].prototype );
 
   mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStart, phiLength) {
-      var points = Sk.ffi.remapToJs(pointsPy);
-      var segments = Sk.ffi.remapToJs(segmentsPy);
-      phiStart = Sk.ffi.remapToJs(phiStart);
-      phiLength = Sk.ffi.remapToJs(phiLength);
-      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments, phiStart, phiLength), REVOLUTION_GEOMETRY, undefined, selfPy);
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStartPy, phiLengthPy, axisPy) {
+      Sk.ffi.checkMethodArgs(REVOLUTION_GEOMETRY, arguments, 1, 5);
+      Sk.ffi.checkArgType(PROP_POINTS, Sk.ffi.PyType.LIST, Sk.ffi.isList(pointsPy), pointsPy);
+      if (Sk.ffi.isDefined(segmentsPy)) {
+        Sk.ffi.checkArgType(PROP_SEGMENTS, Sk.ffi.PyType.INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
+      }
+      if (Sk.ffi.isDefined(phiStartPy)) {
+        Sk.ffi.checkArgType(PROP_PHI_START, NUMBER, Sk.ffi.isNumber(phiStartPy), phiStartPy);
+      }
+      if (Sk.ffi.isDefined(phiLengthPy)) {
+        Sk.ffi.checkArgType(PROP_PHI_LENGTH, NUMBER, Sk.ffi.isNumber(phiLengthPy), phiLengthPy);
+      }
+      if (Sk.ffi.isDefined(axisPy)) {
+        Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, Sk.ffi.isClass(axisPy, VECTOR_3), axisPy);
+      }
+      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](
+        Sk.ffi.remapToJs(pointsPy),
+        Sk.ffi.remapToJs(segmentsPy),
+        Sk.ffi.remapToJs(phiStartPy),
+        Sk.ffi.remapToJs(phiLengthPy),
+        Sk.ffi.remapToJs(axisPy)), REVOLUTION_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
       var geometry = Sk.ffi.remapToJs(geometryPy);

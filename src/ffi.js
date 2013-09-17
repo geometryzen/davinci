@@ -515,31 +515,34 @@ Sk.ffi.isClass = function(valuePy, className)
 };
 goog.exportSymbol("Sk.ffi.isClass", Sk.ffi.isClass);
 
-Sk.ffi.isDefined = function(valuePy) { return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED; };
+Sk.ffi.isDefined = function(valuePy) {return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED;};
 goog.exportSymbol("Sk.ffi.isDefined", Sk.ffi.isDefined);
 
-Sk.ffi.isDict = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT; };
+Sk.ffi.isDict = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT;};
 goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
 
-Sk.ffi.isFunction = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION; };
+Sk.ffi.isList = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LIST;};
+goog.exportSymbol("Sk.ffi.isList", Sk.ffi.isList);
+
+Sk.ffi.isFunction = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION;};
 goog.exportSymbol("Sk.ffi.isFunction", Sk.ffi.isFunction);
 
-Sk.ffi.isFunctionRef = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNREF; };
+Sk.ffi.isFunctionRef = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNREF;};
 goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 
-Sk.ffi.isInt = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT; };
+Sk.ffi.isInt = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT;};
 goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 
-Sk.ffi.isNone = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE; };
+Sk.ffi.isNone = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE;};
 goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
-Sk.ffi.isNumber = function(valuePy) { return Sk.builtin.checkNumber(valuePy); };
+Sk.ffi.isNumber = function(valuePy) {return Sk.builtin.checkNumber(valuePy);};
 goog.exportSymbol("Sk.ffi.isNumber", Sk.ffi.isNumber);
 
-Sk.ffi.isStr = function(valuePy) { return Sk.builtin.checkString(valuePy); };
+Sk.ffi.isStr = function(valuePy) {return Sk.builtin.checkString(valuePy);};
 goog.exportSymbol("Sk.ffi.isStr", Sk.ffi.isStr);
 
-Sk.ffi.isUndefined = function(valuePy) { return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.UNDEFINED; };
+Sk.ffi.isUndefined = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.UNDEFINED;};
 goog.exportSymbol("Sk.ffi.isUndefined", Sk.ffi.isUndefined);
 
 /**
