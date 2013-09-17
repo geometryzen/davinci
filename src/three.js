@@ -1776,20 +1776,26 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, CIRCLE_GEOMETRY, []);
 
    mod[CUBE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, heightPy, depthPy, widthSegments, heightSegments, depthSegmentsPy) {
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, heightPy, depthPy, widthSegmentsPy, heightSegmentsPy, depthSegmentsPy) {
       Sk.ffi.checkMethodArgs(CUBE_GEOMETRY, arguments, 3, 6);
       Sk.ffi.checkArgType(PROP_WIDTH,  NUMBER, Sk.ffi.isNumber(widthPy),  widthPy);
       Sk.ffi.checkArgType(PROP_HEIGHT, NUMBER, Sk.ffi.isNumber(heightPy), heightPy);
       Sk.ffi.checkArgType(PROP_DEPTH,  NUMBER, Sk.ffi.isNumber(depthPy),  depthPy);
+      if (Sk.ffi.isDefined(widthSegmentsPy)) {
+        Sk.ffi.checkArgType(PROP_WIDTH_SEGMENTS, INT, Sk.ffi.isInt(widthSegmentsPy), widthSegmentsPy);
+      }
+      if (Sk.ffi.isDefined(heightSegmentsPy)) {
+        Sk.ffi.checkArgType(PROP_HEIGHT_SEGMENTS, INT, Sk.ffi.isInt(heightSegmentsPy), heightSegmentsPy);
+      }
       if (Sk.ffi.isDefined(depthSegmentsPy)) {
         Sk.ffi.checkArgType(PROP_DEPTH_SEGMENTS, INT, Sk.ffi.isInt(depthSegmentsPy), depthSegmentsPy);
       }
       var width  = Sk.ffi.remapToJs(widthPy);
       var height = Sk.ffi.remapToJs(heightPy);
       var depth  = Sk.ffi.remapToJs(depthPy);
-      widthSegments  = numberFromIntegerArg(widthSegments,  PROP_WIDTH_SEGMENTS,  CUBE_GEOMETRY);
-      heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, CUBE_GEOMETRY);
-      var depthSegments = Sk.ffi.remapToJs(depthSegmentsPy);
+      var widthSegments  = Sk.ffi.remapToJs(widthSegmentsPy);
+      var heightSegments = Sk.ffi.remapToJs(heightSegmentsPy);
+      var depthSegments  = Sk.ffi.remapToJs(depthSegmentsPy);
       Sk.ffi.referenceToPy(new THREE[CUBE_GEOMETRY](width, height, depth, widthSegments, heightSegments, depthSegments), CUBE_GEOMETRY, undefined, selfPy);
     });
     $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
