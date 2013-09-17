@@ -16,6 +16,16 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @const
  * @type {string}
  */
+  var FACE_3                     = "Face3";
+/**
+ * @const
+ * @type {string}
+ */
+  var VECTOR_2                   = "Vector2";
+/**
+ * @const
+ * @type {string}
+ */
   var VECTOR_3                   = "Vector3";
 /**
  * @const
@@ -152,6 +162,11 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @type {string}
  */
   var PLANE_GEOMETRY             = "PlaneGeometry";
+/**
+ * @const
+ * @type {string}
+ */
+  var REVOLUTION_GEOMETRY        = "RevolutionGeometry";
 /**
  * @const
  * @type {string}
@@ -2086,6 +2101,160 @@ Sk.builtin.defineThree = function(mod, THREE) {
       return Sk.ffi.stringToPy(PLANE_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
     });
   }, PLANE_GEOMETRY, []);
+
+  /**
+   * @constructor
+   * @param {!Array.<number>} points
+   * @param {number} segments
+   * @param {number=} phiStart
+   * @param {number=} phiLength
+   */
+  THREE.RevolutionGeometry = function ( points, segments, phiStart, phiLength ) {
+
+    THREE[GEOMETRY].call( this );
+
+    segments = segments || 12;
+    phiStart = phiStart || 0;
+    phiLength = phiLength || 2 * Math.PI;
+
+    // Determine heuristically whether the user intended to make a complete revolution.
+    var isClosed = Math.abs(2 * Math.PI - Math.abs(phiLength - phiStart)) < 0.0001;
+
+    // The number of vertical half planes (phi constant).
+    var halfPlanes = isClosed ? segments : segments + 1;
+    var inverseSegments = 1.0 / segments;
+    var phiStep = (phiLength - phiStart) * inverseSegments;
+
+    for ( var i = 0, il = halfPlanes; i < il; i ++ ) {
+
+      var phi = phiStart + i * phiStep;
+
+      var c = Math.cos( phi );
+      var s = Math.sin( phi );
+
+      for ( var j = 0, jl = points.length; j < jl; j ++ ) {
+
+        var pt = points[ j ];
+
+        var vertex = new THREE[VECTOR_3]();
+
+        vertex.x = c * pt.x - s * pt.y;
+        vertex.y = s * pt.x + c * pt.y;
+        vertex.z = pt.z;
+
+        this['vertices'].push( vertex );
+
+      }
+
+    }
+
+    var inversePointLength = 1.0 / ( points.length - 1 );
+    var np = points.length;
+
+    // The denominator for modulo index arithmetic.
+    var wrap = np * halfPlanes;
+
+    for ( var i = 0, il = segments; i < il; i ++ ) {
+
+      for ( var j = 0, jl = points.length - 1; j < jl; j ++ ) {
+
+        var base = j + np * i;
+        var a = base % wrap;
+        var b = (base + np) % wrap;
+        var c = (base + 1 + np) % wrap;
+        var d = (base + 1) % wrap;
+
+        var u0 = i * inverseSegments;
+        var v0 = j * inversePointLength;
+        var u1 = u0 + inverseSegments;
+        var v1 = v0 + inversePointLength;
+
+        this['faces'].push( new THREE[FACE_3]( a, b, d ) );
+
+        this['faceVertexUvs'][ 0 ].push( [
+
+          new THREE[VECTOR_2]( u0, v0 ),
+          new THREE[VECTOR_2]( u1, v0 ),
+          new THREE[VECTOR_2]( u0, v1 )
+
+        ] );
+
+        this['faces'].push( new THREE[FACE_3]( b, c, d ) );
+
+        this['faceVertexUvs'][ 0 ].push( [
+
+          new THREE[VECTOR_2]( u1, v0 ),
+          new THREE[VECTOR_2]( u1, v1 ),
+          new THREE[VECTOR_2]( u0, v1 )
+
+        ] );
+
+
+      }
+
+    }
+
+//  This call seems to be responsible for making the revolution incomplete.
+//  We try to make it a no-op by sensibly detecting a closed revolution.
+//    this['mergeVertices']();
+    this['computeCentroids']();
+    this['computeFaceNormals']();
+    this['computeVertexNormals']();
+  };
+
+  THREE.RevolutionGeometry.prototype = Object.create( THREE[GEOMETRY].prototype );
+
+  mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStart, phiLength) {
+      var points = Sk.ffi.remapToJs(pointsPy);
+      var segments = Sk.ffi.remapToJs(segmentsPy);
+      phiStart = Sk.ffi.remapToJs(phiStart);
+      phiLength = Sk.ffi.remapToJs(phiLength);
+      Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments, phiStart, phiLength), REVOLUTION_GEOMETRY, undefined, selfPy);
+    });
+    $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
+      var geometry = Sk.ffi.remapToJs(geometryPy);
+      switch(name) {
+        case PROP_ID: {
+          return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
+        }
+        case PROP_NAME: {
+          return Sk.ffi.stringToPy(geometry[PROP_NAME]);
+        }
+        case PROP_VERTICES: {
+          return verticesPy(geometry[PROP_VERTICES]);
+        }
+      }
+    });
+    $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
+      var geometry = Sk.ffi.remapToJs(geometryPy);
+      var value = Sk.ffi.remapToJs(valuePy);
+      switch(name) {
+        case PROP_NAME: {
+          if (isString(value)) {
+            geometry[PROP_NAME] = value;
+          }
+          else {
+            throw new Error(name + " must be a string");
+          }
+        }
+        break;
+        default: {
+          throw new Error(name + " is not an attribute of " + REVOLUTION_GEOMETRY);
+        }
+      }
+    });
+    $loc.__str__ = Sk.ffi.functionPy(function(self) {
+      var latheGeometry = self.v;
+      var args = {};
+      return Sk.ffi.stringToPy(REVOLUTION_GEOMETRY + "(" + JSON.stringify(args) + ")");
+    });
+    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
+      var latheGeometry = self.v;
+      var args = [];
+      return Sk.ffi.stringToPy(REVOLUTION_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
+    });
+  }, REVOLUTION_GEOMETRY, []);
 
    mod[SPHERE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var PROP_WIDTH_SEGMENTS  = "widthSegments";
