@@ -548,14 +548,10 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             return dims;
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
-            var dimensions = dimensionArrow();
-            var length         = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
-//          var radiusTop      = Sk.ffi.numberToFloatPy(0);
-//          var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
-//          var radialSegments = Sk.ffi.numberToIntPy(32);
-//          var heightSegments = Sk.ffi.numberToIntPy(1);
-//          var openEnded      = Sk.ffi.booleanToPy(false);
-          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], length);
+          var dimensions = dimensionArrow();
+          var length     = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
+          var segments   = Sk.ffi.numberToIntPy(32);
+          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], length, segments);
           var parameters = {};
           parameters[PROP_COLOR]     = arrow[PROP_COLOR];
           parameters[PROP_WIREFRAME] = arrow[PROP_WIREFRAME];

@@ -1705,29 +1705,31 @@ Sk.builtin.defineThree = function(mod, THREE) {
         case PROP_ID: {
           return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
         }
+        case PROP_UUID: {
+          return Sk.ffi.stringToPy(geometry[PROP_UUID]);
+        }
         case PROP_NAME: {
           return Sk.ffi.stringToPy(geometry[PROP_NAME]);
         }
         case PROP_VERTICES: {
           return verticesPy(geometry[PROP_VERTICES]);
         }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(ARROW_GEOMETRY);
+        }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
       var geometry = Sk.ffi.remapToJs(geometryPy);
-      var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
-        case PROP_NAME: {
-          if (isString(value)) {
-            geometry[PROP_NAME] = value;
-          }
-          else {
-            throw new Error(name + " must be a string");
-          }
+        case PROP_NAME:
+        {
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+          geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
         }
         break;
         default: {
-          throw new Error(name + " is not an attribute of " + ARROW_GEOMETRY);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(ARROW_GEOMETRY);
         }
       }
     });
@@ -2217,34 +2219,22 @@ Sk.builtin.defineThree = function(mod, THREE) {
         var u1 = u0 + inverseSegments;
         var v1 = v0 + inversePointLength;
 
-        this['faces'].push( new THREE[FACE_3]( a, b, d ) );
+        this['faces'].push(new THREE[FACE_3](d, b, a));
+        this['faceVertexUvs'][ 0 ].push([
+          new THREE[VECTOR_2](u0, v0),
+          new THREE[VECTOR_2](u1, v0),
+          new THREE[VECTOR_2](u0, v1)
+        ]);
 
-        this['faceVertexUvs'][ 0 ].push( [
-
-          new THREE[VECTOR_2]( u0, v0 ),
-          new THREE[VECTOR_2]( u1, v0 ),
-          new THREE[VECTOR_2]( u0, v1 )
-
-        ] );
-
-        this['faces'].push( new THREE[FACE_3]( b, c, d ) );
-
-        this['faceVertexUvs'][ 0 ].push( [
-
-          new THREE[VECTOR_2]( u1, v0 ),
-          new THREE[VECTOR_2]( u1, v1 ),
-          new THREE[VECTOR_2]( u0, v1 )
-
-        ] );
-
-
+        this['faces'].push(new THREE[FACE_3](d, c, b));
+        this['faceVertexUvs'][ 0 ].push([
+          new THREE[VECTOR_2](u1, v0),
+          new THREE[VECTOR_2](u1, v1), 
+          new THREE[VECTOR_2](u0, v1)
+        ]);
       }
-
     }
 
-//  This call seems to be responsible for making the revolution incomplete.
-//  We try to make it a no-op by sensibly detecting a closed revolution.
-//    this['mergeVertices']();
     this['computeCentroids']();
     this['computeFaceNormals']();
     this['computeVertexNormals']();
@@ -2272,6 +2262,9 @@ Sk.builtin.defineThree = function(mod, THREE) {
         case PROP_VERTICES: {
           return verticesPy(geometry[PROP_VERTICES]);
         }
+        default: {
+          throw Sk.ffi.err.attribute(name).isNotGetableOnType(REVOLUTION_GEOMETRY);
+        }
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
@@ -2279,26 +2272,20 @@ Sk.builtin.defineThree = function(mod, THREE) {
       var value = Sk.ffi.remapToJs(valuePy);
       switch(name) {
         case PROP_NAME: {
-          if (isString(value)) {
-            geometry[PROP_NAME] = value;
-          }
-          else {
-            throw new Error(name + " must be a string");
-          }
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+          geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
         }
         break;
         default: {
-          throw new Error(name + " is not an attribute of " + REVOLUTION_GEOMETRY);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(REVOLUTION_GEOMETRY);
         }
       }
     });
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      var latheGeometry = self.v;
+    $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var args = {};
       return Sk.ffi.stringToPy(REVOLUTION_GEOMETRY + "(" + JSON.stringify(args) + ")");
     });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      var latheGeometry = self.v;
+    $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
       var args = [];
       return Sk.ffi.stringToPy(REVOLUTION_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
     });
