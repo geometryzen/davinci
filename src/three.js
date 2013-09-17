@@ -380,6 +380,11 @@ Sk.builtin.defineThree = function(mod, THREE) {
  * @const
  * @type {string}
  */
+  var PROP_UUID                  = "uuid";
+/**
+ * @const
+ * @type {string}
+ */
   var PROP_USE_QUATERNION        = "useQuaternion";
 /**
  * @const
@@ -1739,37 +1744,61 @@ Sk.builtin.defineThree = function(mod, THREE) {
   }, ARROW_GEOMETRY, []);
 
    mod[CIRCLE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(self, radius, segments, thetaStart, thetaLength) {
-      radius      = numberFromArg(radius,          PROP_RADIUS,       CIRCLE_GEOMETRY);
-      segments    = numberFromIntegerArg(segments, PROP_SEGMENTS,     CIRCLE_GEOMETRY);
-      thetaStart  = numberFromArg(thetaStart,      PROP_THETA_START,  CIRCLE_GEOMETRY);
-      thetaLength = numberFromArg(thetaLength,     PROP_THETA_LENGTH, CIRCLE_GEOMETRY);
-      self.v = new THREE[CIRCLE_GEOMETRY](radius, segments, thetaStart, thetaLength);
-      self.tp$name = CIRCLE_GEOMETRY;
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, segmentsPy, thetaStartPy, thetaLengthPy) {
+      Sk.ffi.checkMethodArgs(CIRCLE_GEOMETRY, arguments, 0, 4);
+      if (Sk.ffi.isDefined(radiusPy)) {
+        Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+      }
+      if (Sk.ffi.isDefined(segmentsPy)) {
+        Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
+      }
+      if (Sk.ffi.isDefined(thetaStartPy)) {
+        Sk.ffi.checkArgType(PROP_THETA_START, NUMBER, Sk.ffi.isNumber(thetaStartPy), thetaStartPy);
+      }
+      if (Sk.ffi.isDefined(thetaLengthPy)) {
+        Sk.ffi.checkArgType(PROP_THETA_LENGTH, NUMBER, Sk.ffi.isNumber(thetaLengthPy), thetaLengthPy);
+      }
+      Sk.ffi.referenceToPy(new THREE[CIRCLE_GEOMETRY](Sk.ffi.remapToJs(radiusPy), Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(thetaStartPy), Sk.ffi.remapToJs(thetaLengthPy)), CIRCLE_GEOMETRY, undefined, selfPy);
     });
-    $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+    $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+      var geometry = Sk.ffi.remapToJs(selfPy);
       switch(name) {
+        case PROP_ID: {
+          return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
+        }
+        case PROP_UUID: {
+          return Sk.ffi.stringToPy(geometry[PROP_UUID]);
+        }
+        case PROP_NAME: {
+          return Sk.ffi.stringToPy(geometry[PROP_NAME]);
+        }
+        case PROP_VERTICES: {
+          return verticesPy(geometry[PROP_VERTICES]);
+        }
         default: {
           throw Sk.ffi.err.attribute(name).isNotGetableOnType(CIRCLE_GEOMETRY);
         }
       }
     });
-    $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-      var geometry = Sk.ffi.remapToJs(geometryPy);
-      var value = Sk.ffi.remapToJs(valuePy);
+    $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+      var geometry = Sk.ffi.remapToJs(selfPy);
       switch(name) {
+        case PROP_NAME:
+        {
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+          geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
+        }
+        break;
         default: {
-          throw new Error(name + " is not an attribute of " + CIRCLE_GEOMETRY);
+          throw Sk.ffi.err.attribute(name).isNotSetableOnType(CIRCLE_GEOMETRY);
         }
       }
     });
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      var sphere = self.v;
+    $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var args = {};
       return Sk.ffi.stringToPy(CIRCLE_GEOMETRY + "(" + JSON.stringify(args) + ")");
     });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      var sphere = self.v;
+    $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
       var args = [];
       return Sk.ffi.stringToPy(CIRCLE_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
     });
