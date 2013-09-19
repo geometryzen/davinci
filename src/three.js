@@ -1,6 +1,6 @@
 (function() {
-Sk.builtin.defineThree = function(mod, THREE) {
-Sk.ffi.checkFunctionArgs("defineThree", arguments, 2, 2);
+Sk.builtin.defineThree = function(mod, THREE, BLADE) {
+Sk.ffi.checkFunctionArgs("defineThree", arguments, 3, 3);
 /**
 * @const
 * @type {string}
@@ -196,6 +196,11 @@ var TETRAHEDRON_GEOMETRY       = "TetrahedronGeometry";
 * @type {string}
 */
 var TORUS_GEOMETRY             = "TorusGeometry";
+/**
+* @const
+* @type {string}
+*/
+var PROP_ATTITUDE              = "attitude";
 /**
 * @const
 * @type {string}
@@ -445,6 +450,11 @@ var PROP_WIREFRAME_LINEWIDTH   = "wireframeLinewidth";
 * @const
 * @type {string}
 */
+var PROP_VECTOR                = "vector";
+/**
+* @const
+* @type {string}
+*/
 var PROP_W                     = "w";
 /**
 * @const
@@ -614,9 +624,22 @@ function isUndefined(x) { return typeof x === 'undefined'; }
 function isDefined(x)   { return typeof x !== 'undefined'; }
 function isNull(x)      { return typeof x === 'object' && x === null; }
 
+function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
 function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
 function isGeometryPy(valuePy) {
   return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
+}
+
+function vectorToEuclidean3Py(vector) {
+  var euclidean = {"vector": vector, "quaternion": new THREE[QUATERNION](0,0,0,0), "xyz": 0};
+  return Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(euclidean, EUCLIDEAN_3));
+}
+
+function setVectorProperty(obj, name, valuePy) {
+  Sk.ffi.checkArgType(name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
+  var vectorPy = Sk.ffi.gattr(valuePy, PROP_VECTOR);
+  Sk.ffi.checkArgType(name, VECTOR_3, isVector3Py(vectorPy), vectorPy);
+  obj[name] = Sk.ffi.remapToJs(vectorPy);
 }
 
 function methodAdd(target) {
@@ -673,7 +696,7 @@ function verticesPy(vertices) {
     });
     $loc.__getitem__ = Sk.ffi.functionPy(function(verticesPy, indexPy) {
       var index = Sk.ffi.remapToJs(indexPy);
-      return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(vertices[index], VECTOR_3));
+      return vectorToEuclidean3Py(vertices[index]);
     });
     $loc.mp$length = function() {return vertices.length;};
     $loc.__str__ = Sk.ffi.functionPy(function(self) {
@@ -856,7 +879,7 @@ function wxyzToPy(w, x, y, z) {
 function vectorJs(x, y, z) {return new THREE[VECTOR_3](x, y, z);}
 function quaternionJs(x, y, z, w) {return new THREE[QUATERNION](x, y, z, w);}
 
-Sk.builtin.defineEuclidean3(mod, {"vector": vectorJs, "quaternion": quaternionJs}, EUCLIDEAN_3);
+Sk.builtin.defineEuclidean3(mod, {"vector": vectorJs, "quaternion": quaternionJs}, EUCLIDEAN_3, THREE, BLADE);
 Sk.builtin.defineVector3(mod, VECTOR_3, vectorJs);
 Sk.builtin.defineQuaternion(mod, QUATERNION, quaternionJs);
 
@@ -878,22 +901,22 @@ mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var scene = Sk.ffi.remapToJs(scenePy);
     switch(name) {
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(scene[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(scene[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(scene[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(scene[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(scene[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(scene[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(scene[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(scene[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(scene[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(scene[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return scene[PROP_USE_QUATERNION];
@@ -927,16 +950,15 @@ mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var scene = Sk.ffi.remapToJs(scenePy);
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
-      case PROP_POSITION: {
-        scene[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(scene, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         scene[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        scene[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -946,14 +968,6 @@ mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        scene[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        scene[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -1423,22 +1437,22 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.builtin.assk$(camera.aspect, Sk.builtin.nmber.float$);
       }
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera.position, VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(camera[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(camera[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return camera[PROP_USE_QUATERNION];
@@ -1489,16 +1503,15 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         camera.aspect = value;
       }
       break;
-      case PROP_POSITION: {
-        camera[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(camera, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         camera[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        camera[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -1508,14 +1521,6 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        camera[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        camera[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -1552,22 +1557,22 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.numberToFloatPy(camera.aspect);
       }
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(camera[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(camera[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(camera[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(camera[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return camera[PROP_USE_QUATERNION];
@@ -1630,16 +1635,15 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         camera[PROP_BOTTOM] = value;
       }
       break;
-      case PROP_POSITION: {
-        camera[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(camera, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         camera[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        camera[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -1649,14 +1653,6 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        camera[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        camera[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -1679,10 +1675,10 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, ORTHOGRAPHIC_CAMERA, []);
 
 mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scalePy, axisPy, segmentsPy, lengthPy, radiusShaft, radiusCone, lengthCone) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scalePy, attitudePy, segmentsPy, lengthPy, radiusShaft, radiusCone, lengthCone) {
     Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 0, 6);
     var scale;
-    var axis;
+    var quaternion;
     var length;
     if (Sk.ffi.isDefined(scalePy)) {
       Sk.ffi.checkArgType(PROP_SCALE, NUMBER, Sk.ffi.isNumber(scalePy), scalePy);
@@ -1691,12 +1687,12 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     else {
       scale = 1;
     }
-    if (Sk.ffi.isDefined(axisPy)) {
-      Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, Sk.ffi.isClass(axisPy, VECTOR_3), axisPy);
-      axis = Sk.ffi.remapToJs(axisPy);
+    if (Sk.ffi.isDefined(attitudePy)) {
+      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isClass(attitudePy, EUCLIDEAN_3), attitudePy);
+      quaternion = Sk.ffi.remapToJs(attitudePy).quaternion;
     }
     else {
-      axis = new THREE[VECTOR_3](0, 0, 1);
+      quaternion = new THREE[QUATERNION](0, 0, 0, 1);
     }
     if (Sk.ffi.isDefined(segmentsPy)) {
       Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isNumber(segmentsPy), segmentsPy);
@@ -1719,7 +1715,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var d = new THREE[VECTOR_3](radiusShaft, 0, 0);
     var e = new THREE[VECTOR_3](0, 0, 0);
     var points = [a, b, c, d, e];
-    Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments, 0, 2 * Math.PI, axis), ARROW_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](points, segments, 0, 2 * Math.PI, quaternion), ARROW_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -2178,36 +2174,16 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  * @param {number=} segments
  * @param {number=} phiStart
  * @param {number=} phiLength
- * @param {Object=} axis
+ * @param {Object=} attitude
  */
-THREE.RevolutionGeometry = function (points, segments, phiStart, phiLength, axis) {
+THREE.RevolutionGeometry = function (points, segments, phiStart, phiLength, attitude) {
 
   THREE[GEOMETRY].call( this );
 
-  var e3 = new THREE[VECTOR_3]( 0, 0, 1 );
   segments = segments || 12;
   phiStart = phiStart || 0;
   phiLength = phiLength || 2 * Math.PI;
-  axis = axis || e3;
-  function rotor(a, b) {
-    // TODO: This doesn't work when a is anti-parallel to b.
-    var ax = a.x;
-    var ay = a.y;
-    var az = a.z;
-    var bx = b.x;
-    var by = b.y;
-    var bz = b.z;
-    var sp = ax * bx + ay * by + az * bz;
-    var w0 = 1 + sp;
-    var scale = 1 / Math.sqrt(2 * w0);
-    var w = w0 * scale;
-    var x = (ay * bz - az * by) * scale;
-    var y = (az * bx - ax * bz) * scale;
-    var z = (ax * by - ay * bx) * scale;
-    return new THREE[QUATERNION](x, y, z, w);
-  }
-
-  var rotation = rotor(e3, axis);
+  attitude = attitude || new THREE[QUATERNION](0, 0, 0, 1);
 
   // Determine heuristically whether the user intended to make a complete revolution.
   var isClosed = Math.abs(2 * Math.PI - Math.abs(phiLength - phiStart)) < 0.0001;
@@ -2234,7 +2210,7 @@ THREE.RevolutionGeometry = function (points, segments, phiStart, phiLength, axis
       vertex.y = s * pt.x + c * pt.y;
       vertex.z = pt.z;
 
-      vertex['applyQuaternion'](rotation);
+      vertex['applyQuaternion'](attitude);
 
       this['vertices'].push( vertex );
 
@@ -2287,7 +2263,7 @@ THREE.RevolutionGeometry = function (points, segments, phiStart, phiLength, axis
 THREE.RevolutionGeometry.prototype = Object.create( THREE[GEOMETRY].prototype );
 
 mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStartPy, phiLengthPy, axisPy) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, segmentsPy, phiStartPy, phiLengthPy, attitudePy) {
     Sk.ffi.checkMethodArgs(REVOLUTION_GEOMETRY, arguments, 1, 5);
     Sk.ffi.checkArgType(PROP_POINTS, Sk.ffi.PyType.LIST, Sk.ffi.isList(pointsPy), pointsPy);
     if (Sk.ffi.isDefined(segmentsPy)) {
@@ -2299,15 +2275,17 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (Sk.ffi.isDefined(phiLengthPy)) {
       Sk.ffi.checkArgType(PROP_PHI_LENGTH, NUMBER, Sk.ffi.isNumber(phiLengthPy), phiLengthPy);
     }
-    if (Sk.ffi.isDefined(axisPy)) {
-      Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, Sk.ffi.isClass(axisPy, VECTOR_3), axisPy);
+    if (Sk.ffi.isDefined(attitudePy)) {
+      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isClass(attitudePy, EUCLIDEAN_3), attitudePy);
     }
+    var attitude   = Sk.ffi.remapToJs(attitudePy);
+    var quaternion = attitude ? attitude.quaternion : undefined;
     Sk.ffi.referenceToPy(new THREE[REVOLUTION_GEOMETRY](
       Sk.ffi.remapToJs(pointsPy),
       Sk.ffi.remapToJs(segmentsPy),
       Sk.ffi.remapToJs(phiStartPy),
       Sk.ffi.remapToJs(phiLengthPy),
-      Sk.ffi.remapToJs(axisPy)), REVOLUTION_GEOMETRY, undefined, selfPy);
+      quaternion), REVOLUTION_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -2621,22 +2599,22 @@ mod[OBJECT_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var obj = Sk.ffi.remapToJs(objPy);
     switch(name) {
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(obj[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(obj[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(obj[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(obj[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(obj[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(obj[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(obj[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(obj[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(obj[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(obj[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return obj[PROP_USE_QUATERNION];
@@ -2649,20 +2627,19 @@ mod[OBJECT_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(obj, name, value) {
+  $loc.__setattr__ = Sk.ffi.functionPy(function(obj, name, valuePy) {
     obj = Sk.ffi.remapToJs(obj);
-    value = Sk.ffi.remapToJs(value);
+    var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
-      case PROP_POSITION: {
-        obj[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(obj, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         obj[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        obj[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -2672,14 +2649,6 @@ mod[OBJECT_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        obj[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        obj[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -2775,22 +2744,22 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
       }
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(light[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(light[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return light[PROP_USE_QUATERNION];
@@ -2814,9 +2783,9 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, value) {
+  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, valuePy) {
     light = Sk.ffi.remapToJs(light);
-    value = Sk.ffi.remapToJs(value);
+    var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       case PROP_COLOR: {
         light[PROP_COLOR] = new THREE[COLOR](value);
@@ -2840,16 +2809,15 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_POSITION: {
-        light[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(light, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         light[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        light[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -2859,14 +2827,6 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        light[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        light[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -2920,22 +2880,22 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
       }
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(light[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(light[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(light[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(light[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return light[PROP_USE_QUATERNION];
@@ -2959,9 +2919,9 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, value) {
+  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, valuePy) {
     light = Sk.ffi.remapToJs(light);
-    value = Sk.ffi.remapToJs(value);
+    var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       case PROP_COLOR: {
         light[PROP_COLOR] = new THREE[COLOR](value);
@@ -2985,16 +2945,15 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_POSITION: {
-        light[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(light, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         light[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        light[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -3004,14 +2963,6 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        light[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        light[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {
@@ -3049,22 +3000,22 @@ mod[LINE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var line = Sk.ffi.remapToJs(linePy);
     switch(name) {
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(line[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(line[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(line[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(line[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(line[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(line[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(line[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(line[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(line[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(line[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return line[PROP_USE_QUATERNION];
@@ -3209,22 +3160,22 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       case PROP_POSITION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(mesh[PROP_POSITION], VECTOR_3));
+        return vectorToEuclidean3Py(mesh[PROP_POSITION]);
       }
       case PROP_QUATERNION: {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(mesh[PROP_QUATERNION], QUATERNION));
       }
       case PROP_ROTATION: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(mesh[PROP_ROTATION], VECTOR_3));
+        return vectorToEuclidean3Py(mesh[PROP_ROTATION]);
       }
       case PROP_EULER_ORDER: {
         return Sk.ffi.stringToPy(mesh[PROP_EULER_ORDER]);
       }
       case PROP_SCALE: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(mesh[PROP_SCALE], VECTOR_3));
+        return vectorToEuclidean3Py(mesh[PROP_SCALE]);
       }
       case PROP_UP: {
-        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(mesh[PROP_UP], VECTOR_3));
+        return vectorToEuclidean3Py(mesh[PROP_UP]);
       }
       case PROP_USE_QUATERNION: {
         return mesh[PROP_USE_QUATERNION];
@@ -3337,17 +3288,15 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_POSITION: {
-        Sk.ffi.checkArgType(PROP_POSITION, VECTOR_3, isVector3Py(valuePy), valuePy);
-        mesh[PROP_POSITION] = value;
+      case PROP_POSITION:
+      case PROP_ROTATION:
+      case PROP_SCALE:
+      case PROP_UP: {
+        setVectorProperty(mesh, name, valuePy);
       }
       break;
       case PROP_QUATERNION: {
         mesh[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        mesh[PROP_ROTATION] = value;
       }
       break;
       case PROP_EULER_ORDER: {
@@ -3357,14 +3306,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         else {
           throw new Error(name + " must be a string");
         }
-      }
-      break;
-      case PROP_SCALE: {
-        mesh[PROP_SCALE] = value;
-      }
-      break;
-      case PROP_UP: {
-        mesh[PROP_UP] = value;
       }
       break;
       case PROP_USE_QUATERNION: {

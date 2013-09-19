@@ -22,7 +22,7 @@ var $builtinmodule = function(name) {
   }
   function quaternionJs(x, y, z, w) {return new THREE.Quaternion(x, y, z, w);}
 
-  Sk.builtin.defineEuclidean3(mod, {"vector": vectorJs, "quaternion": quaternionJs}, "Euclidean3");
+  Sk.builtin.defineEuclidean3(mod, {"vector": vectorJs, "quaternion": quaternionJs}, "Euclidean3", THREE, BLADE);
   Sk.builtin.defineUnits(mod);
 
   return mod;

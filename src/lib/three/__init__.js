@@ -7,6 +7,6 @@
  */
 var $builtinmodule = function(name) {
   var mod = {};
-  Sk.builtin.defineThree(mod, THREE);
+  Sk.builtin.defineThree(mod, THREE, BLADE);
   return mod;
 }

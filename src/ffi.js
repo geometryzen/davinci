@@ -102,7 +102,7 @@ goog.exportSymbol("Sk.ffi.none", Sk.ffi.none);
 /**
  * Converts a JavaScript boolean or null to the internal Python bool representation.
  *
- * @param {?boolean} valueJs
+ * @param {?boolean=} valueJs
  * @param {boolean=} defaultJs
  * @return {Sk.ffi.bool|Sk.ffi.none|undefined}
  */
@@ -173,7 +173,7 @@ goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
 /**
  * Converts a JavaScript number or null to the internal Python float representation.
  *
- * @param {?number} valueJs
+ * @param {?number=} valueJs
  * @param {number=} defaultJs
  * @return {Object|Sk.ffi.none|undefined}
  */
@@ -970,7 +970,7 @@ goog.exportSymbol("Sk.ffi.numberToJs", Sk.ffi.numberToJs);
  * valueJs = Sk.ffi.remapToJs(valuePy);
  *
  * @param {Object} valuePy The Python value to be mapped.
- * @param {Object=} defaultJs The optional default JavaScript value to use when the type of the value is undefined.
+ * @param {boolean|Object=} defaultJs The optional default JavaScript value to use when the type of the value is undefined.
  */
 Sk.ffi.remapToJs = function(valuePy, defaultJs)
 {

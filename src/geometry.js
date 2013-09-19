@@ -22,6 +22,11 @@ var CARTESIAN_SPACE                 = "CartesianSpace";
  * @const
  * @type {string}
  */
+var EUCLIDEAN_3                     = "Euclidean3";
+/**
+ * @const
+ * @type {string}
+ */
 var SCENE                           = "Scene";
 /**
  * @const
@@ -33,6 +38,11 @@ var PERSPECTIVE_CAMERA              = "PerspectiveCamera";
  * @type {string}
  */
 var WEBGL_RENDERER                  = "WebGLRenderer";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_ATTITUDE                   = "attitude";
 /**
  * @const
  * @type {string}
@@ -272,6 +282,11 @@ var OBJECT_3D                       = "Object3D";
  * @const
  * @type {string}
  */
+var QUATERNION                      = "Quaternion";
+/**
+ * @const
+ * @type {string}
+ */
 var VECTOR_3                        = "Vector3";
 /**
  * @const
@@ -313,8 +328,10 @@ var MATERIAL_GRID_MINOR = new THREE[LINE_BASIC_MATERIAL]({"color": COLOR_GRID,"o
 var e1 = new THREE[VECTOR_3](1, 0, 0);
 var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
+var one = {"vector": new THREE[VECTOR_3](0, 0, 0), "quaternion": new THREE[QUATERNION](0, 0, 0, 1), "xyz": 0};
 
-function isVector3(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
+function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
+function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
 
 function methodName(targetPy) {
   var target = Sk.ffi.remapToJs(targetPy);
@@ -489,17 +506,17 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = {};
     self[PROP_COLOR]     = DEFAULT_COLOR;
     self[PROP_WIREFRAME] = false;
-    self[PROP_AXIS]      = e3;
+    self[PROP_ATTITUDE]  = one;
     Sk.ffi.referenceToPy(self, ARROW_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var arrow = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_AXIS: {
-        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
-          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
-          arrow[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+      case PROP_ATTITUDE: {
+        return Sk.ffi.callableToPy(mod, PROP_ATTITUDE, function(methodPy, attitudePy) {
+          Sk.ffi.checkMethodArgs(PROP_ATTITUDE, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, isEuclidean3Py(attitudePy), attitudePy);
+          arrow[PROP_ATTITUDE] = Sk.ffi.remapToJs(attitudePy);
           return selfPy;
         });
       }
@@ -563,7 +580,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
-           * @return {{scale: number, axis: Object, length: number, radius: number}}
+           * @return {{scale: number, attitude: Object, length: number, radius: number}}
            */
           function dimensionArrow() {
             var dims = {};
@@ -576,20 +593,20 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
               dims.length = dims.radius / alpha;
             }
             else {
-              dims.scale  = (arrow.scale)  ? arrow.scale  : 1;
-              dims.axis   = (arrow.axis)   ? arrow.axis   : e3;
-              dims.length = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
-              dims.radius = (arrow.radius) ? arrow.radius : DEFAULT_CYLINDER_RADIUS;
+              dims.scale    = (arrow.scale)    ? arrow.scale    : 1;
+              dims.attitude = (arrow.attitude) ? arrow.attitude : one;
+              dims.length   = (arrow.length)   ? arrow.length   : DEFAULT_CYLINDER_HEIGHT;
+              dims.radius   = (arrow.radius)   ? arrow.radius   : DEFAULT_CYLINDER_RADIUS;
             }
             return dims;
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionArrow();
           var scalePy    = Sk.ffi.numberToFloatPy(dimensions[PROP_SCALE]);
-          var axisPy     = Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(dimensions[PROP_AXIS], VECTOR_3));
+          var attitudePy = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_ATTITUDE], EUCLIDEAN_3));
           var segmentsPy = Sk.ffi.numberToIntPy(32);
           var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
-          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, axisPy, segmentsPy, lengthPy);
+          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy);
           return completeMesh(geometryPy, arrow);
         });
       }
@@ -622,7 +639,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_AXIS: {
         return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
           Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
+          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
           cone[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
           return selfPy;
         });
@@ -964,7 +981,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_AXIS: {
         return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
           Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3(axisPy), axisPy);
+          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
           sphere[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
           return selfPy;
         });

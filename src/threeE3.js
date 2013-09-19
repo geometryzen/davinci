@@ -1,15 +1,19 @@
 /**
  * Convenience function for incorporating a Euclidean3 class into a module.
- *
- * Usage:
- *
- * Sk.builtin.defineEuclidean3(mod);
  */
 (function() {
-this.BLADE = this.BLADE || {};
-var BLADE = this.BLADE;
-Sk.builtin.defineEuclidean3 = function(mod, factory, EUCLIDEAN_3) {
-Sk.ffi.checkFunctionArgs("defineEuclidean3", arguments, 3, 3);
+Sk.builtin.defineEuclidean3 = function(mod, factory, EUCLIDEAN_3, THREE, BLADE) {
+Sk.ffi.checkFunctionArgs("defineEuclidean3", arguments, 5, 5);
+/**
+ * @const
+ * @type {string}
+ */
+var VECTOR_3                   = "Vector3";
+/**
+ * @const
+ * @type {string}
+ */
+var QUATERNION                 = "Quaternion";
 /**
  * @const
  * @type {string}
@@ -60,6 +64,21 @@ var INT                        = Sk.ffi.PyType.INT;
  * @type {!Array.<Sk.ffi.PyType>}
  */
 var NUMBER                     = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_VECTOR                = "vector";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_QUATERNION            = "quaternion";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_MUTABLE               = "mutable";
 /**
  * @const
  * @type {string}
@@ -125,6 +144,11 @@ var METHOD_DOT                 = "dot";
  * @type {string}
  */
 var METHOD_EXP                 = "exp";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_CONSTANTIFY         = "constantify";
 /**
  * @const
  * @type {string}
@@ -204,7 +228,47 @@ var ARG_OTHER                  = "other";
  * @const
  * @type {string}
  */
+var ARG_SELF                   = "self";
+/**
+ * @const
+ * @type {string}
+ */
 var ARG_VALUE                  = "value";
+/**
+ * @constructor
+ */
+THREE.Euclidean3 = function(vector, quaternion, xyz, mutable) {
+  this.vector     = vector;
+  this.quaternion = quaternion;
+  this._pseudo    = xyz;
+  this._mutable   = (typeof mutable === 'boolean') ? mutable : true;
+}
+THREE.Euclidean3.prototype = {
+  constructor: THREE.Euclidean3,
+  get w () {return this.quaternion.w;},
+  set w (value) {this.checkMutable(); this.quaternion.w = value;},
+  get x () {return this.vector.x;},
+  set x (value) {this.checkMutable(); this.vector.x = value;},
+  get y () {return this.vector.y;},
+  set y (value) {this.checkMutable(); this.vector.y = value;},
+  get z () {return this.vector.z;},
+  set z (value) {this.checkMutable(); this.vector.z = value;},
+  get xy () {return -this.quaternion.z;},
+  set xy (value) {this.checkMutable(); this.quaternion.z = -value;},
+  get yz () {return -this.quaternion.x;},
+  set yz (value) {this.checkMutable(); this.quaternion.x = -value;},
+  get zx () {return -this.quaternion.y;},
+  set zx (value) {this.checkMutable(); this.quaternion.y = -value;},
+  get xyz () {return this._pseudo;},
+  set xyz (value) {this.checkMutable(); this._pseudo = value;},
+  get mutable () {return this._mutable;},
+  set mutable (value) {this._mutable = value;},
+  checkMutable: function() {
+    if (!this._mutable) {
+      throw new Error("Quantity is not mutable");
+    }
+  }
+}
 
 function isNumber(x)    {return typeof x === 'number';}
 function isEuclidean3(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
@@ -562,17 +626,28 @@ function divide(a000, a001, a010, a011, a100, a101, a110, a111, b000, b001, b010
     return coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz);
   }
 }
-
-function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz) {
-  w   = Sk.ffi.numberToFloatPy(w);
-  x   = Sk.ffi.numberToFloatPy(x);
-  y   = Sk.ffi.numberToFloatPy(y);
-  z   = Sk.ffi.numberToFloatPy(z);
-  xy  = Sk.ffi.numberToFloatPy(xy);
-  yz  = Sk.ffi.numberToFloatPy(yz);
-  zx  = Sk.ffi.numberToFloatPy(zx);
-  xyz = Sk.ffi.numberToFloatPy(xyz);
-  return Sk.ffi.callsim(mod[EUCLIDEAN_3], w, x, y, z, xy, yz, zx, xyz);
+/**
+ * @param {number} w
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} xy
+ * @param {number} yz
+ * @param {number} zx
+ * @param {number} xyz
+ * @param {boolean=} mutable
+ */
+function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz, mutable) {
+  var wPy   = Sk.ffi.numberToFloatPy(w);
+  var xPy   = Sk.ffi.numberToFloatPy(x);
+  var yPy   = Sk.ffi.numberToFloatPy(y);
+  var zPy   = Sk.ffi.numberToFloatPy(z);
+  var xyPy  = Sk.ffi.numberToFloatPy(xy);
+  var yzPy  = Sk.ffi.numberToFloatPy(yz);
+  var zxPy  = Sk.ffi.numberToFloatPy(zx);
+  var xyzPy = Sk.ffi.numberToFloatPy(xyz);
+  var mutablePy = Sk.ffi.booleanToPy(mutable);
+  return Sk.ffi.callsim(mod[EUCLIDEAN_3], wPy, xPy, yPy, zPy, xyPy, yzPy, zxPy, xyzPy, mutablePy);
 }
 
 function coord(mv, index) {
@@ -636,50 +711,61 @@ function compute(f, a, b, coord, pack) {
   return pack(x0, x1, x2, x3, x4, x5, x6, x7);
 }
 
-mod[SCALAR_E3] = Sk.ffi.functionPy(function(w) {
-  Sk.ffi.checkFunctionArgs(SCALAR_E3, arguments, 1, 1);
-  Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNumber(w), w);
-  w = Sk.ffi.numberToJs(w);
-  return coordsJsToE3Py(w, 0, 0, 0, 0, 0, 0, 0);
+mod[SCALAR_E3] = Sk.ffi.functionPy(function(wPy, mutablePy) {
+  Sk.ffi.checkFunctionArgs(SCALAR_E3, arguments, 1, 2);
+  Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNumber(wPy), wPy);
+  if (Sk.ffi.isDefined(mutablePy)) {
+    Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
+  }
+  return coordsJsToE3Py(Sk.ffi.numberToJs(wPy), 0, 0, 0, 0, 0, 0, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
-mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z) {
-  Sk.ffi.checkFunctionArgs(VECTOR_E3, arguments, 3, 3);
+mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
+  Sk.ffi.checkFunctionArgs(VECTOR_E3, arguments, 3, 4);
   Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
   Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
   Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
+  if (Sk.ffi.isDefined(mutablePy)) {
+    Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
+  }
   x = Sk.ffi.numberToJs(x);
   y = Sk.ffi.numberToJs(y);
   z = Sk.ffi.numberToJs(z);
-  return coordsJsToE3Py(0, x, y, z, 0, 0, 0, 0);
+  return coordsJsToE3Py(0, x, y, z, 0, 0, 0, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
-mod[BIVECTOR_E3] = Sk.ffi.functionPy(function(xy, yz, zx) {
-  Sk.ffi.checkFunctionArgs(BIVECTOR_E3, arguments, 3, 3);
+mod[BIVECTOR_E3] = Sk.ffi.functionPy(function(xy, yz, zx, mutablePy) {
+  Sk.ffi.checkFunctionArgs(BIVECTOR_E3, arguments, 3, 4);
   Sk.ffi.checkArgType(PROP_XY, NUMBER, Sk.ffi.isNumber(xy), xy);
   Sk.ffi.checkArgType(PROP_YZ, NUMBER, Sk.ffi.isNumber(yz), yz);
   Sk.ffi.checkArgType(PROP_ZX, NUMBER, Sk.ffi.isNumber(zx), zx);
+  if (Sk.ffi.isDefined(mutablePy)) {
+    Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
+  }
   xy = Sk.ffi.numberToJs(xy);
   yz = Sk.ffi.numberToJs(yz);
   zx = Sk.ffi.numberToJs(zx);
-  return coordsJsToE3Py(0, 0, 0, 0, xy, yz, zx, 0);
+  return coordsJsToE3Py(0, 0, 0, 0, xy, yz, zx, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
-mod[PSEUDOSCALAR_E3] = Sk.ffi.functionPy(function(xyz) {
-  Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_E3, arguments, 1, 1);
+mod[PSEUDOSCALAR_E3] = Sk.ffi.functionPy(function(xyz, mutablePy) {
+  Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_E3, arguments, 1, 2);
   Sk.ffi.checkArgType(PROP_XYZ, NUMBER, Sk.ffi.isNumber(xyz), xyz);
+  if (Sk.ffi.isDefined(mutablePy)) {
+    Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
+  }
   xyz = Sk.ffi.numberToJs(xyz);
-  return coordsJsToE3Py(0, 0, 0, 0, 0, 0, 0, xyz);
+  return coordsJsToE3Py(0, 0, 0, 0, 0, 0, 0, xyz, Sk.ffi.remapToJs(mutablePy));
 });
 
 mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, w, x, y, z, xy, yz, zx, xyz) {
-    Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 1, 8);
+  $loc.__init__ = Sk.ffi.functionPy(function(self, w, x, y, z, xy, yz, zx, xyz, mutablePy) {
+    Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 1, 9);
     switch(Sk.ffi.getType(w)) {
       case Sk.ffi.PyType.FLOAT:
       case Sk.ffi.PyType.INT:
       case Sk.ffi.PyType.LONG: {
-        Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 8, 8);
+        Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 8, 9);
         Sk.ffi.checkArgType(PROP_W,    NUMBER, Sk.ffi.isNumber(w), w);
         Sk.ffi.checkArgType(PROP_X,    NUMBER, Sk.ffi.isNumber(x), x);
         Sk.ffi.checkArgType(PROP_Y,    NUMBER, Sk.ffi.isNumber(y), y);
@@ -688,6 +774,9 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         Sk.ffi.checkArgType(PROP_YZ,   NUMBER, Sk.ffi.isNumber(yz), yz);
         Sk.ffi.checkArgType(PROP_ZX,   NUMBER, Sk.ffi.isNumber(zx), zx);
         Sk.ffi.checkArgType(PROP_XYZ,  NUMBER, Sk.ffi.isNumber(xyz), xyz);
+        if (Sk.ffi.isDefined(mutablePy)) {
+          Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
+        }
         w   = Sk.ffi.remapToJs(w);
         x   = Sk.ffi.remapToJs(x);
         y   = Sk.ffi.remapToJs(y);
@@ -696,9 +785,10 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         yz  = Sk.ffi.remapToJs(yz);
         zx  = Sk.ffi.remapToJs(zx);
         xyz = Sk.ffi.remapToJs(xyz);
+        var mutable = Sk.ffi.remapToJs(mutablePy, true);
         var vector = factory.vector(x,y,z);
         var quaternion = factory.quaternion(-yz, -zx, -xy, w);
-        Sk.ffi.referenceToPy({"vector": vector, "quaternion": quaternion, "xyz": xyz}, EUCLIDEAN_3, undefined, self);
+        Sk.ffi.referenceToPy(new THREE.Euclidean3(vector, quaternion, xyz, mutable), EUCLIDEAN_3, undefined, self);
       }
       break;
       case Sk.ffi.PyType.CLASS: {
@@ -979,6 +1069,11 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return selfPy;
     }
   });
+  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    var s  = Sk.ffi.remapToJs(selfPy);
+    var o = Sk.ffi.remapToJs(otherPy);
+    return Sk.ffi.numberToFloatPy(s.x * o.x + s.y * o.y + s.z * o.z);
+  });
   $loc.__xor__ = Sk.ffi.functionPy(function(a, b) {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
@@ -1165,6 +1260,13 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     a.xyz = rcoE3(a0, a1, a2, a3, a4, a5, a6, a7, b0, b1, b2, b3, b4, b5, b6, b7, 7);
     return selfPy;
   });
+  $loc.__len__ = Sk.ffi.functionPy(function(selfPy) {
+    var self = Sk.ffi.remapToJs(selfPy);
+    var x = self.x;
+    var y = self.y;
+    var z = self.z;
+    return Sk.ffi.numberToFloatPy(Math.sqrt(x*x+y*y+z*z));
+  });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
     return selfPy;
   });
@@ -1236,28 +1338,37 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var quaternion = self.quaternion;
     switch(name) {
       case PROP_W: {
-        return Sk.ffi.numberToFloatPy(quaternion.w);
+        return Sk.ffi.numberToFloatPy(self.w);
       }
       case PROP_X: {
-        return Sk.ffi.numberToFloatPy(vector.x);
+        return Sk.ffi.numberToFloatPy(self.x);
       }
       case PROP_Y: {
-        return Sk.ffi.numberToFloatPy(vector.y);
+        return Sk.ffi.numberToFloatPy(self.y);
       }
       case PROP_Z: {
-        return Sk.ffi.numberToFloatPy(vector.z);
+        return Sk.ffi.numberToFloatPy(self.z);
       }
       case PROP_XY: {
-        return Sk.ffi.numberToFloatPy(-quaternion.z);
+        return Sk.ffi.numberToFloatPy(self.xy);
       }
       case PROP_YZ: {
-        return Sk.ffi.numberToFloatPy(-quaternion.x);
+        return Sk.ffi.numberToFloatPy(self.yz);
       }
       case PROP_ZX: {
-        return Sk.ffi.numberToFloatPy(-quaternion.y);
+        return Sk.ffi.numberToFloatPy(self.zx);
       }
       case PROP_XYZ: {
         return Sk.ffi.numberToFloatPy(self.xyz);
+      }
+      case PROP_MUTABLE: {
+        return Sk.ffi.booleanToPy(self.mutable);
+      }
+      case PROP_VECTOR: {
+        return Sk.ffi.callsim(mod[VECTOR_3], Sk.ffi.referenceToPy(self.vector, VECTOR_3));
+      }
+      case PROP_QUATERNION: {
+        return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(self.quaternion, QUATERNION));
       }
       case METHOD_ADD: {
         return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, otherPy) {
@@ -1272,6 +1383,13 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           quaternion.y += arg.quaternion.y;
           quaternion.z += arg.quaternion.z;
           self.xyz += arg.xyz;
+          return selfPy;
+        });
+      }
+      case METHOD_CONSTANTIFY: {
+        return Sk.ffi.callableToPy(mod, METHOD_CONSTANTIFY, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_CONSTANTIFY, arguments, 0, 0);
+          self.mutable = false;
           return selfPy;
         });
       }
@@ -1356,7 +1474,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case METHOD_SET: {
         return Sk.ffi.callableToPy(mod, METHOD_SET, function(methodPy, xPy, yPy, zPy) {
-          Sk.ffi.checkMethodArgs(METHOD_SET, arguments, 1, 1);
+          Sk.ffi.checkMethodArgs(METHOD_SET, arguments, 3, 3);
           Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(xPy), xPy);
           Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(yPy), yPy);
           Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(zPy), zPy);
@@ -1391,40 +1509,27 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(mv, name, value) {
-    mv = Sk.ffi.remapToJs(mv);
-    value = Sk.ffi.remapToJs(value);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    // We don't normally check the self argument for performance reasons.
+    // I'm doing it here to prove the implementation and because we expect coordinate-mutation to be rare.
+    Sk.ffi.checkArgType(ARG_SELF, EUCLIDEAN_3, isEuclidean3(selfPy), selfPy);
+    var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_W: {
-        mv.w = value;
-      }
-      break;
-      case PROP_X: {
-        mv.x = value;
-      }
-      break;
-      case PROP_Y: {
-        mv.y = value;
-      }
-      break;
-      case PROP_Z: {
-        mv.z = value;
-      }
-      break;
-      case PROP_XY: {
-        mv.xy = value;
-      }
-      break;
-      case PROP_YZ: {
-        mv.yz = value;
-      }
-      break;
-      case PROP_ZX: {
-        mv.zx = value;
-      }
-      break;
+      case PROP_W:
+      case PROP_X:
+      case PROP_Y:
+      case PROP_Z:
+      case PROP_XY:
+      case PROP_YZ:
+      case PROP_ZX:
       case PROP_XYZ: {
-        mv.xyz = value;
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        try {
+          self[name] = Sk.ffi.remapToJs(valuePy);
+        }
+        catch(e) {
+          throw Sk.ffi.assertionError(e.message);
+        }
       }
       break;
       default: {
@@ -1484,15 +1589,14 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    var vector = self.vector;
     var quaternion = self.quaternion;
-    var w = quaternion.w;
-    var x = vector.x;
-    var y = vector.y;
-    var z = vector.z;
-    var xy = -quaternion.z;
-    var yz = -quaternion.x;
-    var zx = -quaternion.y;
+    var w   = self.w;
+    var x   = self.x;
+    var y   = self.y;
+    var z   = self.z;
+    var xy  = self.xy;
+    var yz  = self.yz;
+    var zx  = self.zx;
     var xyz = self.xyz;
     return Sk.ffi.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], ["1", "i", "j", "k", "ij", "jk", "ki", "I"]));
   });
