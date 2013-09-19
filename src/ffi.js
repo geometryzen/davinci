@@ -1106,6 +1106,97 @@ Sk.ffi.exp = function(valuePy)
 };
 goog.exportSymbol("Sk.ffi.exp", Sk.ffi.exp);
 
+Sk.ffi.add = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__add__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__add__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__add__');
+    }
+};
+goog.exportSymbol("Sk.ffi.add", Sk.ffi.add);
+
+Sk.ffi.sub = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__sub__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__sub__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__sub__');
+    }
+};
+goog.exportSymbol("Sk.ffi.sub", Sk.ffi.sub);
+
+Sk.ffi.mul = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__mul__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__mul__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__mul__');
+    }
+};
+goog.exportSymbol("Sk.ffi.mul", Sk.ffi.mul);
+
+Sk.ffi.div = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__div__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__div__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__div__');
+    }
+};
+goog.exportSymbol("Sk.ffi.div", Sk.ffi.div);
+
+Sk.ffi.xor = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__xor__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__xor__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__xor__');
+    }
+};
+goog.exportSymbol("Sk.ffi.xor", Sk.ffi.xor);
+
+Sk.ffi.lshift = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__lshift__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__lshift__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__lshift__');
+    }
+};
+goog.exportSymbol("Sk.ffi.lshift", Sk.ffi.lshift);
+
+Sk.ffi.rshift = function(lhsPy, rhsPy)
+{
+    if (lhsPy['__rshift__'])
+    {
+        return Sk.ffi.callsim(lhsPy["__rshift__"], lhsPy, rhsPy);
+    }
+    else
+    {
+        throw Sk.ffi.notImplementedError('__rshift__');
+    }
+};
+goog.exportSymbol("Sk.ffi.rshift", Sk.ffi.rshift);
+
 /**
  * Computes the positive of a value by either invoking the special __pos__ function or the native equivalent.
  */

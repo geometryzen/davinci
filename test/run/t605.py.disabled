@@ -1,4 +1,6 @@
-from eight import *
+# The quaternions are isomorphic to the even sub-algebra of Euclidean Space (e3ga).
+# TODO: division; Quaternions are after all a division algebra! 
+from three import *
 from math import pi
 
 def showValue(name, m):
@@ -20,8 +22,7 @@ print "quaternion.w => " + str(quaternion.w)
 print "----------"
 print "Defaults for Quaternion()"
 print "----------"
-print repr(Quaternion(0,0,0,0))
-'''
+print repr(Quaternion())
 print str(Quaternion())
 print "x => " + str(Quaternion().x)
 print "y => " + str(Quaternion().y)
@@ -30,7 +31,6 @@ print "w => " + str(Quaternion().w)
 print "----------"
 print "Assignment"
 print "----------"
-
 quaternion = Quaternion(0,0,0,0)
 print repr(quaternion)
 print str(quaternion)
@@ -38,7 +38,6 @@ quaternion.x = 1
 quaternion.y = 2
 quaternion.z = 3
 quaternion.w = 4
-
 print quaternion
 print str(quaternion)
 print repr(quaternion)
@@ -58,18 +57,11 @@ source = Quaternion(4, 3, 2, 1)
 print target.copy(source)
 print repr(target)
 print "----------"
-print "setFromEuler(vector, order) Quaternion"
-print "----------"
-vector = Vector3(0.5, 1.0, 2.0)
-target = Quaternion()
-print target.setFromEuler(vector)
-print repr(target)
-print "----------"
 print "setFromAxisAngle(axis, angle) Quaternion"
 print "----------"
 axis = Vector3(1.0, 1.0, 1.0).normalize()
 target = Quaternion()
-print target.setFromAxisAngle(axis, pi/2.0)
+print target.setFromAxisAngle(axis, pi/2)
 print repr(target)
 print "----------"
 print "inverse()"
@@ -125,4 +117,3 @@ for a in qs:
     for b in qs:
         showValue(str(a) + " * " + str(b), a * b)
     print ""
-'''

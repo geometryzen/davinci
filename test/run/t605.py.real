@@ -3,7 +3,7 @@ Quaternions
 Construction
 ----------
 Quaternion(1, 2, 3, 4)
-4+i+2*j+3*k
+4+i+2j+3k
 quaternion.x => 1.0
 quaternion.y => 2.0
 quaternion.z => 3.0
@@ -22,8 +22,8 @@ Assignment
 ----------
 Quaternion(0, 0, 0, 0)
 0
-4+i+2*j+3*k
-4+i+2*j+3*k
+4+i+2j+3k
+4+i+2j+3k
 Quaternion(1, 2, 3, 4)
 ----------
 set(x, y, z, w)
@@ -36,20 +36,22 @@ quaternion.w => 7.0
 ----------
 copy(q) Quaternion
 ----------
-1+4*i+3*j+2*k
+1+4i+3j+2k
 Quaternion(4, 3, 2, 1)
-----------
-setFromEuler(vector, order) Quaternion
-----------
 ----------
 setFromAxisAngle(axis, angle) Quaternion
 ----------
+0.7071067811865476+0.408248290463863i+0.408248290463863j+0.408248290463863k
+Quaternion(0.408248290463863, 0.408248290463863, 0.408248290463863, 0.7071067811865476)
 ----------
 inverse()
 ----------
+0.03333333333333333-0.13333333333333333i-0.1j-0.06666666666666667k
+1
 ----------
 length()
 ----------
+5.47722557505
 ----------
 lengthSq()
 ----------
@@ -57,10 +59,11 @@ lengthSq()
 ----------
 normalize()
 ----------
+0.18257418583505536+0.7302967433402214i+0.5477225575051661j+0.3651483716701107k
 ----------
 clone()
 ----------
-1+4*i+3*j+2*k
+1+4i+3j+2k
 ----------
 operators
 ----------
@@ -73,19 +76,19 @@ Addition +
 1 + k => 1+k
 
 i + 1 => 1+i
-i + i => 2*i
+i + i => 2i
 i + j => i+j
 i + k => i+k
 
 j + 1 => 1+j
 j + i => i+j
-j + j => 2*j
+j + j => 2j
 j + k => j+k
 
 k + 1 => 1+k
 k + i => i+k
 k + j => j+k
-k + k => 2*k
+k + k => 2k
 
 ----------
 Subtraction -

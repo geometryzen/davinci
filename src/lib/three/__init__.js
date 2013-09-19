@@ -1,9 +1,7 @@
 /**
  * The 'three' module is a foreign function interface over Three.js for the DaVinci Python to JavaScript cross-compiler.
  *
- * The 'three' module is in core respects API-compatible with the Three.js library.
- *
- * The 'three' module contains additional helper functions for Physicists.
+ * The 'three' module is in most respects API-compatible with the Three.js library.
  *
  * David Holmes (david.geo.holmes@gmail.com)
  */
