@@ -2035,45 +2035,51 @@ mod[ICOSAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 
 mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var PROP_DETAIL = "detail";
-  $loc.__init__ = Sk.ffi.functionPy(function(self, radius, detail) {
-    radius = numberFromArg(radius,        PROP_RADIUS, OCTAHEDRON_GEOMETRY);
-    detail = numberFromIntegerArg(detail, PROP_DETAIL, OCTAHEDRON_GEOMETRY);
-    self.v = new THREE[OCTAHEDRON_GEOMETRY](radius, detail);
-    self.v.radius = radius; // workaround for THREE not caching radius.
-    self.v.detail = detail; // workaround for THREE not caching detail.
-    self.tp$name = OCTAHEDRON_GEOMETRY;
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, detailPy) {
+    Sk.ffi.checkMethodArgs(OCTAHEDRON_GEOMETRY, arguments, 0, 2);
+    if (Sk.ffi.isDefined(radiusPy)) {
+      Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+    }
+    if (Sk.ffi.isDefined(detailPy)) {
+      Sk.ffi.checkArgType(PROP_DETAIL, INT, Sk.ffi.isInt(detailPy), detailPy);
+    }
+    var radius = Sk.ffi.remapToJs(radiusPy);
+    var detail = Sk.ffi.remapToJs(detailPy);
+    var octahedron = new THREE[OCTAHEDRON_GEOMETRY](radius, detail);
+    octahedron.radius = radius; // workaround for THREE not caching radius.
+    octahedron.detail = detail; // workaround for THREE not caching detail.
+    Sk.ffi.referenceToPy(octahedron, OCTAHEDRON_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_RADIUS: {
-        return Sk.builtin.assk$(self.v[PROP_RADIUS], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(self[PROP_RADIUS]);
       }
       case PROP_DETAIL: {
-        return Sk.builtin.assk$(self.v[PROP_DETAIL], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(self[PROP_DETAIL]);
       }
       default: {
-        // Framework will take care of the error message.
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(OCTAHEDRON_GEOMETRY);
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     switch(name) {
       default: {
-        throw new Error(name + " is not an attribute of " + OCTAHEDRON_GEOMETRY);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(OCTAHEDRON_GEOMETRY);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(self) {
-    var octahedron = self.v;
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var octahedron = Sk.ffi.remapToJs(selfPy);
     var args = {};
     args[PROP_RADIUS] = octahedron[PROP_RADIUS];
     args[PROP_DETAIL] = octahedron[PROP_DETAIL];
     return Sk.ffi.stringToPy(OCTAHEDRON_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-    var octahedron = self.v;
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var octahedron = Sk.ffi.remapToJs(selfPy);
     var radius = octahedron[PROP_RADIUS];
     var detail = octahedron[PROP_DETAIL];
     var args = [radius, detail];
