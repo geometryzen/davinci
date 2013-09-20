@@ -1984,43 +1984,48 @@ mod[LATHE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, LATHE_GEOMETRY, []);
 
 mod[ICOSAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, radius, detail) {
-    radius = numberFromArg(radius,        PROP_RADIUS, ICOSAHEDRON_GEOMETRY);
-    detail = numberFromIntegerArg(detail, PROP_DETAIL, ICOSAHEDRON_GEOMETRY);
-    self.v = new THREE[ICOSAHEDRON_GEOMETRY](radius, detail);
-    self.tp$name = ICOSAHEDRON_GEOMETRY;
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, detailPy) {
+    Sk.ffi.checkMethodArgs(ICOSAHEDRON_GEOMETRY, arguments, 0, 2);
+    if (Sk.ffi.isDefined(radiusPy)) {
+      Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+    }
+    if (Sk.ffi.isDefined(detailPy)) {
+      Sk.ffi.checkArgType(PROP_DETAIL, INT, Sk.ffi.isInt(detailPy), detailPy);
+    }
+    var radius = Sk.ffi.remapToJs(radiusPy);
+    var detail = Sk.ffi.remapToJs(detailPy);
+    Sk.ffi.referenceToPy(new THREE[ICOSAHEDRON_GEOMETRY](radius, detail), ICOSAHEDRON_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_RADIUS: {
-        return Sk.builtin.assk$(self.v[PROP_RADIUS], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(self[PROP_RADIUS]);
       }
       case PROP_DETAIL: {
-        return Sk.builtin.assk$(self.v[PROP_DETAIL], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(self[PROP_DETAIL]);
       }
       default: {
-        // Framework will take care of the error message.
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(ICOSAHEDRON_GEOMETRY);
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     switch(name) {
       default: {
-        throw new Error(name + " is not an attribute of " + ICOSAHEDRON_GEOMETRY);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(ICOSAHEDRON_GEOMETRY);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(self) {
-    var icosahedron = self.v;
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var icosahedron = Sk.ffi.remapToJs(selfPy);
     var args = {};
     args[PROP_RADIUS] = icosahedron[PROP_RADIUS];
     args[PROP_DETAIL] = icosahedron[PROP_DETAIL];
     return Sk.ffi.stringToPy(ICOSAHEDRON_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-    var icosahedron = self.v;
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var icosahedron = Sk.ffi.remapToJs(selfPy);
     var radius = icosahedron[PROP_RADIUS];
     var detail = icosahedron[PROP_DETAIL];
     var args = [radius, detail];
