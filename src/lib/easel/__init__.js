@@ -897,7 +897,7 @@ var $builtinmodule = function(name) {
     });
   }, POINT, []);
 
-  Sk.builtin.defineEuclidean2(mod);
+  Sk.builtin.defineEuclidean2(mod, BLADE);
 
   mod['getHSL'] = new Sk.builtin.func(function(hue, saturation, lightness, alpha) {
     hue = Sk.ffi.remapToJs(hue);

@@ -26,15 +26,13 @@ var $builtinmodule = function(name) {
   Sk.builtin.defineWorkbench(mod);
 
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, windowPy, tickPy, terminatePy, setUpPy, tearDownPy) {
-      Sk.ffi.checkMethodArgs(WINDOW_ANIMATION_RUNNER, arguments, 5, 5);
-      Sk.ffi.checkArgType("window",    WINDOW,   Sk.ffi.isClass(windowPy) && Sk.ffi.typeName(windowPy) === WINDOW);
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy) {
+      Sk.ffi.checkMethodArgs(WINDOW_ANIMATION_RUNNER, arguments, 4, 4);
       Sk.ffi.checkArgType("tick",      FUNCTION, Sk.ffi.isFunction(tickPy));
       Sk.ffi.checkArgType("terminate", FUNCTION, Sk.ffi.isFunction(terminatePy));
       Sk.ffi.checkArgType("setUp",     FUNCTION, Sk.ffi.isFunction(setUpPy));
       Sk.ffi.checkArgType("tearDown",  FUNCTION, Sk.ffi.isFunction(tearDownPy));
       var WindowAnimationRunner = function() {
-        this.window    = Sk.ffi.remapToJs(windowPy);
         this.tick      = Sk.ffi.remapToJs(tickPy);
         this.terminate = Sk.ffi.remapToJs(terminatePy);
         this.setUp     = Sk.ffi.remapToJs(setUpPy);
@@ -60,13 +58,13 @@ var $builtinmodule = function(name) {
                 war.elapsed = 0;
               }
             }
-            if (war.terminate(war.elapsed)) {
-              war.window.cancelAnimationFrame(war.requestID);
+            if (war.terminate(war.elapsed / 1000)) {
+              window.cancelAnimationFrame(war.requestID);
               war.tearDown();
             }
             else {
-              war.requestID = war.window.requestAnimationFrame(animate);
-              war.tick(war.elapsed);
+              war.requestID = window.requestAnimationFrame(animate);
+              war.tick(war.elapsed / 1000);
             }
           };
           animate(null);

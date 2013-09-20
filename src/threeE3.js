@@ -1,9 +1,18 @@
-/**
- * Convenience function for incorporating a Euclidean3 class into a module.
- */
 (function() {
-Sk.builtin.defineEuclidean3 = function(mod, factory, EUCLIDEAN_3, THREE, BLADE) {
-Sk.ffi.checkFunctionArgs("defineEuclidean3", arguments, 5, 5);
+Sk.builtin.defineEuclidean3 = function(mod, THREE, BLADE) {
+Sk.ffi.checkFunctionArgs("defineEuclidean3", arguments, 3, 3);
+/**
+ * Define the dependencies of Euclidean3.
+ * This now includes THREE.Vector3 and THREE.Quaternion.
+ */
+Sk.builtin.defineVector3(mod, THREE);
+Sk.builtin.defineQuaternion(mod, THREE);
+Sk.builtin.defineUnits(mod, BLADE);
+/**
+ * @const
+ * @type {string}
+ */
+var EUCLIDEAN_3                = "Euclidean3";
 /**
  * @const
  * @type {string}
@@ -238,6 +247,9 @@ var ARG_VALUE                  = "value";
  * @constructor
  */
 THREE.Euclidean3 = function(vector, quaternion, xyz, mutable) {
+  if (typeof vector !== 'object') {throw new Error("43a75b65-8614-4836-9829-377eaeee7cfe");}
+  if (typeof quaternion !== 'object') {throw new Error("89fb1d18-dc26-4149-913d-58f192c161d7");}
+  if (typeof xyz !== 'number') {throw new Error("09e5e46b-fdf4-4720-9262-5c2503c84dc6");}
   this.vector     = vector;
   this.quaternion = quaternion;
   this._pseudo    = xyz;
@@ -271,7 +283,30 @@ THREE.Euclidean3.prototype = {
 }
 
 function isNumber(x)    {return typeof x === 'number';}
-function isEuclidean3(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
+function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
+/**
+ * @param {number} w
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} xy
+ * @param {number} yz
+ * @param {number} zx
+ * @param {number} xyz
+ * @param {boolean=} mutable
+ */
+function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz, mutable) {
+  var wPy   = Sk.ffi.numberToFloatPy(w);
+  var xPy   = Sk.ffi.numberToFloatPy(x);
+  var yPy   = Sk.ffi.numberToFloatPy(y);
+  var zPy   = Sk.ffi.numberToFloatPy(z);
+  var xyPy  = Sk.ffi.numberToFloatPy(xy);
+  var yzPy  = Sk.ffi.numberToFloatPy(yz);
+  var zxPy  = Sk.ffi.numberToFloatPy(zx);
+  var xyzPy = Sk.ffi.numberToFloatPy(xyz);
+  var mutablePy = Sk.ffi.booleanToPy(mutable);
+  return Sk.ffi.callsim(mod[EUCLIDEAN_3], wPy, xPy, yPy, zPy, xyPy, yzPy, zxPy, xyzPy, mutablePy);
+}
 
 function stringFromCoordinates(coordinates, labels) {
   var append, i, sb, str, _i, _ref;
@@ -626,29 +661,6 @@ function divide(a000, a001, a010, a011, a100, a101, a110, a111, b000, b001, b010
     return coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz);
   }
 }
-/**
- * @param {number} w
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @param {number} xy
- * @param {number} yz
- * @param {number} zx
- * @param {number} xyz
- * @param {boolean=} mutable
- */
-function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz, mutable) {
-  var wPy   = Sk.ffi.numberToFloatPy(w);
-  var xPy   = Sk.ffi.numberToFloatPy(x);
-  var yPy   = Sk.ffi.numberToFloatPy(y);
-  var zPy   = Sk.ffi.numberToFloatPy(z);
-  var xyPy  = Sk.ffi.numberToFloatPy(xy);
-  var yzPy  = Sk.ffi.numberToFloatPy(yz);
-  var zxPy  = Sk.ffi.numberToFloatPy(zx);
-  var xyzPy = Sk.ffi.numberToFloatPy(xyz);
-  var mutablePy = Sk.ffi.booleanToPy(mutable);
-  return Sk.ffi.callsim(mod[EUCLIDEAN_3], wPy, xPy, yPy, zPy, xyPy, yzPy, zxPy, xyzPy, mutablePy);
-}
 
 function coord(mv, index) {
   switch(index) {
@@ -786,8 +798,8 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         zx  = Sk.ffi.remapToJs(zx);
         xyz = Sk.ffi.remapToJs(xyz);
         var mutable = Sk.ffi.remapToJs(mutablePy, true);
-        var vector = factory.vector(x,y,z);
-        var quaternion = factory.quaternion(-yz, -zx, -xy, w);
+        var vector = new THREE[VECTOR_3](x,y,z);
+        var quaternion = new THREE[QUATERNION](-yz, -zx, -xy, w);
         Sk.ffi.referenceToPy(new THREE.Euclidean3(vector, quaternion, xyz, mutable), EUCLIDEAN_3, undefined, self);
       }
       break;
@@ -797,7 +809,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AssertionError("Ouch " + Sk.ffi.getType(w));
+        throw new Sk.builtin.AssertionError("09eaed05-6d9d-4ded-a499-e4c480a9ed68, getType(w) => " + Sk.ffi.getType(w));
       }
     }
   });
@@ -844,7 +856,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (Sk.ffi.isNumber(otherPy)) {
       qs.w += other;
     }
-    else if (isEuclidean3(otherPy)) {
+    else if (isEuclidean3Py(otherPy)) {
       var vo = other.vector;
       var qo = other.quaternion;
       qs.w     += qo.w;
@@ -906,7 +918,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (Sk.ffi.isNumber(otherPy)) {
       qs.w -= other;
     }
-    else if (isEuclidean3(otherPy)) {
+    else if (isEuclidean3Py(otherPy)) {
       var vo = other.vector;
       var qo = other.quaternion;
       qs.w     -= qo.w;
@@ -1512,7 +1524,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     // We don't normally check the self argument for performance reasons.
     // I'm doing it here to prove the implementation and because we expect coordinate-mutation to be rare.
-    Sk.ffi.checkArgType(ARG_SELF, EUCLIDEAN_3, isEuclidean3(selfPy), selfPy);
+    Sk.ffi.checkArgType(ARG_SELF, EUCLIDEAN_3, isEuclidean3Py(selfPy), selfPy);
     var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_W:
@@ -1588,8 +1600,9 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkFunctionArgs("str", arguments, 1, 1);
+    Sk.ffi.checkArgType(ARG_SELF, EUCLIDEAN_3, isEuclidean3Py(selfPy), selfPy);
     var self = Sk.ffi.remapToJs(selfPy);
-    var quaternion = self.quaternion;
     var w   = self.w;
     var x   = self.x;
     var y   = self.y;

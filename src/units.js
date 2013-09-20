@@ -1,16 +1,6 @@
-/**
- * Convenience function for incorporating units into a module.
- *
- * Usage:
- *
- * Sk.builtin.defineUnits(mod);
- */
 (function() {
-
-this.BLADE = this.BLADE || {};
-var  BLADE = this.BLADE;
-
-Sk.builtin.defineUnits = function(mod) {
+Sk.builtin.defineUnits = function(mod, BLADE) {
+Sk.ffi.checkFunctionArgs("defineUnits", arguments, 2, 2);
 /**
  * Prefixes.
  */
@@ -34,7 +24,6 @@ mod.peta  = Sk.ffi.numberToFloatPy(1e+15);
 mod.exa   = Sk.ffi.numberToFloatPy(1e+18);
 mod.zetta = Sk.ffi.numberToFloatPy(1e+21);
 mod.yotta = Sk.ffi.numberToFloatPy(1e+24);
-
 /**
  * @const
  * @type {string}

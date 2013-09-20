@@ -1331,8 +1331,7 @@ var $builtinmodule = function(name) {
 
   var mod = {};
 
-  Sk.builtin.defineEuclidean2(mod);
-  Sk.builtin.defineUnits(mod);
+  Sk.builtin.defineEuclidean2(mod, BLADE);
 
   // The exported name of the SPRITE class.
   var SPRITE = "Sprite";

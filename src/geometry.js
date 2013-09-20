@@ -47,11 +47,6 @@ var PROP_ATTITUDE                   = "attitude";
  * @const
  * @type {string}
  */
-var PROP_AXIS                       = "axis";
-/**
- * @const
- * @type {string}
- */
 var PROP_ORIGIN                     = "origin";
 /**
  * @const
@@ -328,7 +323,7 @@ var MATERIAL_GRID_MINOR = new THREE[LINE_BASIC_MATERIAL]({"color": COLOR_GRID,"o
 var e1 = new THREE[VECTOR_3](1, 0, 0);
 var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
-var one = {"vector": new THREE[VECTOR_3](0, 0, 0), "quaternion": new THREE[QUATERNION](0, 0, 0, 1), "xyz": 0};
+var one = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 0), new THREE[QUATERNION](0, 0, 0, 1), 0, false);
 
 function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
 function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
@@ -630,20 +625,12 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = {};
     self[PROP_COLOR]     = DEFAULT_COLOR;
     self[PROP_WIREFRAME] = false;
-    self[PROP_AXIS]      = e3;
+    self[PROP_ATTITUDE]  = one;
     Sk.ffi.referenceToPy(self, CONE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var cone = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_AXIS: {
-        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
-          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
-          cone[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
-          return selfPy;
-        });
-      }
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
@@ -972,20 +959,12 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = {};
     self[PROP_COLOR]     = DEFAULT_COLOR;
     self[PROP_WIREFRAME] = false;
-    self[PROP_AXIS]      = e3;
+    self[PROP_ATTITUDE]  = one;
     Sk.ffi.referenceToPy(self, SPHERE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var sphere = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_AXIS: {
-        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
-          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
-          sphere[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
-          return selfPy;
-        });
-      }
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);

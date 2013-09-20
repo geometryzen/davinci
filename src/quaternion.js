@@ -1,18 +1,14 @@
 /**
  * Convenience function for incorporating quaternion into a module.
- *
- * Usage:
- *
- * Sk.builtin.defineQuaternion(mod);
  */
 (function() {
+Sk.builtin.defineQuaternion = function(mod, THREE) {
+Sk.ffi.checkFunctionArgs("defineQuaternion", arguments, 2, 2);
 /**
- * @param {!Object} mod
- * @param {string} QUATERNION
- * @param {function(number, number, number, number): !Object} xyzwToJs
- */
-Sk.builtin.defineQuaternion = function(mod, QUATERNION, xyzwToJs) {
-Sk.ffi.checkFunctionArgs("defineQuaternion", arguments, 3, 3);
+* @const
+* @type {string}
+*/
+var QUATERNION                 = "Quaternion";
 /**
 * @const
 * @type {string}
@@ -187,7 +183,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var y = Sk.ffi.remapToJs(yPy);
       var z = Sk.ffi.remapToJs(zPy);
       var w = Sk.ffi.remapToJs(wPy);
-      Sk.ffi.referenceToPy(xyzwToJs(x, y, z, w), QUATERNION, undefined, selfPy);
+      Sk.ffi.referenceToPy(new THREE[QUATERNION](x, y, z, w), QUATERNION, undefined, selfPy);
     }
   });
   $loc.__add__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
@@ -273,7 +269,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return wxyzToPy(a.w * b, a.x * b, a.y * b, a.z * b);
     }
     else {
-      var ab = xyzwToJs(0, 0, 0, 1)['multiplyQuaternions'](a, b);
+      var ab = new THREE[QUATERNION](0, 0, 0, 1)['multiplyQuaternions'](a, b);
       return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(ab, QUATERNION));
     }
   });

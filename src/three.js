@@ -630,20 +630,47 @@ function isDefined(x)   { return typeof x !== 'undefined'; }
 function isNull(x)      { return typeof x === 'object' && x === null; }
 
 function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
+function isQuaternionPy(valuePy) {return Sk.ffi.isClass(valuePy, QUATERNION);}
 function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
 function isGeometryPy(valuePy) {
   return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
+}
+
+function quaternionToEuclidean3Py(quaternion) {
+  var euclidean = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 0), quaternion, 0);
+  return Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(euclidean, EUCLIDEAN_3));
+}
+/**
+ * @param {string} className
+ * @param {Object} targetPy
+ * @param {string} name
+ * @param {Object} valuePy
+ * @param {string=} aliasName
+ */
+function setQuaternionProperty(className, targetPy, name, valuePy, aliasName) {
+  Sk.ffi.checkArgType("target", className, Sk.ffi.isClass(targetPy, className), targetPy);
+  aliasName = aliasName || name;
+  Sk.ffi.checkArgType(aliasName, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
+  var quaternionPy = Sk.ffi.gattr(valuePy, PROP_QUATERNION);
+  Sk.ffi.checkArgType(aliasName, QUATERNION, isQuaternionPy(quaternionPy), quaternionPy);
+  Sk.ffi.remapToJs(targetPy)[name] = Sk.ffi.remapToJs(quaternionPy);
 }
 
 function vectorToEuclidean3Py(vector) {
   var euclidean = new THREE[EUCLIDEAN_3](vector, new THREE[QUATERNION](0,0,0,0), 0);
   return Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(euclidean, EUCLIDEAN_3));
 }
-
-function setVectorProperty(obj, name, valuePy) {
-  Sk.ffi.checkArgType(name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
+/**
+ * @param {Object} obj
+ * @param {string} name
+ * @param {Object} valuePy
+ * @param {string=} aliasName
+ */
+function setVectorProperty(obj, name, valuePy, aliasName) {
+  aliasName = aliasName || name;
+  Sk.ffi.checkArgType(aliasName, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
   var vectorPy = Sk.ffi.gattr(valuePy, PROP_VECTOR);
-  Sk.ffi.checkArgType(name, VECTOR_3, isVector3Py(vectorPy), vectorPy);
+  Sk.ffi.checkArgType(aliasName, VECTOR_3, isVector3Py(vectorPy), vectorPy);
   obj[name] = Sk.ffi.remapToJs(vectorPy);
 }
 
@@ -892,12 +919,7 @@ function wxyzToPy(w, x, y, z) {
   return Sk.ffi.callsim(mod[QUATERNION], xPy, yPy, zPy, wPy);
 }
 
-function vectorJs(x, y, z) {return new THREE[VECTOR_3](x, y, z);}
-function quaternionJs(x, y, z, w) {return new THREE[QUATERNION](x, y, z, w);}
-
-Sk.builtin.defineEuclidean3(mod, {"vector": vectorJs, "quaternion": quaternionJs}, EUCLIDEAN_3, THREE, BLADE);
-Sk.builtin.defineVector3(mod, VECTOR_3, vectorJs);
-Sk.builtin.defineQuaternion(mod, QUATERNION, quaternionJs);
+Sk.builtin.defineEuclidean3(mod, THREE, BLADE);
 
 mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, sceneRefPy) {
@@ -3064,6 +3086,9 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__getattr__ = Sk.ffi.functionPy(function(meshPy, name) {
     var mesh = Sk.ffi.remapToJs(meshPy);
     switch(name) {
+      case PROP_ATTITUDE: {
+        return quaternionToEuclidean3Py(mesh[PROP_QUATERNION]);
+      }
       case PROP_ID: {
         return Sk.ffi.numberToIntPy(mesh[PROP_ID]);
       }
@@ -3089,9 +3114,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_POSITION: {
         return vectorToEuclidean3Py(mesh[PROP_POSITION]);
       }
-      case PROP_QUATERNION: {
-        return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(mesh[PROP_QUATERNION], QUATERNION));
-      }
       case PROP_ROTATION: {
         return vectorToEuclidean3Py(mesh[PROP_ROTATION]);
       }
@@ -3103,9 +3125,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case PROP_UP: {
         return vectorToEuclidean3Py(mesh[PROP_UP]);
-      }
-      case PROP_USE_QUATERNION: {
-        return mesh[PROP_USE_QUATERNION];
       }
       case PROP_VISIBLE: {
         return mesh[PROP_VISIBLE];
@@ -3178,6 +3197,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var mesh = Sk.ffi.remapToJs(meshPy);
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
+      case PROP_ATTITUDE: {setQuaternionProperty(MESH, meshPy, PROP_QUATERNION, valuePy, name);} break;
       case PROP_MATRIX_AUTO_UPDATE: {
         mesh[PROP_MATRIX_AUTO_UPDATE] = checkArgBool(PROP_MATRIX_AUTO_UPDATE, valuePy);
       }
