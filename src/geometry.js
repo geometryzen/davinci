@@ -492,12 +492,10 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    var space = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + space);
+    return Sk.ffi.stringToPy(CARTESIAN_SPACE);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    var space = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + space);
+    return Sk.ffi.stringToPy(CARTESIAN_SPACE);
   })
 }, CARTESIAN_SPACE, []);
 

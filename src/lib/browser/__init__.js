@@ -17,7 +17,7 @@ var $builtinmodule = function(name) {
 
   mod[EVENT] = Sk.builtin.buildEventClass(mod);
 
-  mod[NODE]  = Sk.builtin.buildNodeClass(mod);
+  Sk.builtin.defineNode(mod);
 
   mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod));
 

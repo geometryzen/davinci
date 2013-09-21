@@ -612,7 +612,7 @@ var ARG_AXIS                   = "axis";
  */
 var ARG_VECTOR                 = "vector";
 
-mod[NODE]  = Sk.builtin.buildNodeClass(mod);
+Sk.builtin.defineNode(mod);
 
 /**
  * @param {string} name
@@ -1228,9 +1228,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return renderer[PROP_SORT_OBJECTS];
       }
       case PROP_DOM_ELEMENT: {
-        // TODO: I think duck-typing means that this will work as long as we don't
-        // try to do anything more ambitious.
-        return {v: renderer[PROP_DOM_ELEMENT]};
+        return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(renderer[PROP_DOM_ELEMENT], NODE));
       }
       case METHOD_RENDER: {
         return Sk.ffi.callableToPy(mod, METHOD_RENDER, function(methodPy, scenePy, cameraPy) {
