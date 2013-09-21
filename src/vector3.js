@@ -1,6 +1,3 @@
-/**
- * Convenience function for incorporating a Vector3 class into a module.
- */
 (function() {
   /**
    * @param {Array.<number>} coordinates

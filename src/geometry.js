@@ -1,10 +1,3 @@
-/**
- * Convenience function for incorporating visual components into a module.
- *
- * Usage:
- *
- * Sk.builtin.defineGeometry(mod);
- */
 (function() {
 /**
 * @param {string} moduleName The name of the module.
@@ -351,8 +344,21 @@ function completeMesh(geometryPy, parameters) {
   }
   else {
     var args = {};
-    args[PROP_COLOR]     = parameters[PROP_COLOR];
-    args[PROP_WIREFRAME] = parameters[PROP_WIREFRAME];
+
+    if (typeof parameters[PROP_COLOR] !== 'undefined') {
+      args[PROP_COLOR] = parameters[PROP_COLOR];
+    }
+    else {
+      args[PROP_COLOR] = DEFAULT_COLOR;
+    }
+
+    if (typeof parameters[PROP_WIREFRAME] !== 'undefined') {
+      args[PROP_WIREFRAME] = parameters[PROP_WIREFRAME];
+    }
+    else {
+      args[PROP_WIREFRAME] = false;
+    }
+
     var materialPy = Sk.ffi.callsim(mod[MESH_LAMBERT_MATERIAL], Sk.ffi.remapToPy(args));
     return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy));
   }
@@ -495,34 +501,79 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   })
 }, CARTESIAN_SPACE, []);
 
+/**
+ * @param {Object} selfPy
+ * @param {string} name
+ * @param {string} className
+ */
+function builderGetAttr(selfPy, name, className) {
+  var self = Sk.ffi.remapToJs(selfPy);
+  switch(name) {
+    case PROP_ATTITUDE: {
+      return Sk.ffi.callableToPy(mod, name, function(methodPy, attitudePy) {
+        Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+        Sk.ffi.checkArgType(name, EUCLIDEAN_3, isEuclidean3Py(attitudePy), attitudePy);
+        self[name] = Sk.ffi.remapToJs(attitudePy);
+        return selfPy;
+      });
+    }
+    case PROP_COLOR: {
+      return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
+        Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+        self[name] = Sk.ffi.remapToJs(colorPy);
+        return selfPy;
+      });
+    }
+    case PROP_MATERIAL: {
+      return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
+        Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
+        Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy);
+        self[PROP_MATERIAL] = materialPy;
+        return selfPy;
+      });
+    }
+    case PROP_NAME: {
+      return methodName(selfPy);
+    }
+    case PROP_SCALE: {
+      return Sk.ffi.callableToPy(mod, PROP_SCALE, function(methodPy, lengthPy) {
+        Sk.ffi.checkMethodArgs(PROP_SCALE, arguments, 1, 1);
+        Sk.ffi.checkArgType(PROP_SCALE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+        self[PROP_SCALE] = Sk.ffi.remapToJs(lengthPy);
+        return selfPy;
+      });
+    }
+    case PROP_VOLUME: {
+      return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
+        Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
+        Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
+        self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
+        return selfPy;
+      });
+    }
+    case PROP_WIREFRAME: {
+      return Sk.ffi.callableToPy(mod, name, function(methodPy, wireframePy) {
+        Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+        Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
+        self[name] = Sk.ffi.remapToJs(wireframePy);
+        return selfPy;
+      });
+    }
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+    }
+  }
+}
+
 mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(ARROW_BUILDER, arguments, 0, 0);
-    var self = {};
-    self[PROP_COLOR]     = DEFAULT_COLOR;
-    self[PROP_WIREFRAME] = false;
-    self[PROP_ATTITUDE]  = one;
-    Sk.ffi.referenceToPy(self, ARROW_BUILDER, undefined, selfPy);
+    Sk.ffi.referenceToPy({}, ARROW_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var arrow = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_ATTITUDE: {
-        return Sk.ffi.callableToPy(mod, PROP_ATTITUDE, function(methodPy, attitudePy) {
-          Sk.ffi.checkMethodArgs(PROP_ATTITUDE, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, isEuclidean3Py(attitudePy), attitudePy);
-          arrow[PROP_ATTITUDE] = Sk.ffi.remapToJs(attitudePy);
-          return selfPy;
-        });
-      }
-      case PROP_COLOR: {
-        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
-          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
-          arrow[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
       case PROP_LENGTH_MANGLED: {
         return Sk.ffi.callableToPy(mod, PROP_LENGTH, function(methodPy, lengthPy) {
           Sk.ffi.checkMethodArgs(PROP_LENGTH, arguments, 1, 1);
@@ -531,44 +582,11 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
-      case PROP_MATERIAL: {
-        return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
-          Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy); // TODO: MATERIALS
-          arrow[PROP_MATERIAL] = materialPy;
-          return selfPy;
-        });
-      }
-      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           arrow[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
-          return selfPy;
-        });
-      }
-      case PROP_SCALE: {
-        return Sk.ffi.callableToPy(mod, PROP_SCALE, function(methodPy, lengthPy) {
-          Sk.ffi.checkMethodArgs(PROP_SCALE, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_SCALE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
-          arrow[PROP_SCALE] = Sk.ffi.remapToJs(lengthPy);
-          return selfPy;
-        });
-      }
-      case PROP_VOLUME: {
-        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
-          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          arrow[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
-          return selfPy;
-        });
-      }
-      case PROP_WIREFRAME: {
-        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
-          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          arrow[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -579,6 +597,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionArrow() {
             var dims = {};
+            dims.attitude = (arrow.attitude) ? arrow.attitude : one;
             if (arrow.volume) {
               var s = (arrow.scale)  ? arrow.scale  : 1;
               var h = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
@@ -589,9 +608,8 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             }
             else {
               dims.scale    = (arrow.scale)    ? arrow.scale    : 1;
-              dims.attitude = (arrow.attitude) ? arrow.attitude : one;
-              dims.length   = (arrow.length)   ? arrow.length   : DEFAULT_CYLINDER_HEIGHT;
               dims.radius   = (arrow.radius)   ? arrow.radius   : DEFAULT_CYLINDER_RADIUS;
+              dims.length   = (arrow.length)   ? arrow.length   : DEFAULT_CYLINDER_HEIGHT;
             }
             return dims;
           }
@@ -606,7 +624,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(ARROW_BUILDER);
+        return builderGetAttr(selfPy, name, ARROW_BUILDER);
       }
     }
   });
@@ -622,23 +640,11 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(CONE_BUILDER, arguments, 0, 0);
-    var self = {};
-    self[PROP_COLOR]     = DEFAULT_COLOR;
-    self[PROP_WIREFRAME] = false;
-    self[PROP_ATTITUDE]  = one;
-    Sk.ffi.referenceToPy(self, CONE_BUILDER, undefined, selfPy);
+    Sk.ffi.referenceToPy({}, CONE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var cone = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
-          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
-          cone[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
@@ -647,28 +653,11 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
-      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           cone[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
-          return selfPy;
-        });
-      }
-      case PROP_VOLUME: {
-        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
-          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          cone[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
-          return selfPy;
-        });
-      }
-      case PROP_WIREFRAME: {
-        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
-          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          cone[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -705,7 +694,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CONE_BUILDER);
+        return builderGetAttr(selfPy, name, CONE_BUILDER);
       }
     }
   });
@@ -721,22 +710,11 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(CUBE_BUILDER, arguments, 0, 0);
-    var self = {};
-    self[PROP_COLOR]     = DEFAULT_COLOR;
-    self[PROP_WIREFRAME] = false;
-    Sk.ffi.referenceToPy(self, CUBE_BUILDER, undefined, selfPy);
+    Sk.ffi.referenceToPy({}, CUBE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var cube = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
-          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
-          cube[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
       case PROP_DEPTH: {
         return Sk.ffi.callableToPy(mod, PROP_DEPTH, function(methodPy, depthPy) {
           Sk.ffi.checkMethodArgs(PROP_DEPTH, arguments, 1, 1);
@@ -753,28 +731,11 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
-      case PROP_NAME: { return methodName(selfPy); }
-      case PROP_VOLUME: {
-        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
-          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          cube[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
-          return selfPy;
-        });
-      }
       case PROP_WIDTH: {
         return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
           Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
           cube[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
-          return selfPy;
-        });
-      }
-      case PROP_WIREFRAME: {
-        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
-          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          cube[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -811,7 +772,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CUBE_BUILDER);
+        return builderGetAttr(selfPy, name, CUBE_BUILDER);
       }
     }
   });
@@ -831,21 +792,11 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     self[PROP_RADIUS_TOP]    = DEFAULT_CYLINDER_RADIUS;
     self[PROP_RADIUS_BOTTOM] = DEFAULT_CYLINDER_RADIUS;
     self[PROP_HEIGHT]        = DEFAULT_CYLINDER_HEIGHT;
-    self[PROP_COLOR]         = DEFAULT_COLOR;
-    self[PROP_WIREFRAME]     = false;
     Sk.ffi.referenceToPy(self, CYLINDER_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var cylinder = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
-          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
-          cylinder[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
@@ -854,15 +805,6 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
-      case PROP_MATERIAL: {
-        return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
-          Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy); // TODO: MATERIALS
-          cylinder[PROP_MATERIAL] = materialPy;
-          return selfPy;
-        });
-      }
-      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
@@ -885,22 +827,6 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS_BOTTOM, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusBottomPy) || Sk.ffi.isNone(radiusBottomPy), radiusBottomPy);
           cylinder[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusBottomPy);
-          return selfPy;
-        });
-      }
-      case PROP_VOLUME: {
-        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
-          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          cylinder[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
-          return selfPy;
-        });
-      }
-      case PROP_WIREFRAME: {
-        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
-          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          cylinder[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -940,7 +866,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CYLINDER_BUILDER);
+        return builderGetAttr(selfPy, name, CYLINDER_BUILDER);
       }
     }
   });
@@ -956,45 +882,16 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(SPHERE_BUILDER, arguments, 0, 0);
-    var self = {};
-    self[PROP_COLOR]     = DEFAULT_COLOR;
-    self[PROP_WIREFRAME] = false;
-    self[PROP_ATTITUDE]  = one;
-    Sk.ffi.referenceToPy(self, SPHERE_BUILDER, undefined, selfPy);
+    Sk.ffi.referenceToPy({}, SPHERE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var sphere = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callableToPy(mod, PROP_COLOR, function(methodPy, colorPy) {
-          Sk.ffi.checkMethodArgs(PROP_COLOR, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_COLOR, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
-          sphere[PROP_COLOR] = Sk.ffi.remapToJs(colorPy);
-          return selfPy;
-        });
-      }
-      case PROP_NAME: { return methodName(selfPy); }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           sphere[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
-          return selfPy;
-        });
-      }
-      case PROP_VOLUME: {
-        return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
-          Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
-          sphere[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
-          return selfPy;
-        });
-      }
-      case PROP_WIREFRAME: {
-        return Sk.ffi.callableToPy(mod, PROP_WIREFRAME, function(methodPy, wireframePy) {
-          Sk.ffi.checkMethodArgs(PROP_WIREFRAME, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIREFRAME, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
-          sphere[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -1024,7 +921,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(SPHERE_BUILDER);
+        return builderGetAttr(selfPy, name, SPHERE_BUILDER);
       }
     }
   });

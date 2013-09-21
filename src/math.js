@@ -1,10 +1,3 @@
-/**
- * Convenience function for incorporating math into a module.
- *
- * Usage:
- *
- * Sk.builtin.defineMath(mod);
- */
 (function() {
 Sk.builtin.defineMath = function(mod) {
 Sk.ffi.checkFunctionArgs("defineMath", arguments, 1, 1);
@@ -206,16 +199,8 @@ mod.exp = Sk.ffi.functionPy(function(anglePy) {
   if (Sk.ffi.isNumber(anglePy)) {
     return Sk.ffi.numberToFloatPy(Math.exp(Sk.ffi.remapToJs(anglePy)));
   }
-  else
-  {
+  else {
     return Sk.ffi.exp(anglePy);
-//    try {
-//      var methodPy = Sk.ffi.gattr(anglePy, "exp");
-//      return Sk.ffi.callsim(methodPy);
-//    }
-//    catch(e) {
-//      throw Sk.ffi.err.argument(ARG_ANGLE).inFunction("exp").mustHaveType(DIMENSIONLESS_NUMBER);
-//    }
   }
 });
 
@@ -258,5 +243,6 @@ mod.factorial = Sk.ffi.functionPy(function(x) {
     r *= i;
   return new Sk.builtin.nmber(r, Sk.builtin.nmber.int$);
 });
+
 };
 }).call(this);

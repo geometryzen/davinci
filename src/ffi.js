@@ -780,6 +780,7 @@ Sk.ffi.typeString = function(kind, name)
             }
             default:
             {
+                // TODO: This should convert to Kleene ? for UNDEFINED?
                 throw Sk.ffi.assertionError("b15da19c-b080-4695-a157-cfcb740b265b, kind => " + kind);
             }
         }

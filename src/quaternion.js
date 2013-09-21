@@ -1,6 +1,3 @@
-/**
- * Convenience function for incorporating quaternion into a module.
- */
 (function() {
 Sk.builtin.defineQuaternion = function(mod, THREE) {
 Sk.ffi.checkFunctionArgs("defineQuaternion", arguments, 2, 2);

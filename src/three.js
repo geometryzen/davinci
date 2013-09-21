@@ -350,6 +350,11 @@ var PROP_HEIGHT_SEGMENTS       = "heightSegments";
 * @const
 * @type {string}
 */
+var PROP_INTENSITY             = "intensity";
+/**
+* @const
+* @type {string}
+*/
 var PROP_OPEN_ENDED            = "openEnded";
 /**
 * @const
@@ -1437,6 +1442,91 @@ mod[COLOR] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, COLOR, []);
 
+function cameraGetAttr(cameraPy, name, className) {
+  var camera = Sk.ffi.remapToJs(cameraPy);
+  var UPDATE_PROJECTION_MATRIX = "updateProjectionMatrix"
+  switch(name) {
+    case "aspect": {
+      return Sk.builtin.assk$(camera.aspect, Sk.builtin.nmber.float$);
+    }
+    case PROP_POSITION: {
+      return vectorToEuclidean3Py(camera[PROP_POSITION]);
+    }
+    case PROP_QUATERNION: {
+      return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(camera[PROP_QUATERNION], QUATERNION));
+    }
+    case PROP_ROTATION: {
+      return vectorToEuclidean3Py(camera[PROP_ROTATION]);
+    }
+    case PROP_EULER_ORDER: {
+      return Sk.ffi.stringToPy(camera[PROP_EULER_ORDER]);
+    }
+    case PROP_SCALE: {
+      return vectorToEuclidean3Py(camera[PROP_SCALE]);
+    }
+    case PROP_UP: {
+      return vectorToEuclidean3Py(camera[PROP_UP]);
+    }
+    case PROP_USE_QUATERNION: {
+      return camera[PROP_USE_QUATERNION];
+    }
+    case METHOD_LOOK_AT: {return methodLookAt(cameraPy);}
+    case UPDATE_PROJECTION_MATRIX: {
+      return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
+        $loc.__init__ = Sk.ffi.functionPy(function(self) {
+          self.tp$name = UPDATE_PROJECTION_MATRIX;
+        });
+        $loc.__call__ = Sk.ffi.functionPy(function(self) {
+          camera[name]();
+        });
+        $loc.__str__ = Sk.ffi.functionPy(function(self) {
+          return Sk.ffi.stringToPy(UPDATE_PROJECTION_MATRIX)
+        })
+        $loc.__repr__ = Sk.ffi.functionPy(function(self) {
+          return Sk.ffi.stringToPy(UPDATE_PROJECTION_MATRIX)
+        })
+      }, UPDATE_PROJECTION_MATRIX, []));
+    }
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+    }
+  }
+}
+
+function cameraSetAttr(cameraPy, name, valuePy, className) {
+  var camera = Sk.ffi.remapToJs(cameraPy);
+  var value = Sk.ffi.remapToJs(valuePy);
+  switch(name) {
+    case PROP_POSITION:
+    case PROP_ROTATION:
+    case PROP_SCALE:
+    case PROP_UP: {
+      setVectorProperty(camera, name, valuePy);
+    }
+    break;
+    case PROP_QUATERNION: {
+      camera[PROP_QUATERNION] = value;
+    }
+    break;
+    case PROP_EULER_ORDER: {
+      if (isString(value)) {
+        camera[PROP_EULER_ORDER] = value;
+      }
+      else {
+        throw new Error(name + " must be a string");
+      }
+    }
+    break;
+    case PROP_USE_QUATERNION: {
+      camera[PROP_USE_QUATERNION] = value;
+    }
+    break;
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+    }
+  }
+}
+
 mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(self, fov, aspect, near, far) {
     var fieldOfView = Sk.builtin.asnum$(fov)
@@ -1493,7 +1583,7 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, UPDATE_PROJECTION_MATRIX, []));
       }
       default: {
-        return;
+        return cameraGetAttr(cameraPy, name, PERSPECTIVE_CAMERA);
       }
     }
   });
@@ -1530,7 +1620,7 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AssertionError(name + " is not an attribute of " + PERSPECTIVE_CAMERA);
+        return cameraSetAttr(cameraPy, name, valuePy, PERSPECTIVE_CAMERA);
       }
     }
   });
@@ -1597,7 +1687,7 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, UPDATE_PROJECTION_MATRIX, []));
       }
       default: {
-        return;
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(ORTHOGRAPHIC_CAMERA);
       }
     }
   });
@@ -1646,7 +1736,7 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AssertionError(name + " is not an attribute of " + ORTHOGRAPHIC_CAMERA);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(ORTHOGRAPHIC_CAMERA);
       }
     }
   });
@@ -1941,7 +2031,6 @@ mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     args[PROP_RADIUS_BOTTOM] = cylinder[PROP_RADIUS_BOTTOM];
     args[PROP_HEIGHT] = cylinder[PROP_HEIGHT];
     args[PROP_OPEN_ENDED] = cylinder[PROP_OPEN_ENDED];
-    // TODO: Need a Python.stringify because Boolean is {True, False} etc.
     return Sk.ffi.stringToPy(CYLINDER_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
@@ -2136,6 +2225,9 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_HEIGHT_SEGMENTS: {
         return Sk.builtin.assk$(self.v[PROP_HEIGHT_SEGMENTS], Sk.builtin.nmber.int$);
       }
+      default: {
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(OCTAHEDRON_GEOMETRY);
+      }
     }
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
@@ -2143,7 +2235,7 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       default: {
-        throw new Error(name + " is not an attribute of " + PLANE_GEOMETRY);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(PLANE_GEOMETRY);
       }
     }
   });
@@ -2586,369 +2678,272 @@ mod[TETRAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy(GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, GEOMETRY, []);
-
+/**
+ * @param {string} className 
+ * @param {!Object} selfPy
+ * @param {string} name
+ */
+function object3DGetAttr(className, selfPy, name) {
+  var self = Sk.ffi.remapToJs(selfPy);
+  switch(name) {
+    case PROP_ATTITUDE: {
+      return quaternionToEuclidean3Py(self[PROP_QUATERNION]);
+    }
+    case PROP_POSITION:
+    case PROP_ROTATION:
+    case PROP_SCALE:
+    case PROP_UP: {
+      return vectorToEuclidean3Py(self[name]);
+    }
+    case PROP_QUATERNION: {
+      return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(self[PROP_QUATERNION], QUATERNION));
+    }
+    case PROP_EULER_ORDER: {
+      return Sk.ffi.stringToPy(self[PROP_EULER_ORDER]);
+    }
+    case PROP_USE_QUATERNION: {
+      return self[PROP_USE_QUATERNION];
+    }
+    case METHOD_ADD: {
+      return methodAdd(self);
+    }
+    case METHOD_REMOVE: {
+      return methodRemove(self);
+    }
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+    }
+  }
+}
+/**
+ * @param {string} className 
+ * @param {!Object} selfPy
+ * @param {string} name
+ * @param {!Object} valuePy
+ */
+function object3DSetAttr(className, selfPy, name, valuePy) {
+  var self = Sk.ffi.remapToJs(selfPy);
+  var value = Sk.ffi.remapToJs(valuePy);
+  switch(name) {
+    case PROP_ATTITUDE: {
+      setQuaternionProperty(className, selfPy, PROP_QUATERNION, valuePy, name);
+    }
+    break;
+    case PROP_POSITION:
+    case PROP_ROTATION:
+    case PROP_SCALE:
+    case PROP_UP: {
+      setVectorProperty(self, name, valuePy);
+    }
+    break;
+    case PROP_QUATERNION: {
+      self[PROP_QUATERNION] = value;
+    }
+    break;
+    case PROP_EULER_ORDER: {
+      if (isString(value)) {
+        self[PROP_EULER_ORDER] = value;
+      }
+      else {
+        throw new Error(name + " must be a string");
+      }
+    }
+    break;
+    case PROP_USE_QUATERNION: {
+      self[PROP_USE_QUATERNION] = value;
+    }
+    break;
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+    }
+  }
+}
+/**
+ *
+ */
 mod[OBJECT_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self) {
-    self.tp$name = OBJECT_3D;
-    self.v = new THREE[OBJECT_3D]();
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.referenceToPy(new THREE[OBJECT_3D](), OBJECT_3D, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(objPy, name) {
-    var obj = Sk.ffi.remapToJs(objPy);
-    switch(name) {
-      case PROP_POSITION: {
-        return vectorToEuclidean3Py(obj[PROP_POSITION]);
-      }
-      case PROP_QUATERNION: {
-        return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(obj[PROP_QUATERNION], QUATERNION));
-      }
-      case PROP_ROTATION: {
-        return vectorToEuclidean3Py(obj[PROP_ROTATION]);
-      }
-      case PROP_EULER_ORDER: {
-        return Sk.ffi.stringToPy(obj[PROP_EULER_ORDER]);
-      }
-      case PROP_SCALE: {
-        return vectorToEuclidean3Py(obj[PROP_SCALE]);
-      }
-      case PROP_UP: {
-        return vectorToEuclidean3Py(obj[PROP_UP]);
-      }
-      case PROP_USE_QUATERNION: {
-        return obj[PROP_USE_QUATERNION];
-      }
-      case METHOD_ADD: {
-        return methodAdd(obj);
-      }
-      case METHOD_REMOVE: {
-        return methodRemove(obj);
-      }
-    }
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return object3DGetAttr(OBJECT_3D, selfPy, name);
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(obj, name, valuePy) {
-    obj = Sk.ffi.remapToJs(obj);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      case PROP_POSITION:
-      case PROP_ROTATION:
-      case PROP_SCALE:
-      case PROP_UP: {
-        setVectorProperty(obj, name, valuePy);
-      }
-      break;
-      case PROP_QUATERNION: {
-        obj[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_EULER_ORDER: {
-        if (isString(value)) {
-          obj[PROP_EULER_ORDER] = value;
-        }
-        else {
-          throw new Error(name + " must be a string");
-        }
-      }
-      break;
-      case PROP_USE_QUATERNION: {
-        obj[PROP_USE_QUATERNION] = value;
-      }
-      break;
-      default: {
-        throw new Error(name + " is not an settable attribute of " + OBJECT_3D);
-      }
-    }
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return object3DSetAttr(OBJECT_3D, selfPy, name, valuePy);
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(obj) {
-    obj = Sk.ffi.remapToJs(obj);
-    if (isDefined(obj)) {
-      var args = {};
-      return Sk.ffi.stringToPy(OBJECT_3D + "(" + JSON.stringify(args) + ")");
-    }
-    else {
-      return Sk.ffi.stringToPy("<type '" + OBJECT_3D + "'>");
-    }
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var args = {};
+    return Sk.ffi.stringToPy(OBJECT_3D + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(obj) {
-    obj = Sk.ffi.remapToJs(obj);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var args = [];
     return Sk.ffi.stringToPy(OBJECT_3D + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, OBJECT_3D, []);
-
+/**
+ * @param {string} className 
+ * @param {!Object} selfPy
+ * @param {string} name
+ */
+function lightGetAttr(className, selfPy, name) {
+  var light = Sk.ffi.remapToJs(selfPy);
+  switch(name) {
+    case PROP_COLOR: {
+      return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
+    }
+    default: {
+      return object3DGetAttr(className, selfPy, name);
+    }
+  }
+}
+/**
+ * @param {string} className 
+ * @param {!Object} selfPy
+ * @param {string} name
+ * @param {!Object} valuePy
+ */
+function lightSetAttr(className, selfPy, name, valuePy) {
+  var light = Sk.ffi.remapToJs(selfPy);
+  var value = Sk.ffi.remapToJs(valuePy);
+  switch(name) {
+    case PROP_COLOR: {
+      light[PROP_COLOR] = new THREE[COLOR](value);
+    }
+    break;
+    default: {
+      return object3DSetAttr(className, selfPy, name, valuePy);
+    }
+  }
+}
+/**
+ * AmbientLight
+ */
 mod[AMBIENT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, color) {
-    self.tp$name = AMBIENT_LIGHT;
-    color = Sk.ffi.remapToJs(color);
-    self.v = new THREE[AMBIENT_LIGHT](color);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy) {
+    var color = Sk.ffi.remapToJs(colorPy);
+    Sk.ffi.referenceToPy(new THREE[AMBIENT_LIGHT](color), AMBIENT_LIGHT, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(lightPy, name) {
-    var light = Sk.ffi.remapToJs(lightPy);
-    switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
-      }
-    }
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return lightGetAttr(AMBIENT_LIGHT, selfPy, name);
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(lightPy, name, valuePy) {
-    var light = Sk.ffi.remapToJs(lightPy);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      case PROP_COLOR: {
-        light[PROP_COLOR] = new THREE[COLOR](value);
-      }
-      break;
-      default: {
-        throw new Error(name + " is not an settable attribute of " + AMBIENT_LIGHT);
-      }
-    }
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return lightSetAttr(AMBIENT_LIGHT, selfPy, name, valuePy);
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
-    if (isDefined(light)) {
-      var args = {};
-      args[PROP_COLOR] = light[PROP_COLOR];
-      return Sk.ffi.stringToPy(AMBIENT_LIGHT + "(" + JSON.stringify(args) + ")");
-    }
-    else {
-      return Sk.ffi.stringToPy("<type '" + AMBIENT_LIGHT + "'>");
-    }
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
+    var args = {};
+    args[PROP_COLOR] = light[PROP_COLOR];
+    return Sk.ffi.stringToPy(AMBIENT_LIGHT + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
     var args = [light[PROP_COLOR]];
     return Sk.ffi.stringToPy(AMBIENT_LIGHT + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, AMBIENT_LIGHT, []);
-
+/**
+ * DirectionalLight
+ */
 mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  var PROP_INTENSITY = "intensity";
-  $loc.__init__ = Sk.ffi.functionPy(function(self, color, intensity, distance) {
-    self.tp$name = DIRECTIONAL_LIGHT;
-    color = Sk.ffi.remapToJs(color);
-    intensity = Sk.ffi.remapToJs(intensity);
-    distance = Sk.ffi.remapToJs(distance);
-    self.v = new THREE[DIRECTIONAL_LIGHT](color, intensity, distance);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy, intensityPy) {
+    Sk.ffi.checkMethodArgs(DIRECTIONAL_LIGHT, arguments, 1, 2);
+    Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
+    var color = Sk.ffi.remapToJs(colorPy);
+    var intensity = Sk.ffi.remapToJs(intensityPy);
+    Sk.ffi.referenceToPy(new THREE[DIRECTIONAL_LIGHT](color, intensity), DIRECTIONAL_LIGHT, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(lightPy, name) {
-    var light = Sk.ffi.remapToJs(lightPy);
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var light = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
-      }
-      case PROP_DISTANCE: {
-        return Sk.ffi.numberToFloatPy(light[PROP_DISTANCE]);
-      }
       case PROP_INTENSITY: {
         return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
       }
-      case PROP_POSITION: {
-        return vectorToEuclidean3Py(light[PROP_POSITION]);
+      default: {
+        return lightGetAttr(DIRECTIONAL_LIGHT, selfPy, name);
       }
-      case PROP_QUATERNION: {
-        return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(light[PROP_QUATERNION], QUATERNION));
-      }
-      case PROP_ROTATION: {
-        return vectorToEuclidean3Py(light[PROP_ROTATION]);
-      }
-      case PROP_EULER_ORDER: {
-        return Sk.ffi.stringToPy(light[PROP_EULER_ORDER]);
-      }
-      case PROP_SCALE: {
-        return vectorToEuclidean3Py(light[PROP_SCALE]);
-      }
-      case PROP_UP: {
-        return vectorToEuclidean3Py(light[PROP_UP]);
-      }
-      case PROP_USE_QUATERNION: {
-        return light[PROP_USE_QUATERNION];
-      }
-      case METHOD_LOOK_AT: {return methodLookAt(lightPy);}
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, valuePy) {
-    light = Sk.ffi.remapToJs(light);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    var light = Sk.ffi.remapToJs(selfPy);
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
-      case PROP_COLOR: {
-        light[PROP_COLOR] = new THREE[COLOR](value);
-      }
-      break;
-      case PROP_DISTANCE: {
-        if (isNumber(value)) {
-          light[PROP_DISTANCE] = value;
-        }
-        else {
-          throw new Sk.builtin.TypeError("'" + PROP_DISTANCE + "' attribute must be a <type 'float'>.");
-        }
-      }
-      break;
       case PROP_INTENSITY: {
-        if (isNumber(value)) {
-          light[PROP_INTENSITY] = value;
-        }
-        else {
-          throw new Sk.builtin.TypeError("'" + PROP_INTENSITY + "' attribute must be a <type 'float'>.");
-        }
-      }
-      break;
-      case PROP_POSITION:
-      case PROP_ROTATION:
-      case PROP_SCALE:
-      case PROP_UP: {
-        setVectorProperty(light, name, valuePy);
-      }
-      break;
-      case PROP_QUATERNION: {
-        light[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_EULER_ORDER: {
-        if (isString(value)) {
-          light[PROP_EULER_ORDER] = value;
-        }
-        else {
-          throw new Error(name + " must be a string");
-        }
-      }
-      break;
-      case PROP_USE_QUATERNION: {
-        light[PROP_USE_QUATERNION] = value;
+        Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        light[PROP_INTENSITY] = value;
       }
       break;
       default: {
-        throw new Error(name + " is not an settable attribute of " + DIRECTIONAL_LIGHT);
+        return lightSetAttr(DIRECTIONAL_LIGHT, selfPy, name, valuePy);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
-    if (isDefined(light)) {
-      var args = {};
-      args[PROP_COLOR] = light[PROP_COLOR];
-      args[PROP_INTENSITY] = light[PROP_INTENSITY];
-      args[PROP_DISTANCE] = light[PROP_DISTANCE];
-      return Sk.ffi.stringToPy(DIRECTIONAL_LIGHT + "(" + JSON.stringify(args) + ")");
-    }
-    else {
-      return Sk.ffi.stringToPy("<type '" + DIRECTIONAL_LIGHT + "'>");
-    }
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
+    var args = {};
+    args[PROP_COLOR] = light[PROP_COLOR];
+    args[PROP_INTENSITY] = light[PROP_INTENSITY];
+    args[PROP_DISTANCE] = light[PROP_DISTANCE];
+    return Sk.ffi.stringToPy(DIRECTIONAL_LIGHT + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
     var args = [light[PROP_COLOR], light[PROP_INTENSITY], light[PROP_DISTANCE]];
     return Sk.ffi.stringToPy(DIRECTIONAL_LIGHT + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, DIRECTIONAL_LIGHT, []);
-
+/**
+ * PointLight
+ */
 mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  var PROP_INTENSITY = "intensity";
-  $loc.__init__ = Sk.ffi.functionPy(function(self, color, intensity, distance) {
-    self.tp$name = POINT_LIGHT;
-    color = Sk.ffi.remapToJs(color);
-    intensity = Sk.ffi.remapToJs(intensity);
-    distance = Sk.ffi.remapToJs(distance);
-    self.v = new THREE[POINT_LIGHT](color, intensity, distance);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy, intensityPy, distancePy) {
+    Sk.ffi.checkMethodArgs(POINT_LIGHT, arguments, 1, 3);
+    Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
+    Sk.ffi.checkArgType(PROP_DISTANCE,  NUMBER, Sk.ffi.isNumber(distancePy) ||Sk.ffi.isUndefined(distancePy),  distancePy);
+    var color = Sk.ffi.remapToJs(colorPy);
+    var intensity = Sk.ffi.remapToJs(intensityPy);
+    var distance = Sk.ffi.remapToJs(distancePy);
+    Sk.ffi.referenceToPy(new THREE[POINT_LIGHT](color, intensity, distance), POINT_LIGHT, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(lightPy, name) {
-    var light = Sk.ffi.remapToJs(lightPy);
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     switch(name) {
-      case PROP_COLOR: {
-        return Sk.ffi.callsim(mod[COLOR], Sk.ffi.referenceToPy(light[PROP_COLOR], COLOR));
-      }
       case PROP_DISTANCE: {
-        return Sk.ffi.numberToFloatPy(light[PROP_DISTANCE]);
+        return Sk.ffi.numberToFloatPy(Sk.ffi.remapToJs(selfPy)[PROP_DISTANCE]);
       }
       case PROP_INTENSITY: {
-        return Sk.ffi.numberToFloatPy(light[PROP_INTENSITY]);
+        return Sk.ffi.numberToFloatPy(Sk.ffi.remapToJs(selfPy)[PROP_INTENSITY]);
       }
-      case PROP_POSITION: {
-        return vectorToEuclidean3Py(light[PROP_POSITION]);
+      default: {
+        return lightGetAttr(POINT_LIGHT, selfPy, name);
       }
-      case PROP_QUATERNION: {
-        return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(light[PROP_QUATERNION], QUATERNION));
-      }
-      case PROP_ROTATION: {
-        return vectorToEuclidean3Py(light[PROP_ROTATION]);
-      }
-      case PROP_EULER_ORDER: {
-        return Sk.ffi.stringToPy(light[PROP_EULER_ORDER]);
-      }
-      case PROP_SCALE: {
-        return vectorToEuclidean3Py(light[PROP_SCALE]);
-      }
-      case PROP_UP: {
-        return vectorToEuclidean3Py(light[PROP_UP]);
-      }
-      case PROP_USE_QUATERNION: {
-        return light[PROP_USE_QUATERNION];
-      }
-      case METHOD_LOOK_AT: {return methodLookAt(lightPy);}
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(light, name, valuePy) {
-    light = Sk.ffi.remapToJs(light);
-    var value = Sk.ffi.remapToJs(valuePy);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     switch(name) {
-      case PROP_COLOR: {
-        light[PROP_COLOR] = new THREE[COLOR](value);
-      }
-      break;
       case PROP_DISTANCE: {
-        if (isNumber(value)) {
-          light[PROP_DISTANCE] = value;
-        }
-        else {
-          throw new Sk.builtin.TypeError("'" + PROP_DISTANCE + "' attribute must be a <type 'float'>.");
-        }
+        Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.remapToJs(selfPy)[PROP_DISTANCE] = Sk.ffi.remapToJs(valuePy);
       }
       break;
       case PROP_INTENSITY: {
-        if (isNumber(value)) {
-          light[PROP_INTENSITY] = value;
-        }
-        else {
-          throw new Sk.builtin.TypeError("'" + PROP_INTENSITY + "' attribute must be a <type 'float'>.");
-        }
-      }
-      break;
-      case PROP_POSITION:
-      case PROP_ROTATION:
-      case PROP_SCALE:
-      case PROP_UP: {
-        setVectorProperty(light, name, valuePy);
-      }
-      break;
-      case PROP_QUATERNION: {
-        light[PROP_QUATERNION] = value;
-      }
-      break;
-      case PROP_EULER_ORDER: {
-        if (isString(value)) {
-          light[PROP_EULER_ORDER] = value;
-        }
-        else {
-          throw new Error(name + " must be a string");
-        }
-      }
-      break;
-      case PROP_USE_QUATERNION: {
-        light[PROP_USE_QUATERNION] = value;
+        Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.remapToJs(selfPy)[PROP_INTENSITY] = Sk.ffi.remapToJs(valuePy);
       }
       break;
       default: {
-        throw new Error(name + " is not an settable attribute of " + POINT_LIGHT);
+        return lightSetAttr(POINT_LIGHT, selfPy, name, valuePy);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
     var args = {};
     args[PROP_COLOR] = light[PROP_COLOR];
     args[PROP_INTENSITY] = light[PROP_INTENSITY];
     args[PROP_DISTANCE] = light[PROP_DISTANCE];
     return Sk.ffi.stringToPy(POINT_LIGHT + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(light) {
-    light = Sk.ffi.remapToJs(light);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var light = Sk.ffi.remapToJs(selfPy);
     var args = [light[PROP_COLOR], light[PROP_INTENSITY], light[PROP_DISTANCE]];
     return Sk.ffi.stringToPy(POINT_LIGHT + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
