@@ -539,10 +539,10 @@ function shapeGetAttr(shapePy, name, className) {
       return Sk.ffi.stringToPy(shape[PROP_NAME]);
     }
     case PROP_X: {
-      return Sk.ffi.numberToIntPy(shape[PROP_X]);
+      return Sk.ffi.numberToFloatPy(shape[PROP_X]);
     }
     case PROP_Y: {
-      return Sk.ffi.numberToIntPy(shape[PROP_Y]);
+      return Sk.ffi.numberToFloatPy(shape[PROP_Y]);
     }
     case PROP_ROTATION: {
       return Sk.ffi.numberToFloatPy(shape[PROP_ROTATION]);
@@ -609,7 +609,7 @@ function shapeSetAttr(shapePy, name, valuePy, className) {
     break;
     case PROP_X:
     case PROP_Y: {
-      Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isInt(valuePy), valuePy);
+      Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
       shape[name] = value;
     }
     break;
@@ -936,27 +936,12 @@ mod[TWEEN] = Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
  * Container
  */
 mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(containerPy, argPy) {
-    containerPy.tp$name = CONTAINER;
-    if (typeof argPy === 'undefined') {
-      containerPy.v = new createjs[CONTAINER]();
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, argPy) {
+    if (Sk.ffi.isUndefined(argPy)) {
+      Sk.ffi.referenceToPy(new createjs[CONTAINER](), CONTAINER, undefined, selfPy);
     }
     else {
-      var name = argPy.tp$name;
-      if (typeof name === 'string') {
-        switch(name) {
-          case CONTAINER: {
-            containerPy.v = Sk.ffi.remapToJs(argPy);
-          }
-          break;
-          default: {
-            throw new Error(name);
-          }
-        }
-      }
-      else {
-        throw new Error(typeof name);
-      }
+      Sk.ffi.referenceToPy(Sk.ffi.remapToJs(argPy), CONTAINER, undefined, selfPy);
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(containerPy, name) {
@@ -982,7 +967,7 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
             var child = container[METHOD_ADD_CHILD](Sk.ffi.remapToJs(childPy));
-            return Sk.ffi.callsim(mod[childPy.tp$name], Sk.ffi.referenceToPy(child, childPy.tp$name));
+            return childPy;
           });
         }, METHOD_ADD_CHILD, []));
       }
