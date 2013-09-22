@@ -1,10 +1,4 @@
-/*
- * 'browser' Python module
- *
- * Exposes the window and document variables.
- */
 var $builtinmodule = function(name) {
-
   var mod = {};
 
   var EVENT                    = 'Event';
@@ -22,8 +16,6 @@ var $builtinmodule = function(name) {
   mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod));
 
   mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod));
-
-  Sk.builtin.defineWorkbench(mod);
 
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy) {
