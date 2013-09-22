@@ -232,9 +232,14 @@ var PROP_DEPTH_SEGMENTS        = "depthSegments";
 */
 var PROP_DETAIL                = "detail";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
+var PROP_DOM_ELEMENT           = "domElement";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_DISTANCE              = "distance";
 /**
 * @const
@@ -1010,7 +1015,6 @@ mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var PROP_AUTO_CLEAR   = "autoClear";
   var PROP_CLEAR_COLOR  = "clearColor";
-  var PROP_DOM_ELEMENT  = "domElement";
   var PROP_GAMMA_INPUT  = "gammaInput";
   var PROP_GAMMA_OUTPUT = "gammaOutput";
   var PROP_SORT_OBJECTS = "sortObjects";
@@ -1041,10 +1045,7 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return renderer[PROP_SORT_OBJECTS];
       }
       case PROP_DOM_ELEMENT: {
-        // TODO: I think duck-typing means that this will work as long as we don't
-        // try to do anything more ambitious.
-        // TODO: I think we can access the Node now too.
-        return {v: renderer[PROP_DOM_ELEMENT]};
+        return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(renderer[PROP_DOM_ELEMENT], NODE));
       }
       case METHOD_RENDER: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1194,7 +1195,6 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var PROP_AUTO_CLEAR   = "autoClear";
   var PROP_CLEAR_COLOR  = "clearColor";
-  var PROP_DOM_ELEMENT  = "domElement";
   var PROP_GAMMA_INPUT  = "gammaInput";
   var PROP_GAMMA_OUTPUT = "gammaOutput";
   var PROP_SORT_OBJECTS = "sortObjects";

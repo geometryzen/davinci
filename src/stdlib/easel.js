@@ -29,6 +29,11 @@ var EVENT                         = "Event";
  */
 var GRAPHICS                      = "Graphics";
 /**
+* @const
+* @type {Sk.ffi.PyType}
+*/
+var INT                           = Sk.ffi.PyType.INT;
+/**
  * @const
  * @type {string}
  */
@@ -38,6 +43,11 @@ var MOVIE_CLIP                    = "MovieClip";
  * @type {string}
  */
 var NODE                          = "Node";
+/**
+* @const
+* @type {!Array.<Sk.ffi.PyType>}
+*/
+var NUMBER                        = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
  * @const
  * @type {string}
@@ -88,6 +98,11 @@ var PROP_BOUNCE_OUT               = "bounceOut";
  * @type {string}
  */
 var PROP_CANVAS                   = "canvas";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_FONT                     = "font";
 /**
  * @const
  * @type {string}
@@ -509,128 +524,136 @@ mod[MOVIE_CLIP] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, MOVIE_CLIP, []);
 /**
+ *
+ */
+function shapeGetAttr(shapePy, name, className) {
+  var shape = Sk.ffi.remapToJs(shapePy);
+  switch(name) {
+    case PROP_ALPHA: {
+      return Sk.ffi.numberToFloatPy(shape[PROP_ALPHA]);
+    }
+    case PROP_GRAPHICS: {
+      return Sk.ffi.callsim(mod[GRAPHICS], Sk.ffi.referenceToPy(shape[PROP_GRAPHICS], GRAPHICS));
+    }
+    case PROP_NAME: {
+      return Sk.ffi.stringToPy(shape[PROP_NAME]);
+    }
+    case PROP_X: {
+      return Sk.ffi.numberToIntPy(shape[PROP_X]);
+    }
+    case PROP_Y: {
+      return Sk.ffi.numberToIntPy(shape[PROP_Y]);
+    }
+    case PROP_ROTATION: {
+      return Sk.ffi.numberToFloatPy(shape[PROP_ROTATION]);
+    }
+    case METHOD_ADD_EVENT_LISTENER: {
+      return Sk.builtin.addEventListener(mod, shape);
+    }
+    case METHOD_REMOVE_EVENT_LISTENER: {
+      return Sk.builtin.removeEventListener(mod, shape);
+    }
+    case METHOD_GLOBAL_TO_LOCAL: {
+      return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
+        $loc.__init__ = Sk.ffi.functionPy(function(self) {
+          self.tp$name = METHOD_GLOBAL_TO_LOCAL;
+          self.v = shape[METHOD_GLOBAL_TO_LOCAL];
+        });
+        $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y) {
+          var point = shape[METHOD_GLOBAL_TO_LOCAL](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y));
+          return Sk.ffi.callsim(mod[POINT], Sk.ffi.referenceToPy(point, POINT));
+        });
+      }, METHOD_GLOBAL_TO_LOCAL, []));
+    }
+    case METHOD_HIT_TEST: {
+      return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
+        $loc.__init__ = Sk.ffi.functionPy(function(self) {
+          self.tp$name = METHOD_HIT_TEST;
+          self.v = shape[METHOD_HIT_TEST];
+        });
+        $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y) {
+          return Sk.ffi.remapToPy(shape[METHOD_HIT_TEST](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y)));
+        });
+      }, METHOD_HIT_TEST, []));
+    }
+    case METHOD_LOCAL_TO_LOCAL: {
+      return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
+        $loc.__init__ = Sk.ffi.functionPy(function(self) {
+          self.tp$name = METHOD_LOCAL_TO_LOCAL;
+          self.v = shape[METHOD_LOCAL_TO_LOCAL];
+        });
+        $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y, target) {
+          var point = shape[METHOD_LOCAL_TO_LOCAL](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), Sk.ffi.remapToJs(target));
+          return Sk.ffi.callsim(mod[POINT], Sk.ffi.referenceToPy(point, POINT));
+        });
+      }, METHOD_LOCAL_TO_LOCAL, []));
+    }
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+    }
+  }
+}
+function shapeSetAttr(shapePy, name, valuePy, className) {
+  var shape = Sk.ffi.remapToJs(shapePy);
+  var value = Sk.ffi.remapToJs(valuePy);
+  switch(name) {
+    case PROP_ALPHA: {
+      Sk.ffi.checkArgType(PROP_ALPHA, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+      shape[PROP_ALPHA] = value;
+    }
+    break;
+    case PROP_NAME: {
+      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+      shape[PROP_NAME] = value;
+    }
+    break;
+    case PROP_X:
+    case PROP_Y: {
+      Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isInt(valuePy), valuePy);
+      shape[name] = value;
+    }
+    break;
+    case PROP_ROTATION: {
+      Sk.ffi.checkArgType(PROP_ROTATION, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+      shape[PROP_ROTATION] = value;
+    }
+    break;
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+    }
+  }
+}
+/**
  * Shape
  */
 mod[SHAPE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(shapePy, argPy) {
-    shapePy.tp$name = SHAPE;
-    if (typeof argPy === 'undefined') {
-      shapePy.v = new createjs[SHAPE]();
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, argPy) {
+    Sk.ffi.checkMethodArgs(SHAPE, arguments, 0, 1);
+    if (Sk.ffi.isUndefined(argPy)) {
+      Sk.ffi.referenceToPy(new createjs[SHAPE](), SHAPE, undefined, selfPy);
     }
     else {
-      var name = argPy.tp$name;
-      if (typeof name === 'string') {
-        switch(name) {
-          case SHAPE: {
-            shapePy.v = Sk.ffi.remapToJs(argPy);
-          }
-          break;
-          case GRAPHICS: {
-            shapePy.v = new createjs[SHAPE](Sk.ffi.remapToJs(argPy));
-          }
-          break;
-          default: {
-            throw new Error(name);
-          }
+      Sk.ffi.checkArgType(PROP_GRAPHICS, GRAPHICS, Sk.ffi.isClass(argPy), argPy);
+      switch(Sk.ffi.typeName(argPy)) {
+        case SHAPE: {
+          Sk.ffi.referenceToPy(Sk.ffi.remapToJs(argPy), SHAPE, undefined, selfPy);
         }
-      }
-      else {
-        throw new Error(typeof name);
+        break;
+        case GRAPHICS: {
+          Sk.ffi.referenceToPy(new createjs[SHAPE](Sk.ffi.remapToJs(argPy)), SHAPE, undefined, selfPy);
+        }
+        break;
+        default: {
+          Sk.ffi.checkArgType(PROP_GRAPHICS, GRAPHICS, false, argPy);
+        }
       }
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(shapePy, name) {
-    var shape = Sk.ffi.remapToJs(shapePy);
-    switch(name) {
-      case PROP_ALPHA: {
-        return Sk.builtin.assk$(shape[PROP_ALPHA], Sk.builtin.nmber.float$);
-      }
-      case PROP_GRAPHICS: {
-        return Sk.ffi.callsim(mod[GRAPHICS], Sk.ffi.referenceToPy(shape[PROP_GRAPHICS], GRAPHICS));
-      }
-      case PROP_NAME: {
-        return new Sk.builtin.str(shape[PROP_NAME]);
-      }
-      case PROP_X: {
-        return Sk.builtin.assk$(shape[PROP_X], Sk.builtin.nmber.int$);
-      }
-      case PROP_Y: {
-        return Sk.builtin.assk$(shape[PROP_Y], Sk.builtin.nmber.int$);
-      }
-      case PROP_ROTATION: {
-        return Sk.builtin.assk$(shape[PROP_ROTATION], Sk.builtin.nmber.float$);
-      }
-      case METHOD_ADD_EVENT_LISTENER: {
-        return Sk.builtin.addEventListener(mod, shape);
-      }
-      case METHOD_REMOVE_EVENT_LISTENER: {
-        return Sk.builtin.removeEventListener(mod, shape);
-      }
-      case METHOD_GLOBAL_TO_LOCAL: {
-        return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-          $loc.__init__ = Sk.ffi.functionPy(function(self) {
-            self.tp$name = METHOD_GLOBAL_TO_LOCAL;
-            self.v = shape[METHOD_GLOBAL_TO_LOCAL];
-          });
-          $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y) {
-            var point = shape[METHOD_GLOBAL_TO_LOCAL](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y));
-            return Sk.ffi.callsim(mod[POINT], Sk.ffi.referenceToPy(point, POINT));
-          });
-        }, METHOD_GLOBAL_TO_LOCAL, []));
-      }
-      case METHOD_HIT_TEST: {
-        return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-          $loc.__init__ = Sk.ffi.functionPy(function(self) {
-            self.tp$name = METHOD_HIT_TEST;
-            self.v = shape[METHOD_HIT_TEST];
-          });
-          $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y) {
-            return Sk.ffi.remapToPy(shape[METHOD_HIT_TEST](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y)));
-          });
-        }, METHOD_HIT_TEST, []));
-      }
-      case METHOD_LOCAL_TO_LOCAL: {
-        return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-          $loc.__init__ = Sk.ffi.functionPy(function(self) {
-            self.tp$name = METHOD_LOCAL_TO_LOCAL;
-            self.v = shape[METHOD_LOCAL_TO_LOCAL];
-          });
-          $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y, target) {
-            var point = shape[METHOD_LOCAL_TO_LOCAL](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), Sk.ffi.remapToJs(target));
-            return Sk.ffi.callsim(mod[POINT], Sk.ffi.referenceToPy(point, POINT));
-          });
-        }, METHOD_LOCAL_TO_LOCAL, []));
-      }
-    }
+    return shapeGetAttr(shapePy, name, SHAPE);
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(shapePy, name, valuePy) {
-    var shape = Sk.ffi.remapToJs(shapePy);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      case PROP_ALPHA: {
-        shape[PROP_ALPHA] = value;
-      }
-      break;
-      case PROP_NAME: {
-        shape[PROP_NAME] = value;
-      }
-      break;
-      case PROP_X: {
-        shape[PROP_X] = value;
-      }
-      break;
-      case PROP_Y: {
-        shape[PROP_Y] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        shape[PROP_ROTATION] = value;
-      }
-      break;
-      default: {
-        throw new Sk.builtin.AttributeError(name + " is not a writeable attribute of " + SHAPE);
-      }
-    }
+    return shapeSetAttr(shapePy, name, valuePy, SHAPE);
   });
 }, SHAPE, []);
 /**
@@ -665,8 +688,8 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             self.v = stage[METHOD_ADD_CHILD];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(self, childPy) {
-            var child = stage[METHOD_ADD_CHILD](Sk.ffi.remapToJs(childPy));
-            return Sk.ffi.callsim(mod[childPy.tp$name], Sk.ffi.referenceToPy(child, childPy.tp$name));
+            stage[METHOD_ADD_CHILD](Sk.ffi.remapToJs(childPy));
+            return childPy;
           });
         }, METHOD_ADD_CHILD, []));
       }
@@ -717,38 +740,21 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  */
 mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, textPy, fontPy, colorPy) {
-    selfPy.tp$name = TEXT;
+    Sk.ffi.checkArgType(PROP_TEXT, Sk.ffi.PyType.STR, Sk.ffi.isStr(textPy), textPy);
+    Sk.ffi.checkArgType(PROP_FONT, Sk.ffi.PyType.STR, Sk.ffi.isStr(fontPy), fontPy);
     var text = Sk.ffi.remapToJs(textPy);
     var font = Sk.ffi.remapToJs(fontPy);
     var color = Sk.ffi.remapToJs(colorPy);
-    selfPy.v = new createjs[TEXT](text, font, color);
+    Sk.ffi.referenceToPy(new createjs[TEXT](text, font, color), TEXT, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(textPy, name) {
     var text = Sk.ffi.remapToJs(textPy);
     switch(name) {
-      case PROP_ALPHA: {
-        return Sk.builtin.assk$(text[PROP_ALPHA], Sk.builtin.nmber.float$);
-      }
-      case PROP_X: {
-        return Sk.builtin.assk$(text[PROP_X], Sk.builtin.nmber.float$);
-      }
-      case PROP_Y: {
-        return Sk.builtin.assk$(text[PROP_Y], Sk.builtin.nmber.float$);
-      }
-      case PROP_ROTATION: {
-        return Sk.builtin.assk$(text[PROP_ROTATION], Sk.builtin.nmber.float$);
-      }
       case PROP_TEXT: {
-        return new Sk.builtin.str(text[PROP_TEXT]);
+        return Sk.ffi.stringToPy(text[PROP_TEXT]);
       }
       case PROP_TEXT_ALIGN: {
-        return new Sk.builtin.str(text[PROP_TEXT_ALIGN]);
-      }
-      case METHOD_ADD_EVENT_LISTENER: {
-        return Sk.builtin.addEventListener(mod, text);
-      }
-      case METHOD_REMOVE_EVENT_LISTENER: {
-        return Sk.builtin.removeEventListener(mod, text);
+        return Sk.ffi.stringToPy(text[PROP_TEXT_ALIGN]);
       }
       case METHOD_GET_MEASURED_WIDTH: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -772,31 +778,17 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           });
         }, METHOD_GET_MEASURED_HEIGHT, []));
       }
+      default: {
+        return shapeGetAttr(textPy, name, TEXT);
+      }
     }
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(textPy, name, valuePy) {
     var text = Sk.ffi.remapToJs(textPy);
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
-      case PROP_ALPHA: {
-        Sk.builtin.pyCheckType(PROP_ALPHA, "Number", Sk.builtin.checkNumber(valuePy));
-        text[PROP_ALPHA] = value;
-      }
-      break;
       case PROP_HIT_AREA: {
         text[PROP_HIT_AREA] = value;
-      }
-      break;
-      case PROP_X: {
-        text[PROP_X] = value;
-      }
-      break;
-      case PROP_Y: {
-        text[PROP_Y] = value;
-      }
-      break;
-      case PROP_ROTATION: {
-        text[PROP_ROTATION] = value;
       }
       break;
       case PROP_TEXT: {
@@ -808,17 +800,17 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AttributeError(name + " is not a writeable attribute of " + TEXT);
+        return shapeSetAttr(textPy, name, valuePy, TEXT);
       }
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return new Sk.builtin.str(TEXT + "(" + self.x + ", " + self.y + ")");
+    return Sk.ffi.stringToPy(TEXT + "(" + self.x + ", " + self.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return new Sk.builtin.str("[" + self.x + ", " + self.y + "]");
+    return Sk.ffi.stringToPy("[" + self.x + ", " + self.y + "]");
   });
 }, TEXT, []);
 /**
@@ -971,7 +963,7 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var container = Sk.ffi.remapToJs(containerPy);
     switch(name) {
       case PROP_NAME: {
-        return new Sk.builtin.str(container[PROP_NAME]);
+        return Sk.ffi.stringToPy(container[PROP_NAME]);
       }
       case PROP_X: {
         return Sk.builtin.assk$(container[PROP_X], Sk.builtin.nmber.float$);
@@ -1052,11 +1044,11 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return new Sk.builtin.str(CONTAINER + "(" + self.x + ", " + self.y + ")");
+    return Sk.ffi.stringToPy(CONTAINER + "(" + self.x + ", " + self.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return new Sk.builtin.str("[" + self.x + ", " + self.y + "]");
+    return Sk.ffi.stringToPy("[" + self.x + ", " + self.y + "]");
   });
 }, CONTAINER, []);
 /**
@@ -1142,11 +1134,11 @@ mod[POINT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(pointPy) {
     var point = Sk.ffi.remapToJs(pointPy);
-    return new Sk.builtin.str(POINT + "(" + point.x + ", " + point.y + ")");
+    return Sk.ffi.stringToPy(POINT + "(" + point.x + ", " + point.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(pointPy) {
     var point = Sk.ffi.remapToJs(pointPy);
-    return new Sk.builtin.str("[" + point.x + ", " + point.y + "]");
+    return Sk.ffi.stringToPy("[" + point.x + ", " + point.y + "]");
   });
 }, POINT, []);
 /**
@@ -1157,7 +1149,7 @@ mod[METHOD_GET_HSL] = Sk.ffi.functionPy(function(hue, saturation, lightness, alp
   saturation = Sk.ffi.remapToJs(saturation);
   lightness = Sk.ffi.remapToJs(lightness);
   alpha = Sk.ffi.remapToJs(alpha);
-  return new Sk.builtin.str(createjs[GRAPHICS][METHOD_GET_HSL](hue, saturation, lightness, alpha));
+  return Sk.ffi.stringToPy(createjs[GRAPHICS][METHOD_GET_HSL](hue, saturation, lightness, alpha));
 });
 /**
  *
