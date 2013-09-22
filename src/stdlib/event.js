@@ -1,4 +1,4 @@
-Sk.builtin.buildEventClass = function(mod) {
+Sk.builtin.defineEvent = function(mod) {
 /**
  * @const
  * @type {string}
@@ -94,8 +94,10 @@ var METHOD_STOP_IMMEDIATE_PROPAGATION     = "stopImmediatePropagation";
  * @type {string}
  */
 var METHOD_STOP_PROPAGATION               = "stopPropagation";
-
-return Sk.ffi.buildClass(mod, function($gbl, $loc) {
+/**
+ * Event
+ */
+mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, eventRefPy) {
     Sk.ffi.referenceToPy(Sk.ffi.remapToJs(eventRefPy), EVENT, undefined, selfPy);
   });
@@ -249,4 +251,23 @@ return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
     eventTarget[METHOD_ADD_EVENT_LISTENER](type, listenerJs, useCapture);
   });
 }, METHOD_ADD_EVENT_LISTENER, []));
+};
+
+Sk.builtin.removeEventListener = function (mod, eventTarget) {
+var EVENT                                 = "Event";
+var METHOD_REMOVE_EVENT_LISTENER          = "removeEventListener";
+return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.referenceToPy(eventTarget[METHOD_REMOVE_EVENT_LISTENER], METHOD_REMOVE_EVENT_LISTENER, undefined, selfPy);
+  });
+  $loc.__call__ = Sk.ffi.functionPy(function(selfPy, typePy, listenerPy, useCapturePy) {
+    var type = Sk.ffi.remapToJs(typePy);
+    var listenerJs = function(event) {
+      var eventPy = Sk.ffi.callsim(mod[EVENT], Sk.ffi.referenceToPy(event, EVENT));
+      Sk.ffi.callsim(listenerPy, eventPy);
+    };
+    var useCapture = Sk.ffi.remapToJs(useCapturePy);
+    eventTarget[METHOD_REMOVE_EVENT_LISTENER](type, listenerJs, useCapture);
+  });
+}, METHOD_REMOVE_EVENT_LISTENER, []));
 };

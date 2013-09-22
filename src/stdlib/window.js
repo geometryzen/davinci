@@ -43,7 +43,22 @@ var METHOD_ADD_EVENT_LISTENER             = "addEventListener";
  * @const
  * @type {string}
  */
+var METHOD_ALERT                          = "alert";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CANCEL_ANIMATION_FRAME         = "cancelAnimationFrame";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_CONFIRM                        = "confirm";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_PROMPT                         = "prompt";
 /**
  * @const
  * @type {string}
@@ -101,6 +116,12 @@ return Sk.misceval.buildClass(mod, function($gbl, $loc) {
           });
         }, METHOD_ADD_EVENT_LISTENER, []));
       }
+      case METHOD_ALERT: {
+        return Sk.ffi.callableToPy(mod, METHOD_ALERT, function(methodPy, messagePy) {
+          Sk.ffi.checkMethodArgs(METHOD_ALERT, arguments, 0, 1);
+          window[METHOD_ALERT](Sk.ffi.remapToJs(messagePy));
+        });
+      }
       case METHOD_REMOVE_EVENT_LISTENER: {
         return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {
           $loc.__init__ = Sk.ffi.functionPy(function(self) {
@@ -125,6 +146,18 @@ return Sk.misceval.buildClass(mod, function($gbl, $loc) {
             }
           });
         }, METHOD_CANCEL_ANIMATION_FRAME, []));
+      }
+      case METHOD_CONFIRM: {
+        return Sk.ffi.callableToPy(mod, METHOD_CONFIRM, function(methodPy, messagePy) {
+          Sk.ffi.checkMethodArgs(METHOD_CONFIRM, arguments, 0, 1);
+          return Sk.ffi.remapToPy(window[METHOD_CONFIRM](Sk.ffi.remapToJs(messagePy)));
+        });
+      }
+      case METHOD_PROMPT: {
+        return Sk.ffi.callableToPy(mod, METHOD_PROMPT, function(methodPy, textPy, valuePy) {
+          Sk.ffi.checkMethodArgs(METHOD_PROMPT, arguments, 0, 2);
+          return Sk.ffi.remapToPy(window[METHOD_PROMPT](Sk.ffi.remapToJs(textPy), Sk.ffi.remapToJs(valuePy)));
+        });
       }
       case METHOD_REQUEST_ANIMATION_FRAME: {
         return Sk.misceval.callsim(Sk.misceval.buildClass(mod, function($gbl, $loc) {

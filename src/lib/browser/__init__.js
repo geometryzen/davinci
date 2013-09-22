@@ -15,7 +15,7 @@ var $builtinmodule = function(name) {
   var WORKBENCH                = 'Workbench';
   var METHOD_START             = 'start';
 
-  mod[EVENT] = Sk.builtin.buildEventClass(mod);
+  Sk.builtin.defineEvent(mod);
 
   Sk.builtin.defineNode(mod);
 
