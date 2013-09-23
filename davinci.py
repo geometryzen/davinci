@@ -109,6 +109,7 @@ Files = [
         'src/stdlib/event.js',
         'src/stdlib/geometry.js',
         'src/stdlib/node.js',
+        'src/stdlib/probeE3.js',
         'src/stdlib/window.js',
         'src/stdlib/e2ga.js',
         'src/stdlib/units.js',
