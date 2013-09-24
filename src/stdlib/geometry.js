@@ -120,6 +120,11 @@ var PROP_SCALE                      = "scale";
  * @const
  * @type {string}
  */
+var PROP_SEGMENTS                   = "segments";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_VOLUME                     = "volume";
 /**
  * @const
@@ -588,6 +593,14 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case PROP_SEGMENTS: {
+        return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
+          Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
+          arrow[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          return selfPy;
+        });
+      }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
@@ -615,7 +628,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var dimensions = dimensionArrow();
           var scalePy    = Sk.ffi.numberToFloatPy(dimensions[PROP_SCALE]);
           var attitudePy = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_ATTITUDE], EUCLIDEAN_3));
-          var segmentsPy = Sk.ffi.numberToIntPy(32);
+          var segmentsPy = Sk.ffi.numberToIntPy(arrow[PROP_SEGMENTS] ? arrow[PROP_SEGMENTS] : 32);
           var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
           var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy);
           return completeMesh(geometryPy, arrow);
@@ -659,6 +672,14 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case PROP_SEGMENTS: {
+        return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
+          Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
+          cone[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          return selfPy;
+        });
+      }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
@@ -680,11 +701,11 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             return dims;
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
-          var dimensions = dimensionCone();
+          var dimensions     = dimensionCone();
           var radiusTop      = Sk.ffi.numberToFloatPy(0);
           var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
           var height         = Sk.ffi.numberToFloatPy(dimensions[PROP_HEIGHT]);
-          var radialSegments = Sk.ffi.numberToIntPy(32);
+          var radialSegments = Sk.ffi.numberToIntPy(cone[PROP_SEGMENTS] ? cone[PROP_SEGMENTS] : 32);
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
@@ -828,6 +849,14 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case PROP_SEGMENTS: {
+        return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
+          Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
+          cylinder[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          return selfPy;
+        });
+      }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
@@ -856,7 +885,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var radiusTop      = Sk.ffi.numberToFloatPy(dimensions.a);
           var radiusBottom   = Sk.ffi.numberToFloatPy(dimensions.b);
           var height         = Sk.ffi.numberToFloatPy(dimensions.h);
-          var radialSegments = Sk.ffi.numberToIntPy(32);
+          var radialSegments = Sk.ffi.numberToIntPy(cylinder[PROP_SEGMENTS] ? cylinder[PROP_SEGMENTS] : 32);
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
