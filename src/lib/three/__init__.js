@@ -1,12 +1,6 @@
-/**
- * The 'three' module is a foreign function interface over Three.js for the DaVinci Python to JavaScript cross-compiler.
- *
- * The 'three' module is in most respects API-compatible with the Three.js library.
- *
- * David Holmes (david.geo.holmes@gmail.com)
- */
-var $builtinmodule = function(name) {
+var $builtinmodule = function(namePy) {
   var mod = {};
   Sk.builtin.defineThree(mod, THREE, BLADE);
+  Sk.builtin.defineGeometry(mod, THREE, Sk.ffi.remapToJs(namePy));
   return mod;
 }

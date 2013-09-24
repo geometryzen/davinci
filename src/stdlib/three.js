@@ -167,59 +167,70 @@ var LATHE_GEOMETRY             = "LatheGeometry";
 */
 var OCTAHEDRON_GEOMETRY        = "OctahedronGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var PLANE_GEOMETRY             = "PlaneGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var REVOLUTION_GEOMETRY        = "RevolutionGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var SPHERE_GEOMETRY            = "SphereGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var TEXT_GEOMETRY              = "TextGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var TETRAHEDRON_GEOMETRY       = "TetrahedronGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var TORUS_GEOMETRY             = "TorusGeometry";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
+var PROP_ASPECT                = "aspect";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_ATTITUDE              = "attitude";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var PROP_AXIS                  = "axis";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var PROP_BOTTOM                = "bottom";
 /**
-* @const
-* @type {string}
-*/
+ * The 'canvas' property is an alias for the 'domElement' property.
+ * @const
+ * @type {string}
+ */
+var PROP_CANVAS                = "canvas";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_COLOR                 = "color";
 /**
-* @const
-* @type {string}
-*/
+ * @const
+ * @type {string}
+ */
 var PROP_DEPTH                 = "depth";
 /**
 * @const
@@ -255,6 +266,11 @@ var PROP_FAR                   = "far";
 * @const
 * @type {string}
 */
+var PROP_FOV                   = "fov";
+/**
+* @const
+* @type {string}
+*/
 var PROP_GENERATOR             = "generator";
 /**
 * @const
@@ -271,6 +287,16 @@ var PROP_ID                    = "id";
 * @type {string}
 */
 var PROP_LEFT                  = "left";
+/**
+* @const
+* @type {string}
+*/
+var PROP_MASS                  = "mass";
+/**
+* @const
+* @type {string}
+*/
+var PROP_MOMENTUM              = "momentum";
 /**
 * @const
 * @type {string}
@@ -615,7 +641,37 @@ var METHOD_SET_RGB             = "setRGB";
  * @const
  * @type {string}
  */
+var ARG_ALPHA                  = "alpha";
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_ASPECT                 = PROP_ASPECT;
+/**
+ * @const
+ * @type {string}
+ */
 var ARG_AXIS                   = "axis";
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_COLOR                  = PROP_COLOR;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_FAR                    = PROP_FAR;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_FOV                    = PROP_FOV;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_NEAR                   = PROP_NEAR;
 /**
  * @const
  * @type {string}
@@ -781,6 +837,10 @@ function isColor(x) {
   else {
     return false;
   }
+}
+
+function isColorPy(valuePy) {
+  return Sk.ffi.isClass(valuePy, COLOR);
 }
 
 function webGLSupported() {
@@ -1049,6 +1109,7 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_SORT_OBJECTS: {
         return renderer[PROP_SORT_OBJECTS];
       }
+      case PROP_CANVAS:
       case PROP_DOM_ELEMENT: {
         return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(renderer[PROP_DOM_ELEMENT], NODE));
       }
@@ -1124,8 +1185,7 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, METHOD_SET_SIZE, []));
       }
       default: {
-        // The framework will raise an AttributeError exception.
-        return /* undefined */;
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CANVAS_RENDERER);
       }
     }
   });
@@ -1176,7 +1236,7 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Error(name + " is not an attribute of " + CANVAS_RENDERER);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(CANVAS_RENDERER);
       }
     }
   });
@@ -1232,6 +1292,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_SORT_OBJECTS: {
         return renderer[PROP_SORT_OBJECTS];
       }
+      case PROP_CANVAS:
       case PROP_DOM_ELEMENT: {
         return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(renderer[PROP_DOM_ELEMENT], NODE));
       }
@@ -1250,10 +1311,12 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       case METHOD_SET_CLEAR_COLOR: {
-        return Sk.ffi.callableToPy(mod, METHOD_SET_CLEAR_COLOR, function(methodPy, color, alpha) {
-          Sk.ffi.checkMethodArgs(METHOD_GET_CLEAR_COLOR, arguments, 2, 2);
-          color  = Sk.ffi.remapToJs(color);
-          alpha = Sk.ffi.remapToJs(alpha);
+        return Sk.ffi.callableToPy(mod, METHOD_SET_CLEAR_COLOR, function(methodPy, colorPy, alphaPy) {
+          Sk.ffi.checkMethodArgs(METHOD_SET_CLEAR_COLOR, arguments, 2, 2);
+          Sk.ffi.checkArgType(ARG_COLOR, [COLOR, Sk.ffi.PyType.INT], isColorPy(colorPy)||Sk.ffi.isInt(colorPy), colorPy);
+          Sk.ffi.checkArgType(ARG_ALPHA, NUMBER, Sk.ffi.isNumber(alphaPy), alphaPy);
+          var color  = Sk.ffi.remapToJs(colorPy);
+          var alpha = Sk.ffi.remapToJs(alphaPy);
           return Sk.ffi.remapToPy(renderer[METHOD_SET_CLEAR_COLOR](color, alpha));
         });
       }
@@ -1277,8 +1340,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, METHOD_SET_SIZE, []));
       }
       default: {
-        // The framework will raise an AttributeError exception.
-        return /* undefined */;
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(WEBGL_RENDERER);
       }
     }
   });
@@ -1329,7 +1391,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Error(name + " is not an attribute of " + WEBGL_RENDERER);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(WEBGL_RENDERER);
       }
     }
   });
@@ -1529,15 +1591,29 @@ function cameraSetAttr(cameraPy, name, valuePy, className) {
     }
   }
 }
-
+/**
+ * PerspectiveCamera
+ */
 mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, fov, aspect, near, far) {
-    var fieldOfView = Sk.builtin.asnum$(fov)
-    var aspectRatio = Sk.builtin.asnum$(aspect)
-    var nearPlane = Sk.builtin.asnum$(near)
-    var farPlane = Sk.builtin.asnum$(far)
-    self.v = new THREE[PERSPECTIVE_CAMERA](fieldOfView, aspectRatio, nearPlane, farPlane);
-    self.tp$name = PERSPECTIVE_CAMERA;
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, fovPy, aspectPy, nearPy, farPy) {
+    Sk.ffi.checkMethodArgs(PERSPECTIVE_CAMERA, arguments, 0, 4);
+    if (Sk.ffi.isDefined(fovPy)) {
+      Sk.ffi.checkArgType(ARG_FOV, NUMBER, Sk.ffi.isNumber(fovPy), fovPy);
+    }
+    if (Sk.ffi.isDefined(aspectPy)) {
+      Sk.ffi.checkArgType(ARG_ASPECT, NUMBER, Sk.ffi.isNumber(aspectPy), aspectPy);
+    }
+    if (Sk.ffi.isDefined(nearPy)) {
+      Sk.ffi.checkArgType(ARG_NEAR, NUMBER, Sk.ffi.isNumber(nearPy), nearPy);
+    }
+    if (Sk.ffi.isDefined(farPy)) {
+      Sk.ffi.checkArgType(ARG_FAR, NUMBER, Sk.ffi.isNumber(farPy), farPy);
+    }
+    var fieldOfView = Sk.ffi.remapToJs(fovPy);
+    var aspectRatio = Sk.ffi.remapToJs(aspectPy);
+    var nearPlane = Sk.ffi.remapToJs(nearPy);
+    var farPlane = Sk.ffi.remapToJs(farPy);
+    Sk.ffi.referenceToPy(new THREE[PERSPECTIVE_CAMERA](fieldOfView, aspectRatio, nearPlane, farPlane), PERSPECTIVE_CAMERA, undefined, selfPy);
   });
 
   $loc.__getattr__ = Sk.ffi.functionPy(function(cameraPy, name) {
@@ -1627,8 +1703,19 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(self) {
-    return Sk.ffi.stringToPy(PERSPECTIVE_CAMERA);
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var camera = Sk.ffi.remapToJs(selfPy);
+    var args = {};
+    args[PROP_FOV]    = camera[PROP_FOV];
+    args[PROP_ASPECT] = camera[PROP_ASPECT];
+    args[PROP_NEAR]   = camera[PROP_NEAR];
+    args[PROP_FAR]    = camera[PROP_FAR];
+    return Sk.ffi.stringToPy(PERSPECTIVE_CAMERA + "(" + JSON.stringify(args) + ")");
+  });
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var camera = Sk.ffi.remapToJs(selfPy);
+    var args = [camera[PROP_FOV], camera[PROP_ASPECT], camera[PROP_NEAR], camera[PROP_FAR]];
+    return Sk.ffi.stringToPy(PERSPECTIVE_CAMERA + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, PERSPECTIVE_CAMERA, []);
 
@@ -2235,7 +2322,7 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.builtin.assk$(self.v[PROP_HEIGHT_SEGMENTS], Sk.builtin.nmber.int$);
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(OCTAHEDRON_GEOMETRY);
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(PLANE_GEOMETRY);
       }
     }
   });
@@ -2439,7 +2526,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var PROP_HEIGHT_SEGMENTS = "heightSegments";
   var PROP_PHI_START       = "phiStart";
   var PROP_PHI_LENGTH      = "phiLength";
-  $loc.__init__ = Sk.ffi.functionPy(function(self, radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength) {
     radius         = numberFromArg(radius,                PROP_RADIUS,          SPHERE_GEOMETRY);
     widthSegments  = numberFromIntegerArg(widthSegments,  PROP_WIDTH_SEGMENTS,  SPHERE_GEOMETRY);
     heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, SPHERE_GEOMETRY);
@@ -2447,52 +2534,53 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     phiLength      = numberFromArg(phiLength,             PROP_PHI_LENGTH,      SPHERE_GEOMETRY);
     thetaStart     = numberFromArg(thetaStart,            PROP_THETA_START,     SPHERE_GEOMETRY);
     thetaLength    = numberFromArg(thetaLength,           PROP_THETA_LENGTH,    SPHERE_GEOMETRY);
-    self.v = new THREE[SPHERE_GEOMETRY](radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength);
-    self.tp$name = SPHERE_GEOMETRY;
+    Sk.ffi.referenceToPy(new THREE[SPHERE_GEOMETRY](radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength), SPHERE_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var geometry = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_RADIUS: {
-        return Sk.builtin.assk$(self.v[PROP_RADIUS], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(geometry[PROP_RADIUS]);
       }
       case PROP_WIDTH_SEGMENTS: {
-        return Sk.builtin.assk$(self.v[PROP_WIDTH_SEGMENTS], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(geometry[PROP_WIDTH_SEGMENTS]);
       }
       case PROP_HEIGHT_SEGMENTS: {
-        return Sk.builtin.assk$(self.v[PROP_HEIGHT_SEGMENTS], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(geometry[PROP_HEIGHT_SEGMENTS]);
       }
       case PROP_PHI_START: {
-        return Sk.builtin.assk$(self.v[PROP_PHI_START], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(geometry[PROP_PHI_START]);
       }
       case PROP_PHI_LENGTH: {
-        return Sk.builtin.assk$(self.v[PROP_PHI_LENGTH], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(geometry[PROP_PHI_LENGTH]);
       }
       case PROP_THETA_START: {
-        return Sk.builtin.assk$(self.v[PROP_THETA_START], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(geometry[PROP_THETA_START]);
       }
       case PROP_THETA_LENGTH: {
-        return Sk.builtin.assk$(self.v[PROP_THETA_LENGTH], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(geometry[PROP_THETA_LENGTH]);
+      }
+      default: {
+        return geometryGetAttr(SPHERE_GEOMETRY, selfPy, name);
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     switch(name) {
       default: {
-        throw new Error(name + " is not an attribute of " + SPHERE_GEOMETRY);
+        return geometrySetAttr(SPHERE_GEOMETRY, selfPy, name, valuePy);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(self) {
-    var sphere = self.v;
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var sphere = Sk.ffi.remapToJs(selfPy);
     var radius = sphere[PROP_RADIUS];
     var args = {};
     args[PROP_RADIUS] = radius;
     return Sk.ffi.stringToPy(SPHERE_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-    var sphere = self.v;
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var sphere         = Sk.ffi.remapToJs(selfPy);
     var radius         = sphere[PROP_RADIUS];
     var widthSegments  = sphere[PROP_WIDTH_SEGMENTS];
     var heightSegments = sphere[PROP_HEIGHT_SEGMENTS];
@@ -2644,50 +2732,70 @@ mod[TETRAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy(TORUS_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, TORUS_GEOMETRY, []);
-
- mod[GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, geometryPy) {
+/**
+ * @param {string} className 
+ * @param {!Object} geometryPy
+ * @param {string} name
+ */
+function geometryGetAttr(className, geometryPy, name) {
+  var geometry = Sk.ffi.remapToJs(geometryPy);
+  switch(name) {
+    case PROP_ID: {
+      return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
+    }
+    case PROP_NAME: {
+      return Sk.ffi.stringToPy(geometry[PROP_NAME]);
+    }
+    case PROP_UUID: {
+      return Sk.ffi.stringToPy(geometry[PROP_UUID]);
+    }
+    case PROP_VERTICES: {
+      // TODO: This isn't really possible with the current implementation.
+      return verticesPy(geometry[PROP_VERTICES]);
+    }
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+    }
+  }
+}
+/**
+ * @param {string} className 
+ * @param {!Object} geometryPy
+ * @param {string} name
+ * @param {!Object} valuePy
+ */
+function geometrySetAttr(className, geometryPy, name, valuePy) {
+  var geometry = Sk.ffi.remapToJs(geometryPy);
+  var value = Sk.ffi.remapToJs(valuePy);
+  switch(name) {
+    case PROP_NAME: {
+      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+      geometry[PROP_NAME] = value;
+    }
+    break;
+    default: {
+      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+    }
+  }
+}
+/**
+ * Geometry
+ */
+mod[GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy) {
     if (isDefined(geometryPy)) {
-      self.v = Sk.ffi.remapToJs(geometryPy);
-      self.tp$name = geometryPy.tp$name;
+      Sk.ffi.referenceToPy(Sk.ffi.remapToJs(geometryPy), GEOMETRY, undefined, selfPy);
     }
     else {
-      self.v = new THREE[GEOMETRY]();
-      self.tp$name = GEOMETRY;
+      Sk.ffi.referenceToPy(new THREE[GEOMETRY](), GEOMETRY, undefined, selfPy);
     }
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    switch(name) {
-      case PROP_ID: {
-        return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
-      }
-      case PROP_NAME: {
-        return Sk.ffi.stringToPy(geometry[PROP_NAME]);
-      }
-      case PROP_VERTICES: {
-        return verticesPy(geometry[PROP_VERTICES]);
-      }
-    }
-  });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      default: {
-        throw new Error(name + " is not an attribute of " + GEOMETRY);
-      }
-    }
-  });
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {return geometryGetAttr(GEOMETRY, selfPy, name);});
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {return geometrySetAttr(GEOMETRY, selfPy, name, valuePy);});
   $loc.__str__ = Sk.ffi.functionPy(function(geometryPy) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
-    if (isDefined(geometry)) {
-      var args = {};
-      return Sk.ffi.stringToPy(GEOMETRY + "(" + JSON.stringify(args) + ")");
-    }
-    else {
-      return Sk.ffi.stringToPy("<type '" + GEOMETRY + "'>");
-    }
+    var args = {};
+    return Sk.ffi.stringToPy(GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(geometry) {
     geometry = Sk.ffi.remapToJs(geometry);
@@ -2720,6 +2828,12 @@ function object3DGetAttr(className, selfPy, name) {
     }
     case PROP_USE_QUATERNION: {
       return self[PROP_USE_QUATERNION];
+    }
+    case PROP_MASS:
+    case PROP_MOMENTUM: {
+      var valuePy = self[name];
+      Sk.ffi.checkArgType("431935c5-b446-4add-adeb-45ba029551a2, name => " + name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
+      return valuePy;
     }
     case METHOD_ADD: {
       return methodAdd(self);
@@ -2768,6 +2882,12 @@ function object3DSetAttr(className, selfPy, name, valuePy) {
     break;
     case PROP_USE_QUATERNION: {
       self[PROP_USE_QUATERNION] = value;
+    }
+    break;
+    case PROP_MASS:
+    case PROP_MOMENTUM: {
+      Sk.ffi.checkArgType(name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
+      self[name] = valuePy;
     }
     break;
     default: {
@@ -2914,6 +3034,7 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy, intensityPy, distancePy) {
     Sk.ffi.checkMethodArgs(POINT_LIGHT, arguments, 1, 3);
+    Sk.ffi.checkArgType(ARG_COLOR, [COLOR, Sk.ffi.PyType.INT], isColorPy(colorPy)||Sk.ffi.isInt(colorPy), colorPy);
     Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
     Sk.ffi.checkArgType(PROP_DISTANCE,  NUMBER, Sk.ffi.isNumber(distancePy) ||Sk.ffi.isUndefined(distancePy),  distancePy);
     var color = Sk.ffi.remapToJs(colorPy);
@@ -3203,6 +3324,9 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           mesh[METHOD_UPDATE_MATRIX]();
         });
       }
+      default: {
+        return object3DGetAttr(MESH, meshPy, name);
+      }
     }
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(meshPy, name, valuePy) {
@@ -3261,7 +3385,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AssertionError(name + " is not an attribute of " + MESH);
+        return object3DSetAttr(MESH, meshPy, name, valuePy);
       }
     }
   });
