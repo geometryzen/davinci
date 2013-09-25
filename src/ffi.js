@@ -134,6 +134,7 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
         }
         else
         {
+            Sk.debugout({"defaultJs": defaultJs});
             throw Sk.ffi.err.
                 argument("defaultJs").
                 inFunction("Sk.ffi.booleanToPy").
@@ -142,6 +143,7 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
     }
     else
     {
+        Sk.debugout({"valueJs": valueJs});
         throw Sk.ffi.err.
             argument("valueJs").
             inFunction("Sk.ffi.booleanToPy").

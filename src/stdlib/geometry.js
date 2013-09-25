@@ -240,6 +240,11 @@ var LINE_BASIC_MATERIAL             = "LineBasicMaterial";
  * @const
  * @type {string}
  */
+var MESH_BASIC_MATERIAL             = "MeshBasicMaterial";
+/**
+ * @const
+ * @type {string}
+ */
 var MESH_LAMBERT_MATERIAL           = "MeshLambertMaterial";
 /**
  * @const
@@ -357,6 +362,7 @@ function methodName(targetPy) {
 }
 
 function completeMesh(geometryPy, parameters) {
+
   function modifyMesh(meshPy) {
     var mesh = Sk.ffi.remapToJs(meshPy);
     if (parameters[PROP_NAME]) {
@@ -364,6 +370,7 @@ function completeMesh(geometryPy, parameters) {
     }
     return meshPy;
   }
+
   if (parameters[PROP_MATERIAL]) {
     return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, parameters[PROP_MATERIAL]));
   }
@@ -384,7 +391,7 @@ function completeMesh(geometryPy, parameters) {
     if (typeof parameters[PROP_WIREFRAME] !== 'undefined') {
       args[PROP_WIREFRAME] = parameters[PROP_WIREFRAME];
       if (parameters[PROP_WIREFRAME]) {
-        var materialPy = Sk.ffi.callsim(mod[MESH_NORMAL_MATERIAL], Sk.ffi.remapToPy(args));
+        var materialPy = Sk.ffi.callsim(mod[MESH_BASIC_MATERIAL], Sk.ffi.remapToPy(args));
         return modifyMesh(Sk.ffi.callsim(mod[MESH], geometryPy, materialPy));
       }
       else {
