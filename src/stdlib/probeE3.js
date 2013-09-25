@@ -88,6 +88,13 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     switch(name) {
       case PROP_QUANTITY: {
         Sk.ffi.checkArgType(PROP_QUANTITY, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
+        /**
+         * Compute the Quaternion required to rotate (0,1,0) to (x,y,z).
+         *
+         * @param {number} x
+         * @param {number} y
+         * @param {number} z
+         */
         function quaternion(x, y, z) {
           if (y !== -1) {
             var scale = 1 / Math.sqrt(2 * (1 + y));
@@ -113,7 +120,6 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
         var s0 = Math.abs(w);
         grade0.scale.set(s0, s0, s0);
-//      grade0.quaternion.set(0, 0, 0, 1);
 
         var grade1 = Sk.ffi.remapToJs(probe[PROP_GRADE_1]);
         var s1 = Math.sqrt(x * x + y * y + z * z);
@@ -128,7 +134,6 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         var s3 = Math.pow(Math.abs(xyz), 1/3);
         grade3.scale.set(s3, s3, s3);
-//      grade2.quaternion = quaternion(yz/s2, zx/s2, xy/s2);
 
         probe[PROP_QUANTITY] = valuePy;
       }
