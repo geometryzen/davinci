@@ -89,19 +89,19 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_QUANTITY: {
         Sk.ffi.checkArgType(PROP_QUANTITY, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
         /**
-         * Compute the Quaternion required to rotate (0,1,0) to (x,y,z).
+         * Compute the Quaternion required to rotate (0,0,1) to (x,y,z).
          *
          * @param {number} x
          * @param {number} y
          * @param {number} z
          */
         function quaternion(x, y, z) {
-          if (y !== -1) {
-            var scale = 1 / Math.sqrt(2 * (1 + y));
-            var xy = scale * x;
-            var yz = -scale * z;
-            var zx = 0;
-            return new THREE[QUATERNION](-yz, 0, -xy, scale * (1 + y));
+          if (z !== -1) {
+            var scale = 1 / Math.sqrt(2 * (1 + z));
+            var xy =  0;
+            var yz = +scale * y;
+            var zx = -scale * x;
+            return new THREE[QUATERNION](-yz, -zx, -xy, scale * (1 + z));
           }
           else {
             return new THREE[QUATERNION](1, 0, 0, 0);
