@@ -285,6 +285,11 @@ var SPHERE_GEOMETRY                 = "SphereGeometry";
  * @const
  * @type {string}
  */
+var TORUS_GEOMETRY                  = "TorusGeometry";
+/**
+ * @const
+ * @type {string}
+ */
 var VORTEX_GEOMETRY                 = "VortexGeometry";
 /**
  * @const
@@ -1163,10 +1168,10 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionPlane();
-          var width      = Sk.ffi.remapToPy(dimensions[PROP_WIDTH]);
-          var height     = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
+          var radius     = Sk.ffi.remapToPy(dimensions[PROP_WIDTH]);
+          var tube       = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
           var segments   = Sk.ffi.numberToIntPy(plane[PROP_SEGMENTS] ? plane[PROP_SEGMENTS] : 1);
-          var geometryPy = Sk.ffi.callsim(mod[VORTEX_GEOMETRY], width, height, segments, segments);
+          var geometryPy = Sk.ffi.callsim(mod[TORUS_GEOMETRY], radius, tube, segments, segments);
           return completeMesh(geometryPy, plane);
         });
       }
