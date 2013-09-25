@@ -561,7 +561,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_COLOR: {
       return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
         Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy) || Sk.ffi.isStr(colorPy), colorPy);
         self[name] = Sk.ffi.remapToJs(colorPy);
         return selfPy;
       });
@@ -580,7 +580,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_SCALE: {
       return Sk.ffi.callableToPy(mod, PROP_SCALE, function(methodPy, lengthPy) {
         Sk.ffi.checkMethodArgs(PROP_SCALE, arguments, 1, 1);
-        Sk.ffi.checkArgType(PROP_SCALE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+        Sk.ffi.checkArgType(PROP_SCALE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
         self[PROP_SCALE] = Sk.ffi.remapToJs(lengthPy);
         return selfPy;
       });
@@ -588,7 +588,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_VOLUME: {
       return Sk.ffi.callableToPy(mod, PROP_VOLUME, function(methodPy, volumePy) {
         Sk.ffi.checkMethodArgs(PROP_VOLUME, arguments, 1, 1);
-        Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNumber(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
+        Sk.ffi.checkArgType(PROP_VOLUME, NUMBER, Sk.ffi.isNum(volumePy) || Sk.ffi.isNone(volumePy), volumePy);
         self[PROP_VOLUME] = Sk.ffi.remapToJs(volumePy);
         return selfPy;
       });
@@ -626,7 +626,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_LENGTH_MANGLED: {
         return Sk.ffi.callableToPy(mod, PROP_LENGTH, function(methodPy, lengthPy) {
           Sk.ffi.checkMethodArgs(PROP_LENGTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_LENGTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+          Sk.ffi.checkArgType(PROP_LENGTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
           arrow[PROP_LENGTH] = Sk.ffi.remapToJs(lengthPy);
           return selfPy;
         });
@@ -634,7 +634,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           arrow[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
@@ -705,7 +705,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
+          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
           cone[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
@@ -713,7 +713,7 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           cone[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
@@ -783,7 +783,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_DEPTH: {
         return Sk.ffi.callableToPy(mod, PROP_DEPTH, function(methodPy, depthPy) {
           Sk.ffi.checkMethodArgs(PROP_DEPTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_DEPTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(depthPy) || Sk.ffi.isNone(depthPy), depthPy);
+          Sk.ffi.checkArgType(PROP_DEPTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(depthPy) || Sk.ffi.isNone(depthPy), depthPy);
           cube[PROP_DEPTH] = Sk.ffi.remapToJs(depthPy);
           return selfPy;
         });
@@ -791,7 +791,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
+          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
           cube[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
@@ -799,7 +799,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_WIDTH: {
         return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
           Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
+          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
           cube[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
           return selfPy;
         });
@@ -874,7 +874,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
+          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
           cylinder[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
@@ -882,7 +882,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           cylinder[PROP_RADIUS_TOP]    = Sk.ffi.remapToJs(radiusPy);
           cylinder[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
@@ -891,7 +891,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS_TOP: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS_TOP, function(methodPy, radiusTopPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS_TOP, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS_TOP, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusTopPy) || Sk.ffi.isNone(radiusTopPy), radiusTopPy);
+          Sk.ffi.checkArgType(PROP_RADIUS_TOP, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusTopPy) || Sk.ffi.isNone(radiusTopPy), radiusTopPy);
           cylinder[PROP_RADIUS_TOP] = Sk.ffi.remapToJs(radiusTopPy);
           return selfPy;
         });
@@ -899,7 +899,7 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS_BOTTOM: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS_BOTTOM, function(methodPy, radiusBottomPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS_BOTTOM, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusBottomPy) || Sk.ffi.isNone(radiusBottomPy), radiusBottomPy);
+          Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusBottomPy) || Sk.ffi.isNone(radiusBottomPy), radiusBottomPy);
           cylinder[PROP_RADIUS_BOTTOM] = Sk.ffi.remapToJs(radiusBottomPy);
           return selfPy;
         });
@@ -972,7 +972,7 @@ mod[PLANE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
+          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
           plane[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
           return selfPy;
         });
@@ -980,7 +980,7 @@ mod[PLANE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_WIDTH: {
         return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
           Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
+          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
           plane[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
           return selfPy;
         });
@@ -1047,7 +1047,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNumber(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
           sphere[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });

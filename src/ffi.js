@@ -538,8 +538,8 @@ goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 Sk.ffi.isNone = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE;};
 goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
-Sk.ffi.isNumber = function(valuePy) {return Sk.builtin.checkNumber(valuePy);};
-goog.exportSymbol("Sk.ffi.isNumber", Sk.ffi.isNumber);
+Sk.ffi.isNum = function(valuePy) {return Sk.builtin.checkNumber(valuePy);};
+goog.exportSymbol("Sk.ffi.isNum", Sk.ffi.isNum);
 
 Sk.ffi.isStr = function(valuePy) {return Sk.builtin.checkString(valuePy);};
 goog.exportSymbol("Sk.ffi.isStr", Sk.ffi.isStr);

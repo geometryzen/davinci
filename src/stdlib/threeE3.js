@@ -725,7 +725,7 @@ function compute(f, a, b, coord, pack) {
 
 mod[SCALAR_E3] = Sk.ffi.functionPy(function(wPy, mutablePy) {
   Sk.ffi.checkFunctionArgs(SCALAR_E3, arguments, 1, 2);
-  Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNumber(wPy), wPy);
+  Sk.ffi.checkArgType(PROP_W, NUMBER, Sk.ffi.isNum(wPy), wPy);
   if (Sk.ffi.isDefined(mutablePy)) {
     Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
   }
@@ -734,9 +734,9 @@ mod[SCALAR_E3] = Sk.ffi.functionPy(function(wPy, mutablePy) {
 
 mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
   Sk.ffi.checkFunctionArgs(VECTOR_E3, arguments, 3, 4);
-  Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
-  Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
-  Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
+  Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(x), x);
+  Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(y), y);
+  Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(z), z);
   if (Sk.ffi.isDefined(mutablePy)) {
     Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
   }
@@ -748,9 +748,9 @@ mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
 
 mod[BIVECTOR_E3] = Sk.ffi.functionPy(function(xy, yz, zx, mutablePy) {
   Sk.ffi.checkFunctionArgs(BIVECTOR_E3, arguments, 3, 4);
-  Sk.ffi.checkArgType(PROP_XY, NUMBER, Sk.ffi.isNumber(xy), xy);
-  Sk.ffi.checkArgType(PROP_YZ, NUMBER, Sk.ffi.isNumber(yz), yz);
-  Sk.ffi.checkArgType(PROP_ZX, NUMBER, Sk.ffi.isNumber(zx), zx);
+  Sk.ffi.checkArgType(PROP_XY, NUMBER, Sk.ffi.isNum(xy), xy);
+  Sk.ffi.checkArgType(PROP_YZ, NUMBER, Sk.ffi.isNum(yz), yz);
+  Sk.ffi.checkArgType(PROP_ZX, NUMBER, Sk.ffi.isNum(zx), zx);
   if (Sk.ffi.isDefined(mutablePy)) {
     Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
   }
@@ -762,7 +762,7 @@ mod[BIVECTOR_E3] = Sk.ffi.functionPy(function(xy, yz, zx, mutablePy) {
 
 mod[PSEUDOSCALAR_E3] = Sk.ffi.functionPy(function(xyz, mutablePy) {
   Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_E3, arguments, 1, 2);
-  Sk.ffi.checkArgType(PROP_XYZ, NUMBER, Sk.ffi.isNumber(xyz), xyz);
+  Sk.ffi.checkArgType(PROP_XYZ, NUMBER, Sk.ffi.isNum(xyz), xyz);
   if (Sk.ffi.isDefined(mutablePy)) {
     Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
   }
@@ -778,14 +778,14 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case Sk.ffi.PyType.INT:
       case Sk.ffi.PyType.LONG: {
         Sk.ffi.checkMethodArgs(EUCLIDEAN_3, arguments, 8, 9);
-        Sk.ffi.checkArgType(PROP_W,    NUMBER, Sk.ffi.isNumber(w), w);
-        Sk.ffi.checkArgType(PROP_X,    NUMBER, Sk.ffi.isNumber(x), x);
-        Sk.ffi.checkArgType(PROP_Y,    NUMBER, Sk.ffi.isNumber(y), y);
-        Sk.ffi.checkArgType(PROP_Z,    NUMBER, Sk.ffi.isNumber(z), z);
-        Sk.ffi.checkArgType(PROP_XY,   NUMBER, Sk.ffi.isNumber(xy), xy);
-        Sk.ffi.checkArgType(PROP_YZ,   NUMBER, Sk.ffi.isNumber(yz), yz);
-        Sk.ffi.checkArgType(PROP_ZX,   NUMBER, Sk.ffi.isNumber(zx), zx);
-        Sk.ffi.checkArgType(PROP_XYZ,  NUMBER, Sk.ffi.isNumber(xyz), xyz);
+        Sk.ffi.checkArgType(PROP_W,    NUMBER, Sk.ffi.isNum(w), w);
+        Sk.ffi.checkArgType(PROP_X,    NUMBER, Sk.ffi.isNum(x), x);
+        Sk.ffi.checkArgType(PROP_Y,    NUMBER, Sk.ffi.isNum(y), y);
+        Sk.ffi.checkArgType(PROP_Z,    NUMBER, Sk.ffi.isNum(z), z);
+        Sk.ffi.checkArgType(PROP_XY,   NUMBER, Sk.ffi.isNum(xy), xy);
+        Sk.ffi.checkArgType(PROP_YZ,   NUMBER, Sk.ffi.isNum(yz), yz);
+        Sk.ffi.checkArgType(PROP_ZX,   NUMBER, Sk.ffi.isNum(zx), zx);
+        Sk.ffi.checkArgType(PROP_XYZ,  NUMBER, Sk.ffi.isNum(xyz), xyz);
         if (Sk.ffi.isDefined(mutablePy)) {
           Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
         }
@@ -818,7 +818,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var vector = self.vector;
     var quaternion = self.quaternion;
     var b = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return coordsJsToE3Py(quaternion.w + b, vector.x, vector.y, vector.z, -quaternion.z, -quaternion.x, -quaternion.y, self.xyz);
     }
     else if (Sk.ffi.isClass(otherPy, EUCLIDEAN_3)) {
@@ -841,7 +841,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     var vector = self.vector;
     var quaternion = self.quaternion;
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return coordsJsToE3Py(a + quaternion.w, vector.x, vector.y, vector.z, -quaternion.z, -quaternion.x, -quaternion.y, self.xyz);
     }
     else {
@@ -853,7 +853,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var vs = self.vector;
     var qs = self.quaternion;
     var other = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       qs.w += other;
     }
     else if (isEuclidean3Py(otherPy)) {
@@ -878,7 +878,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var vs = self.vector;
     var qs = self.quaternion;
     var other = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return coordsJsToE3Py(qs.w - other, vs.x, vs.y, vs.z, -qs.z, -qs.x, -qs.y, self.xyz);
     }
     else if (Sk.ffi.isClass(otherPy, EUCLIDEAN_3)) {
@@ -903,7 +903,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     var vs = self.vector;
     var qs = self.quaternion;
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return coordsJsToE3Py(other - qs.w, -vs.x, -vs.y, -vs.z, qs.z, qs.x, qs.y, -self.xyz);
     }
     else {
@@ -915,7 +915,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var vs = self.vector;
     var qs = self.quaternion;
     var other = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       qs.w -= other;
     }
     else if (isEuclidean3Py(otherPy)) {
@@ -971,7 +971,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     var vector = self.vector;
     var quaternion = self.quaternion;
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return coordsJsToE3Py(a * quaternion.w, a * vector.x, a * vector.y, a * vector.z, -a * quaternion.z, -a * quaternion.x, -a * quaternion.y, a * self.xyz);
     }
     else {
@@ -1441,7 +1441,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_SET_X: {
         return Sk.ffi.callableToPy(mod, METHOD_SET_X, function(methodPy, xPy) {
           Sk.ffi.checkMethodArgs(METHOD_SET_X, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(xPy), xPy);
+          Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(xPy), xPy);
           var x  = Sk.ffi.remapToJs(xPy);
           vector[METHOD_SET_X](x);
           return selfPy;
@@ -1450,7 +1450,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_SET_Y: {
         return Sk.ffi.callableToPy(mod, METHOD_SET_Y, function(methodPy, yPy) {
           Sk.ffi.checkMethodArgs(METHOD_SET_Y, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(yPy), yPy);
+          Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(yPy), yPy);
           var y  = Sk.ffi.remapToJs(yPy);
           vector[METHOD_SET_Y](y);
           return selfPy;
@@ -1459,7 +1459,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_SET_Z: {
         return Sk.ffi.callableToPy(mod, METHOD_SET_Z, function(methodPy, zPy) {
           Sk.ffi.checkMethodArgs(METHOD_SET_Z, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(zPy), zPy);
+          Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(zPy), zPy);
           var z  = Sk.ffi.remapToJs(zPy);
           vector[METHOD_SET_Z](z);
           return selfPy;
@@ -1477,7 +1477,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, METHOD_SET_COMPONENT, function(methodPy, indexPy, valuePy) {
           Sk.ffi.checkMethodArgs(METHOD_SET_COMPONENT, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_INDEX, INT, Sk.ffi.isInt(indexPy), indexPy);
-          Sk.ffi.checkArgType(ARG_VALUE, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+          Sk.ffi.checkArgType(ARG_VALUE, NUMBER, Sk.ffi.isNum(valuePy), valuePy);
           var index = Sk.ffi.remapToJs(indexPy);
           var value = Sk.ffi.remapToJs(valuePy);
           vector[METHOD_SET_COMPONENT](index, value);
@@ -1487,9 +1487,9 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_SET: {
         return Sk.ffi.callableToPy(mod, METHOD_SET, function(methodPy, xPy, yPy, zPy) {
           Sk.ffi.checkMethodArgs(METHOD_SET, arguments, 3, 3);
-          Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(xPy), xPy);
-          Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(yPy), yPy);
-          Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(zPy), zPy);
+          Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(xPy), xPy);
+          Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(yPy), yPy);
+          Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(zPy), zPy);
           var x = Sk.ffi.remapToJs(xPy);
           var y = Sk.ffi.remapToJs(yPy);
           var z = Sk.ffi.remapToJs(zPy);
@@ -1535,7 +1535,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_YZ:
       case PROP_ZX:
       case PROP_XYZ: {
-        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(valuePy), valuePy);
         try {
           self[name] = Sk.ffi.remapToJs(valuePy);
         }

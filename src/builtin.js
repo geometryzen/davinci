@@ -356,7 +356,7 @@ Sk.builtin.zip = function zip()
 Sk.builtin.abs = function abs(xPy)
 {
   Sk.ffi.checkFunctionArgs("abs", arguments, 1, 1);
-  if (Sk.ffi.isNumber(xPy))
+  if (Sk.ffi.isNum(xPy))
   {
     return Sk.ffi.numberToPy(Math.abs(Sk.ffi.remapToJs(xPy)), Sk.ffi.getType(xPy));
   }

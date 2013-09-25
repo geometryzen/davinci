@@ -1,6 +1,7 @@
 (function() {
-Sk.builtin.defineThree = function(mod, THREE, BLADE) {
+Sk.stdlib.defineThree = function(mod, THREE, BLADE) {
 Sk.ffi.checkFunctionArgs("defineThree", arguments, 3, 3);
+Sk.builtin.defineNode(mod);
 /**
 * @const
 * @type {string}
@@ -15,7 +16,7 @@ var INT                        = Sk.ffi.PyType.INT;
 * @const
 * @type {!Array.<Sk.ffi.PyType>}
 */
-var NUMBER                     = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+var NUM                        = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
 * @const
 * @type {string}
@@ -666,6 +667,11 @@ var ARG_DEPTH                  = PROP_DEPTH;
  * @const
  * @type {string}
  */
+var ARG_DETAIL                 = PROP_DETAIL;
+/**
+ * @const
+ * @type {string}
+ */
 var ARG_FAR                    = PROP_FAR;
 /**
  * @const
@@ -681,14 +687,351 @@ var ARG_NEAR                   = PROP_NEAR;
  * @const
  * @type {string}
  */
+var ARG_RADIUS                 = PROP_RADIUS;
+/**
+ * @const
+ * @type {string}
+ */
 var ARG_VECTOR                 = "vector";
 /**
  * @const
  * @type {string}
  */
 var ARG_WIDTH                  = PROP_WIDTH;
+/**
+ * CylinderGeometry
+ *
+ * This is a customized version of THREE.CylinderGeometry.
+ *
+ * @constructor
+ * @param {number} radiusTop
+ * @param {number} radiusBottom
+ * @param {number} height
+ * @param {number} radialSegments
+ * @param {number} heightSegments
+ * @param {boolean} openEnded
+ */
+Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded) {
 
-Sk.builtin.defineNode(mod);
+  THREE['Geometry'].call( this );
+
+  this.radiusTop = radiusTop = radiusTop !== undefined ? radiusTop : 20;
+  this.radiusBottom = radiusBottom = radiusBottom !== undefined ? radiusBottom : 20;
+  this.height = height = height !== undefined ? height : 100;
+
+  this.radialSegments = radialSegments = radialSegments || 8;
+  this.heightSegments = heightSegments = heightSegments || 1;
+
+  this.openEnded = openEnded = openEnded !== undefined ? openEnded : false;
+
+  var heightHalf = height / 2;
+
+  var x, y, vertices = [], uvs = [];
+
+  for ( y = 0; y <= heightSegments; y ++ ) {
+
+    var verticesRow = [];
+    var uvsRow = [];
+
+    var v = y / heightSegments;
+    var radius = v * ( radiusBottom - radiusTop ) + radiusTop;
+
+    for ( x = 0; x <= radialSegments; x ++ ) {
+
+      var u = x / radialSegments;
+
+      var vertex = new THREE['Vector3']();
+      vertex.x = radius * Math.sin( u * Math.PI * 2 );
+      vertex.y = - v * height + heightHalf;
+      vertex.z = radius * Math.cos( u * Math.PI * 2 );
+
+      this['vertices'].push( vertex );
+
+      verticesRow.push( this['vertices'].length - 1 );
+      uvsRow.push( new THREE['Vector2']( u, 1 - v ) );
+
+    }
+
+    vertices.push( verticesRow );
+    uvs.push( uvsRow );
+
+  }
+
+  var tanTheta = ( radiusBottom - radiusTop ) / height;
+  var na, nb;
+
+  for ( x = 0; x < radialSegments; x ++ ) {
+
+    if ( radiusTop !== 0 ) {
+
+      na = this['vertices'][ vertices[ 0 ][ x ] ].clone();
+      nb = this['vertices'][ vertices[ 0 ][ x + 1 ] ].clone();
+
+    } else {
+
+      na = this['vertices'][ vertices[ 1 ][ x ] ].clone();
+      nb = this['vertices'][ vertices[ 1 ][ x + 1 ] ].clone();
+
+    }
+
+    na['setY']( Math.sqrt( na.x * na.x + na.z * na.z ) * tanTheta ).normalize();
+    nb['setY']( Math.sqrt( nb.x * nb.x + nb.z * nb.z ) * tanTheta ).normalize();
+
+    for ( y = 0; y < heightSegments; y ++ ) {
+
+      var v1 = vertices[ y ][ x ];
+      var v2 = vertices[ y + 1 ][ x ];
+      var v3 = vertices[ y + 1 ][ x + 1 ];
+      var v4 = vertices[ y ][ x + 1 ];
+
+      var n1 = na.clone();
+      var n2 = na.clone();
+      var n3 = nb.clone();
+      var n4 = nb.clone();
+
+      var uv1 = uvs[ y ][ x ].clone();
+      var uv2 = uvs[ y + 1 ][ x ].clone();
+      var uv3 = uvs[ y + 1 ][ x + 1 ].clone();
+      var uv4 = uvs[ y ][ x + 1 ].clone();
+
+      this['faces'].push( new THREE['Face3']( v1, v2, v4, [ n1, n2, n4 ] ) );
+      this['faceVertexUvs'][0].push([uv1, uv2, uv4]);
+
+      this['faces'].push( new THREE['Face3']( v2, v3, v4, [ n2, n3, n4 ] ) );
+      this['faceVertexUvs'][ 0 ].push( [ uv2, uv3, uv4 ] );
+
+    }
+
+  }
+
+  // top cap
+
+  if ( openEnded === false && radiusTop > 0 ) {
+
+    this['vertices'].push( new THREE['Vector3']( 0, heightHalf, 0 ) );
+
+    for ( x = 0; x < radialSegments; x ++ ) {
+
+      var v1 = vertices[ 0 ][ x ];
+      var v2 = vertices[ 0 ][ x + 1 ];
+      var v3 = this['vertices'].length - 1;
+
+      var n1 = new THREE['Vector3']( 0, 1, 0 );
+      var n2 = new THREE['Vector3']( 0, 1, 0 );
+      var n3 = new THREE['Vector3']( 0, 1, 0 );
+
+      var uv1 = uvs[ 0 ][ x ].clone();
+      var uv2 = uvs[ 0 ][ x + 1 ].clone();
+      var uv3 = new THREE['Vector2']( uv2.u, 0 );
+
+      this['faces'].push( new THREE['Face3']( v1, v2, v3, [ n1, n2, n3 ] ) );
+      this['faceVertexUvs'][ 0 ].push( [ uv1, uv2, uv3 ] );
+
+    }
+
+  }
+
+  // bottom cap
+
+  if ( openEnded === false && radiusBottom > 0 ) {
+
+    this['vertices'].push( new THREE['Vector3']( 0, - heightHalf, 0 ) );
+
+    for ( x = 0; x < radialSegments; x ++ ) {
+
+      var v1 = vertices[ y ][ x + 1 ];
+      var v2 = vertices[ y ][ x ];
+      var v3 = this['vertices'].length - 1;
+
+      var n1 = new THREE['Vector3']( 0, - 1, 0 );
+      var n2 = new THREE['Vector3']( 0, - 1, 0 );
+      var n3 = new THREE['Vector3']( 0, - 1, 0 );
+
+      var uv1 = uvs[ y ][ x + 1 ].clone();
+      var uv2 = uvs[ y ][ x ].clone();
+      var uv3 = new THREE['Vector2']( uv2.u, 1 );
+
+      this['faces'].push( new THREE['Face3']( v1, v2, v3, [ n1, n2, n3 ] ) );
+      this['faceVertexUvs'][0].push([uv1, uv2, uv3]);
+    }
+  }
+  this['computeCentroids']();
+  this['computeFaceNormals']();
+}
+Sk.stdlib.CylinderGeometry.prototype = Object.create(THREE['Geometry'].prototype);
+/**
+ * PlaneGeometry
+ *
+ * This is a customized version of THREE.PlaneGeometry.
+ *
+ * @constructor
+ * @param {number} width
+ * @param {number} height
+ * @param {number} widthSegments
+ * @param {number} heightSegments
+ */
+Sk.stdlib.PlaneGeometry = function (width, height, widthSegments, heightSegments) {
+
+  THREE['Geometry'].call( this );
+
+  this.width = width;
+  this.height = height;
+
+  this.widthSegments = widthSegments || 1;
+  this.heightSegments = heightSegments || 1;
+
+  var ix, iz;
+  var width_half = width / 2;
+  var height_half = height / 2;
+
+  var gridX = this.widthSegments;
+  var gridZ = this.heightSegments;
+
+  var gridX1 = gridX + 1;
+  var gridZ1 = gridZ + 1;
+
+  var segment_width = this.width / gridX;
+  var segment_height = this.height / gridZ;
+
+  var normal = new THREE['Vector3'](0, 0, 1);
+
+  for ( iz = 0; iz < gridZ1; iz ++ ) {
+    for ( ix = 0; ix < gridX1; ix ++ ) {
+      var x = ix * segment_width - width_half;
+      var y = iz * segment_height - height_half;
+      this['vertices'].push(new THREE['Vector3'](x, - y, 0));
+    }
+  }
+
+  for ( iz = 0; iz < gridZ; iz ++ ) {
+    for ( ix = 0; ix < gridX; ix ++ ) {
+      var a = ix + gridX1 * iz;
+      var b = ix + gridX1 * ( iz + 1 );
+      var c = ( ix + 1 ) + gridX1 * ( iz + 1 );
+      var d = ( ix + 1 ) + gridX1 * iz;
+
+      var uva = new THREE['Vector2']( ix / gridX, 1 - iz / gridZ );
+      var uvb = new THREE['Vector2']( ix / gridX, 1 - ( iz + 1 ) / gridZ );
+      var uvc = new THREE['Vector2']( ( ix + 1 ) / gridX, 1 - ( iz + 1 ) / gridZ );
+      var uvd = new THREE['Vector2']( ( ix + 1 ) / gridX, 1 - iz / gridZ );
+
+      var face = new THREE['Face3'](a, b, d);
+      face['normal'].copy( normal );
+      face['vertexNormals'].push(normal.clone(), normal.clone(), normal.clone());
+
+      this['faces'].push(face);
+      this['faceVertexUvs'][0].push([uva, uvb, uvd]);
+
+      face = new THREE['Face3'](b, c, d);
+      face['normal'].copy(normal);
+      face['vertexNormals'].push(normal.clone(), normal.clone(), normal.clone());
+
+      this['faces'].push(face);
+      this['faceVertexUvs'][0].push([uvb.clone(), uvc, uvd.clone()]);
+    }
+  }
+  this['computeCentroids']();
+};
+Sk.stdlib.PlaneGeometry.prototype = Object.create(THREE['Geometry'].prototype);
+/**
+ * RevolutionGeometry
+ *
+ * This is a customized version of THREE.LatheGeometry.
+ *
+ * @constructor
+ * @param {!Array.<number>} points
+ * @param {!Object} generator
+ * @param {number=} segments
+ * @param {number=} phiStart
+ * @param {number=} phiLength
+ * @param {Object=} attitude
+ */
+Sk.stdlib.RevolutionGeometry = function (points, generator, segments, phiStart, phiLength, attitude) {
+
+  THREE['Geometry'].call( this );
+
+  segments = segments || 12;
+  phiStart = phiStart || 0;
+  phiLength = phiLength || 2 * Math.PI;
+
+  // Determine heuristically whether the user intended to make a complete revolution.
+  var isClosed = Math.abs(2 * Math.PI - Math.abs(phiLength - phiStart)) < 0.0001;
+
+  // The number of vertical half planes (phi constant).
+  var halfPlanes = isClosed ? segments : segments + 1;
+  var inverseSegments = 1.0 / segments;
+  var phiStep = (phiLength - phiStart) * inverseSegments;
+
+  for (var i = 0, il = halfPlanes; i < il; i++) {
+
+    var phi = phiStart + i * phiStep;
+
+    var halfAngle = phi / 2;
+
+    var cosHA = Math.cos( halfAngle );
+    var sinHA = Math.sin( halfAngle );
+    var rotor = new THREE[QUATERNION](generator.x * sinHA, generator.y * sinHA, generator.z * sinHA, cosHA);
+
+    for (var j = 0, jl = points.length; j < jl; j++) {
+
+      var pt = points[ j ];
+
+      var vertex = new THREE[VECTOR_3](pt.x, pt.y, pt.z);
+
+      // The generator tells us how to rotate the points.
+      vertex['applyQuaternion'](rotor);
+
+      // The attitude tells us where we want the symmetry axis to be.
+      if (attitude) {
+        vertex['applyQuaternion'](attitude);
+      }
+
+      this['vertices'].push( vertex );
+    }
+  }
+
+  var inversePointLength = 1.0 / ( points.length - 1 );
+  var np = points.length;
+
+  // The denominator for modulo index arithmetic.
+  var wrap = np * halfPlanes;
+
+  for ( var i = 0, il = segments; i < il; i ++ ) {
+
+    for ( var j = 0, jl = points.length - 1; j < jl; j ++ ) {
+
+      var base = j + np * i;
+      var a = base % wrap;
+      var b = (base + np) % wrap;
+      var c = (base + 1 + np) % wrap;
+      var d = (base + 1) % wrap;
+
+      var u0 = i * inverseSegments;
+      var v0 = j * inversePointLength;
+      var u1 = u0 + inverseSegments;
+      var v1 = v0 + inversePointLength;
+
+      this['faces'].push(new THREE[FACE_3](d, b, a));
+      this['faceVertexUvs'][ 0 ].push([
+        new THREE[VECTOR_2](u0, v0),
+        new THREE[VECTOR_2](u1, v0),
+        new THREE[VECTOR_2](u0, v1)
+      ]);
+
+      this['faces'].push(new THREE[FACE_3](d, c, b));
+      this['faceVertexUvs'][ 0 ].push([
+        new THREE[VECTOR_2](u1, v0),
+        new THREE[VECTOR_2](u1, v1), 
+        new THREE[VECTOR_2](u0, v1)
+      ]);
+    }
+  }
+
+  this['computeCentroids']();
+  this['computeFaceNormals']();
+  this['computeVertexNormals']();
+};
+Sk.stdlib.RevolutionGeometry.prototype = Object.create(THREE['Geometry'].prototype);
 
 /**
  * @param {string} name
@@ -1324,7 +1667,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, METHOD_SET_CLEAR_COLOR, function(methodPy, colorPy, alphaPy) {
           Sk.ffi.checkMethodArgs(METHOD_SET_CLEAR_COLOR, arguments, 2, 2);
           Sk.ffi.checkArgType(ARG_COLOR, [COLOR, Sk.ffi.PyType.INT], isColorPy(colorPy)||Sk.ffi.isInt(colorPy), colorPy);
-          Sk.ffi.checkArgType(ARG_ALPHA, NUMBER, Sk.ffi.isNumber(alphaPy), alphaPy);
+          Sk.ffi.checkArgType(ARG_ALPHA, NUM, Sk.ffi.isNum(alphaPy), alphaPy);
           var color  = Sk.ffi.remapToJs(colorPy);
           var alpha = Sk.ffi.remapToJs(alphaPy);
           return Sk.ffi.remapToPy(renderer[METHOD_SET_CLEAR_COLOR](color, alpha));
@@ -1608,16 +1951,16 @@ mod[PERSPECTIVE_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, fovPy, aspectPy, nearPy, farPy) {
     Sk.ffi.checkMethodArgs(PERSPECTIVE_CAMERA, arguments, 0, 4);
     if (Sk.ffi.isDefined(fovPy)) {
-      Sk.ffi.checkArgType(ARG_FOV, NUMBER, Sk.ffi.isNumber(fovPy), fovPy);
+      Sk.ffi.checkArgType(ARG_FOV, NUM, Sk.ffi.isNum(fovPy), fovPy);
     }
     if (Sk.ffi.isDefined(aspectPy)) {
-      Sk.ffi.checkArgType(ARG_ASPECT, NUMBER, Sk.ffi.isNumber(aspectPy), aspectPy);
+      Sk.ffi.checkArgType(ARG_ASPECT, NUM, Sk.ffi.isNum(aspectPy), aspectPy);
     }
     if (Sk.ffi.isDefined(nearPy)) {
-      Sk.ffi.checkArgType(ARG_NEAR, NUMBER, Sk.ffi.isNumber(nearPy), nearPy);
+      Sk.ffi.checkArgType(ARG_NEAR, NUM, Sk.ffi.isNum(nearPy), nearPy);
     }
     if (Sk.ffi.isDefined(farPy)) {
-      Sk.ffi.checkArgType(ARG_FAR, NUMBER, Sk.ffi.isNumber(farPy), farPy);
+      Sk.ffi.checkArgType(ARG_FAR, NUM, Sk.ffi.isNum(farPy), farPy);
     }
     var fieldOfView = Sk.ffi.remapToJs(fovPy);
     var aspectRatio = Sk.ffi.remapToJs(aspectPy);
@@ -1857,7 +2200,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var attitude;
     var length;
     if (Sk.ffi.isDefined(scalePy)) {
-      Sk.ffi.checkArgType(PROP_SCALE, NUMBER, Sk.ffi.isNumber(scalePy), scalePy);
+      Sk.ffi.checkArgType(PROP_SCALE, NUM, Sk.ffi.isNum(scalePy), scalePy);
       scale = Sk.ffi.remapToJs(scalePy);
     }
     else {
@@ -1871,10 +2214,10 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       attitude = new THREE[QUATERNION](0, 0, 0, 1);
     }
     if (Sk.ffi.isDefined(segmentsPy)) {
-      Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isNumber(segmentsPy), segmentsPy);
+      Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isNum(segmentsPy), segmentsPy);
     }
     if (Sk.ffi.isDefined(lengthPy)) {
-      Sk.ffi.checkArgType(PROP_SCALE, NUMBER, Sk.ffi.isNumber(lengthPy), lengthPy);
+      Sk.ffi.checkArgType(PROP_SCALE, NUM, Sk.ffi.isNum(lengthPy), lengthPy);
       length = Sk.ffi.remapToJs(lengthPy) * scale;
     }
     else {
@@ -1893,7 +2236,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var e = new THREE[VECTOR_3](0,           -halfLength,              0);
     var points = [a, b, c, d, e];
     var generator = new THREE[QUATERNION](0, 1, 0, 0);
-    Sk.ffi.referenceToPy(new BLADE.RevolutionGeometry(points, generator, segments, 0, 2 * Math.PI, attitude), ARROW_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(points, generator, segments, 0, 2 * Math.PI, attitude), ARROW_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -1943,16 +2286,16 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, segmentsPy, thetaStartPy, thetaLengthPy) {
     Sk.ffi.checkMethodArgs(CIRCLE_GEOMETRY, arguments, 0, 4);
     if (Sk.ffi.isDefined(radiusPy)) {
-      Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+      Sk.ffi.checkArgType(PROP_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
     }
     if (Sk.ffi.isDefined(segmentsPy)) {
       Sk.ffi.checkArgType(PROP_SEGMENTS, INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
     }
     if (Sk.ffi.isDefined(thetaStartPy)) {
-      Sk.ffi.checkArgType(PROP_THETA_START, NUMBER, Sk.ffi.isNumber(thetaStartPy), thetaStartPy);
+      Sk.ffi.checkArgType(PROP_THETA_START, NUM, Sk.ffi.isNum(thetaStartPy), thetaStartPy);
     }
     if (Sk.ffi.isDefined(thetaLengthPy)) {
-      Sk.ffi.checkArgType(PROP_THETA_LENGTH, NUMBER, Sk.ffi.isNumber(thetaLengthPy), thetaLengthPy);
+      Sk.ffi.checkArgType(PROP_THETA_LENGTH, NUM, Sk.ffi.isNum(thetaLengthPy), thetaLengthPy);
     }
     Sk.ffi.referenceToPy(new THREE[CIRCLE_GEOMETRY](Sk.ffi.remapToJs(radiusPy), Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(thetaStartPy), Sk.ffi.remapToJs(thetaLengthPy)), CIRCLE_GEOMETRY, undefined, selfPy);
   });
@@ -2003,9 +2346,9 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  mod[CUBE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, heightPy, depthPy, widthSegmentsPy, heightSegmentsPy, depthSegmentsPy) {
     Sk.ffi.checkMethodArgs(CUBE_GEOMETRY, arguments, 3, 6);
-    Sk.ffi.checkArgType(PROP_WIDTH,  NUMBER, Sk.ffi.isNumber(widthPy),  widthPy);
-    Sk.ffi.checkArgType(PROP_HEIGHT, NUMBER, Sk.ffi.isNumber(heightPy), heightPy);
-    Sk.ffi.checkArgType(PROP_DEPTH,  NUMBER, Sk.ffi.isNumber(depthPy),  depthPy);
+    Sk.ffi.checkArgType(PROP_WIDTH,  NUM, Sk.ffi.isNum(widthPy),  widthPy);
+    Sk.ffi.checkArgType(PROP_HEIGHT, NUM, Sk.ffi.isNum(heightPy), heightPy);
+    Sk.ffi.checkArgType(PROP_DEPTH,  NUM, Sk.ffi.isNum(depthPy),  depthPy);
     if (Sk.ffi.isDefined(widthSegmentsPy)) {
       Sk.ffi.checkArgType(PROP_WIDTH_SEGMENTS, INT, Sk.ffi.isInt(widthSegmentsPy), widthSegmentsPy);
     }
@@ -2076,9 +2419,9 @@ mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
     else {
       Sk.ffi.checkMethodArgs(CYLINDER_GEOMETRY, arguments, 0, 6);
-      Sk.ffi.checkArgType(PROP_RADIUS_TOP, NUMBER, Sk.ffi.isNumber(radiusTopPy)||Sk.ffi.isUndefined(radiusTopPy), radiusTopPy);
-      Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, NUMBER, Sk.ffi.isNumber(radiusBottomPy)||Sk.ffi.isUndefined(radiusBottomPy), radiusBottomPy);
-      Sk.ffi.checkArgType(PROP_HEIGHT, NUMBER, Sk.ffi.isNumber(heightPy)||Sk.ffi.isUndefined(heightPy), heightPy);
+      Sk.ffi.checkArgType(PROP_RADIUS_TOP, NUM, Sk.ffi.isNum(radiusTopPy)||Sk.ffi.isUndefined(radiusTopPy), radiusTopPy);
+      Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, NUM, Sk.ffi.isNum(radiusBottomPy)||Sk.ffi.isUndefined(radiusBottomPy), radiusBottomPy);
+      Sk.ffi.checkArgType(PROP_HEIGHT, NUM, Sk.ffi.isNum(heightPy)||Sk.ffi.isUndefined(heightPy), heightPy);
       Sk.ffi.checkArgType(PROP_RADIAL_SEGMENTS, Sk.ffi.PyType.INT, Sk.ffi.isInt(radialSegmentsPy)||Sk.ffi.isUndefined(radialSegmentsPy), radialSegmentsPy);
       Sk.ffi.checkArgType(PROP_HEIGHT_SEGMENTS, Sk.ffi.PyType.INT, Sk.ffi.isInt(heightSegmentsPy)||Sk.ffi.isUndefined(heightSegmentsPy), heightSegmentsPy);
       Sk.ffi.checkArgType(PROP_OPEN_ENDED, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(openEndedPy)||Sk.ffi.isUndefined(openEndedPy), openEndedPy);
@@ -2088,7 +2431,7 @@ mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var radialSegments = Sk.ffi.remapToJs(radialSegmentsPy);
       var heightSegments = Sk.ffi.remapToJs(heightSegmentsPy);
       var openEnded = Sk.ffi.remapToJs(openEndedPy);
-      Sk.ffi.referenceToPy(new THREE[CYLINDER_GEOMETRY](radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded), CYLINDER_GEOMETRY, undefined, selfPy);
+      Sk.ffi.referenceToPy(new Sk.stdlib.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded), CYLINDER_GEOMETRY, undefined, selfPy);
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
@@ -2113,16 +2456,14 @@ mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.booleanToPy(cylinder[PROP_OPEN_ENDED]);
       }
       default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CYLINDER_GEOMETRY);
+        return geometryGetAttr(CYLINDER_GEOMETRY, selfPy, name);
       }
     }
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
-    var cylinder = Sk.ffi.remapToJs(selfPy);
-    var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       default: {
-        throw Sk.ffi.err.attribute(name).isNotSetableOnType(CYLINDER_GEOMETRY);
+        return geometrySetAttr(CYLINDER_GEOMETRY, selfPy, name, valuePy);
       }
     }
   });
@@ -2156,7 +2497,7 @@ mod[LATHE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     });
     // LatheGeometry assumes that the points are to be rotated about the z-axis.
     var generator = new THREE[QUATERNION](0, 0, 1, 0);
-    Sk.ffi.referenceToPy(new BLADE.RevolutionGeometry(points, generator, Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(points, generator, Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
@@ -2204,7 +2545,7 @@ mod[ICOSAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, detailPy) {
     Sk.ffi.checkMethodArgs(ICOSAHEDRON_GEOMETRY, arguments, 0, 2);
     if (Sk.ffi.isDefined(radiusPy)) {
-      Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+      Sk.ffi.checkArgType(PROP_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
     }
     if (Sk.ffi.isDefined(detailPy)) {
       Sk.ffi.checkArgType(PROP_DETAIL, INT, Sk.ffi.isInt(detailPy), detailPy);
@@ -2255,7 +2596,7 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, detailPy) {
     Sk.ffi.checkMethodArgs(OCTAHEDRON_GEOMETRY, arguments, 0, 2);
     if (Sk.ffi.isDefined(radiusPy)) {
-      Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+      Sk.ffi.checkArgType(PROP_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
     }
     if (Sk.ffi.isDefined(detailPy)) {
       Sk.ffi.checkArgType(PROP_DETAIL, INT, Sk.ffi.isInt(detailPy), detailPy);
@@ -2307,13 +2648,13 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  mod[PLANE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, depthPy, widthSegments, heightSegments) {
     Sk.ffi.checkMethodArgs(PLANE_GEOMETRY, arguments, 2, 5);
-    Sk.ffi.checkArgType(ARG_WIDTH, NUMBER, Sk.ffi.isNumber(widthPy),  widthPy);
-    Sk.ffi.checkArgType(ARG_DEPTH, NUMBER, Sk.ffi.isNumber(depthPy), depthPy);
+    Sk.ffi.checkArgType(ARG_WIDTH, NUM, Sk.ffi.isNum(widthPy),  widthPy);
+    Sk.ffi.checkArgType(ARG_DEPTH, NUM, Sk.ffi.isNum(depthPy), depthPy);
     var width = Sk.ffi.remapToJs(widthPy);
     var depth = Sk.ffi.remapToJs(depthPy);
     widthSegments  = numberFromIntegerArg(widthSegments,  PROP_WIDTH_SEGMENTS,  PLANE_GEOMETRY);
     heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, PLANE_GEOMETRY);
-    Sk.ffi.referenceToPy(new BLADE.RectangleGeometry(width, depth, widthSegments, heightSegments), PLANE_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new Sk.stdlib.PlaneGeometry(width, depth, widthSegments, heightSegments), PLANE_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(planePy, name) {
     var plane = Sk.ffi.remapToJs(planePy);
@@ -2361,176 +2702,6 @@ mod[OCTAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy(PLANE_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, PLANE_GEOMETRY, []);
-/**
- * RectangleGeometry
- *
- * @constructor
- * @param {number} width
- * @param {number} height
- * @param {number} widthSegments
- * @param {number} heightSegments
- */
-BLADE.RectangleGeometry = function (width, height, widthSegments, heightSegments) {
-
-  THREE['Geometry'].call( this );
-
-  this.width = width;
-  this.height = height;
-
-  this.widthSegments = widthSegments || 1;
-  this.heightSegments = heightSegments || 1;
-
-  var ix, iz;
-  var width_half = width / 2;
-  var height_half = height / 2;
-
-  var gridX = this.widthSegments;
-  var gridZ = this.heightSegments;
-
-  var gridX1 = gridX + 1;
-  var gridZ1 = gridZ + 1;
-
-  var segment_width = this.width / gridX;
-  var segment_height = this.height / gridZ;
-
-  var normal = new THREE['Vector3'](0, 0, 1);
-
-  for ( iz = 0; iz < gridZ1; iz ++ ) {
-    for ( ix = 0; ix < gridX1; ix ++ ) {
-      var x = ix * segment_width - width_half;
-      var y = iz * segment_height - height_half;
-      this['vertices'].push(new THREE['Vector3'](x, - y, 0));
-    }
-  }
-
-  for ( iz = 0; iz < gridZ; iz ++ ) {
-    for ( ix = 0; ix < gridX; ix ++ ) {
-      var a = ix + gridX1 * iz;
-      var b = ix + gridX1 * ( iz + 1 );
-      var c = ( ix + 1 ) + gridX1 * ( iz + 1 );
-      var d = ( ix + 1 ) + gridX1 * iz;
-
-      var uva = new THREE['Vector2']( ix / gridX, 1 - iz / gridZ );
-      var uvb = new THREE['Vector2']( ix / gridX, 1 - ( iz + 1 ) / gridZ );
-      var uvc = new THREE['Vector2']( ( ix + 1 ) / gridX, 1 - ( iz + 1 ) / gridZ );
-      var uvd = new THREE['Vector2']( ( ix + 1 ) / gridX, 1 - iz / gridZ );
-
-      var face = new THREE['Face3'](a, b, d);
-      face['normal'].copy( normal );
-      face['vertexNormals'].push(normal.clone(), normal.clone(), normal.clone());
-
-      this['faces'].push(face);
-      this['faceVertexUvs'][0].push([uva, uvb, uvd]);
-
-      face = new THREE['Face3'](b, c, d);
-      face['normal'].copy(normal);
-      face['vertexNormals'].push(normal.clone(), normal.clone(), normal.clone());
-
-      this['faces'].push(face);
-      this['faceVertexUvs'][0].push([uvb.clone(), uvc, uvd.clone()]);
-    }
-  }
-  this['computeCentroids']();
-};
-BLADE.RectangleGeometry.prototype = Object.create(THREE['Geometry'].prototype);
-
-/**
- * RevolutionGeometry
- *
- * @constructor
- * @param {!Array.<number>} points
- * @param {!Object} generator
- * @param {number=} segments
- * @param {number=} phiStart
- * @param {number=} phiLength
- * @param {Object=} attitude
- */
-BLADE.RevolutionGeometry = function (points, generator, segments, phiStart, phiLength, attitude) {
-
-  THREE[GEOMETRY].call( this );
-
-  segments = segments || 12;
-  phiStart = phiStart || 0;
-  phiLength = phiLength || 2 * Math.PI;
-
-  // Determine heuristically whether the user intended to make a complete revolution.
-  var isClosed = Math.abs(2 * Math.PI - Math.abs(phiLength - phiStart)) < 0.0001;
-
-  // The number of vertical half planes (phi constant).
-  var halfPlanes = isClosed ? segments : segments + 1;
-  var inverseSegments = 1.0 / segments;
-  var phiStep = (phiLength - phiStart) * inverseSegments;
-
-  for (var i = 0, il = halfPlanes; i < il; i++) {
-
-    var phi = phiStart + i * phiStep;
-
-    var halfAngle = phi / 2;
-
-    var cosHA = Math.cos( halfAngle );
-    var sinHA = Math.sin( halfAngle );
-    var rotor = new THREE[QUATERNION](generator.x * sinHA, generator.y * sinHA, generator.z * sinHA, cosHA);
-
-    for (var j = 0, jl = points.length; j < jl; j++) {
-
-      var pt = points[ j ];
-
-      var vertex = new THREE[VECTOR_3](pt.x, pt.y, pt.z);
-
-      // The generator tells us how to rotate the points.
-      vertex['applyQuaternion'](rotor);
-
-      // The attitude tells us where we want the symmetry axis to be.
-      if (attitude) {
-        vertex['applyQuaternion'](attitude);
-      }
-
-      this['vertices'].push( vertex );
-    }
-  }
-
-  var inversePointLength = 1.0 / ( points.length - 1 );
-  var np = points.length;
-
-  // The denominator for modulo index arithmetic.
-  var wrap = np * halfPlanes;
-
-  for ( var i = 0, il = segments; i < il; i ++ ) {
-
-    for ( var j = 0, jl = points.length - 1; j < jl; j ++ ) {
-
-      var base = j + np * i;
-      var a = base % wrap;
-      var b = (base + np) % wrap;
-      var c = (base + 1 + np) % wrap;
-      var d = (base + 1) % wrap;
-
-      var u0 = i * inverseSegments;
-      var v0 = j * inversePointLength;
-      var u1 = u0 + inverseSegments;
-      var v1 = v0 + inversePointLength;
-
-      this['faces'].push(new THREE[FACE_3](d, b, a));
-      this['faceVertexUvs'][ 0 ].push([
-        new THREE[VECTOR_2](u0, v0),
-        new THREE[VECTOR_2](u1, v0),
-        new THREE[VECTOR_2](u0, v1)
-      ]);
-
-      this['faces'].push(new THREE[FACE_3](d, c, b));
-      this['faceVertexUvs'][ 0 ].push([
-        new THREE[VECTOR_2](u1, v0),
-        new THREE[VECTOR_2](u1, v1), 
-        new THREE[VECTOR_2](u0, v1)
-      ]);
-    }
-  }
-
-  this['computeCentroids']();
-  this['computeFaceNormals']();
-  this['computeVertexNormals']();
-};
-BLADE.RevolutionGeometry.prototype = Object.create(THREE[GEOMETRY].prototype);
 
 mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, generatorPy, segmentsPy, phiStartPy, phiLengthPy, attitudePy) {
@@ -2541,10 +2712,10 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       Sk.ffi.checkArgType(PROP_SEGMENTS, Sk.ffi.PyType.INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
     }
     if (Sk.ffi.isDefined(phiStartPy)) {
-      Sk.ffi.checkArgType(PROP_PHI_START, NUMBER, Sk.ffi.isNumber(phiStartPy), phiStartPy);
+      Sk.ffi.checkArgType(PROP_PHI_START, NUM, Sk.ffi.isNum(phiStartPy), phiStartPy);
     }
     if (Sk.ffi.isDefined(phiLengthPy)) {
-      Sk.ffi.checkArgType(PROP_PHI_LENGTH, NUMBER, Sk.ffi.isNumber(phiLengthPy), phiLengthPy);
+      Sk.ffi.checkArgType(PROP_PHI_LENGTH, NUM, Sk.ffi.isNum(phiLengthPy), phiLengthPy);
     }
     if (Sk.ffi.isDefined(attitudePy)) {
       Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isClass(attitudePy, EUCLIDEAN_3), attitudePy);
@@ -2554,7 +2725,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     });
     var attitude   = Sk.ffi.remapToJs(attitudePy);
     var attitude = Sk.ffi.remapToJs(attitudePy) ? Sk.ffi.remapToJs(attitudePy).quaternion : undefined;
-    Sk.ffi.referenceToPy(new BLADE.RevolutionGeometry(
+    Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(
       points,
       Sk.ffi.remapToJs(generatorPy).quaternion,
       Sk.ffi.remapToJs(segmentsPy),
@@ -2605,7 +2776,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return;
       }
       else {
-        Sk.ffi.checkArgType(PROP_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+        Sk.ffi.checkArgType(PROP_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
       }
     }
     var radius = Sk.ffi.remapToJs(radiusPy);
@@ -2675,43 +2846,47 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, SPHERE_GEOMETRY, []);
 
 mod[TETRAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  var PROP_DETAIL = "detail";
-  $loc.__init__ = Sk.ffi.functionPy(function(self, radius, detail) {
-    radius = numberFromArg(radius,        PROP_RADIUS, TETRAHEDRON_GEOMETRY);
-    detail = numberFromIntegerArg(detail, PROP_DETAIL, TETRAHEDRON_GEOMETRY);
-    self.v = new THREE[TETRAHEDRON_GEOMETRY](radius, detail);
-    self.v.radius = radius; // workaround for THREE not caching radius.
-    self.v.detail = detail; // workaround for THREE not caching detail.
-    self.tp$name = TETRAHEDRON_GEOMETRY;
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, detailPy) {
+    Sk.ffi.checkMethodArgs(TETRAHEDRON_GEOMETRY, arguments, 2, 2);
+    Sk.ffi.checkArgType(ARG_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
+    Sk.ffi.checkArgType(ARG_DETAIL, INT,    Sk.ffi.isInt(detailPy), detailPy);
+    var radius = Sk.ffi.remapToJs(radiusPy);
+    var detail = Sk.ffi.remapToJs(detailPy);
+    var tetra = new THREE[TETRAHEDRON_GEOMETRY](radius, detail);
+    tetra.radius = radius; // workaround for THREE not caching radius.
+    tetra.detail = detail; // workaround for THREE not caching detail.
+    Sk.ffi.referenceToPy(tetra, TETRAHEDRON_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(tetraPy, name) {
+    var tetra = Sk.ffi.remapToJs(tetraPy);
     switch(name) {
       case PROP_RADIUS: {
-        return Sk.builtin.assk$(self.v[PROP_RADIUS], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(tetra[PROP_RADIUS]);
       }
       case PROP_DETAIL: {
-        return Sk.builtin.assk$(self.v[PROP_DETAIL], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(tetra[PROP_DETAIL]);
+      }
+      default: {
+        return geometryGetAttr(TETRAHEDRON_GEOMETRY, tetraPy, name);
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(tetraPy, name, valuePy) {
     switch(name) {
       default: {
-        throw new Error(name + " is not an attribute of " + TETRAHEDRON_GEOMETRY);
+        return geometrySetAttr(TETRAHEDRON_GEOMETRY, tetraPy, name, valuePy);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(self) {
-    var tetrahedron = self.v;
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    var tetrahedron = Sk.ffi.remapToJs(selfPy);
     var args = {};
     args[PROP_RADIUS] = tetrahedron[PROP_RADIUS];
     args[PROP_DETAIL] = tetrahedron[PROP_DETAIL];
     return Sk.ffi.stringToPy(TETRAHEDRON_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-    var tetrahedron = self.v;
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    var tetrahedron = Sk.ffi.remapToJs(selfPy);
     var radius = tetrahedron[PROP_RADIUS];
     var detail = tetrahedron[PROP_DETAIL];
     var args = [radius, detail];
@@ -2868,7 +3043,7 @@ mod[GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(geometryPy), GEOMETRY, undefined, selfPy);
     }
     else {
-      Sk.ffi.referenceToPy(new THREE[GEOMETRY](), GEOMETRY, undefined, selfPy);
+      Sk.ffi.referenceToPy(new THREE['Geometry'](), GEOMETRY, undefined, selfPy);
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {return geometryGetAttr(GEOMETRY, selfPy, name);});
@@ -3074,7 +3249,7 @@ mod[AMBIENT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy, intensityPy) {
     Sk.ffi.checkMethodArgs(DIRECTIONAL_LIGHT, arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
+    Sk.ffi.checkArgType(PROP_INTENSITY, NUM, Sk.ffi.isNum(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
     var color = Sk.ffi.remapToJs(colorPy);
     var intensity = Sk.ffi.remapToJs(intensityPy);
     Sk.ffi.referenceToPy(new THREE[DIRECTIONAL_LIGHT](color, intensity), DIRECTIONAL_LIGHT, undefined, selfPy);
@@ -3095,7 +3270,7 @@ mod[DIRECTIONAL_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       case PROP_INTENSITY: {
-        Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.checkArgType(PROP_INTENSITY, NUM, Sk.ffi.isNum(valuePy), valuePy);
         light[PROP_INTENSITY] = value;
       }
       break;
@@ -3125,8 +3300,8 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, colorPy, intensityPy, distancePy) {
     Sk.ffi.checkMethodArgs(POINT_LIGHT, arguments, 1, 3);
     Sk.ffi.checkArgType(ARG_COLOR, [COLOR, Sk.ffi.PyType.INT], isColorPy(colorPy)||Sk.ffi.isInt(colorPy), colorPy);
-    Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
-    Sk.ffi.checkArgType(PROP_DISTANCE,  NUMBER, Sk.ffi.isNumber(distancePy) ||Sk.ffi.isUndefined(distancePy),  distancePy);
+    Sk.ffi.checkArgType(PROP_INTENSITY, NUM, Sk.ffi.isNum(intensityPy)||Sk.ffi.isUndefined(intensityPy), intensityPy);
+    Sk.ffi.checkArgType(PROP_DISTANCE,  NUM, Sk.ffi.isNum(distancePy) ||Sk.ffi.isUndefined(distancePy),  distancePy);
     var color = Sk.ffi.remapToJs(colorPy);
     var intensity = Sk.ffi.remapToJs(intensityPy);
     var distance = Sk.ffi.remapToJs(distancePy);
@@ -3148,12 +3323,12 @@ mod[POINT_LIGHT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     switch(name) {
       case PROP_DISTANCE: {
-        Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.checkArgType(PROP_DISTANCE, NUM, Sk.ffi.isNum(valuePy), valuePy);
         Sk.ffi.remapToJs(selfPy)[PROP_DISTANCE] = Sk.ffi.remapToJs(valuePy);
       }
       break;
       case PROP_INTENSITY: {
-        Sk.ffi.checkArgType(PROP_INTENSITY, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+        Sk.ffi.checkArgType(PROP_INTENSITY, NUM, Sk.ffi.isNum(valuePy), valuePy);
         Sk.ffi.remapToJs(selfPy)[PROP_INTENSITY] = Sk.ffi.remapToJs(valuePy);
       }
       break;
@@ -3362,7 +3537,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, METHOD_ROTATE_ON_AXIS, function(methodPy, axisPy, anglePy) {
           Sk.ffi.checkMethodArgs(METHOD_ROTATE_ON_AXIS, arguments, 2, 2);
           Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
-          Sk.ffi.checkArgType("angle", NUMBER, Sk.ffi.isNumber(anglePy), anglePy);
+          Sk.ffi.checkArgType("angle", NUM, Sk.ffi.isNum(anglePy), anglePy);
           mesh[METHOD_ROTATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(anglePy));
           return meshPy;
         });
@@ -3372,7 +3547,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_ROTATE_Z: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, axisPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(ARG_AXIS, NUMBER, Sk.ffi.isNumber(axisPy), axisPy);
+          Sk.ffi.checkArgType(ARG_AXIS, NUM, Sk.ffi.isNum(axisPy), axisPy);
           mesh[name](Sk.ffi.remapToJs(axisPy));
           return meshPy;
         });
@@ -3398,7 +3573,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, METHOD_TRANSLATE_ON_AXIS, function(methodPy, axisPy, distancePy) {
           Sk.ffi.checkMethodArgs(METHOD_TRANSLATE_ON_AXIS, arguments, 2, 2);
           Sk.ffi.checkArgType(ARG_AXIS, VECTOR_3, isVector3Py(axisPy), axisPy);
-          Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(distancePy), distancePy);
+          Sk.ffi.checkArgType(PROP_DISTANCE, NUM, Sk.ffi.isNum(distancePy), distancePy);
           mesh[METHOD_TRANSLATE_ON_AXIS](Sk.ffi.remapToJs(axisPy), Sk.ffi.remapToJs(distancePy));
           return meshPy;
         });
@@ -3408,7 +3583,7 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_TRANSLATE_Z: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, distancePy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_DISTANCE, NUMBER, Sk.ffi.isNumber(distancePy), distancePy);
+          Sk.ffi.checkArgType(PROP_DISTANCE, NUM, Sk.ffi.isNum(distancePy), distancePy);
           mesh[name](Sk.ffi.remapToJs(distancePy));
           return meshPy;
         });

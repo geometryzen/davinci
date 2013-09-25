@@ -186,7 +186,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__add__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a.w + b, a.x, a.y, a.z);
     }
     else {
@@ -200,7 +200,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__radd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(otherPy);
     var b = Sk.ffi.remapToJs(selfPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a + b.w, b.x, b.y, b.z);
     }
     else {
@@ -210,7 +210,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__iadd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var other = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       self.w += other;
     }
     else {
@@ -224,7 +224,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a.w - b, a.x, a.y, a.z);
     }
     else {
@@ -238,7 +238,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__rsub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(otherPy);
     var b = Sk.ffi.remapToJs(selfPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a - b.w, -b.x, -b.y, -b.z);
     }
     else {
@@ -248,7 +248,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__isub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var other = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       self.w -= other;
     }
     else {
@@ -262,7 +262,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a.w * b, a.x * b, a.y * b, a.z * b);
     }
     else {
@@ -273,7 +273,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(otherPy);
     var b = Sk.ffi.remapToJs(selfPy);
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       return wxyzToPy(a * b.w, a * b.x, a * b.y, a * b.z);
     }
     else {
@@ -288,7 +288,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var a2 = a.y;
     var a3 = a.z;
     var b0, b1, b2, b3, b4, b5, b6, b7;
-    if (Sk.ffi.isNumber(otherPy)) {
+    if (Sk.ffi.isNum(otherPy)) {
       a.w *= b;
       a.x *= b;
       a.y *= b;

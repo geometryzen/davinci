@@ -53,7 +53,7 @@ mod.atan2 = Sk.ffi.functionPy(function(y, x) {
 
 mod.sin = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("sin", arguments, 1, 1);
-  if (Sk.ffi.isNumber(anglePy)) {
+  if (Sk.ffi.isNum(anglePy)) {
     return Sk.ffi.numberToFloatPy(Math.sin(Sk.ffi.remapToJs(anglePy)));
   }
   else
@@ -71,7 +71,7 @@ mod.sin = Sk.ffi.functionPy(function(anglePy) {
 
 mod.cos = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("cos", arguments, 1, 1);
-  if (Sk.ffi.isNumber(anglePy)) {
+  if (Sk.ffi.isNum(anglePy)) {
     return Sk.ffi.numberToFloatPy(Math.cos(Sk.ffi.remapToJs(anglePy)));
   }
   else
@@ -196,7 +196,7 @@ mod.log10 = Sk.ffi.functionPy(function(x) {
 
 mod.exp = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("exp", arguments, 1, 1);
-  if (Sk.ffi.isNumber(anglePy)) {
+  if (Sk.ffi.isNum(anglePy)) {
     return Sk.ffi.numberToFloatPy(Math.exp(Sk.ffi.remapToJs(anglePy)));
   }
   else {

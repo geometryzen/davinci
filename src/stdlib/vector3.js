@@ -193,9 +193,9 @@
             case Sk.ffi.PyType.INT:
             case Sk.ffi.PyType.LONG: {
               Sk.ffi.checkMethodArgs(VECTOR_3, arguments, 3, 3);
-              Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
-              Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
-              Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
+              Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(x), x);
+              Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(y), y);
+              Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(z), z);
               Sk.ffi.referenceToPy(new THREE[VECTOR_3](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), Sk.ffi.remapToJs(z)), VECTOR_3, undefined, selfPy);
             }
             break
@@ -247,7 +247,7 @@
       });
       $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         Sk.ffi.checkLhsOperandType(OP_MUL, VECTOR_3, isVector3Py(selfPy), selfPy);
-        Sk.ffi.checkRhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+        Sk.ffi.checkRhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
         var x = a.x * b;
@@ -256,7 +256,7 @@
         return xyzJsToVector3Py(x, y, z);
       });
       $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-        Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+        Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
         Sk.ffi.checkRhsOperandType(OP_MUL, VECTOR_3, isVector3Py(selfPy), selfPy);
         var a = Sk.ffi.remapToJs(otherPy);
         var b = Sk.ffi.remapToJs(selfPy);
@@ -267,7 +267,7 @@
       });
       $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         Sk.ffi.checkLhsOperandType(OP_DIV, VECTOR_3, isVector3Py(selfPy), selfPy);
-        Sk.ffi.checkRhsOperandType(OP_DIV, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+        Sk.ffi.checkRhsOperandType(OP_DIV, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
         var x = a.x / b;
@@ -276,7 +276,7 @@
         return xyzJsToVector3Py(x, y, z);
       });
       $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-        Sk.ffi.checkLhsOperandType(OP_DIV, NUMBER, Sk.ffi.isNumber(otherPy), otherPy);
+        Sk.ffi.checkLhsOperandType(OP_DIV, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
         Sk.ffi.checkRhsOperandType(OP_DIV, VECTOR_3, isVector3Py(selfPy), selfPy);
         var a = Sk.ffi.remapToJs(otherPy);
         var b = Sk.ffi.remapToJs(selfPy);
@@ -314,7 +314,7 @@
           case METHOD_GET_COMPONENT: {
             return Sk.ffi.callableToPy(mod, METHOD_GET_COMPONENT, function(methodPy, indexPy) {
               Sk.ffi.checkMethodArgs(METHOD_GET_COMPONENT, arguments, 1, 1);
-              Sk.ffi.checkArgType("index", INT, Sk.ffi.isNumber(indexPy), indexPy);
+              Sk.ffi.checkArgType("index", INT, Sk.ffi.isNum(indexPy), indexPy);
               return Sk.ffi.remapToPy(vector[METHOD_GET_COMPONENT](Sk.ffi.remapToJs(indexPy)));
             });
           }
@@ -343,9 +343,9 @@
           case METHOD_SET: {
             return Sk.ffi.callableToPy(mod, METHOD_SET, function(methodPy, x, y, z) {
               Sk.ffi.checkMethodArgs(METHOD_SET, arguments, 3, 3);
-              Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNumber(x), x);
-              Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNumber(y), y);
-              Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNumber(z), z);
+              Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(x), x);
+              Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(y), y);
+              Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(z), z);
               x  = Sk.ffi.remapToJs(x);
               y  = Sk.ffi.remapToJs(y);
               z  = Sk.ffi.remapToJs(z);
@@ -357,7 +357,7 @@
             return Sk.ffi.callableToPy(mod, METHOD_SET_COMPONENT, function(methodPy, indexPy, valuePy) {
               Sk.ffi.checkMethodArgs(METHOD_SET_COMPONENT, arguments, 2, 2);
               Sk.ffi.checkArgType("index", INT, Sk.ffi.isInt(indexPy), indexPy);
-              Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+              Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNum(valuePy), valuePy);
               var index = Sk.ffi.remapToJs(indexPy);
               var value = Sk.ffi.remapToJs(valuePy);
               vector[METHOD_SET_COMPONENT](index, value);
@@ -369,7 +369,7 @@
           case METHOD_SET_Z: {
             return Sk.ffi.callableToPy(mod, name, function(methodPy, valuePy) {
               Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-              Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+              Sk.ffi.checkArgType("value", NUMBER, Sk.ffi.isNum(valuePy), valuePy);
               vector[name](Sk.ffi.remapToJs(valuePy));
               return vectorPy;
             });
@@ -384,7 +384,7 @@
           case PROP_X:
           case PROP_Y:
           case PROP_Z: {
-            Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+            Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(valuePy), valuePy);
             var vector = Sk.ffi.remapToJs(selfPy);
             vector[name] = Sk.ffi.remapToJs(valuePy);
           }

@@ -101,6 +101,7 @@ Files = [
         'src/import.js',
         'src/timsort.js',
         'src/builtindict.js',
+        'src/stdlib/stdlib.js',
         'src/stdlib/math.js',
         'src/stdlib/complex.js',
         'src/stdlib/quaternion.js',

@@ -47,7 +47,7 @@ var NODE                          = "Node";
 * @const
 * @type {!Array.<Sk.ffi.PyType>}
 */
-var NUMBER                        = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+var NUM                           = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
  * @const
  * @type {string}
@@ -312,6 +312,11 @@ var METHOD_REMOVE_EVENT_LISTENER  = "removeEventListener";
  * @const
  * @type {string}
  */
+var METHOD_RENDER                 = "render";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_SET_STROKE_STYLE       = "setStrokeStyle";
 /**
  * @const
@@ -425,13 +430,13 @@ mod[GRAPHICS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, METHOD_DRAW_RECT, []));
       }
       case METHOD_DRAW_ROUND_RECT: {
-        return Sk.ffi.callableToPy(mod, METHOD_DRAW_ROUND_RECT, function(methodPy, xPy, yPy, widthPy, heightPy, radiusPy) {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, xPy, yPy, widthPy, heightPy, radiusPy) {
           Sk.ffi.checkMethodArgs(METHOD_DRAW_ROUND_RECT, arguments, 5, 5);
-          Sk.ffi.checkArgType(ARG_X, NUMBER, Sk.ffi.isNumber(xPy), xPy);
-          Sk.ffi.checkArgType(ARG_Y, NUMBER, Sk.ffi.isNumber(yPy), yPy);
-          Sk.ffi.checkArgType(ARG_WIDTH, NUMBER, Sk.ffi.isNumber(widthPy), widthPy);
-          Sk.ffi.checkArgType(ARG_HEIGHT, NUMBER, Sk.ffi.isNumber(heightPy), heightPy);
-          Sk.ffi.checkArgType(ARG_RADIUS, NUMBER, Sk.ffi.isNumber(radiusPy), radiusPy);
+          Sk.ffi.checkArgType(ARG_X, NUM, Sk.ffi.isNum(xPy), xPy);
+          Sk.ffi.checkArgType(ARG_Y, NUM, Sk.ffi.isNum(yPy), yPy);
+          Sk.ffi.checkArgType(ARG_WIDTH, NUM, Sk.ffi.isNum(widthPy), widthPy);
+          Sk.ffi.checkArgType(ARG_HEIGHT, NUM, Sk.ffi.isNum(heightPy), heightPy);
+          Sk.ffi.checkArgType(ARG_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
           var x = Sk.ffi.remapToJs(xPy);
           var y = Sk.ffi.remapToJs(yPy);
           var w = Sk.ffi.remapToJs(widthPy);
@@ -645,7 +650,7 @@ function shapeSetAttr(shapePy, name, valuePy, className) {
   var value = Sk.ffi.remapToJs(valuePy);
   switch(name) {
     case PROP_ALPHA: {
-      Sk.ffi.checkArgType(PROP_ALPHA, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+      Sk.ffi.checkArgType(PROP_ALPHA, NUM, Sk.ffi.isNum(valuePy), valuePy);
       shape[PROP_ALPHA] = value;
     }
     break;
@@ -656,12 +661,12 @@ function shapeSetAttr(shapePy, name, valuePy, className) {
     break;
     case PROP_X:
     case PROP_Y: {
-      Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+      Sk.ffi.checkArgType(name, NUM, Sk.ffi.isNum(valuePy), valuePy);
       shape[name] = value;
     }
     break;
     case PROP_ROTATION: {
-      Sk.ffi.checkArgType(PROP_ROTATION, NUMBER, Sk.ffi.isNumber(valuePy), valuePy);
+      Sk.ffi.checkArgType(PROP_ROTATION, NUM, Sk.ffi.isNum(valuePy), valuePy);
       shape[PROP_ROTATION] = value;
     }
     break;
@@ -723,10 +728,10 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.remapToPy(stage[PROP_MOUSE_MOVE_OUTSIDE]);
       }
       case PROP_MOUSE_X: {
-        return Sk.builtin.assk$(stage[PROP_MOUSE_X], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(stage[PROP_MOUSE_X]);
       }
       case PROP_MOUSE_Y: {
-        return Sk.builtin.assk$(stage[PROP_MOUSE_Y], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(stage[PROP_MOUSE_Y]);
       }
       case METHOD_ADD_CHILD: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -751,16 +756,14 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           });
         }, METHOD_ENABLE_MOUSE_OVER, []));
       }
+      case METHOD_RENDER:
       case METHOD_UPDATE: {
-        return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-          $loc.__init__ = Sk.ffi.functionPy(function(self) {
-            self.tp$name = METHOD_UPDATE;
-            self.v = stage[METHOD_UPDATE];
-          });
-          $loc.__call__ = Sk.ffi.functionPy(function(updatePy) {
-            stage[METHOD_UPDATE]();
-          });
-        }, METHOD_UPDATE, []));
+        return Sk.ffi.callableToPy(mod, name, function(methodPy) {
+          stage[METHOD_UPDATE]();
+        });
+      }
+      default: {
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(STAGE);
       }
     }
   });
@@ -777,7 +780,7 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       default: {
-        throw new Sk.builtin.AttributeError(name + " is not a writeable attribute of " + STAGE);
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(STAGE);
       }
     }
   });
