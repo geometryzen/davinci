@@ -151,7 +151,7 @@ describe "Sk.ffi", ->
     # Just for the hell of it, we'll add the precondition functions.
     doubleMe = (xPy) ->
       Sk.ffi.checkFunctionArgs 'doubleMe', arguments, 1, 1
-      Sk.ffi.checkArgType 'x', 'Number', Sk.ffi.isNumber xPy
+      Sk.ffi.checkArgType 'x', 'Number', Sk.ffi.isNum xPy
       x = Sk.ffi.remapToJs xPy
       return Sk.ffi.remapToPy 2 * x
 
