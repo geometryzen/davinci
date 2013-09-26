@@ -382,6 +382,16 @@ var PROP_RADIUS                = "radius";
 * @const
 * @type {string}
 */
+var PROP_RADIUS_CONE           = "radiusCone";
+/**
+* @const
+* @type {string}
+*/
+var PROP_RADIUS_SHAFT          = "radiusShaft";
+/**
+* @const
+* @type {string}
+*/
 var PROP_RADIUS_TOP            = "radiusTop";
 /**
 * @const
@@ -693,6 +703,16 @@ var ARG_NEAR                   = PROP_NEAR;
  * @type {string}
  */
 var ARG_RADIUS                 = PROP_RADIUS;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_RADIUS_CONE            = PROP_RADIUS_CONE;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_RADIUS_SHAFT           = PROP_RADIUS_SHAFT;
 /**
  * @const
  * @type {string}
@@ -1117,6 +1137,127 @@ Sk.stdlib.TorusGeometry = function(radius, tube, radialSegments, tubularSegments
 };
 Sk.stdlib.TorusGeometry.prototype = Object.create(THREE['Geometry'].prototype );
 /**
+ * VortexGeometry
+ *
+ * @constructor
+ * @param {number=} radius
+ * @param {number=} radiusCone
+ * @param {number=} radiusShaft
+ * @param {number=} lengthCone
+ * @param {number=} lengthShaft
+ * @param {number=} arrowSegments
+ * @param {number=} radialSegments
+ */
+Sk.stdlib.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments) {
+
+  THREE['Geometry'].call(this);
+
+  var scope = this;
+
+  var n = 9;
+  this.radius = radius || 1;
+  this.radiusCone  = radiusCone || 0.08;
+  this.radiusShaft = radiusShaft || 0.01;
+  this.lengthCone  = lengthCone || 0.2;
+  this.lengthShaft = lengthShaft || 0.8;
+  arrowSegments = arrowSegments || 6;
+  this.circleSegments = arrowSegments * n;
+  this.radialSegments = radialSegments || 8;
+
+  var twoPI = Math.PI * 2;
+  var R = this.radius;
+  var center = new THREE['Vector3']();
+  var uvs = [];
+  var normals = [];
+
+  var alpha = this.lengthShaft / (this.lengthCone + this.lengthShaft);
+  var factor = twoPI / arrowSegments;
+  var theta = alpha / (n - 2);
+  function computeAngle(circleSegments, i) {
+    var m = i % n;
+    if (m === n - 1) {
+      return computeAngle(circleSegments, i - 1);
+    }
+    else {
+      var a = (i - m)/n;
+      return factor * (a + m * theta);
+    }
+  }
+
+  function computeRadius(i) {
+    var m = i % n;
+    if (m === n - 1) {
+      return radiusCone;
+    }
+    else {
+      return radiusShaft;
+    }
+  }
+
+  for ( var j = 0; j <= this.radialSegments; j ++ ) {
+
+    // v is the angle inside the vortex tube.
+    var v = twoPI * j / this.radialSegments;
+    var cosV = Math.cos(v);
+    var sinV = Math.sin(v);
+
+    for ( var i = 0; i <= this.circleSegments; i ++ ) {
+
+      // u is the angle in the xy-plane measured from the x-axis clockwise about the z-axis.
+      var u = computeAngle(this.circleSegments, i)
+      var cosU = Math.cos(u);
+      var sinU = Math.sin(u);
+
+      center.x = R * cosU;
+      center.y = R * sinU;
+
+      var vertex = new THREE['Vector3']();
+      var r = computeRadius(i);
+      vertex.x = (R + r * cosV ) * cosU;
+      vertex.y = (R + r * cosV ) * sinU;
+      vertex.z = r * sinV;
+
+      this['vertices'].push( vertex );
+
+      uvs.push( new THREE['Vector2']( i / this.circleSegments, j / this.radialSegments ) );
+      normals.push( vertex.clone().sub( center ).normalize() );
+    }
+  }
+
+  for ( var j = 1; j <= this.radialSegments; j ++ ) {
+
+    for ( var i = 1; i <= this.circleSegments; i ++ ) {
+
+      var a = ( this.circleSegments + 1 ) * j + i - 1;
+      var b = ( this.circleSegments + 1 ) * ( j - 1 ) + i - 1;
+      var c = ( this.circleSegments + 1 ) * ( j - 1 ) + i;
+      var d = ( this.circleSegments + 1 ) * j + i;
+
+      var face = new THREE['Face3'](a, b, d, [normals[a], normals[b], normals[d]]);
+      face['normal'].add( normals[ a ] );
+      face['normal'].add( normals[ b ] );
+      face['normal'].add( normals[ d ] );
+      face['normal'].normalize();
+
+      this['faces'].push(face);
+
+      this['faceVertexUvs'][0].push([uvs[a].clone(), uvs[b].clone(), uvs[d].clone()]);
+
+      face = new THREE['Face3'](b, c, d, [normals[b], normals[c], normals[d]]);
+      face['normal'].add( normals[ b ] );
+      face['normal'].add( normals[ c ] );
+      face['normal'].add( normals[ d ] );
+      face['normal'].normalize();
+
+      this['faces'].push(face);
+
+      this['faceVertexUvs'][0].push([uvs[b].clone(), uvs[c].clone(), uvs[d].clone()]);
+    }
+  }
+  this['computeCentroids']();
+};
+Sk.stdlib.VortexGeometry.prototype = Object.create(THREE['Geometry'].prototype );
+/**
  * @param {string} name
  * @param {Object} valuePy
  * @return {boolean} The JavaScript value of the Python argument.
@@ -1297,43 +1438,6 @@ function webGLSupported() {
     return false;
   }
 }
-
-function stringFromCoordinates(coordinates, labels) {
-  var append, i, sb, str, _i, _ref;
-  sb = [];
-  append = function(number, label) {
-    var n;
-    if (number !== 0) {
-      if (number >= 0) {
-        if (sb.length > 0) {
-          sb.push("+");
-        }
-      } else {
-        sb.push("-");
-      }
-      n = Math.abs(number);
-      if (n === 1) {
-        return sb.push(label);
-      } else {
-        sb.push(n.toString());
-        if (label !== "1") {
-          sb.push("*");
-          return sb.push(label);
-        }
-      }
-    }
-  };
-  for (i = _i = 0, _ref = coordinates.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-    append(coordinates[i], labels[i]);
-  }
-  if (sb.length > 0) {
-    str = sb.join("");
-  } else {
-    str = "0";
-  }
-  return str;
-}
-
 /**
  * @param {boolean=} lax
  */
@@ -2771,7 +2875,7 @@ mod[PLANE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__setattr__ = Sk.ffi.functionPy(function(planePy, name, valuePy) {
     switch(name) {
       default: {
-        return geometryGetAttr(PLANE_GEOMETRY, planePy, name);
+        return geometrySetAttr(PLANE_GEOMETRY, planePy, name, valuePy);
       }
     }
   });
@@ -3099,58 +3203,62 @@ mod[TETRAHEDRON_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, TORUS_GEOMETRY, []);
 
 mod[VORTEX_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, depthPy, widthSegments, heightSegments) {
-    Sk.ffi.checkMethodArgs(VORTEX_GEOMETRY, arguments, 2, 5);
-    Sk.ffi.checkArgType(ARG_WIDTH, NUM, Sk.ffi.isNum(widthPy),  widthPy);
-    Sk.ffi.checkArgType(ARG_DEPTH, NUM, Sk.ffi.isNum(depthPy), depthPy);
-    var width = Sk.ffi.remapToJs(widthPy);
-    var depth = Sk.ffi.remapToJs(depthPy);
-    widthSegments  = numberFromIntegerArg(widthSegments,  PROP_WIDTH_SEGMENTS,  VORTEX_GEOMETRY);
-    heightSegments = numberFromIntegerArg(heightSegments, PROP_HEIGHT_SEGMENTS, VORTEX_GEOMETRY);
-    Sk.ffi.referenceToPy(new Sk.stdlib.PlaneGeometry(width, depth, widthSegments, heightSegments), VORTEX_GEOMETRY, undefined, selfPy);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, radiusConePy, radiusShaftPy, lengthConePy, lengthShaftPy, arrowSegments, radialSegments) {
+    Sk.ffi.checkMethodArgs(VORTEX_GEOMETRY, arguments, 7, 7);
+    Sk.ffi.checkArgType(ARG_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
+    Sk.ffi.checkArgType(ARG_RADIUS_CONE, NUM, Sk.ffi.isNum(radiusConePy), radiusConePy);
+    Sk.ffi.checkArgType(ARG_RADIUS_SHAFT, NUM, Sk.ffi.isNum(radiusShaftPy), radiusShaftPy);
+    var radius = Sk.ffi.remapToJs(radiusPy);
+    var radiusCone = Sk.ffi.remapToJs(radiusConePy);
+    var radiusShaft = Sk.ffi.remapToJs(radiusShaftPy);
+    var lengthCone = Sk.ffi.remapToJs(lengthConePy);
+    var lengthShaft = Sk.ffi.remapToJs(lengthShaftPy);
+    arrowSegments  = numberFromIntegerArg(arrowSegments,  PROP_WIDTH_SEGMENTS,  VORTEX_GEOMETRY);
+    radialSegments = numberFromIntegerArg(radialSegments, PROP_HEIGHT_SEGMENTS, VORTEX_GEOMETRY);
+    var vortex = new Sk.stdlib.VortexGeometry(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments);
+    Sk.ffi.referenceToPy(vortex, VORTEX_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(planePy, name) {
-    var plane = Sk.ffi.remapToJs(planePy);
+  $loc.__getattr__ = Sk.ffi.functionPy(function(vortexPy, name) {
+    var vortex = Sk.ffi.remapToJs(vortexPy);
     switch(name) {
-      case PROP_WIDTH: {
-        return Sk.ffi.numberToFloatPy(plane[PROP_WIDTH]);
+      case PROP_RADIUS: {
+        return Sk.ffi.numberToFloatPy(vortex[PROP_RADIUS]);
       }
-      case PROP_DEPTH:
-      case PROP_HEIGHT: {
-        return Sk.ffi.numberToFloatPy(plane[PROP_HEIGHT]);
+      case PROP_RADIUS_SHAFT: {
+        return Sk.ffi.numberToFloatPy(vortex[PROP_RADIUS_SHAFT]);
       }
       case PROP_WIDTH_SEGMENTS: {
-        return Sk.ffi.numberToIntPy(plane[PROP_WIDTH_SEGMENTS]);
+        return Sk.ffi.numberToIntPy(vortex[PROP_WIDTH_SEGMENTS]);
       }
       case PROP_DEPTH_SEGMENTS:
       case PROP_HEIGHT_SEGMENTS: {
-        return Sk.ffi.numberToIntPy(plane[PROP_HEIGHT_SEGMENTS]);
+        return Sk.ffi.numberToIntPy(vortex[PROP_HEIGHT_SEGMENTS]);
       }
       default: {
-        return geometryGetAttr(VORTEX_GEOMETRY, planePy, name);
+        return geometryGetAttr(VORTEX_GEOMETRY, vortexPy, name);
       }
     }
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(planePy, name, valuePy) {
+  $loc.__setattr__ = Sk.ffi.functionPy(function(vortexPy, name, valuePy) {
     switch(name) {
       default: {
-        return geometryGetAttr(VORTEX_GEOMETRY, planePy, name);
+        return geometrySetAttr(VORTEX_GEOMETRY, vortexPy, name, valuePy);
       }
     }
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    var plane = Sk.ffi.remapToJs(selfPy);
+  $loc.__str__ = Sk.ffi.functionPy(function(vortexPy) {
+    var vortex = Sk.ffi.remapToJs(vortexPy);
     var args = {};
-    args[PROP_WIDTH] = plane[PROP_WIDTH];
-    args[PROP_DEPTH] = plane[PROP_HEIGHT];
+    args[PROP_WIDTH] = vortex[PROP_WIDTH];
+    args[PROP_DEPTH] = vortex[PROP_HEIGHT];
     return Sk.ffi.stringToPy(VORTEX_GEOMETRY + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    var plane = Sk.ffi.remapToJs(selfPy);
-    var width          = plane[PROP_WIDTH];
-    var depth          = plane[PROP_HEIGHT];
-    var widthSegments  = plane[PROP_WIDTH_SEGMENTS];
-    var heightSegments = plane[PROP_HEIGHT_SEGMENTS];
+  $loc.__repr__ = Sk.ffi.functionPy(function(vortexPy) {
+    var vortex = Sk.ffi.remapToJs(vortexPy);
+    var width          = vortex[PROP_WIDTH];
+    var depth          = vortex[PROP_HEIGHT];
+    var widthSegments  = vortex[PROP_WIDTH_SEGMENTS];
+    var heightSegments = vortex[PROP_HEIGHT_SEGMENTS];
     var args = [width, depth, widthSegments, heightSegments];
     return Sk.ffi.stringToPy(VORTEX_GEOMETRY + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });

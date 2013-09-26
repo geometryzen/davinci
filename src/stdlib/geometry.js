@@ -1120,21 +1120,13 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy({}, VORTEX_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var plane = Sk.ffi.remapToJs(selfPy);
+    var vortex = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_HEIGHT: {
-        return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
-          Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_HEIGHT, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(heightPy) || Sk.ffi.isNone(heightPy), heightPy);
-          plane[PROP_HEIGHT] = Sk.ffi.remapToJs(heightPy);
-          return selfPy;
-        });
-      }
-      case PROP_WIDTH: {
-        return Sk.ffi.callableToPy(mod, PROP_WIDTH, function(methodPy, widthPy) {
-          Sk.ffi.checkMethodArgs(PROP_WIDTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_WIDTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
-          plane[PROP_WIDTH] = Sk.ffi.remapToJs(widthPy);
+      case PROP_RADIUS: {
+        return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, widthPy) {
+          Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
+          vortex[PROP_RADIUS] = Sk.ffi.remapToJs(widthPy);
           return selfPy;
         });
       }
@@ -1142,37 +1134,41 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
           Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
-          plane[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          vortex[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
           return selfPy;
         });
       }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
-           * @return {{width: number, height: number}}
+           * @return {{radius: number, height: number}}
            */
           function dimensionPlane() {
             var dims = {};
-            if (plane[PROP_VOLUME]) {
-              var w = (plane.width)  ? plane.width  : DEFAULT_CUBE_LENGTH;
-              var h = (plane.height) ? plane.height : DEFAULT_CUBE_LENGTH;
-              var alpha = Math.pow(plane[PROP_VOLUME] / (w * h), 1 / 2);
+            if (vortex[PROP_VOLUME]) {
+              var w = (vortex.radius) ? vortex.radius : DEFAULT_CUBE_LENGTH;
+              var h = (vortex.height) ? vortex.height : DEFAULT_CUBE_LENGTH;
+              var alpha = Math.pow(vortex[PROP_VOLUME] / (w * h), 1 / 2);
               dims.width  = alpha * w;
               dims.height = alpha * h;
             }
             else {
-              dims.width  = (plane.width)  ? plane.width  : DEFAULT_CUBE_LENGTH;
-              dims.height = (plane.height) ? plane.height : DEFAULT_CUBE_LENGTH;
+              dims.radius = (vortex.radius) ? vortex.radius : DEFAULT_CUBE_LENGTH;
+              dims.height = (vortex.height) ? vortex.height : DEFAULT_CUBE_LENGTH;
             }
             return dims;
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionPlane();
-          var radius     = Sk.ffi.remapToPy(dimensions[PROP_WIDTH]);
-          var tube       = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
-          var segments   = Sk.ffi.numberToIntPy(plane[PROP_SEGMENTS] ? plane[PROP_SEGMENTS] : 1);
-          var geometryPy = Sk.ffi.callsim(mod[TORUS_GEOMETRY], radius, tube, segments, segments);
-          return completeMesh(geometryPy, plane);
+          var radius      = Sk.ffi.remapToPy(dimensions[PROP_RADIUS]);
+          var radiusCone  = Sk.ffi.remapToPy(0.08);
+          var radiusShaft = Sk.ffi.remapToPy(0.01);
+          var lengthCone  = Sk.ffi.remapToPy(0.2);
+          var lengthShaft = Sk.ffi.remapToPy(0.8);
+          var arrows      = Sk.ffi.numberToIntPy(8);
+          var segments    = Sk.ffi.numberToIntPy(32);
+          var geometryPy  = Sk.ffi.callsim(mod[VORTEX_GEOMETRY], radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrows, segments);
+          return completeMesh(geometryPy, vortex);
         });
       }
       default: {

@@ -127,9 +127,10 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         grade1.quaternion = quaternion(x/s1, y/s1, z/s1);
 
         var grade2 = Sk.ffi.remapToJs(probe[PROP_GRADE_2]);
-        var s2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
+        var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
+        var s2 = Math.pow(norm2, 1/2);
         grade2.scale.set(s2, s2, s2);
-        grade2.quaternion = quaternion(yz/s2, zx/s2, xy/s2);
+        grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
 
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         var s3 = Math.pow(Math.abs(xyz), 1/3);
