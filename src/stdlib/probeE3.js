@@ -10,6 +10,31 @@ var PROBE_E3                        = "ProbeE3";
  * @const
  * @type {string}
  */
+var PROBE_BUILDER_E3                = "ProbeBuilderE3";
+/**
+ * @const
+ * @type {string}
+ */
+var ARROW_BUILDER                   = "ArrowBuilder";
+/**
+ * @const
+ * @type {string}
+ */
+var CUBE_BUILDER                    = "CubeBuilder";
+/**
+ * @const
+ * @type {string}
+ */
+var SPHERE_BUILDER                  = "SphereBuilder";
+/**
+ * @const
+ * @type {string}
+ */
+var VORTEX_BUILDER                  = "VortexBuilder";
+/**
+ * @const
+ * @type {string}
+ */
 var EUCLIDEAN_3                     = "Euclidean3";
 /**
  * @const
@@ -47,7 +72,12 @@ var PROP_GRADE_2                    = "grade2";
  */
 var PROP_GRADE_3                    = "grade3";
 /**
- * Probe
+ * @const
+ * @type {string}
+ */
+var METHOD_BUILD                    = "build";
+/**
+ * ProbeE3
  */
 mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, grade0, grade1, grade2, grade3) {
@@ -151,6 +181,47 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy(PROBE_E3);
   })
 }, PROBE_E3, []);
+/**
+ * ProbeBuilderE3
+ */
+mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(PROBE_BUILDER_E3, arguments, 0, 0);
+    Sk.ffi.referenceToPy({}, PROBE_BUILDER_E3, undefined, selfPy);
+  });
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var probe = Sk.ffi.remapToJs(selfPy);
+    switch(name) {
+      case METHOD_BUILD: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy) {
+          var builderNames = [SPHERE_BUILDER, ARROW_BUILDER, VORTEX_BUILDER, CUBE_BUILDER];
+          var meshes = builderNames.map(function(builderName) {
+            var builderPy = Sk.ffi.callsim(mod[builderName]);
+            return Sk.ffi.callsim(Sk.ffi.gattr(builderPy, METHOD_BUILD));
+          });
+          return Sk.ffi.callsim(mod[PROBE_E3], meshes[0], meshes[1], meshes[2], meshes[3]);
+        });
+      }
+      default: {
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(PROBE_BUILDER_E3);
+      }
+    }
+  });
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    var probe = Sk.ffi.remapToJs(selfPy);
+    switch(name) {
+      default: {
+        throw Sk.ffi.err.attribute(name).isNotSetableOnType(PROBE_BUILDER_E3);
+      }
+    }
+  });
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffi.stringToPy(PROBE_BUILDER_E3);
+  })
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffi.stringToPy(PROBE_BUILDER_E3);
+  })
+}, PROBE_BUILDER_E3, []);
 /**
  *
  */
