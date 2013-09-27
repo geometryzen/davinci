@@ -28,8 +28,6 @@ assertEqual(1, M.w,  "M.w")
 assertEqual(2, M.x,  "M.x")
 assertEqual(3, M.y,  "M.y")
 assertEqual(4, M.xy, "M.xy")
-# Length method.
-assertEqual(4, M.length(), "M.length()")
 # Mutation
 M.w  = 4
 M.x  = 3

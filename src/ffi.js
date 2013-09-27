@@ -1073,12 +1073,6 @@ Sk.ffi.buildClass = function(globals, func, name, bases)
 };
 goog.exportSymbol("Sk.ffi.buildClass", Sk.ffi.buildClass);
 
-Sk.ffi.mangleName = function(name)
-{
-    return Sk.mangleName(name);
-}
-goog.exportSymbol("Sk.ffi.mangleName", Sk.ffi.mangleName);
-
 /**
  * 
  * @param {Object} func the thing to call

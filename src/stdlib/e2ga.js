@@ -6,92 +6,92 @@ Sk.builtin.defineUnits(mod, BLADE);
  * @const
  * @type {string}
  */
-var EUCLIDEAN_2    = "Euclidean2";
+var EUCLIDEAN_2      = "Euclidean2";
 /**
  * @const
  * @type {string}
  */
-var SCALAR_E2       = "ScalarE2";
+var SCALAR_E2        = "ScalarE2";
 /**
  * @const
  * @type {string}
  */
-var VECTOR_E2       = "VectorE2";
+var VECTOR_E2        = "VectorE2";
 /**
  * @const
  * @type {string}
  */
-var PSEUDOSCALAR_E2 = "PseudoscalarE2";
+var PSEUDOSCALAR_E2  = "PseudoscalarE2";
 /**
  * @const
  * @type {string}
  */
-var UNIT           = "Unit";
+var UNIT             = "Unit";
 /**
  * @const
  * @type {string}
  */
-var MEASURE        = "Measure";
+var MEASURE          = "Measure";
 /**
  * @const
  * @type {!Array.<Sk.ffi.PyType>}
  */
-var NUM            = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+var NUM              = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
  * @const
  * @type {string}
  */
-var PROP_W         = "w";
+var PROP_W           = "w";
 /**
  * @const
  * @type {string}
  */
-var PROP_X         = "x";
+var PROP_X           = "x";
 /**
  * @const
  * @type {string}
  */
-var PROP_Y         = "y";
+var PROP_Y           = "y";
 /**
  * @const
  * @type {string}
  */
-var PROP_XY        = "xy";
+var PROP_XY          = "xy";
 /**
  * @const
  * @type {string}
  */
-var METHOD_CLONE   = "clone";
+var METHOD_CLONE     = "clone";
 /**
  * @const
  * @type {string}
  */
-var METHOD_LENGTH  = Sk.ffi.mangleName("length");
+var METHOD_MAGNITUDE = "magnitude";
 /**
  * @const
  * @type {string}
  */
-var OP_ADD         = "add";
+var OP_ADD           = "add";
 /**
  * @const
  * @type {string}
  */
-var OP_SUB         = "subtract";
+var OP_SUB           = "subtract";
 /**
  * @const
  * @type {string}
  */
-var OP_MUL         = "multiply";
+var OP_MUL           = "multiply";
 /**
  * @const
  * @type {string}
  */
-var OP_DIV         = "divide";
+var OP_DIV           = "divide";
 /**
  * @const
  * @type {string}
  */
-var OP_EQ          = "equal";
+var OP_EQ            = "equal";
 
 var E2_OR_NUMBER = [EUCLIDEAN_2, NUM];
 var E2_OR_NUMBER_OR_UNIT = [EUCLIDEAN_2, UNIT];
@@ -678,14 +678,14 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           });
         }, METHOD_CLONE, []));
       }
-      case METHOD_LENGTH: {
+      case METHOD_MAGNITUDE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
           $loc.__init__ = Sk.ffi.functionPy(function(self) {
           });
           $loc.__call__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.numberToIntPy(4);
+            return Sk.ffi.numberToFloatPy(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y - mv.xy * mv.xy));
           });
-        }, METHOD_LENGTH, []));
+        }, METHOD_MAGNITUDE, []));
       }
       default: {
         throw Sk.ffi.err.attribute(name).isNotGetableOnType(EUCLIDEAN_2);

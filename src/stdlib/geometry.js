@@ -80,12 +80,7 @@ var PROP_HEIGHT                     = "height";
  * @const
  * @type {string}
  */
-var PROP_LENGTH                     = "length";
-/**
- * @const
- * @type {string}
- */
-var PROP_LENGTH_MANGLED             = Sk.ffi.mangleName(PROP_LENGTH);
+var PROP_MAGNITUDE                  = "magnitude";
 /**
  * @const
  * @type {string}
@@ -638,11 +633,11 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var arrow = Sk.ffi.remapToJs(selfPy);
     switch(name) {
-      case PROP_LENGTH_MANGLED: {
-        return Sk.ffi.callableToPy(mod, PROP_LENGTH, function(methodPy, lengthPy) {
-          Sk.ffi.checkMethodArgs(PROP_LENGTH, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_LENGTH, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
-          arrow[PROP_LENGTH] = Sk.ffi.remapToJs(lengthPy);
+      case PROP_MAGNITUDE: {
+        return Sk.ffi.callableToPy(mod, PROP_MAGNITUDE, function(methodPy, lengthPy) {
+          Sk.ffi.checkMethodArgs(PROP_MAGNITUDE, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_MAGNITUDE, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(lengthPy) || Sk.ffi.isNone(lengthPy), lengthPy);
+          arrow[PROP_MAGNITUDE] = Sk.ffi.remapToJs(lengthPy);
           return selfPy;
         });
       }
@@ -690,7 +685,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var scalePy    = Sk.ffi.numberToFloatPy(dimensions[PROP_SCALE]);
           var attitudePy = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_ATTITUDE], EUCLIDEAN_3));
           var segmentsPy = Sk.ffi.numberToIntPy(arrow[PROP_SEGMENTS] ? arrow[PROP_SEGMENTS] : 32);
-          var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_LENGTH]);
+          var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_MAGNITUDE]);
           var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy);
           return completeMesh(geometryPy, arrow);
         });

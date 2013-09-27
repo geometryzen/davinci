@@ -115,7 +115,7 @@ Files = [
         'src/stdlib/e2ga.js',
         'src/stdlib/units.js',
         'src/stdlib/three.js',
-        'src/stdlib/threeE3.js',
+        'src/stdlib/e3ga.js',
         'src/stdlib/vector3.js',
         'src/stdlib/fractions.js',
         'src/stdlib/workbench.js',

@@ -477,6 +477,11 @@ var PROP_USE_QUATERNION        = "useQuaternion";
 * @const
 * @type {string}
 */
+var PROP_VELOCITY              = "velocity";
+/**
+* @const
+* @type {string}
+*/
 var PROP_VERTICES              = "vertices";
 /**
 * @const
@@ -3370,10 +3375,15 @@ function object3DGetAttr(className, selfPy, name) {
       return self[PROP_USE_QUATERNION];
     }
     case PROP_MASS:
-    case PROP_MOMENTUM: {
+    case PROP_MOMENTUM:
+    case PROP_VELOCITY: {
       var valuePy = self[name];
-      Sk.ffi.checkArgType("431935c5-b446-4add-adeb-45ba029551a2, name => " + name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
-      return valuePy;
+      if (isEuclidean3Py(valuePy)) {
+        return valuePy;
+      }
+      else {
+        throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+      }
     }
     case METHOD_ADD: {
       return methodAdd(self);
@@ -3425,7 +3435,8 @@ function object3DSetAttr(className, selfPy, name, valuePy) {
     }
     break;
     case PROP_MASS:
-    case PROP_MOMENTUM: {
+    case PROP_MOMENTUM:
+    case PROP_VELOCITY: {
       Sk.ffi.checkArgType(name, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
       self[name] = valuePy;
     }

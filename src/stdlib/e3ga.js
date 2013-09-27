@@ -162,7 +162,7 @@ var METHOD_CONSTANTIFY         = "constantify";
  * @const
  * @type {string}
  */
-var METHOD_LENGTH              = Sk.ffi.mangleName("length");
+var METHOD_MAGNITUDE           = "magnitude";
 /**
  * @const
  * @type {string}
@@ -1273,11 +1273,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return selfPy;
   });
   $loc.__len__ = Sk.ffi.functionPy(function(selfPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    var x = self.x;
-    var y = self.y;
-    var z = self.z;
-    return Sk.ffi.numberToFloatPy(Math.sqrt(x*x+y*y+z*z));
+    return Sk.ffi.numberToFloatPy(8);
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
     return selfPy;
@@ -1410,8 +1406,16 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Sk.ffi.checkMethodArgs(METHOD_CROSS, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isClass(otherPy, EUCLIDEAN_3), otherPy);
           var other  = Sk.ffi.remapToJs(otherPy);
-          vector[METHOD_CROSS](other.vector);
-          return selfPy;
+          var Ax = self.x;
+          var Ay = self.y;
+          var Az = self.z;
+          var Bx = other.x;
+          var By = other.y;
+          var Bz = other.z;
+          var Cx = Ay * Bz - Az * By;
+          var Cy = Az * Bx - Ax * Bz;
+          var Cz = Ax * By - Ay * Bx;
+          return coordsJsToE3Py(0, Cx, Cy, Cz, 0, 0, 0, 0);
         });
       }
       case METHOD_DOT: {
@@ -1503,9 +1507,9 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return coordsJsToE3Py(quaternion.w, vector.x, vector.y, vector.z, -quaternion.z, -quaternion.x, -quaternion.y, self.xyz);
         });
       }
-      case METHOD_LENGTH: {
-        return Sk.ffi.callableToPy(mod, METHOD_LENGTH, function(methodPy) {
-          Sk.ffi.checkMethodArgs(METHOD_LENGTH, arguments, 0, 0);
+      case METHOD_MAGNITUDE: {
+        return Sk.ffi.callableToPy(mod, METHOD_MAGNITUDE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_MAGNITUDE, arguments, 0, 0);
           return Sk.ffi.numberToFloatPy(vector.length());
         });
       }

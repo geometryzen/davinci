@@ -75,17 +75,12 @@ var METHOD_INVERSE             = "inverse";
  * @const
  * @type {string}
  */
-var METHOD_LENGTH              = "length";
+var METHOD_MAGNITUDE           = "magnitude";
 /**
  * @const
  * @type {string}
  */
-var METHOD_LENGTH_MANGLED      = Sk.ffi.mangleName(METHOD_LENGTH);
-/**
- * @const
- * @type {string}
- */
-var METHOD_LENGTH_SQ           = "lengthSq";
+var METHOD_QUADRANCE           = "quadrance";
 /**
  * @const
  * @type {string}
@@ -422,7 +417,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             Sk.ffi.referenceToPy(null, METHOD_INVERSE, null, methodPy);
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            var k = 1.0 / quaternion[METHOD_LENGTH_SQ]();
+            var k = 1.0 / quaternion['lengthSq']();
             quaternion[METHOD_CONJUGATE]();
             quaternion.w *= k;
             quaternion.x *= k;
@@ -432,25 +427,25 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           });
         }, METHOD_INVERSE, []));
       }
-      case METHOD_LENGTH_MANGLED: {
+      case METHOD_MAGNITUDE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
           $loc.__init__ = Sk.ffi.functionPy(function(methodPy) {
-            Sk.ffi.referenceToPy(null, METHOD_LENGTH, null, methodPy);
+            Sk.ffi.referenceToPy(null, METHOD_MAGNITUDE, null, methodPy);
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
             return Sk.ffi.numberToFloatPy(quaternion.length());
           });
-        }, METHOD_LENGTH, []));
+        }, METHOD_MAGNITUDE, []));
       }
-      case METHOD_LENGTH_SQ: {
+      case METHOD_QUADRANCE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
           $loc.__init__ = Sk.ffi.functionPy(function(methodPy) {
-            Sk.ffi.referenceToPy(null, METHOD_LENGTH_SQ, null, methodPy);
+            Sk.ffi.referenceToPy(null, METHOD_QUADRANCE, null, methodPy);
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            return Sk.ffi.numberToFloatPy(quaternion[METHOD_LENGTH_SQ]());
+            return Sk.ffi.numberToFloatPy(quaternion['lengthSq']());
           });
-        }, METHOD_LENGTH_SQ, []));
+        }, METHOD_QUADRANCE, []));
       }
       case METHOD_NORMALIZE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
