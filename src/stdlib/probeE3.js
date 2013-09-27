@@ -60,6 +60,11 @@ var PROP_COLOR                      = "color";
  * @const
  * @type {string}
  */
+var PROP_POSITION                   = "position";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_QUANTITY                   = "quantity";
 /**
  * @const
@@ -126,6 +131,19 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     var probe = Sk.ffi.remapToJs(selfPy);
     switch(name) {
+      case PROP_POSITION: {
+        Sk.ffi.checkArgType(PROP_POSITION, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
+        var position = Sk.ffi.remapToJs(valuePy).vector;
+        var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
+        grade0[PROP_POSITION] = position;
+        var grade1 = Sk.ffi.remapToJs(probe[PROP_GRADE_1]);
+        grade1[PROP_POSITION] = position;
+        var grade2 = Sk.ffi.remapToJs(probe[PROP_GRADE_2]);
+        grade2[PROP_POSITION] = position;
+        var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
+        grade3[PROP_POSITION] = position;
+      }
+      break;
       case PROP_QUANTITY: {
         Sk.ffi.checkArgType(PROP_QUANTITY, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
         /**

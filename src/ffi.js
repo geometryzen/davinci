@@ -344,29 +344,29 @@ goog.exportSymbol("Sk.ffi.stringToPy", Sk.ffi.stringToPy);
  * - This form is useful in initialization functions.
  *
  * @param {Object|string|number|boolean} valueJs
- * @param {string} tp$name
+ * @param {string} className
  * @param {Object=} custom Custom metadata that the caller wishes to retain.
  * @param {Object=} targetPy An optional destination for mapping reference types.
  */
-Sk.ffi.referenceToPy = function(valueJs, tp$name, custom, targetPy)
+Sk.ffi.referenceToPy = function(valueJs, className, custom, targetPy)
 {
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.OBJECT || t === Sk.ffi.JsType.FUNCTION)
     {
-        if (typeof tp$name === Sk.ffi.JsType.STRING)
+        if (typeof className === Sk.ffi.JsType.STRING)
         {
             if (targetPy) {
                 targetPy.v = valueJs;
-                targetPy.tp$name = tp$name;
+                targetPy.tp$name = className;
                 targetPy.custom = custom;
             }
             else {
-                return {"v": valueJs, "tp$name": tp$name, "custom": custom};
+                return {"v": valueJs, "tp$name": className, "custom": custom};
             }
         }
         else
         {
-            throw Sk.ffi.assertionError("9fad4b9e-4845-4a06-9bce-0aa7c68e1f03");
+            throw Sk.ffi.assertionError("9fad4b9e-4845-4a06-9bce-0aa7c68e1f03 [className is " + className + "]");
         }
     }
     else

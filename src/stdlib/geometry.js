@@ -235,6 +235,11 @@ var VORTEX_BUILDER                  = "VortexBuilder";
  * @const
  * @type {string}
  */
+var AMBIENT_LIGHT                   = "AmbientLight";
+/**
+ * @const
+ * @type {string}
+ */
 var POINT_LIGHT                     = "PointLight";
 /**
  * @const
@@ -427,9 +432,15 @@ mod[WORLD] = Sk.ffi.functionPy(function() {
   var scenePy = Sk.ffi.callsim(mod[SCENE]);
   var scene = Sk.ffi.remapToJs(scenePy);
 
-  var pointLight = new THREE[POINT_LIGHT](0xFFFFFF);
-  pointLight.position.set(0, 5, 5);
-  scene.add(pointLight);
+  function addPointLight(x, y, z) {
+    var pointLight = new THREE[POINT_LIGHT](0xFFFFFF);
+    pointLight.position.set(x, y, z);
+    scene.add(pointLight);
+  }
+
+  addPointLight(+5, +5, +5);
+
+  scene.add(new THREE[AMBIENT_LIGHT](0x222222));
 
   return scenePy;
 });
