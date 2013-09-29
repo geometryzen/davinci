@@ -1101,45 +1101,6 @@ Sk.ffi.exp = function(valuePy)
 };
 goog.exportSymbol("Sk.ffi.exp", Sk.ffi.exp);
 
-Sk.ffi.add = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__add__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__add__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__add__');
-    }
-};
-goog.exportSymbol("Sk.ffi.add", Sk.ffi.add);
-
-Sk.ffi.sub = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__sub__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__sub__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__sub__');
-    }
-};
-goog.exportSymbol("Sk.ffi.sub", Sk.ffi.sub);
-
-Sk.ffi.mul = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__mul__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__mul__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__mul__');
-    }
-};
-goog.exportSymbol("Sk.ffi.mul", Sk.ffi.mul);
-
 Sk.ffi.div = function(lhsPy, rhsPy)
 {
     if (lhsPy['__div__'])
@@ -1200,15 +1161,6 @@ Sk.ffi.pos = function(valuePy)
     return Sk.ffi.callsim(valuePy["__pos__"], valuePy);
 };
 goog.exportSymbol("Sk.ffi.pos", Sk.ffi.pos);
-
-/**
- * Computes the negative of a value by either invoking the special __neg__ function or the native equivalent.
- */
-Sk.ffi.neg = function(valuePy)
-{
-    return Sk.ffi.callsim(valuePy["__neg__"], valuePy);
-};
-goog.exportSymbol("Sk.ffi.neg", Sk.ffi.neg);
 
 /**
  * Computes the inverse of a value by either invoking the special __invert__ function or the native equivalent.
