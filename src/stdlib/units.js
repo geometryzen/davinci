@@ -210,22 +210,22 @@ var VOLT              = "volt";
  */
 var TESLA             = "tesla";
 
-var isMeasurePy    = function(valuePy) {return Sk.ffi.isClass(valuePy, MEASURE);};
-var isDimensionsPy = function(valuePy) {return Sk.ffi.isClass(valuePy, DIMENSIONS);};
-var isUnitPy       = function(valuePy) {return Sk.ffi.isClass(valuePy, UNIT);};
+var isMeasurePy    = function(valuePy) {return Sk.ffi.isInstance(valuePy, MEASURE);};
+var isDimensionsPy = function(valuePy) {return Sk.ffi.isInstance(valuePy, DIMENSIONS);};
+var isUnitPy       = function(valuePy) {return Sk.ffi.isInstance(valuePy, UNIT);};
 
 Sk.builtin.defineFractions(mod, RATIONAL, function(n, d) {return new BLADE.Rational(n, d)});
 
 mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, M, L, T, Q) {
     Sk.ffi.checkMethodArgs(DIMENSIONS, arguments, 1, 4);
-    Sk.ffi.checkArgType(PROP_M, RATIONAL, Sk.ffi.isClass(M, RATIONAL) || Sk.ffi.isClass(M, DIMENSIONS), M);
+    Sk.ffi.checkArgType(PROP_M, RATIONAL, Sk.ffi.isInstance(M, RATIONAL) || Sk.ffi.isInstance(M, DIMENSIONS), M);
     switch(Sk.ffi.typeName(M)) {
       case RATIONAL: {
         Sk.ffi.checkMethodArgs(DIMENSIONS, arguments, 4, 4);
-        Sk.ffi.checkArgType(PROP_L, RATIONAL, Sk.ffi.isClass(L, RATIONAL), L);
-        Sk.ffi.checkArgType(PROP_T, RATIONAL, Sk.ffi.isClass(T, RATIONAL), T);
-        Sk.ffi.checkArgType(PROP_Q, RATIONAL, Sk.ffi.isClass(Q, RATIONAL), Q);
+        Sk.ffi.checkArgType(PROP_L, RATIONAL, Sk.ffi.isInstance(L, RATIONAL), L);
+        Sk.ffi.checkArgType(PROP_T, RATIONAL, Sk.ffi.isInstance(T, RATIONAL), T);
+        Sk.ffi.checkArgType(PROP_Q, RATIONAL, Sk.ffi.isInstance(Q, RATIONAL), Q);
         Sk.ffi.referenceToPy(new BLADE.Dimensions(Sk.ffi.remapToJs(M), Sk.ffi.remapToJs(L), Sk.ffi.remapToJs(T), Sk.ffi.remapToJs(Q)), DIMENSIONS, undefined, selfPy);
       }
       break;
@@ -302,7 +302,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         Sk.ffi.referenceToPy(new BLADE.Unit(scale, dimensions, labels), UNIT, undefined, selfPy);
       }
       break;
-      case Sk.ffi.PyType.CLASS: {
+      case Sk.ffi.PyType.INSTANCE: {
         Sk.ffi.checkMethodArgs(UNIT, arguments, 1, 1);
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(scalePy), UNIT, undefined, selfPy);
       }
@@ -446,7 +446,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var UOM_PY = "uomPy";
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, qtyPy, uomPy) {
     Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_QUANTITY, "Quantity", Sk.ffi.isClass(qtyPy), qtyPy);
+    Sk.ffi.checkArgType(PROP_QUANTITY, "Quantity", Sk.ffi.isInstance(qtyPy), qtyPy);
     if (Sk.ffi.typeName(qtyPy) === MEASURE) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(qtyPy), MEASURE, qtyPy.custom, selfPy);
     }

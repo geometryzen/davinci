@@ -52,7 +52,7 @@ var OP_MUL           = "*";
  */
 var OP_DIV           = "/";
 
-function isComplexPy(valuePy) {return Sk.ffi.isClass(valuePy, COMPLEX);};
+function isComplexPy(valuePy) {return Sk.ffi.isInstance(valuePy, COMPLEX);};
 
 function phase(x, y) {return Math.atan2(y, x);}
 

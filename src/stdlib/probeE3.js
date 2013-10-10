@@ -132,7 +132,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var probe = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_POSITION: {
-        Sk.ffi.checkArgType(PROP_POSITION, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
+        Sk.ffi.checkArgType(PROP_POSITION, EUCLIDEAN_3, Sk.ffi.isInstance(valuePy, EUCLIDEAN_3), valuePy);
         var position = Sk.ffi.remapToJs(valuePy).vector;
         var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
         grade0[PROP_POSITION] = position;
@@ -145,7 +145,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       case PROP_QUANTITY: {
-        Sk.ffi.checkArgType(PROP_QUANTITY, EUCLIDEAN_3, Sk.ffi.isClass(valuePy, EUCLIDEAN_3), valuePy);
+        Sk.ffi.checkArgType(PROP_QUANTITY, EUCLIDEAN_3, Sk.ffi.isInstance(valuePy, EUCLIDEAN_3), valuePy);
         /**
          * Compute the Quaternion required to rotate (0,0,1) to (x,y,z).
          *
@@ -223,7 +223,7 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isClass(colorPy, COLOR), colorPy);
+          Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
           self[PROP_COLOR] = colorPy;
           return selfPy;
         });

@@ -379,7 +379,7 @@ goog.exportSymbol("Sk.ffi.referenceToPy", Sk.ffi.referenceToPy);
 /**
  * Constructs a Python function.
  *
- * @param {function()} code The implementation of the function.
+ * @param {Function} code The implementation of the function.
  */
 Sk.ffi.functionPy = function(code)
 {
@@ -416,7 +416,7 @@ goog.exportSymbol("Sk.ffi.tuplePy", Sk.ffi.tuplePy);
  *
  * valuePy = Sk.ffi.remapToPy(valueJs, className);
  *
- * @param {Object|string|number|boolean} valueJs The JavaScript value that must be represented in Python.
+ * @param {Object|string|number|boolean|Function} valueJs The JavaScript value that must be represented in Python.
  * @param {string=} className The name of the class when wrapping a JavaScript object.
  * @param {Object=} custom Custom metadata that the caller wishes to retain.
  */
@@ -453,19 +453,23 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     }
     else if (t === Sk.ffi.JsType.STRING)
     {
-        return Sk.ffi.stringToPy(String(valueJs));
+        return Sk.ffi.stringToPy(/** @type {string} */ (valueJs));
     }
     else if (t === Sk.ffi.JsType.NUMBER)
     {
-        return Sk.ffi.numberToFloatPy(Number(valueJs));
+        return Sk.ffi.numberToFloatPy(/** @type {number} */ (valueJs));
     }
     else if (t === Sk.ffi.JsType.BOOLEAN)
     {
-        return Sk.ffi.booleanToPy(valueJs ? true : false);
+        return Sk.ffi.booleanToPy(/** @type {boolean} */ (valueJs));
+    }
+    else if (t === Sk.ffi.JsType.FUNCTION)
+    {
+        return Sk.ffi.functionPy(/** @type {Function} */ (valueJs));
     }
     else
     {
-        goog.asserts.fail("unhandled remapToPy type " + t);
+        throw Sk.ffi.assertionError("d39f7c01-213e-4ded-9e5c-209a2dc94b4c, typeof valueJs => " + t);
     }
 };
 goog.exportSymbol("Sk.ffi.remapToPy", Sk.ffi.remapToPy);
@@ -484,11 +488,11 @@ goog.exportSymbol("Sk.ffi.isBool", Sk.ffi.isBool);
  * @nosideeffects
  * @param {Object} valuePy
  * @param {Sk.ffi.UnionType=} className An optional class name.
- * @return {boolean} Returns true if the value has the type CLASS and if the name matches the type name.
+ * @return {boolean} Returns true if the value has the type Sk.ffi.PyType.INSTANCE and if the name matches the type name.
  */
-Sk.ffi.isClass = function(valuePy, className)
+Sk.ffi.isInstance = function(valuePy, className)
 {
-    if (Sk.ffi.getType(valuePy) === Sk.ffi.PyType.CLASS)
+    if (Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INSTANCE)
     {
         var t = typeof className;
         if (t === Sk.ffi.JsType.STRING)
@@ -513,7 +517,7 @@ Sk.ffi.isClass = function(valuePy, className)
         return false;
     }
 };
-goog.exportSymbol("Sk.ffi.isClass", Sk.ffi.isClass);
+goog.exportSymbol("Sk.ffi.isInstance", Sk.ffi.isInstance);
 
 Sk.ffi.isDefined = function(valuePy) {return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED;};
 goog.exportSymbol("Sk.ffi.isDefined", Sk.ffi.isDefined);
@@ -705,7 +709,7 @@ Sk.ffi.PyType = {
     'STR':        8,
     'NONE':       9,
     'FUNCTION':  10,
-    'CLASS':     11,
+    'INSTANCE':     11,
     'UNDEFINED': -1,
     'FUNREF':    -2
 };
@@ -774,7 +778,7 @@ Sk.ffi.typeString = function(kind, name)
             {
                 return typePy(kind)
             }
-            case Sk.ffi.PyType.CLASS:
+            case Sk.ffi.PyType.INSTANCE:
             {
                 return classBrackets(String(name));
             }
@@ -861,7 +865,7 @@ Sk.ffi.getType = function(valuePy)
             {
                 if (valuePy.tp$name)
                 {
-                    return Sk.ffi.PyType.CLASS;
+                    return Sk.ffi.PyType.INSTANCE;
                 }
                 else
                 {
@@ -890,7 +894,7 @@ Sk.ffi.typeName = function(valuePy)
 {
     switch(Sk.ffi.getType(valuePy))
     {
-        case Sk.ffi.PyType.CLASS:
+        case Sk.ffi.PyType.INSTANCE:
         case Sk.ffi.PyType.BOOL:
         case Sk.ffi.PyType.FLOAT:
         case Sk.ffi.PyType.INT:
@@ -1035,7 +1039,7 @@ Sk.ffi.remapToJs = function(valuePy, defaultJs)
         {
             return Sk.builtin.asnum$(valuePy);
         }
-        case Sk.ffi.PyType.CLASS:
+        case Sk.ffi.PyType.INSTANCE:
         {
             // TODO: This is being exercised, but we should assert the tp$name.
             // I think the pattern here suggests that we have a Sk.builtin.something

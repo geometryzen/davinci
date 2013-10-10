@@ -204,7 +204,7 @@ function isNumber(x)    { return typeof x === 'number'; }
  * @param {Object} valuePy
  * @return {boolean} true if the value is a Lorentzian, otherwise false.
  */
-var isLorentzianPy = function(valuePy) {return Sk.ffi.isClass(valuePy, LORENTZIAN);};
+var isLorentzianPy = function(valuePy) {return Sk.ffi.isInstance(valuePy, LORENTZIAN);};
 
 function coordJsToLorentzianPy(x00, x01, x10, x11) {
   return Sk.ffi.callsim(mod[LORENTZIAN], Sk.ffi.numberToFloatPy(x00), Sk.ffi.numberToFloatPy(x01), Sk.ffi.numberToFloatPy(x10), Sk.ffi.numberToFloatPy(x11));

@@ -101,7 +101,7 @@ function isNumber(x)    { return typeof x === 'number'; }
    * @param {Object} valuePy
    * @return {boolean} true if the value is a Euclidean2, otherwise false.
    */
-  var isEuclidean2Py = function(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_2);};
+  var isEuclidean2Py = function(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_2);};
 
 function remapE2ToPy(x00, x01, x10, x11) {
   return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToFloatPy(x00), Sk.ffi.numberToFloatPy(x01), Sk.ffi.numberToFloatPy(x10), Sk.ffi.numberToFloatPy(x11));
@@ -221,7 +221,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         Sk.ffi.referenceToPy(new BLADE.Euclidean2(Sk.ffi.remapToJs(x00), Sk.ffi.remapToJs(x01), Sk.ffi.remapToJs(x10), Sk.ffi.remapToJs(x11)), EUCLIDEAN_2, undefined, selfPy);
       }
       break;
-      case Sk.ffi.PyType.CLASS: {
+      case Sk.ffi.PyType.INSTANCE: {
         Sk.ffi.checkMethodArgs(EUCLIDEAN_2, arguments, 1, 1);
         Sk.ffi.checkArgType(PROP_W, NUM, isEuclidean2Py(x00), x00);
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(x00), EUCLIDEAN_2, undefined, selfPy);
@@ -305,7 +305,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     switch(Sk.ffi.getType(otherPy)) {
-      case Sk.ffi.PyType.CLASS: {
+      case Sk.ffi.PyType.INSTANCE: {
         switch(Sk.ffi.typeName(otherPy)) {
           case EUCLIDEAN_2: {
             var a = Sk.ffi.remapToJs(selfPy);

@@ -25,12 +25,22 @@ var COLOR                           = "Color";
  * @const
  * @type {string}
  */
+var MATERIAL                        = "Material";
+/**
+ * @const
+ * @type {string}
+ */
 var SCENE                           = "Scene";
 /**
  * @const
  * @type {string}
  */
 var PERSPECTIVE_CAMERA              = "PerspectiveCamera";
+/**
+ * @const
+ * @type {string}
+ */
+var CANVAS_RENDERER                 = "CanvasRenderer";
 /**
  * @const
  * @type {string}
@@ -368,8 +378,8 @@ var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
 var one = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 0), new THREE[QUATERNION](0, 0, 0, 1), 0, false);
 
-function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
-function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
+function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
+function isVector3Py(valuePy) {return Sk.ffi.isInstance(valuePy, VECTOR_3);}
 
 function methodName(targetPy) {
   var target = Sk.ffi.remapToJs(targetPy);
@@ -499,17 +509,30 @@ function createCartesianLines(majorSteps, minorsPerMajorMark, majorScale, e, o) 
 }
 
 mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scenePy) {
-    Sk.ffi.checkMethodArgs(CARTESIAN_SPACE, arguments, 0, 0);
-    var scenePy = Sk.ffi.callsim(mod[WORLD]);
-    var scene = Sk.ffi.remapToJs(scenePy);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scenePy, rendererPy) {
+    var scene;
+    var renderer;
+    Sk.ffi.checkMethodArgs(CARTESIAN_SPACE, arguments, 0, 2);
+    if (Sk.ffi.isDefined(scenePy)) {
+      Sk.ffi.checkArgType(PROP_SCENE, SCENE, Sk.ffi.isInstance(scenePy, SCENE), scenePy);
+    }
+    else {
+      scenePy = Sk.ffi.callsim(mod[WORLD]);
+    }
+    scene = Sk.ffi.remapToJs(scenePy);
+    if (Sk.ffi.isDefined(rendererPy)) {
+      Sk.ffi.checkArgType(PROP_RENDERER, [CANVAS_RENDERER, WEBGL_RENDERER], Sk.ffi.isInstance(rendererPy, WEBGL_RENDERER) || Sk.ffi.isInstance(rendererPy, CANVAS_RENDERER), rendererPy);
+    }
+    else {
+      rendererPy = Sk.ffi.callsim(mod[WEBGL_RENDERER], Sk.ffi.remapToPy({"antialias": true}));
+    }
+    renderer = Sk.ffi.remapToJs(rendererPy);
+
     var cameraPy = Sk.ffi.callsim(mod[PERSPECTIVE_CAMERA], Sk.ffi.numberToFloatPy(45), Sk.ffi.numberToFloatPy(1.0), Sk.ffi.numberToFloatPy(0.1), Sk.ffi.numberToFloatPy(10000));
     var camera = Sk.ffi.remapToJs(cameraPy);
     camera[PROP_UP].set(0, 0, 1);
     camera[PROP_POSITION].set(+8, +4, +5);
     camera[METHOD_LOOK_AT](scene.position);
-    var rendererPy = Sk.ffi.callsim(mod[WEBGL_RENDERER], Sk.ffi.remapToPy({"antialias":true}));
-    var renderer = Sk.ffi.remapToJs(rendererPy);
     renderer[METHOD_SET_CLEAR_COLOR](0x080808, 1.0);
     scene.add(createCartesianAxes(1000));
     scene.add(createCartesianLines(5, 10, 1.0, e1, e2));
@@ -587,7 +610,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_COLOR: {
       return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
         Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isClass(colorPy, COLOR), colorPy);
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
         self[name] = Sk.ffi.remapToJs(colorPy);
         return selfPy;
       });
@@ -595,7 +618,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_MATERIAL: {
       return Sk.ffi.callableToPy(mod, PROP_MATERIAL, function(methodPy, materialPy) {
         Sk.ffi.checkMethodArgs(PROP_MATERIAL, arguments, 1, 1);
-        Sk.ffi.checkArgType(PROP_MATERIAL, [Sk.ffi.PyType.CLASS], Sk.ffi.isClass(materialPy), materialPy);
+        Sk.ffi.checkArgType(PROP_MATERIAL, MATERIAL, Sk.ffi.isInstance(materialPy), materialPy);
         self[PROP_MATERIAL] = materialPy;
         return selfPy;
       });

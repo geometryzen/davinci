@@ -325,8 +325,15 @@ var METHOD_TRANSLATE                      = "translate";
  * @const
  * @type {string}
  */
+var ARG_CHILD                             = "child";
+/**
+ * @const
+ * @type {string}
+ */
 var ARG_NAME                              = "name";
-
+/**
+ * nodeToPy
+ */
 var nodeToPy = function(node) {
   if (node) {
     return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(node, NODE));
@@ -335,59 +342,23 @@ var nodeToPy = function(node) {
     return Sk.ffi.remapToPy(null);
   }
 }
-
-var wrapNumber = function(n) {
-  if (typeof n === 'number') {
-    return Sk.builtin.assk$(n, Sk.builtin.nmber.float$);
-  }
-  else {
-    return Sk.builtin.none.none$;
-  }
-}
-
-var wrapString = function(s) {
-  if (typeof s === 'string') {
-    return Sk.ffi.stringToPy(s)
-  }
-  else {
-    return Sk.builtin.none.none$;
-  }
-}
-
-var nodeFromArg = function(arg) {
-  if (arg) {
-    return arg.v;
-  }
-  else {
-    return null;
-  }
-}
-
-var numberFromArg = function(arg) {
-  if (arg) {
-    return arg.v;
-  }
-  else {
-    return null;
-  }
-}
 /**
  * Node
  */
 mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, nodePy) {
     Sk.ffi.checkMethodArgs(NODE, arguments, 1, 1);
-    Sk.ffi.checkArgType("node", NODE, Sk.ffi.isClass(nodePy, NODE), nodePy);
+    Sk.ffi.checkArgType("node", NODE, Sk.ffi.isInstance(nodePy, NODE), nodePy);
     Sk.ffi.referenceToPy(Sk.ffi.remapToJs(nodePy), NODE, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(nodePy, name) {
     var node = Sk.ffi.remapToJs(nodePy);
     switch(name) {
       case PROP_CLIENT_HEIGHT: {
-        return wrapNumber(node[PROP_CLIENT_HEIGHT]);
+        return Sk.ffi.numberToFloatPy(node[PROP_CLIENT_HEIGHT]);
       }
       case PROP_CLIENT_WIDTH: {
-        return wrapNumber(node[PROP_CLIENT_WIDTH]);
+        return Sk.ffi.numberToFloatPy(node[PROP_CLIENT_WIDTH]);
       }
       case PROP_DIR: {
         return Sk.ffi.stringToPy(node[PROP_DIR]);
@@ -483,20 +454,12 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }, PROP_STYLE, []));
       }
       case METHOD_APPEND_CHILD: {
-        return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-          $loc.__init__ = Sk.ffi.functionPy(function(self) {
-            self.tp$name = METHOD_APPEND_CHILD;
-          });
-          $loc.__call__ = Sk.ffi.functionPy(function(self, childNode) {
-            return nodeToPy(node.appendChild(nodeFromArg(childNode)));
-          });
-          $loc.__str__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_APPEND_CHILD);
-          });
-          $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_APPEND_CHILD);
-          });
-        }, METHOD_APPEND_CHILD, []));
+        return Sk.ffi.callableToPy(mod, METHOD_APPEND_CHILD, function(methodPy, childNodePy) {
+          Sk.ffi.checkMethodArgs(METHOD_APPEND_CHILD, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_CHILD, NODE, Sk.ffi.isInstance(childNodePy, NODE), childNodePy);
+          var childNode = Sk.ffi.remapToJs(childNodePy);
+          return nodeToPy(node.appendChild(Sk.ffi.remapToJs(childNode)));
+        });
       }
       case METHOD_GET_CONTEXT: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1164,7 +1127,7 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             self.tp$name = METHOD_INSERT_BEFORE;
           });
           $loc.__call__ = Sk.ffi.functionPy(function(self, newNode, refNode) {
-            return nodeToPy(node.insertBefore(nodeFromArg(newNode), nodeFromArg(refNode)));
+            return nodeToPy(node.insertBefore(Sk.ffi.remapToJs(newNode), Sk.ffi.remapToJs(refNode)));
           });
           $loc.__str__ = Sk.ffi.functionPy(function(self) {
             return Sk.ffi.stringToPy(METHOD_INSERT_BEFORE)
@@ -1180,7 +1143,7 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             self.tp$name = METHOD_REMOVE_CHILD;
           });
           $loc.__call__ = Sk.ffi.functionPy(function(self, childNode) {
-            return nodeToPy(node.removeChild(nodeFromArg(childNode)));
+            return nodeToPy(node.removeChild(Sk.ffi.remapToJs(childNode)));
           });
           $loc.__str__ = Sk.ffi.functionPy(function(self) {
             return Sk.ffi.stringToPy(METHOD_REMOVE_CHILD);

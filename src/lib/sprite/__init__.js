@@ -1756,7 +1756,7 @@ var $builtinmodule = function(name) {
         }
         break;
         case POSITION: {
-          Sk.ffi.checkArgType("value", EUCLIDEAN_2, Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === EUCLIDEAN_2);
+          Sk.ffi.checkArgType("value", EUCLIDEAN_2, Sk.ffi.isInstance(valuePy) && Sk.ffi.typeName(valuePy) === EUCLIDEAN_2);
           var xPy = Sk.ffi.gattr(valuePy, "x");
           var yPy = Sk.ffi.gattr(valuePy, "y");
           selfPy.v.goto(Sk.ffi.remapToJs(xPy), Sk.ffi.remapToJs(yPy));

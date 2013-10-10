@@ -1294,11 +1294,11 @@ function isUndefined(x) { return typeof x === 'undefined'; }
 function isDefined(x)   { return typeof x !== 'undefined'; }
 function isNull(x)      { return typeof x === 'object' && x === null; }
 
-function isEuclidean3Py(valuePy) {return Sk.ffi.isClass(valuePy, EUCLIDEAN_3);}
-function isQuaternionPy(valuePy) {return Sk.ffi.isClass(valuePy, QUATERNION);}
-function isVector3Py(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);}
+function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
+function isQuaternionPy(valuePy) {return Sk.ffi.isInstance(valuePy, QUATERNION);}
+function isVector3Py(valuePy) {return Sk.ffi.isInstance(valuePy, VECTOR_3);}
 function isGeometryPy(valuePy) {
-  return Sk.ffi.isClass(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
+  return Sk.ffi.isInstance(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
 }
 
 function quaternionToEuclidean3Py(quaternion) {
@@ -1313,7 +1313,7 @@ function quaternionToEuclidean3Py(quaternion) {
  * @param {string=} aliasName
  */
 function setQuaternionProperty(className, targetPy, name, valuePy, aliasName) {
-  Sk.ffi.checkArgType("target", className, Sk.ffi.isClass(targetPy, className), targetPy);
+  Sk.ffi.checkArgType("target", className, Sk.ffi.isInstance(targetPy, className), targetPy);
   aliasName = aliasName || name;
   Sk.ffi.checkArgType(aliasName, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
   var quaternionPy = Sk.ffi.gattr(valuePy, PROP_QUATERNION);
@@ -1434,7 +1434,7 @@ function isColor(x) {
 }
 
 function isColorPy(valuePy) {
-  return Sk.ffi.isClass(valuePy, COLOR);
+  return Sk.ffi.isInstance(valuePy, COLOR);
 }
 
 function webGLSupported() {
@@ -1559,7 +1559,7 @@ mod[SCENE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       Sk.ffi.checkMethodArgs(SCENE, arguments, 0, 0);
       Sk.ffi.referenceToPy(new THREE[SCENE](), SCENE, undefined, selfPy);
     }
-    else if (Sk.ffi.isClass(sceneRefPy, SCENE)) {
+    else if (Sk.ffi.isInstance(sceneRefPy, SCENE)) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(sceneRefPy), SCENE, undefined, selfPy);
     }
     else
@@ -1983,7 +1983,7 @@ mod[COLOR] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       if (Sk.ffi.isInt(valuePy) || Sk.ffi.isStr(valuePy)) {
         Sk.ffi.referenceToPy(new THREE[COLOR](value), COLOR, undefined, selfPy);
       }
-      else if (Sk.ffi.isClass(valuePy, COLOR)) {
+      else if (Sk.ffi.isInstance(valuePy, COLOR)) {
         Sk.ffi.referenceToPy(value, COLOR, undefined, selfPy);
       }
       else {
@@ -2411,7 +2411,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var attitude;
     var length;
     if (Sk.ffi.isDefined(scalePy)) {
-      if (Sk.ffi.isClass(scalePy, ARROW_GEOMETRY)) {
+      if (Sk.ffi.isInstance(scalePy, ARROW_GEOMETRY)) {
         Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 1, 1);
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(scalePy), ARROW_GEOMETRY, undefined, selfPy);
         return;
@@ -2425,7 +2425,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       scale = 1;
     }
     if (Sk.ffi.isDefined(attitudePy)) {
-      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isClass(attitudePy, EUCLIDEAN_3), attitudePy);
+      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isInstance(attitudePy, EUCLIDEAN_3), attitudePy);
       attitude = Sk.ffi.remapToJs(attitudePy).quaternion;
     }
     else {
@@ -2632,7 +2632,7 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 
 mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusTopPy, radiusBottomPy, heightPy, radialSegmentsPy, heightSegmentsPy, openEndedPy) {
-    if (Sk.ffi.isClass(radiusTopPy, CYLINDER_GEOMETRY)) {
+    if (Sk.ffi.isInstance(radiusTopPy, CYLINDER_GEOMETRY)) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(radiusTopPy), CYLINDER_GEOMETRY, undefined, selfPy);
     }
     else {
@@ -2925,7 +2925,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, pointsPy, generatorPy, segmentsPy, phiStartPy, phiLengthPy, attitudePy) {
     Sk.ffi.checkMethodArgs(REVOLUTION_GEOMETRY, arguments, 2, 5);
     Sk.ffi.checkArgType(PROP_POINTS, Sk.ffi.PyType.LIST, Sk.ffi.isList(pointsPy), pointsPy);
-    Sk.ffi.checkArgType(PROP_GENERATOR, EUCLIDEAN_3, Sk.ffi.isClass(generatorPy, EUCLIDEAN_3), generatorPy);
+    Sk.ffi.checkArgType(PROP_GENERATOR, EUCLIDEAN_3, Sk.ffi.isInstance(generatorPy, EUCLIDEAN_3), generatorPy);
     if (Sk.ffi.isDefined(segmentsPy)) {
       Sk.ffi.checkArgType(PROP_SEGMENTS, Sk.ffi.PyType.INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
     }
@@ -2936,7 +2936,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       Sk.ffi.checkArgType(PROP_PHI_LENGTH, NUM, Sk.ffi.isNum(phiLengthPy), phiLengthPy);
     }
     if (Sk.ffi.isDefined(attitudePy)) {
-      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isClass(attitudePy, EUCLIDEAN_3), attitudePy);
+      Sk.ffi.checkArgType(PROP_ATTITUDE, EUCLIDEAN_3, Sk.ffi.isInstance(attitudePy, EUCLIDEAN_3), attitudePy);
     }
     var points = Sk.ffi.remapToJs(pointsPy).map(function(euclidean3) {
       return new THREE[VECTOR_3](euclidean3.x, euclidean3.y, euclidean3.z);
@@ -2988,7 +2988,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   var PROP_PHI_LENGTH      = "phiLength";
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusPy, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength) {
     if (Sk.ffi.isDefined(radiusPy)) {
-      if (Sk.ffi.isClass(radiusPy, SPHERE_GEOMETRY)) {
+      if (Sk.ffi.isInstance(radiusPy, SPHERE_GEOMETRY)) {
         Sk.ffi.checkMethodArgs(SPHERE_GEOMETRY, arguments, 1, 1);
         Sk.ffi.referenceToPy(Sk.ffi.remapToJs(radiusPy), SPHERE_GEOMETRY, undefined, selfPy);
         return;
@@ -3783,8 +3783,8 @@ mod[LINE_BASIC_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
     Sk.ffi.checkMethodArgs(MESH, arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isClass(geometryPy), geometryPy); // TODO: GEOMETRIES
-    Sk.ffi.checkArgType(PROP_MATERIAL, MATERIAL, Sk.ffi.isClass(materialPy), materialPy); // TODO: MATERIALS
+    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isInstance(geometryPy), geometryPy); // TODO: GEOMETRIES
+    Sk.ffi.checkArgType(PROP_MATERIAL, MATERIAL, Sk.ffi.isInstance(materialPy), materialPy); // TODO: MATERIALS
     var custom = {};
     // Remember the concrete class names so that we can return the appropriate Python wrapper later.
     custom[PROP_GEOMETRY] = Sk.ffi.typeName(geometryPy);

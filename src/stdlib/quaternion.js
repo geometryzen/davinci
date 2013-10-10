@@ -110,7 +110,7 @@ var ARG_OTHER                  = "other";
  * @param {Object} valuePy
  * @return {boolean}
  */
-function isQuaternionPy(valuePy) {return Sk.ffi.isClass(valuePy, QUATERNION);};
+function isQuaternionPy(valuePy) {return Sk.ffi.isInstance(valuePy, QUATERNION);};
 /**
  * @param {!Array.<number>} coordinates
  * @param {!Array.<string>} labels

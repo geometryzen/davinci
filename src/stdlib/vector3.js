@@ -156,12 +156,12 @@ Sk.builtin.defineVector3 = function(mod, THREE) {
    * @param {Object} valuePy
    * @return {boolean} true if the thing is a quaternion, otherwise false.
    */
-  var isQuaternionPy = function(valuePy) {return Sk.ffi.isClass(valuePy, QUATERNION);};
+  var isQuaternionPy = function(valuePy) {return Sk.ffi.isInstance(valuePy, QUATERNION);};
   /**
    * @param {Object} valuePy
    * @return {boolean} true if the thing is a vector, otherwise false.
    */
-  var isVector3Py = function(valuePy) {return Sk.ffi.isClass(valuePy, VECTOR_3);};
+  var isVector3Py = function(valuePy) {return Sk.ffi.isInstance(valuePy, VECTOR_3);};
   /**
    * @param {number} x The x-coordinate of the vector.
    * @param {number} y The y-coordinate of the vector.
@@ -178,7 +178,7 @@ Sk.builtin.defineVector3 = function(mod, THREE) {
       }
       else {
         switch(Sk.ffi.getType(x)) {
-          case Sk.ffi.PyType.CLASS: {
+          case Sk.ffi.PyType.INSTANCE: {
             Sk.ffi.checkMethodArgs(VECTOR_3, arguments, 1, 1);
             Sk.ffi.checkArgType(PROP_X, VECTOR_3, isVector3Py(x), x);
             Sk.ffi.referenceToPy(Sk.ffi.remapToJs(x), VECTOR_3, undefined, selfPy);

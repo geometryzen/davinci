@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <!--script src="http://www.geometryzen.org/js/app.js"></script-->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min.js"></script>
+    <script src="../../bladejs/dist/bladejs.min.js"></script>
+    <script src="../dist/davinci.min.js"></script>
+    <script src="../dist/davinci-stdlib.js"></script>
+  </head> 
+  <body> 
+    <script>
+function outf(text) {
+  var mypre = document.getElementById("output");
+  mypre.innerHTML = mypre.innerHTML + text;
+}
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+      throw "File not found: '" + x + "'";
+    }
+    return Sk.builtinFiles["files"][x];
+}
+function run() {
+  var program = document.getElementById("program").value;
+  var mypre = document.getElementById("output");
+  mypre.innerHTML = '';
+  Sk.configure({"output":outf, "read":builtinRead});
+  eval(Sk.importMainWithBody("<stdin>", false, program));
+}
+    </script>
+    <h3>Geometry Zen DaVinci library (standalone)</h3> 
+    <form>
+<!-- Change the style from inline to none if you want to hide the code. -->
+<textarea id="program" cols="80" rows="40" style="display:inline;">from browser import *
+from geometry import *
+from math import *
+from workbench import *
+
+T = 5 # Periodic Time
+omega = 2 * pi / T # Angular Velocity
+R = 4 # radius
+timeOut = 1.5 * T
+
+scene = Scene()
+
+renderer = WebGLRenderer({"canvas":document.getElementById("mycanvas"), "antialias":True})
+
+space = CartesianSpace(scene, renderer)
+
+sphere = SphereBuilder().color(0x0000FF).build()
+space.add(sphere)
+
+#workbench = Workbench(space.renderer, space.camera)
+
+def tick(t):
+    sphere.position.set(R * cos(omega*t), R * sin(omega*t), 0)
+    renderer.render(scene, space.camera)
+
+def terminate(time):
+    return time &gt; timeOut
+
+def setUp():
+    document.addEventListener("keydown", onDocumentKeyDown, False)
+
+def tearDown():
+    document.removeEventListener("keydown", onDocumentKeyDown, False)
+
+def escKey(event, downFlag):
+    event.preventDefault()
+    global timeOut
+    timeOut = 0
+
+keyHandlers = {27: escKey}
+    
+def onDocumentKeyDown(event):
+    try:
+        keyHandlers[event.keyCode](event, True)
+    except:
+        pass
+
+war = WindowAnimationRunner(tick, terminate, setUp, tearDown)
+war.start()
+</textarea>
+    <br/>
+    <button type="button" onclick="run()">Run</button>
+    </form>
+    <pre id="output"></pre>
+    <canvas id="mycanvas" width="640" height="360"></mycanvas>
+  </body>
+</html>
