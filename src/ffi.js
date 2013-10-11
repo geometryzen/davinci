@@ -1071,6 +1071,9 @@ Sk.ffi.remapToJs = function(valuePy, defaultJs)
 };
 goog.exportSymbol("Sk.ffi.remapToJs", Sk.ffi.remapToJs);
 
+/**
+ *
+ */
 Sk.ffi.buildClass = function(globals, func, name, bases)
 {
     return Sk.misceval.buildClass(globals, func, name, bases);
@@ -1088,110 +1091,6 @@ Sk.ffi.callsim = function(func, args)
     return Sk.misceval.apply(func, undefined, undefined, undefined, args);
 };
 goog.exportSymbol("Sk.ffi.callsim", Sk.ffi.callsim);
-
-/**
- * Computes the exponential of a value by either invoking the special __exp__ function or the native equivalent.
- */
-Sk.ffi.exp = function(valuePy)
-{
-    if (valuePy['__exp__'])
-    {
-        return Sk.ffi.callsim(valuePy["__exp__"], valuePy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__exp__');
-    }
-};
-goog.exportSymbol("Sk.ffi.exp", Sk.ffi.exp);
-
-Sk.ffi.div = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__div__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__div__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__div__');
-    }
-};
-goog.exportSymbol("Sk.ffi.div", Sk.ffi.div);
-
-Sk.ffi.xor = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__xor__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__xor__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__xor__');
-    }
-};
-goog.exportSymbol("Sk.ffi.xor", Sk.ffi.xor);
-
-Sk.ffi.lshift = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__lshift__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__lshift__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__lshift__');
-    }
-};
-goog.exportSymbol("Sk.ffi.lshift", Sk.ffi.lshift);
-
-Sk.ffi.rshift = function(lhsPy, rhsPy)
-{
-    if (lhsPy['__rshift__'])
-    {
-        return Sk.ffi.callsim(lhsPy["__rshift__"], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError('__rshift__');
-    }
-};
-goog.exportSymbol("Sk.ffi.rshift", Sk.ffi.rshift);
-
-/**
- * Computes the positive of a value by either invoking the special __pos__ function or the native equivalent.
- */
-Sk.ffi.pos = function(valuePy)
-{
-    return Sk.ffi.callsim(valuePy["__pos__"], valuePy);
-};
-goog.exportSymbol("Sk.ffi.pos", Sk.ffi.pos);
-
-/**
- * Computes the inverse of a value by either invoking the special __invert__ function or the native equivalent.
- */
-Sk.ffi.invert = function(valuePy)
-{
-    return Sk.ffi.callsim(valuePy["__invert__"], valuePy);
-};
-goog.exportSymbol("Sk.ffi.invert", Sk.ffi.invert);
-
-/**
- * Computes the programmatic representation of a value by either invoking the special __repr__ function or the native equivalent.
- */
-Sk.ffi.repr = function(valuePy)
-{
-    return Sk.ffi.callsim(valuePy["__repr__"], valuePy);
-};
-goog.exportSymbol("Sk.ffi.repr", Sk.ffi.repr);
-
-/**
- * Computes the string representation of a value by either invoking the special __str__ function or the native equivalent.
- */
-Sk.ffi.str = function(valuePy)
-{
-    return Sk.ffi.callsim(valuePy["__str__"], valuePy);
-};
-goog.exportSymbol("Sk.ffi.str", Sk.ffi.str);
 
 /**
  * Convenience function for implementing callable attributes.

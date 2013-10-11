@@ -171,16 +171,16 @@ describe "Sk.ffi", ->
       # Finally, verify the twice-wrapped version.
       expect(twiceWrappedDoubleMeJs.call 'Hello', x).toBe 2 * x
 
-  describe "isClass", ->
-    it "isClass() => false", -> expect(Sk.ffi.isInstance()).toBe false
-    it "isClass remapToJs({}, 'Foo') => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo')).toBe true
-    it "isClass remapToJs({}, 'Foo'), 'Foo' => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), 'Foo').toBe true
-    it "isClass remapToJs({}, 'Foo'), 'Bar' => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), 'Bar').toBe false
-    it "isClass remapToJs({}, 'Foo'), [] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), []).toBe false
-    it "isClass remapToJs({}, 'Foo'), ['Foo'] => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Foo']).toBe true
-    it "isClass remapToJs({}, 'Foo'), ['Bar'] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Bar']).toBe false
-    it "isClass remapToJs({}, 'Foo'), ['Foo','Bar'] => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Foo','Bar']).toBe true
-    it "isClass remapToJs({}, 'Foo'), ['Fiz','Bar'] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Fiz','Bar']).toBe false
-    it "isClass True => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.True).toBe false
-    it "isClass False => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.False).toBe false
-    it "isClass None => false", -> expect(Sk.ffi.isInstance Sk.ffi.none.None).toBe false
+  describe "isInstance", ->
+    it "isInstance() => false", -> expect(Sk.ffi.isInstance()).toBe false
+    it "isInstance remapToJs({}, 'Foo') => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo')).toBe true
+    it "isInstance remapToJs({}, 'Foo'), 'Foo' => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), 'Foo').toBe true
+    it "isInstance remapToJs({}, 'Foo'), 'Bar' => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), 'Bar').toBe false
+    it "isInstance remapToJs({}, 'Foo'), [] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), []).toBe false
+    it "isInstance remapToJs({}, 'Foo'), ['Foo'] => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Foo']).toBe true
+    it "isInstance remapToJs({}, 'Foo'), ['Bar'] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Bar']).toBe false
+    it "isInstance remapToJs({}, 'Foo'), ['Foo','Bar'] => true", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Foo','Bar']).toBe true
+    it "isInstance remapToJs({}, 'Foo'), ['Fiz','Bar'] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Fiz','Bar']).toBe false
+    it "isInstance True => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.True).toBe false
+    it "isInstance False => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.False).toBe false
+    it "isInstance None => false", -> expect(Sk.ffi.isInstance Sk.ffi.none.None).toBe false

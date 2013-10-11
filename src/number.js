@@ -601,7 +601,7 @@ Sk.builtin.nmber.prototype.nb$positive = function() { return this.clone(); };
 
 Sk.builtin.nmber.prototype.nb$nonzero = function()
 {
-	return this.v !== 0;
+  return this.v !== 0 ? Sk.builtin.bool.true$ : Sk.builtin.bool.false$;
 };
 
 Sk.builtin.nmber.prototype.nb$isnegative = function() { return this.v < 0 };

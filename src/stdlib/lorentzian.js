@@ -520,7 +520,7 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return c;
         }
         else {
-          return Sk.ffh.neg(c);
+          return Sk.ffh.negative(c);
         }
       });
     }
@@ -894,7 +894,7 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return mv[0x3];
       }
       case PROP_YX: {
-        return Sk.ffh.neg(mv[0x3]);
+        return Sk.ffh.negative(mv[0x3]);
       }
       case PROP_Z: {
         return mv[0x4];
@@ -903,13 +903,13 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return mv[0x5];
       }
       case PROP_ZX: {
-        return Sk.ffh.neg(mv[0x5]);
+        return Sk.ffh.negative(mv[0x5]);
       }
       case PROP_YZ: {
         return mv[0x6];
       }
       case PROP_ZY: {
-        return Sk.ffh.neg(mv[0x6]);
+        return Sk.ffh.negative(mv[0x6]);
       }
       case PROP_XYZ: {
         return mv[0x7];
@@ -921,13 +921,13 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return mv[0x9];
       }
       case PROP_TX: {
-        return Sk.ffh.neg(mv[0x9]);
+        return Sk.ffh.negative(mv[0x9]);
       }
       case PROP_YT: {
         return mv[0xA];
       }
       case PROP_TY: {
-        return Sk.ffh.neg(mv[0xA]);
+        return Sk.ffh.negative(mv[0xA]);
       }
       case PROP_XYT: {
         return mv[0xB];
@@ -936,13 +936,13 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return mv[0xC];
       }
       case PROP_TZ: {
-        return Sk.ffh.neg(mv[0xC]);
+        return Sk.ffh.negative(mv[0xC]);
       }
       case PROP_XZT: {
         return mv[0xD];
       }
       case PROP_ZXT: {
-        return Sk.ffh.neg(mv[0xD]);
+        return Sk.ffh.negative(mv[0xD]);
       }
       case PROP_YZT: {
         return mv[0xE];

@@ -1,6 +1,6 @@
 {
   "name": "davinci-tools",
-  "version": "0.9.106",
+  "version": "0.9.107",
   "description": "Python to JavaScript cross compiler tooling",
   "author": {
     "name": "David Holmes",

@@ -517,13 +517,13 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy)) {
       var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.div(self[QTY_PY], other[QTY_PY]), Sk.ffi.div(self[UOM_PY], other[UOM_PY]));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], other[QTY_PY]), Sk.ffh.divide(self[UOM_PY], other[UOM_PY]));
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.div(self[QTY_PY], otherPy), self[UOM_PY]);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], otherPy), self[UOM_PY]);
     }
     else if (isUnitPy(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], self[QTY_PY], Sk.ffi.div(self[UOM_PY], otherPy));
+      return Sk.ffi.callsim(mod[MEASURE], self[QTY_PY], Sk.ffh.divide(self[UOM_PY], otherPy));
     }
     else {
       Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER, UNIT], false, otherPy);
@@ -546,10 +546,10 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy)) {
       var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.lshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.lshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.lshift(self[QTY_PY], otherPy), self[UOM_PY]);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.lshift(self[QTY_PY], otherPy), self[UOM_PY]);
     }
     else {
       Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
@@ -559,45 +559,45 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy)) {
       var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.rshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.rshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.rshift(self[QTY_PY], otherPy), self[UOM_PY]);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.rshift(self[QTY_PY], otherPy), self[UOM_PY]);
     }
     else {
       Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
     }
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffi.pos(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var quantityPy = Sk.ffh.positive(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__neg__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffh.neg(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var quantityPy = Sk.ffh.negative(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__invert__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffi.invert(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var quantityPy = Sk.ffh.invert(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
-    var quantityPy = Sk.ffi.exp(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var quantityPy = Sk.ffh.exp(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    var qtyStr = Sk.ffi.remapToJs(Sk.ffi.str(self[QTY_PY]));
-    var uomStr = Sk.ffi.remapToJs(Sk.ffi.str(self[UOM_PY]));
+    var qtyStr = Sk.ffi.remapToJs(Sk.ffh.str(self[QTY_PY]));
+    var uomStr = Sk.ffi.remapToJs(Sk.ffh.str(self[UOM_PY]));
     return Sk.ffi.remapToPy("" + qtyStr + " " + uomStr);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    var qtyRepr = Sk.ffi.remapToJs(Sk.ffi.repr(self[QTY_PY]));
-    var uomRepr = Sk.ffi.remapToJs(Sk.ffi.repr(self[UOM_PY]));
+    var qtyRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[QTY_PY]));
+    var uomRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[UOM_PY]));
     return Sk.ffi.remapToPy(MEASURE + "(" + qtyRepr + ", " + uomRepr + ")");
   });
 }, MEASURE, []);

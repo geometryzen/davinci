@@ -200,7 +200,7 @@ mod.exp = Sk.ffi.functionPy(function(anglePy) {
     return Sk.ffi.numberToFloatPy(Math.exp(Sk.ffi.remapToJs(anglePy)));
   }
   else {
-    return Sk.ffi.exp(anglePy);
+    return Sk.ffh.exp(anglePy);
   }
 });
 
