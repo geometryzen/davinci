@@ -467,6 +467,10 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     {
         return Sk.ffi.functionPy(/** @type {Function} */ (valueJs));
     }
+    else if (t === Sk.ffi.JsType.UNDEFINED)
+    {
+        return Sk.ffi.none.None;
+    }
     else
     {
         throw Sk.ffi.assertionError("d39f7c01-213e-4ded-9e5c-209a2dc94b4c, typeof valueJs => " + t);

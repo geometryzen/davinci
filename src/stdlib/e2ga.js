@@ -61,12 +61,27 @@ var PROP_XY          = "xy";
  * @const
  * @type {string}
  */
+var METHOD_CLIFFORD_CONJUGATE = "cliffordConjugate";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CLONE     = "clone";
 /**
  * @const
  * @type {string}
  */
+var METHOD_EXP       = "exp";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_MAGNITUDE = "magnitude";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_SQRT      = "sqrt";
 /**
  * @const
  * @type {string}
@@ -103,8 +118,8 @@ function isNumber(x)    { return typeof x === 'number'; }
    */
   var isEuclidean2Py = function(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_2);};
 
-function remapE2ToPy(x00, x01, x10, x11) {
-  return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToFloatPy(x00), Sk.ffi.numberToFloatPy(x01), Sk.ffi.numberToFloatPy(x10), Sk.ffi.numberToFloatPy(x11));
+function coordsJsToE2Py(s, x, y, xy) {
+  return Sk.ffi.callsim(mod[EUCLIDEAN_2], Sk.ffi.numberToFloatPy(s), Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y), Sk.ffi.numberToFloatPy(xy));
 }
 
 function stringFromCoordinates(coordinates, labels, multiplier) {
@@ -183,27 +198,27 @@ function divide(a00, a01, a10, a11, b00, b01, b10, b11, m) {
     m[PROP_XY] = x11;
   }
   else {
-    return remapE2ToPy(x00, x01, x10, x11);
+    return coordsJsToE2Py(x00, x01, x10, x11);
   }
 }
 
 mod[SCALAR_E2] = Sk.ffi.functionPy(function(w) {
   Sk.ffi.checkFunctionArgs(SCALAR_E2, arguments, 1, 1);
   Sk.ffi.checkArgType(PROP_W, NUM, Sk.ffi.isNum(w), w);
-  return remapE2ToPy(Sk.ffi.remapToJs(w), 0, 0, 0);
+  return coordsJsToE2Py(Sk.ffi.remapToJs(w), 0, 0, 0);
 });
 
 mod[VECTOR_E2] = Sk.ffi.functionPy(function(x, y) {
   Sk.ffi.checkFunctionArgs(VECTOR_E2, arguments, 2, 2);
   Sk.ffi.checkArgType(PROP_X, NUM, Sk.ffi.isNum(x), x);
   Sk.ffi.checkArgType(PROP_Y, NUM, Sk.ffi.isNum(y), y);
-  return remapE2ToPy(0, Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), 0);
+  return coordsJsToE2Py(0, Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y), 0);
 });
 
 mod[PSEUDOSCALAR_E2] = Sk.ffi.functionPy(function(xy) {
   Sk.ffi.checkFunctionArgs(PSEUDOSCALAR_E2, arguments, 1, 1);
   Sk.ffi.checkArgType(PROP_XY, NUM, Sk.ffi.isNum(xy), xy);
-  return remapE2ToPy(0, 0, 0, Sk.ffi.remapToJs(xy));
+  return coordsJsToE2Py(0, 0, 0, Sk.ffi.remapToJs(xy));
 });
 
 mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -236,10 +251,10 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var lhs = Sk.ffi.remapToJs(selfPy);
     var rhs = Sk.ffi.remapToJs(otherPy);
     if (Sk.ffi.isNum(otherPy)) {
-      return remapE2ToPy(lhs.w + rhs, lhs.x, lhs.y, lhs.xy);
+      return coordsJsToE2Py(lhs.w + rhs, lhs.x, lhs.y, lhs.xy);
     }
     else if (isEuclidean2Py(otherPy)) {
-      return remapE2ToPy(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.xy + rhs.xy);
+      return coordsJsToE2Py(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.xy + rhs.xy);
     }
     else {
       Sk.ffi.checkRhsOperandType(OP_ADD, E2_OR_NUMBER, Sk.ffi.isNum(otherPy), otherPy);
@@ -249,7 +264,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkLhsOperandType(OP_ADD, E2_OR_NUMBER, Sk.ffi.isNum(otherPy), otherPy);
     var lhs = Sk.ffi.remapToJs(otherPy);
     var rhs = Sk.ffi.remapToJs(selfPy);
-    return remapE2ToPy(lhs + rhs.w, rhs.x, rhs.y, rhs.xy);
+    return coordsJsToE2Py(lhs + rhs.w, rhs.x, rhs.y, rhs.xy);
   });
   $loc.__iadd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var self = Sk.ffi.remapToJs(selfPy);
@@ -273,10 +288,10 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var lhs = Sk.ffi.remapToJs(selfPy);
     var rhs = Sk.ffi.remapToJs(otherPy);
     if (Sk.ffi.isNum(otherPy)) {
-      return remapE2ToPy(lhs.w - rhs, lhs.x, lhs.y, lhs.xy);
+      return coordsJsToE2Py(lhs.w - rhs, lhs.x, lhs.y, lhs.xy);
     }
     else if (isEuclidean2Py(otherPy)) {
-      return remapE2ToPy(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.xy - rhs.xy);
+      return coordsJsToE2Py(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.xy - rhs.xy);
     }
     else {
       Sk.ffi.checkRhsOperandType(OP_SUB, E2_OR_NUMBER, Sk.ffi.isNum(otherPy), otherPy);
@@ -286,7 +301,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkLhsOperandType(OP_ADD, E2_OR_NUMBER, Sk.ffi.isNum(otherPy), otherPy);
     var lhs = Sk.ffi.remapToJs(otherPy);
     var rhs = Sk.ffi.remapToJs(selfPy);
-    return remapE2ToPy(lhs - rhs.w, -rhs.x, -rhs.y, -rhs.xy);
+    return coordsJsToE2Py(lhs - rhs.w, -rhs.x, -rhs.y, -rhs.xy);
   });
   $loc.__isub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var self = Sk.ffi.remapToJs(selfPy);
@@ -322,7 +337,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             var x01 = a00 * b01 + a01 * b00 - a10 * b11 + a11 * b10;
             var x10 = a00 * b10 + a01 * b11 + a10 * b00 - a11 * b01;
             var x11 = a00 * b11 + a01 * b10 - a10 * b01 + a11 * b00;
-            return remapE2ToPy(x00, x01, x10, x11);
+            return coordsJsToE2Py(x00, x01, x10, x11);
           }
           case UNIT: {
             return Sk.ffi.callsim(mod[MEASURE], selfPy, otherPy);
@@ -337,7 +352,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case Sk.ffi.PyType.LONG: {
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        return remapE2ToPy(a.w * b, a.x * b, a.y * b, a.xy * b);
+        return coordsJsToE2Py(a.w * b, a.x * b, a.y * b, a.xy * b);
       }
       default: {
         Sk.ffi.checkLhsOperandType(OP_MUL, E2_OR_NUMBER_OR_UNIT, false, otherPy);
@@ -348,7 +363,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     lhs = Sk.ffi.remapToJs(lhs);
     rhs = Sk.ffi.remapToJs(rhs);
     if (isNumber(lhs)) {
-      return remapE2ToPy(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
+      return coordsJsToE2Py(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
     }
     else {
       throw new Sk.builtin.AssertionError("" + JSON.stringify(lhs, null, 2) + " * " + JSON.stringify(rhs, null, 2));
@@ -416,7 +431,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
     if (isNumber(b)) {
-      return remapE2ToPy(a.w * b, a.x * b, a.y * b, a.xy * b);
+      return coordsJsToE2Py(a.w * b, a.x * b, a.y * b, a.xy * b);
     }
     else {
       var a00 = a.w;
@@ -431,14 +446,14 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var x01 = a00 * b01 + a01 * b00;
       var x10 = a00 * b10             + a10 * b00;
       var x11 = a00 * b11 + a01 * b10 - a10 * b01 + a11 * b00;
-      return remapE2ToPy(x00, x01, x10, x11);
+      return coordsJsToE2Py(x00, x01, x10, x11);
     }
   });
   $loc.__rxor__ = Sk.ffi.functionPy(function(rhs, lhs) {
     lhs = Sk.ffi.remapToJs(lhs);
     rhs = Sk.ffi.remapToJs(rhs);
     if (isNumber(lhs)) {
-      return remapE2ToPy(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
+      return coordsJsToE2Py(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
     }
     else {
       throw new Sk.builtin.AssertionError("" + JSON.stringify(lhs, null, 2) + " ^ " + JSON.stringify(rhs, null, 2));
@@ -474,7 +489,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
     if (isNumber(b)) {
-      return remapE2ToPy(a.w * b, 0, 0, 0);
+      return coordsJsToE2Py(a.w * b, 0, 0, 0);
     }
     else {
       var a00 = a.w;
@@ -489,14 +504,14 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var x01 = a00 * b01             - a10 * b11;
       var x10 = a00 * b10 + a01 * b11;
       var x11 = a00 * b11;
-      return remapE2ToPy(x00, x01, x10, x11);
+      return coordsJsToE2Py(x00, x01, x10, x11);
     }
   });
   $loc.__rlshift__ = Sk.ffi.functionPy(function(rhs, lhs) {
     lhs = Sk.ffi.remapToJs(lhs);
     rhs = Sk.ffi.remapToJs(rhs);
     if (isNumber(lhs)) {
-      return remapE2ToPy(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
+      return coordsJsToE2Py(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
     }
     else {
       throw new Sk.builtin.AssertionError("" + JSON.stringify(lhs, null, 2) + " << " + JSON.stringify(rhs, null, 2));
@@ -532,7 +547,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
     if (isNumber(b)) {
-      return remapE2ToPy(a.w * b, -a.x * b, -a.y * b, a.xy * b);
+      return coordsJsToE2Py(a.w * b, -a.x * b, -a.y * b, a.xy * b);
     }
     else {
       var a00 = a.w;
@@ -547,14 +562,14 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var x01 =           + a01 * b00             + a11 * b10;
       var x10 =                       + a10 * b00 - a11 * b01;
       var x11 =                                     a11 * b00;
-      return remapE2ToPy(x00, x01, x10, x11);
+      return coordsJsToE2Py(x00, x01, x10, x11);
     }
   });
   $loc.__rrshift__ = Sk.ffi.functionPy(function(rhs, lhs) {
     lhs = Sk.ffi.remapToJs(lhs);
     rhs = Sk.ffi.remapToJs(rhs);
     if (isNumber(lhs)) {
-      return remapE2ToPy(lhs * rhs.w, 0, 0, 0);
+      return coordsJsToE2Py(lhs * rhs.w, 0, 0, 0);
     }
     else {
       throw new Sk.builtin.AssertionError("" + JSON.stringify(lhs, null, 2) + " >> " + JSON.stringify(rhs, null, 2));
@@ -596,27 +611,27 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.nb$negative = function() {
     var self = Sk.ffi.remapToJs(this);
-    return remapE2ToPy(-self.w, -self.x, -self.y, -self.xy);
+    return coordsJsToE2Py(-self.w, -self.x, -self.y, -self.xy);
   };
   $loc.nb$positive = function() {
     return this;
   };
   $loc.nb$invert = function() {
     var self = Sk.ffi.remapToJs(this);
-    return remapE2ToPy(self.w, self.x, self.y, -self.xy);
+    return coordsJsToE2Py(self.w, self.x, self.y, -self.xy);
   };
   $loc.__getitem__ = Sk.ffi.functionPy(function(mv, index) {
     mv = Sk.ffi.remapToJs(mv);
     index = Sk.ffi.remapToJs(index);
     switch(index) {
       case 0: {
-        return remapE2ToPy(mv.w, 0, 0, 0);
+        return coordsJsToE2Py(mv.w, 0, 0, 0);
       }
       case 1: {
-        return remapE2ToPy(0, mv.x, mv.y, 0);
+        return coordsJsToE2Py(0, mv.x, mv.y, 0);
       }
       case 2: {
-        return remapE2ToPy(0, 0, 0, mv.xy);
+        return coordsJsToE2Py(0, 0, 0, mv.xy);
       }
     }
   });
@@ -624,12 +639,23 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var mv = Sk.ffi.remapToJs(selfPy);
     return Sk.ffi.numberToFloatPy(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y - mv.xy * mv.xy));
   });
+  $loc.__cliffordConjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_CLIFFORD_CONJUGATE, arguments, 0, 0);
+    var self = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE2Py(self.w, -self.x, -self.y, -self.xy);
+  });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
     var e = Math.exp(mv.w);
     var c = Math.cos(mv.xy);
     var s = Math.sin(mv.xy);
-    return remapE2ToPy(e * c, 0, 0, e * s);
+    return coordsJsToE2Py(e * c, 0, 0, e * s);
+  });
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
+    var mv = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE2Py(Math.sqrt(mv.w), 0, 0, 0);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(mv) {
     mv = Sk.ffi.remapToJs(mv);
@@ -674,7 +700,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           $loc.__init__ = Sk.ffi.functionPy(function(methodPy) {
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            return remapE2ToPy(mv.w, mv.x, mv.y, mv.xy);
+            return coordsJsToE2Py(mv.w, mv.x, mv.y, mv.xy);
           });
         }, METHOD_CLONE, []));
       }

@@ -1,6 +1,7 @@
 Sk.ffh = Sk.ffh || {};
 
 var SPECIAL_METHOD_ADD     = '__add__';
+var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
 var SPECIAL_METHOD_DIV     = '__div__';
 var SPECIAL_METHOD_EQ      = '__eq__';
 var SPECIAL_METHOD_EXP     = '__exp__';
@@ -12,10 +13,16 @@ var SPECIAL_METHOD_NONZERO = '__nonzero__';
 var SPECIAL_METHOD_POS     = '__pos__';
 var SPECIAL_METHOD_REPR    = '__repr__';
 var SPECIAL_METHOD_RSHIFT  = '__rshift__';
+var SPECIAL_METHOD_SQRT    = '__sqrt__';
 var SPECIAL_METHOD_STR     = '__str__';
 var SPECIAL_METHOD_SUB     = '__sub__';
 var SPECIAL_METHOD_XOR     = '__xor__';
 
+/**
+ * @param {string} specialMethod
+ * @param {Object} valuePy
+ * @param {string=} internalMethod
+ */
 Sk.ffh.unaryExec = function(specialMethod, valuePy, internalMethod)
 {
   if (valuePy[specialMethod])
@@ -84,6 +91,9 @@ Sk.ffh.equal = function(lhsPy, rhsPy)
 };
 goog.exportSymbol("Sk.ffh.equal", Sk.ffh.equal);
 
+Sk.ffh.cliffordConjugate = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_CLIFFORD_CONJUGATE, valuePy, "nb$cliffordConjugate");};
+goog.exportSymbol("Sk.ffh.cliffordConjugate", Sk.ffh.cliffordConjugate);
+
 Sk.ffh.exp = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_EXP, valuePy, "nb$exp");};
 goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);
 
@@ -98,6 +108,9 @@ goog.exportSymbol("Sk.ffh.invert", Sk.ffh.invert);
 
 Sk.ffh.nonzero = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_NONZERO, valuePy, "nb$nonzero");};
 goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
+
+Sk.ffh.sqrt = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_SQRT, valuePy);};
+goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 
 Sk.ffh.str = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_STR, valuePy, "tp$str");};
 goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);

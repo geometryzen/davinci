@@ -20,6 +20,17 @@ var NUMBER = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 mod.pi = Sk.builtin.assk$(Math.PI, Sk.builtin.nmber.float$);
 mod.e =  Sk.builtin.assk$(Math.E, Sk.builtin.nmber.float$);
 
+mod.cliffordConjugate = Sk.ffi.functionPy(function(x) {
+  Sk.ffi.checkFunctionArgs("cliffordConjugate", arguments, 1, 1);
+  if (Sk.ffi.isNum(x)) {
+    // The Clifford Conjugate of a JavaScript number is just itself.
+    return x;
+  }
+  else {
+    return Sk.ffh.cliffordConjugate(x);
+  }
+});
+
 mod.fabs = Sk.ffi.functionPy(function(x) {
   Sk.ffi.checkFunctionArgs("fabs", arguments, 1, 1);
   Sk.builtin.pyCheckType("x", "number", Sk.builtin.checkNumber(x));
@@ -163,8 +174,12 @@ mod.floor = Sk.ffi.functionPy(function(x) {
 
 mod.sqrt = Sk.ffi.functionPy(function(x) {
   Sk.ffi.checkFunctionArgs("sqrt", arguments, 1, 1);
-  Sk.builtin.pyCheckType("x", "number", Sk.builtin.checkNumber(x));
-  return new Sk.builtin.nmber(Math.sqrt(Sk.builtin.asnum$(x)), Sk.builtin.nmber.float$);
+  if (Sk.ffi.isNum(x)) {
+    return Sk.ffi.numberToFloatPy(Math.sqrt(Sk.ffi.remapToJs(x)));
+  }
+  else {
+    return Sk.ffh.sqrt(x);
+  }
 });
 
 mod.trunc = Sk.ffi.functionPy(function(x) {

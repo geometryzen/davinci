@@ -137,6 +137,11 @@ var METHOD_ADD                 = "add";
  * @const
  * @type {string}
  */
+var METHOD_CLIFFORD_CONJUGATE  = "cliffordConjugate";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CLONE               = "clone";
 /**
  * @const
@@ -188,6 +193,11 @@ var METHOD_SET_Y               = "setY";
  * @type {string}
  */
 var METHOD_SET_Z               = "setZ";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_SQRT                = "sqrt";
 /**
  * @const
  * @type {string}
@@ -1553,6 +1563,11 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
+  $loc.__cliffordConjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_CLIFFORD_CONJUGATE, arguments, 0, 0);
+    var self = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE3Py(self.w, -self.x, -self.y, -self.z, -self.xy, -self.yz, -self.zx, self.xyz);
+  });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
     var self = Sk.ffi.remapToJs(selfPy);
@@ -1565,6 +1580,11 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var s = Math.sin(angle);
     var k = s / angle;
     return coordsJsToE3Py(c, 0, 0, 0, k * xy, k * yz, k * zx, 0);
+  });
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
+    var self = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE3Py(Math.sqrt(self.w), 0, 0, 0, 0, 0, 0, 0);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
