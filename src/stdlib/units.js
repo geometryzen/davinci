@@ -533,10 +533,10 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy)) {
       var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.xor(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.xor(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.xor(self[QTY_PY], otherPy), self[UOM_PY]);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.xor(self[QTY_PY], otherPy), self[UOM_PY]);
     }
     else {
       Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
