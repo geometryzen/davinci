@@ -2044,7 +2044,7 @@ mod[COLOR] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_R:
       case PROP_G:
       case PROP_B: {
-        Sk.ffi.checkArgType(name, Sk.ffi.PyType.INT, Sk.ffi.isInt(valuePy), valuePy);
+        Sk.ffi.checkArgType(name, [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT], Sk.ffi.isFloat(valuePy) || Sk.ffi.isInt(valuePy), valuePy);
         color[PROP_R] = Sk.ffi.remapToJs(valuePy);
       }
       break;

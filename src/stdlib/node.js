@@ -458,7 +458,7 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Sk.ffi.checkMethodArgs(METHOD_APPEND_CHILD, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_CHILD, NODE, Sk.ffi.isInstance(childNodePy, NODE), childNodePy);
           var childNode = Sk.ffi.remapToJs(childNodePy);
-          return nodeToPy(node.appendChild(Sk.ffi.remapToJs(childNode)));
+          return nodeToPy(node.appendChild(childNode));
         });
       }
       case METHOD_GET_CONTEXT: {

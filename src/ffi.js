@@ -532,12 +532,25 @@ goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
 Sk.ffi.isList = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LIST;};
 goog.exportSymbol("Sk.ffi.isList", Sk.ffi.isList);
 
+/**
+ * @nosideeffects
+ * @param {Object} valuePy
+ * @return {boolean}
+ */
+Sk.ffi.isFloat = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FLOAT;};
+goog.exportSymbol("Sk.ffi.isFloat", Sk.ffi.isFloat);
+
 Sk.ffi.isFunction = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION;};
 goog.exportSymbol("Sk.ffi.isFunction", Sk.ffi.isFunction);
 
 Sk.ffi.isFunctionRef = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNREF;};
 goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 
+/**
+ * @nosideeffects
+ * @param {Object} valuePy
+ * @return {boolean}
+ */
 Sk.ffi.isInt = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT;};
 goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 
