@@ -117,3 +117,15 @@ goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);
 
 Sk.ffh.repr = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_REPR, valuePy, "tp$str");};
 goog.exportSymbol("Sk.ffh.repr", Sk.ffh.repr);
+/**
+ *
+ */
+Sk.ffh.evaluate = function(exprPy, envPy) {
+  if (Sk.ffi.isFloat(exprPy) ||  Sk.ffi.isInt(exprPy) || Sk.ffi.isLong(exprPy)) {
+    return exprPy;
+  }
+  else {
+    return Sk.ffi.callsim(Sk.ffi.gattr(exprPy, "evaluate"), envPy);
+  }
+}
+goog.exportSymbol("Sk.ffh.evaluate", Sk.ffh.evaluate);

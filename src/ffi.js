@@ -554,6 +554,14 @@ goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 Sk.ffi.isInt = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT;};
 goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 
+/**
+ * @nosideeffects
+ * @param {Object} valuePy
+ * @return {boolean}
+ */
+Sk.ffi.isLong = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LONG;};
+goog.exportSymbol("Sk.ffi.isLong", Sk.ffi.isLong);
+
 Sk.ffi.isNone = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE;};
 goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
