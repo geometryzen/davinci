@@ -6,57 +6,57 @@ Sk.builtin.defineUnits(mod, BLADE);
  * @const
  * @type {string}
  */
-var EUCLIDEAN_2      = "Euclidean2";
+var EUCLIDEAN_2         = "Euclidean2";
 /**
  * @const
  * @type {string}
  */
-var SCALAR_E2        = "ScalarE2";
+var SCALAR_E2           = "ScalarE2";
 /**
  * @const
  * @type {string}
  */
-var VECTOR_E2        = "VectorE2";
+var VECTOR_E2           = "VectorE2";
 /**
  * @const
  * @type {string}
  */
-var PSEUDOSCALAR_E2  = "PseudoscalarE2";
+var PSEUDOSCALAR_E2     = "PseudoscalarE2";
 /**
  * @const
  * @type {string}
  */
-var UNIT             = "Unit";
+var UNIT                = "Unit";
 /**
  * @const
  * @type {string}
  */
-var MEASURE          = "Measure";
+var MEASURE             = "Measure";
 /**
  * @const
  * @type {!Array.<Sk.ffi.PyType>}
  */
-var NUM              = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
+var NUM                 = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
 /**
  * @const
  * @type {string}
  */
-var PROP_W           = "w";
+var PROP_W              = "w";
 /**
  * @const
  * @type {string}
  */
-var PROP_X           = "x";
+var PROP_X              = "x";
 /**
  * @const
  * @type {string}
  */
-var PROP_Y           = "y";
+var PROP_Y              = "y";
 /**
  * @const
  * @type {string}
  */
-var PROP_XY          = "xy";
+var PROP_XY             = "xy";
 /**
  * @const
  * @type {string}
@@ -66,47 +66,62 @@ var METHOD_CLIFFORD_CONJUGATE = "cliffordConjugate";
  * @const
  * @type {string}
  */
-var METHOD_CLONE     = "clone";
+var METHOD_CLONE        = "clone";
 /**
  * @const
  * @type {string}
  */
-var METHOD_EXP       = "exp";
+var METHOD_EXP          = "exp";
 /**
  * @const
  * @type {string}
  */
-var METHOD_MAGNITUDE = "magnitude";
+var METHOD_MAGNITUDE    = "magnitude";
 /**
  * @const
  * @type {string}
  */
-var METHOD_SQRT      = "sqrt";
+var METHOD_SQRT         = "sqrt";
 /**
  * @const
  * @type {string}
  */
-var OP_ADD           = "add";
+var OP_ADD              = "add";
 /**
  * @const
  * @type {string}
  */
-var OP_SUB           = "subtract";
+var OP_SUB              = "subtract";
 /**
  * @const
  * @type {string}
  */
-var OP_MUL           = "multiply";
+var OP_MUL              = "multiply";
 /**
  * @const
  * @type {string}
  */
-var OP_DIV           = "divide";
+var OP_DIV              = "divide";
 /**
  * @const
  * @type {string}
  */
-var OP_EQ            = "equal";
+var OP_EQ               = "equal";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_E1  = "e1";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_E2  = "e2";
+/**
+ * @const
+ * @type {string}
+ */
+var PSEUDOSCALAR_NAME    = "I";
 
 var E2_OR_NUMBER = [EUCLIDEAN_2, NUM];
 var E2_OR_NUMBER_OR_UNIT = [EUCLIDEAN_2, UNIT];
@@ -735,5 +750,10 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
 }, EUCLIDEAN_2, []);
+
+mod[UNIT_VECTOR_NAME_E1] = coordsJsToE2Py(0, 1, 0, 0);
+mod[UNIT_VECTOR_NAME_E2] = coordsJsToE2Py(0, 0, 1, 0);
+mod[PSEUDOSCALAR_NAME]   = coordsJsToE2Py(0, 0, 0, 1);
+
 };
 }).call(this);
