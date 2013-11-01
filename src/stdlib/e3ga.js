@@ -257,6 +257,11 @@ var ARG_VALUE                  = "value";
  * @const
  * @type {string}
  */
+var UNIT_SCALAR_NAME          = "1";
+/**
+ * @const
+ * @type {string}
+ */
 var UNIT_VECTOR_NAME_E1       = "e1";
 /**
  * @const
@@ -273,6 +278,21 @@ var UNIT_VECTOR_NAME_E3       = "e3";
  * @type {string}
  */
 var PSEUDOSCALAR_NAME         = "I";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_I        = "i";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_J        = "j";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_K        = "k";
 /**
  * @constructor
  */
@@ -1636,7 +1656,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var yz  = self.yz;
     var zx  = self.zx;
     var xyz = self.xyz;
-    return Sk.ffi.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], ["1", "i", "j", "k", "ij", "jk", "ki", "I"]));
+    return Sk.ffi.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_I, UNIT_VECTOR_NAME_J, UNIT_VECTOR_NAME_K, "ij", "jk", "ki", PSEUDOSCALAR_NAME]));
   });
 }, EUCLIDEAN_3, []);
 
@@ -1644,6 +1664,9 @@ mod[UNIT_VECTOR_NAME_E1] = coordsJsToE3Py(0, 1, 0, 0, 0, 0, 0, 0, false);
 mod[UNIT_VECTOR_NAME_E2] = coordsJsToE3Py(0, 0, 1, 0, 0, 0, 0, 0, false);
 mod[UNIT_VECTOR_NAME_E3] = coordsJsToE3Py(0, 0, 0, 1, 0, 0, 0, 0, false);
 mod[PSEUDOSCALAR_NAME]   = coordsJsToE3Py(0, 0, 0, 0, 0, 0, 0, 1, false);
+mod[UNIT_VECTOR_NAME_I]  = coordsJsToE3Py(0, 1, 0, 0, 0, 0, 0, 0, false);
+mod[UNIT_VECTOR_NAME_J]  = coordsJsToE3Py(0, 0, 1, 0, 0, 0, 0, 0, false);
+mod[UNIT_VECTOR_NAME_K]  = coordsJsToE3Py(0, 0, 0, 1, 0, 0, 0, 0, false);
 
 };
 }).call(this);

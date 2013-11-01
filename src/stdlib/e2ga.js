@@ -111,6 +111,11 @@ var OP_EQ               = "equal";
  * @const
  * @type {string}
  */
+var UNIT_SCALAR_NAME     = "1";
+/**
+ * @const
+ * @type {string}
+ */
 var UNIT_VECTOR_NAME_E1  = "e1";
 /**
  * @const
@@ -121,12 +126,22 @@ var UNIT_VECTOR_NAME_E2  = "e2";
  * @const
  * @type {string}
  */
+var UNIT_VECTOR_NAME_I   = "i";
+/**
+ * @const
+ * @type {string}
+ */
+var UNIT_VECTOR_NAME_J   = "j";
+/**
+ * @const
+ * @type {string}
+ */
 var PSEUDOSCALAR_NAME    = "I";
 
 var E2_OR_NUMBER = [EUCLIDEAN_2, NUM];
 var E2_OR_NUMBER_OR_UNIT = [EUCLIDEAN_2, UNIT];
 
-function isNumber(x)    { return typeof x === 'number'; }
+function isNumber(x) {return typeof x === 'number';}
   /**
    * @param {Object} valuePy
    * @return {boolean} true if the value is a Euclidean2, otherwise false.
@@ -155,7 +170,7 @@ function stringFromCoordinates(coordinates, labels, multiplier) {
         return sb.push(label);
       } else {
         sb.push(n.toString());
-        if (label !== "1") {
+        if (label !== UNIT_SCALAR_NAME) {
           sb.push(multiplier);
           return sb.push(label);
         }
@@ -682,7 +697,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return Sk.ffi.stringToPy("NaN");
     }
     else {
-      return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], ["1", "i", "j", "I"], "*"));
+      return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_I, UNIT_VECTOR_NAME_J, PSEUDOSCALAR_NAME], "*"));
     }
   });
   $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {
@@ -754,6 +769,8 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[UNIT_VECTOR_NAME_E1] = coordsJsToE2Py(0, 1, 0, 0);
 mod[UNIT_VECTOR_NAME_E2] = coordsJsToE2Py(0, 0, 1, 0);
 mod[PSEUDOSCALAR_NAME]   = coordsJsToE2Py(0, 0, 0, 1);
+mod[UNIT_VECTOR_NAME_I]  = coordsJsToE2Py(0, 1, 0, 0);
+mod[UNIT_VECTOR_NAME_J]  = coordsJsToE2Py(0, 0, 1, 0);
 
 };
 }).call(this);
