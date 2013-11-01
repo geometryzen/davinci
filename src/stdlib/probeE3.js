@@ -70,6 +70,16 @@ var PROP_QUANTITY                   = "quantity";
  * @const
  * @type {string}
  */
+var PROP_SEGMENTS                   = "segments";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_WIREFRAME                  = "wireframe";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_GRADE_0                    = "grade0";
 /**
  * @const
@@ -91,6 +101,11 @@ var PROP_GRADE_3                    = "grade3";
  * @type {string}
  */
 var METHOD_BUILD                    = "build";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_NORMALIZE                = "normalize";
 /**
  * ProbeE3
  */
@@ -177,22 +192,50 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 
         var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
         var s0 = Math.abs(w);
-        grade0.scale.set(s0, s0, s0);
+        if (s0 !== 0) {
+          grade0.scale.set(s0, s0, s0);
+          grade0.visible = true;
+        }
+        else {
+          grade0.visible = false;
+          grade0.scale.set(1, 1, 1);
+        }
 
         var grade1 = Sk.ffi.remapToJs(probe[PROP_GRADE_1]);
-        var s1 = Math.sqrt(x * x + y * y + z * z);
-        grade1.scale.set(s1, s1, s1);
-        grade1.quaternion = quaternion(x/s1, y/s1, z/s1);
+        if (x !== 0 || y !== 0 || z !== 0) {
+          var s1 = Math.sqrt(x * x + y * y + z * z);
+          grade1.scale.set(s1, s1, s1);
+          grade1.quaternion = quaternion(x/s1, y/s1, z/s1);
+          grade1.visible = true;
+        }
+        else {
+          grade1.visible = false;
+          grade1.scale.set(1, 1, 1);
+        }
 
         var grade2 = Sk.ffi.remapToJs(probe[PROP_GRADE_2]);
-        var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
-        var s2 = Math.pow(norm2, 1/2);
-        grade2.scale.set(s2, s2, s2);
-        grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
+        if (xy !== 0 || yz !== 0 || zx !== 0) {
+          var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
+          var s2 = Math.pow(norm2, 1/2);
+          grade2.scale.set(s2, s2, s2);
+          grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
+          grade2.visible = true;
+        }
+        else {
+          grade2.visible = false;
+          grade2.scale.set(1, 1, 1);
+        }
 
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
-        var s3 = Math.pow(Math.abs(xyz), 1/3);
-        grade3.scale.set(s3, s3, s3);
+        if (xyz !== 0) {
+          var s3 = Math.pow(Math.abs(xyz), 1/3);
+          grade3.scale.set(s3, s3, s3);
+          grade3.visible = true;
+        }
+        else {
+          grade3.visible = false;
+          grade3.scale.set(1, 1, 1);
+        }
 
         probe[PROP_QUANTITY] = valuePy;
       }
@@ -215,16 +258,35 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(PROBE_BUILDER_E3, arguments, 0, 0);
-    Sk.ffi.referenceToPy({}, PROBE_BUILDER_E3, undefined, selfPy);
+    var args = {};
+    args[PROP_SEGMENTS] = 12;
+    args[PROP_WIREFRAME] = false;
+    Sk.ffi.referenceToPy(args, PROBE_BUILDER_E3, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var self = Sk.ffi.remapToJs(selfPy);
+    var args = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
-          self[PROP_COLOR] = colorPy;
+          Sk.ffi.checkArgType(name, [NUMBER, Sk.ffi.PyType.STR, COLOR], Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
+          args[PROP_COLOR] = colorPy;
+          return selfPy;
+        });
+      }
+      case PROP_SEGMENTS: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, segmentsPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(name, Sk.ffi.PyType.INT, Sk.ffi.isInt(segmentsPy), segmentsPy);
+          args[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          return selfPy;
+        });
+      }
+      case PROP_WIREFRAME: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, wireframePy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(wireframePy), wireframePy);
+          args[PROP_WIREFRAME] = Sk.ffi.remapToJs(wireframePy);
           return selfPy;
         });
       }
@@ -233,9 +295,12 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var builderNames = [SPHERE_BUILDER, ARROW_BUILDER, VORTEX_BUILDER, CUBE_BUILDER];
           var meshes = builderNames.map(function(builderName) {
             var builderPy = Sk.ffi.callsim(mod[builderName]);
-            if (self[PROP_COLOR]) {
-              Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_COLOR), self[PROP_COLOR]);
+            if (args[PROP_COLOR]) {
+              Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_COLOR), args[PROP_COLOR]);
             }
+            Sk.ffi.callsim(Sk.ffi.gattr(builderPy, METHOD_NORMALIZE));
+            Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_SEGMENTS), Sk.ffi.numberToIntPy(args[PROP_SEGMENTS]));
+            Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_WIREFRAME), Sk.ffi.booleanToPy(args[PROP_WIREFRAME]));
             return Sk.ffi.callsim(Sk.ffi.gattr(builderPy, METHOD_BUILD));
           });
           return Sk.ffi.callsim(mod[PROBE_E3], meshes[0], meshes[1], meshes[2], meshes[3]);

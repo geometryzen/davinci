@@ -180,6 +180,11 @@ var METHOD_LOOK_AT                  = "lookAt";
  * @const
  * @type {string}
  */
+var METHOD_NORMALIZE                = "normalize";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_SET_CLEAR_COLOR          = "setClearColor";
 /**
  * @const
@@ -729,6 +734,13 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return completeMesh(geometryPy, arrow);
         });
       }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+//        args[PROP_RADIUS] = Math.sqrt(1 / Math.PI);
+          return selfPy;
+        });
+      }
       default: {
         return builderGetAttr(selfPy, name, ARROW_BUILDER);
       }
@@ -805,6 +817,13 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var openEnded      = Sk.ffi.booleanToPy(false);
           var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
           return completeMesh(geometryPy, cone);
+        });
+      }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+//        args[PROP_RADIUS] = Math.sqrt(1 / Math.PI);
+          return selfPy;
         });
       }
       default: {
@@ -892,6 +911,15 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var segments   = Sk.ffi.numberToIntPy(cube[PROP_SEGMENTS] ? cube[PROP_SEGMENTS] : 1);
           var geometryPy = Sk.ffi.callsim(mod[CUBE_GEOMETRY], width, height, depth, segments, segments, segments);
           return completeMesh(geometryPy, cube);
+        });
+      }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+          cube[PROP_DEPTH]  = 1;
+          cube[PROP_WIDTH]  = 1;
+          cube[PROP_HEIGHT] = 1;
+          return selfPy;
         });
       }
       default: {
@@ -996,6 +1024,13 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return completeMesh(geometryPy, cylinder);
         });
       }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+//        args[PROP_RADIUS] = Math.sqrt(1 / Math.PI);
+          return selfPy;
+        });
+      }
       default: {
         return builderGetAttr(selfPy, name, CYLINDER_BUILDER);
       }
@@ -1071,6 +1106,13 @@ mod[PLANE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return completeMesh(geometryPy, plane);
         });
       }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+//        args[PROP_RADIUS] = Math.sqrt(1 / Math.PI);
+          return selfPy;
+        });
+      }
       default: {
         return builderGetAttr(selfPy, name, PLANE_BUILDER);
       }
@@ -1091,13 +1133,13 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy({}, SPHERE_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var sphere = Sk.ffi.remapToJs(selfPy);
+    var args = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
-          sphere[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
+          args[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
       }
@@ -1105,7 +1147,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
           Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
-          sphere[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          args[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
           return selfPy;
         });
       }
@@ -1116,22 +1158,29 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionSphere() {
             var dims = {};
-            if (sphere[PROP_VOLUME]) {
-              var r = (sphere.radius) ? sphere.radius : DEFAULT_SPHERE_RADIUS;
-              dims.radius = Math.pow(3 * sphere[PROP_VOLUME] / (4 * Math.PI), 1 / 3);
+            if (args[PROP_VOLUME]) {
+              var r = (args.radius) ? args.radius : DEFAULT_SPHERE_RADIUS;
+              dims.radius = Math.pow(3 * args[PROP_VOLUME] / (4 * Math.PI), 1 / 3);
             }
             else {
-              dims.radius = (sphere.radius) ? sphere.radius : DEFAULT_SPHERE_RADIUS;
+              dims.radius = (args.radius) ? args.radius : DEFAULT_SPHERE_RADIUS;
             }
             return dims;
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionSphere();
           var radius         = Sk.ffi.remapToPy(dimensions.radius);
-          var widthSegments  = Sk.ffi.numberToIntPy(sphere[PROP_SEGMENTS] ? sphere[PROP_SEGMENTS] : 24);
-          var heightSegments = Sk.ffi.numberToIntPy(sphere[PROP_SEGMENTS] ? sphere[PROP_SEGMENTS] : 18);
+          var widthSegments  = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 24);
+          var heightSegments = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 18);
           var geometryPy = Sk.ffi.callsim(mod[SPHERE_GEOMETRY], radius, widthSegments, heightSegments);
-          return completeMesh(geometryPy, sphere);
+          return completeMesh(geometryPy, args);
+        });
+      }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+          args[PROP_RADIUS] = Math.pow(3 / (4 * Math.PI), 1 / 3);
+          return selfPy;
         });
       }
       default: {
@@ -1154,13 +1203,13 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy({}, VORTEX_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var vortex = Sk.ffi.remapToJs(selfPy);
+    var args = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_RADIUS: {
-        return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, widthPy) {
+        return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(widthPy) || Sk.ffi.isNone(widthPy), widthPy);
-          vortex[PROP_RADIUS] = Sk.ffi.remapToJs(widthPy);
+          Sk.ffi.checkArgType(PROP_RADIUS, [NUMBER, Sk.ffi.PyType.NONE], Sk.ffi.isNum(radiusPy) || Sk.ffi.isNone(radiusPy), radiusPy);
+          args[PROP_RADIUS] = Sk.ffi.remapToJs(radiusPy);
           return selfPy;
         });
       }
@@ -1168,7 +1217,7 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, PROP_SEGMENTS, function(methodPy, segmentsPy) {
           Sk.ffi.checkMethodArgs(PROP_SEGMENTS, arguments, 1, 1);
           Sk.ffi.checkArgType(PROP_SEGMENTS, [Sk.ffi.PyType.INT, Sk.ffi.PyType.NONE], Sk.ffi.isInt(segmentsPy) || Sk.ffi.isNone(segmentsPy), segmentsPy);
-          vortex[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
+          args[PROP_SEGMENTS] = Sk.ffi.remapToJs(segmentsPy);
           return selfPy;
         });
       }
@@ -1179,16 +1228,16 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
            */
           function dimensionPlane() {
             var dims = {};
-            if (vortex[PROP_VOLUME]) {
-              var w = (vortex.radius) ? vortex.radius : DEFAULT_CUBE_LENGTH;
-              var h = (vortex.height) ? vortex.height : DEFAULT_CUBE_LENGTH;
-              var alpha = Math.pow(vortex[PROP_VOLUME] / (w * h), 1 / 2);
+            if (args[PROP_VOLUME]) {
+              var w = (args.radius) ? args.radius : DEFAULT_CUBE_LENGTH;
+              var h = (args.height) ? args.height : DEFAULT_CUBE_LENGTH;
+              var alpha = Math.pow(args[PROP_VOLUME] / (w * h), 1 / 2);
               dims.width  = alpha * w;
               dims.height = alpha * h;
             }
             else {
-              dims.radius = (vortex.radius) ? vortex.radius : DEFAULT_CUBE_LENGTH;
-              dims.height = (vortex.height) ? vortex.height : DEFAULT_CUBE_LENGTH;
+              dims.radius = (args.radius) ? args.radius : DEFAULT_CUBE_LENGTH;
+              dims.height = (args.height) ? args.height : DEFAULT_CUBE_LENGTH;
             }
             return dims;
           }
@@ -1199,10 +1248,17 @@ mod[VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var radiusShaft = Sk.ffi.remapToPy(0.01);
           var lengthCone  = Sk.ffi.remapToPy(0.2);
           var lengthShaft = Sk.ffi.remapToPy(0.8);
-          var arrows      = Sk.ffi.numberToIntPy(8);
-          var segments    = Sk.ffi.numberToIntPy(32);
+          var arrows      = Sk.ffi.numberToIntPy(6);
+          var segments    = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 32);
           var geometryPy  = Sk.ffi.callsim(mod[VORTEX_GEOMETRY], radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrows, segments);
-          return completeMesh(geometryPy, vortex);
+          return completeMesh(geometryPy, args);
+        });
+      }
+      case METHOD_NORMALIZE: {
+        return Sk.ffi.callableToPy(mod, METHOD_NORMALIZE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_NORMALIZE, arguments, 0, 0);
+          args[PROP_RADIUS] = Math.sqrt(1 / Math.PI);
+          return selfPy;
         });
       }
       default: {
