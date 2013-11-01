@@ -126,16 +126,6 @@ var UNIT_VECTOR_NAME_E2  = "e2";
  * @const
  * @type {string}
  */
-var UNIT_VECTOR_NAME_I   = "i";
-/**
- * @const
- * @type {string}
- */
-var UNIT_VECTOR_NAME_J   = "j";
-/**
- * @const
- * @type {string}
- */
 var PSEUDOSCALAR_NAME    = "I";
 
 var E2_OR_NUMBER = [EUCLIDEAN_2, NUM];
@@ -697,7 +687,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return Sk.ffi.stringToPy("NaN");
     }
     else {
-      return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_I, UNIT_VECTOR_NAME_J, PSEUDOSCALAR_NAME], "*"));
+      return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_E1, UNIT_VECTOR_NAME_E2, PSEUDOSCALAR_NAME], "*"));
     }
   });
   $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {
@@ -769,8 +759,6 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[UNIT_VECTOR_NAME_E1] = coordsJsToE2Py(0, 1, 0, 0);
 mod[UNIT_VECTOR_NAME_E2] = coordsJsToE2Py(0, 0, 1, 0);
 mod[PSEUDOSCALAR_NAME]   = coordsJsToE2Py(0, 0, 0, 1);
-mod[UNIT_VECTOR_NAME_I]  = coordsJsToE2Py(0, 1, 0, 0);
-mod[UNIT_VECTOR_NAME_J]  = coordsJsToE2Py(0, 0, 1, 0);
 
 };
 }).call(this);
