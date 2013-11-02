@@ -631,15 +631,13 @@ goog.exportSymbol("Sk.ffi.checkFunctionArgs", Sk.ffi.checkFunctionArgs);
  *
  * Use this function whenever you want to ignore the first (self) argument.
  *
- * @param {string} name the name of the attribute
- * @param {{length: number}} args the args passed to the attribute
- * @param {number} minargs the minimum number of allowable arguments
- * @param {number=} maxargs optional maximum number of allowable
- * arguments (default: Infinity)
- * @param {boolean=} kwargs optional true if kwargs, false otherwise
- * (default: false)
- * @param {boolean=} free optional true if free vars, false otherwise
- * (default: false)
+ * @param {string} name the name of the callable attribute or class.
+ * @param {{length: number}} args the arguments passed to the attribute.
+ * @param {number} minargs the minimum number of allowable arguments.
+ * @param {number=} maxargs optional maximum number of allowable arguments (default: Infinity).
+ * @param {boolean=} kwargs optional true if kwargs, false otherwise (default: false).
+ * @param {boolean=} free optional true if free vars, false otherwise (default: false).
+ *
  * @return {number} The number of arguments.
  */
 Sk.ffi.checkMethodArgs = function(name, args, minargs, maxargs, kwargs, free)
