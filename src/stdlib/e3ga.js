@@ -202,6 +202,11 @@ var METHOD_SQRT                = "sqrt";
  * @const
  * @type {string}
  */
+var METHOD_SUB                 = "sub";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_GET_COMPONENT       = "getComponent";
 /**
  * @const
@@ -1429,18 +1434,34 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(self.quaternion, QUATERNION));
       }
       case METHOD_ADD: {
-        return Sk.ffi.callableToPy(mod, METHOD_ADD, function(methodPy, otherPy) {
-          Sk.ffi.checkMethodArgs(METHOD_ADD, arguments, 1, 1);
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, otherPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, EUCLIDEAN_3), otherPy);
-          var arg  = Sk.ffi.remapToJs(otherPy);
-          quaternion.w += arg.quaternion.w;
-          vector.x += arg.vector.x;
-          vector.y += arg.vector.y;
-          vector.z += arg.vector.z;
-          quaternion.x += arg.quaternion.x;
-          quaternion.y += arg.quaternion.y;
-          quaternion.z += arg.quaternion.z;
-          self.xyz += arg.xyz;
+          var other  = Sk.ffi.remapToJs(otherPy);
+          quaternion.w += other.quaternion.w;
+          vector.x += other.vector.x;
+          vector.y += other.vector.y;
+          vector.z += other.vector.z;
+          quaternion.x += other.quaternion.x;
+          quaternion.y += other.quaternion.y;
+          quaternion.z += other.quaternion.z;
+          self.xyz += other.xyz;
+          return selfPy;
+        });
+      }
+      case METHOD_SUB: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, otherPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, EUCLIDEAN_3), otherPy);
+          var other  = Sk.ffi.remapToJs(otherPy);
+          quaternion.w -= other.quaternion.w;
+          vector.x -= other.vector.x;
+          vector.y -= other.vector.y;
+          vector.z -= other.vector.z;
+          quaternion.x -= other.quaternion.x;
+          quaternion.y -= other.quaternion.y;
+          quaternion.z -= other.quaternion.z;
+          self.xyz -= other.xyz;
           return selfPy;
         });
       }

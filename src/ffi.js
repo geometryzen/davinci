@@ -732,7 +732,7 @@ Sk.ffi.PyType = {
     'STR':        8,
     'NONE':       9,
     'FUNCTION':  10,
-    'INSTANCE':     11,
+    'INSTANCE':  11,
     'UNDEFINED': -1,
     'FUNREF':    -2
 };
