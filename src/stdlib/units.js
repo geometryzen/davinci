@@ -1,3 +1,5 @@
+Sk.units = Sk.units || {};
+
 (function() {
 Sk.builtin.defineUnits = function(mod, BLADE) {
 Sk.ffi.checkFunctionArgs("defineUnits", arguments, 2, 2);

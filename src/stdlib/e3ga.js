@@ -1,3 +1,10 @@
+Sk.e3ga = Sk.e3ga || {};
+/**
+ * @const
+ * @type {string}
+ */
+Sk.e3ga.VECTOR_E3                  = "VectorE3";
+
 (function() {
 Sk.builtin.defineEuclidean3 = function(mod, THREE, BLADE) {
 Sk.ffi.checkFunctionArgs("defineEuclidean3", arguments, 3, 3);
@@ -28,11 +35,6 @@ var QUATERNION                 = "Quaternion";
  * @type {string}
  */
 var SCALAR_E3                  = "ScalarE3";
-/**
- * @const
- * @type {string}
- */
-var VECTOR_E3                  = "VectorE3";
 /**
  * @const
  * @type {string}
@@ -309,7 +311,7 @@ THREE.Euclidean3 = function(vector, quaternion, xyz, mutable) {
   this.quaternion = quaternion;
   this._pseudo    = xyz;
   this._mutable   = (typeof mutable === 'boolean') ? mutable : true;
-}
+};
 THREE.Euclidean3.prototype = {
   constructor: THREE.Euclidean3,
   get w () {return this.quaternion.w;},
@@ -335,7 +337,7 @@ THREE.Euclidean3.prototype = {
       throw Sk.ffi.assertionError("Quantity is not mutable");
     }
   }
-}
+};
 
 function isNumber(x)    {return typeof x === 'number';}
 function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
@@ -787,8 +789,8 @@ mod[SCALAR_E3] = Sk.ffi.functionPy(function(wPy, mutablePy) {
   return coordsJsToE3Py(Sk.ffi.numberToJs(wPy), 0, 0, 0, 0, 0, 0, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
-mod[VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
-  Sk.ffi.checkFunctionArgs(VECTOR_E3, arguments, 3, 4);
+mod[Sk.e3ga.VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
+  Sk.ffi.checkFunctionArgs(Sk.e3ga.VECTOR_E3, arguments, 3, 4);
   Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(x), x);
   Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(y), y);
   Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(z), z);
@@ -1650,7 +1652,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
     else if (!grade0 && grade1 && !grade2 && !grade3) {
       var args = [x, y, z];
-      return Sk.ffi.stringToPy(VECTOR_E3 + "(" + args.join(", ") + ")");
+      return Sk.ffi.stringToPy(Sk.e3ga.VECTOR_E3 + "(" + args.join(", ") + ")");
     }
     else if (!grade0 && !grade1 && grade2 && !grade3) {
       var args = [xy, yz, zx];

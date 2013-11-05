@@ -30,11 +30,6 @@ var SPHERE_BUILDER                  = "SphereBuilder";
  * @const
  * @type {string}
  */
-var VORTEX_BUILDER                  = "VortexBuilder";
-/**
- * @const
- * @type {string}
- */
 var EUCLIDEAN_3                     = "Euclidean3";
 /**
  * @const
@@ -225,7 +220,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade2 = Sk.ffi.remapToJs(probe[PROP_GRADE_2]);
         if (xy !== 0 || yz !== 0 || zx !== 0) {
           var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
-          var s2 = Math.pow(norm2, 1/2);
+          var s2 = Math.pow(norm2, 1 / 2);
           grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
           show(grade2, s2);
         }
@@ -235,7 +230,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         if (xyz !== 0) {
-          var s3 = Math.pow(Math.abs(xyz), 1/3);
+          var s3 = Math.pow(Math.abs(xyz), 1 / 3);
           show(grade3, s3);
         }
         else {
@@ -243,6 +238,18 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
 
         probe[PROP_QUANTITY] = valuePy;
+      }
+      break;
+      case PROP_GRADE_0: {
+        probe[PROP_GRADE_0] = valuePy;
+      }
+      break;
+      case PROP_GRADE_1: {
+        probe[PROP_GRADE_1] = valuePy;
+      }
+      break;
+      case PROP_GRADE_2: {
+        probe[PROP_GRADE_2] = valuePy;
       }
       break;
       case PROP_GRADE_3: {
@@ -301,7 +308,7 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy) {
-          var builderNames = [SPHERE_BUILDER, ARROW_BUILDER, VORTEX_BUILDER, CUBE_BUILDER];
+          var builderNames = [SPHERE_BUILDER, ARROW_BUILDER, Sk.geometry.VORTEX_BUILDER, Sk.geometry.VOLUME_BUILDER];
           var meshes = builderNames.map(function(builderName) {
             var builderPy = Sk.ffi.callsim(mod[builderName]);
             if (args[PROP_COLOR]) {
