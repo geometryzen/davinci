@@ -3,6 +3,11 @@ Sk.geometry = Sk.geometry || {};
  * @const
  * @type {string}
  */
+Sk.geometry.ARROW_BUILDER                   = "ArrowBuilder";
+/**
+ * @const
+ * @type {string}
+ */
 Sk.geometry.CYLINDER_BUILDER                = "CylinderBuilder";
 /**
  * @const
@@ -237,11 +242,6 @@ var WORLD                           = "world";
  * @const
  * @type {string}
  */
-var ARROW_BUILDER                   = "ArrowBuilder";
-/**
- * @const
- * @type {string}
- */
 var CONE_BUILDER                    = "ConeBuilder";
 /**
  * @const
@@ -288,11 +288,6 @@ var MESH_LAMBERT_MATERIAL           = "MeshLambertMaterial";
  * @type {string}
  */
 var MESH_NORMAL_MATERIAL            = "MeshNormalMaterial";
-/**
- * @const
- * @type {string}
- */
-var ARROW_GEOMETRY                  = "ArrowGeometry";
 /**
  * @const
  * @type {string}
@@ -731,11 +726,44 @@ function builderGetAttr(selfPy, name, className) {
     }
   }
 }
-
-mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+/**
+ * ArrowBuilder
+ * @constructor
+ */
+Sk.geometry.ArrowBuilder = function() {
+  this._innerPy = Sk.ffi.callsim(mod[Sk.geometry.ARROW_BUILDER]);
+}
+Sk.geometry.ArrowBuilder.prototype = {
+  constructor: Sk.geometry.ArrowBuilder,
+  axis: function(x, y, z) {
+    var xPy = Sk.ffi.numberToFloatPy(x);
+    var yPy = Sk.ffi.numberToFloatPy(y);
+    var zPy = Sk.ffi.numberToFloatPy(z);
+    var directionPy = Sk.ffi.callsim(mod[Sk.e3ga.VECTOR_E3], xPy, yPy, zPy);
+    Sk.ffi.callsim(Sk.ffi.gattr(this._innerPy, PROP_AXIS), directionPy);
+    return this;
+  },
+  material: function(material) {
+    var materialPy = Sk.ffi.callsim(mod[Sk.three.MATERIAL], Sk.ffi.referenceToPy(material, Sk.three.MATERIAL));
+    Sk.ffi.callsim(Sk.ffi.gattr(this._innerPy, PROP_MATERIAL), materialPy);
+    return this;
+  },
+  radius: function(radius) {
+    var radiusPy = Sk.ffi.numberToFloatPy(radius);
+    Sk.ffi.callsim(Sk.ffi.gattr(this._innerPy, PROP_RADIUS), radiusPy);
+    return this;
+  },
+  build: function() {
+    return Sk.ffi.remapToJs(Sk.ffi.callsim(Sk.ffi.gattr(this._innerPy, METHOD_BUILD)));
+  }
+};
+/**
+ * ArrowBuilder
+ */
+mod[Sk.geometry.ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
-    Sk.ffi.checkMethodArgs(ARROW_BUILDER, arguments, 0, 0);
-    Sk.ffi.referenceToPy({}, ARROW_BUILDER, undefined, selfPy);
+    Sk.ffi.checkMethodArgs(Sk.geometry.ARROW_BUILDER, arguments, 0, 0);
+    Sk.ffi.referenceToPy({}, Sk.geometry.ARROW_BUILDER, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var arrow = Sk.ffi.remapToJs(selfPy);
@@ -803,7 +831,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var segmentsPy = Sk.ffi.numberToIntPy(arrow[PROP_SEGMENTS] ? arrow[PROP_SEGMENTS] : 32);
           var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_MAGNITUDE]);
           var axisPy     = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_AXIS], EUCLIDEAN_3));
-          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy, undefined, undefined, undefined, axisPy);
+          var geometryPy = Sk.ffi.callsim(mod[Sk.three.ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy, undefined, undefined, undefined, axisPy);
           return completeMesh(geometryPy, arrow);
         });
       }
@@ -815,7 +843,7 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         });
       }
       default: {
-        return builderGetAttr(selfPy, name, ARROW_BUILDER);
+        return builderGetAttr(selfPy, name, Sk.geometry.ARROW_BUILDER);
       }
     }
   });
@@ -824,9 +852,9 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(ARROW_BUILDER + "(" + ")");
+    return Sk.ffi.stringToPy(Sk.geometry.ARROW_BUILDER + "(" + ")");
   })
-}, ARROW_BUILDER, []);
+}, Sk.geometry.ARROW_BUILDER, []);
 
 mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
@@ -1399,6 +1427,7 @@ mod[Sk.geometry.VOLUME] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkMethodArgs(Sk.geometry.VOLUME, arguments, 1, 1);
     var composite = new THREE[Sk.three.OBJECT_3D]();
     var cylinder;
+    var arrow;
     var cb = new Sk.geometry.CylinderBuilder();
     cb.radius(0.01).material(Sk.ffi.remapToJs(materialPy));
 
@@ -1412,16 +1441,10 @@ mod[Sk.geometry.VOLUME] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     cylinder = cb.build();
     cylinder.position.set(+0.0, -0.5, +0.5);
     composite.add(cylinder);
-    cylinder = cb.build();
-    cylinder.position.set(+0.0, -0.5, -0.5);
-    composite.add(cylinder);
 
     cb.axis(0, 1, 0);
     cylinder = cb.build();
     cylinder.position.set(+0.5, +0.0, +0.5);
-    composite.add(cylinder);
-    cylinder = cb.build();
-    cylinder.position.set(+0.5, +0.0, -0.5);
     composite.add(cylinder);
     cylinder = cb.build();
     cylinder.position.set(-0.5, +0.0, +0.5);
@@ -1432,9 +1455,6 @@ mod[Sk.geometry.VOLUME] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 
     cb.axis(0, 0, 1);
     cylinder = cb.build();
-    cylinder.position.set(+0.5, +0.5, +0.0);
-    composite.add(cylinder);
-    cylinder = cb.build();
     cylinder.position.set(+0.5, -0.5, +0.0);
     composite.add(cylinder);
     cylinder = cb.build();
@@ -1443,6 +1463,24 @@ mod[Sk.geometry.VOLUME] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     cylinder = cb.build();
     cylinder.position.set(-0.5, -0.5, +0.0);
     composite.add(cylinder);
+
+    var ab = new Sk.geometry.ArrowBuilder();
+    ab.radius(0.01).material(Sk.ffi.remapToJs(materialPy));
+
+    ab.axis(1, 0, 0);
+    arrow = ab.build();
+    arrow.position.set(+0.0, -0.5, -0.5);
+    composite.add(arrow);
+
+    ab.axis(0, 1, 0);
+    arrow = ab.build();
+    arrow.position.set(+0.5, +0.0, -0.5);
+    composite.add(arrow);
+
+    ab.axis(0, 0, 1);
+    arrow = ab.build();
+    arrow.position.set(+0.5, +0.5, +0.0);
+    composite.add(arrow);
 
     Sk.ffi.referenceToPy(composite, Sk.geometry.VOLUME, undefined, selfPy);
   });

@@ -15,11 +15,6 @@ var PROBE_BUILDER_E3                = "ProbeBuilderE3";
  * @const
  * @type {string}
  */
-var ARROW_BUILDER                   = "ArrowBuilder";
-/**
- * @const
- * @type {string}
- */
 var CUBE_BUILDER                    = "CubeBuilder";
 /**
  * @const
@@ -135,6 +130,9 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_GRADE_3: {
         return probe[PROP_GRADE_3];
       }
+      case PROP_POSITION: {
+        return probe[PROP_POSITION];
+      }
       case PROP_QUANTITY: {
         return probe[PROP_QUANTITY];
       }
@@ -148,6 +146,8 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     switch(name) {
       case PROP_POSITION: {
         Sk.ffi.checkArgType(PROP_POSITION, EUCLIDEAN_3, Sk.ffi.isInstance(valuePy, EUCLIDEAN_3), valuePy);
+        probe[PROP_POSITION] = valuePy;
+
         var position = Sk.ffi.remapToJs(valuePy).vector;
         var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
         grade0[PROP_POSITION] = position;
@@ -308,8 +308,8 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy) {
-          var builderNames = [SPHERE_BUILDER, ARROW_BUILDER, Sk.geometry.VORTEX_BUILDER, Sk.geometry.VOLUME_BUILDER];
-          var meshes = builderNames.map(function(builderName) {
+          var builderNames = [SPHERE_BUILDER, Sk.geometry.ARROW_BUILDER, Sk.geometry.VORTEX_BUILDER, Sk.geometry.VOLUME_BUILDER];
+          var objects = builderNames.map(function(builderName) {
             var builderPy = Sk.ffi.callsim(mod[builderName]);
             if (args[PROP_COLOR]) {
               Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_COLOR), args[PROP_COLOR]);
@@ -319,7 +319,7 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             Sk.ffi.callsim(Sk.ffi.gattr(builderPy, PROP_WIREFRAME), Sk.ffi.booleanToPy(args[PROP_WIREFRAME]));
             return Sk.ffi.callsim(Sk.ffi.gattr(builderPy, METHOD_BUILD));
           });
-          return Sk.ffi.callsim(mod[PROBE_E3], meshes[0], meshes[1], meshes[2], meshes[3]);
+          return Sk.ffi.callsim(mod[PROBE_E3], objects[0], objects[1], objects[2], objects[3]);
         });
       }
       default: {
