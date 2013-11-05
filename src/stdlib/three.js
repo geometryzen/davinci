@@ -352,6 +352,11 @@ var PROP_FACE                  = "face";
  * @const
  * @type {string}
  */
+var PROP_FACES                 = "faces";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_FAR                   = "far";
 /**
  * @const
@@ -617,6 +622,11 @@ var PROP_VELOCITY              = "velocity";
  * @const
  * @type {string}
  */
+var PROP_VERTEX_NORMALS        = "vertexNormals";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_VERTICES              = "vertices";
 /**
  * @const
@@ -827,6 +837,11 @@ var METHOD_TRANSLATE_Z         = "translateZ";
  * @const
  * @type {string}
  */
+var METHOD_TRAVERSE            = "traverse";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_UNPROJECT_VECTOR    = "unprojectVector";
 /**
  * @const
@@ -878,6 +893,11 @@ var ARG_ASPECT                 = PROP_ASPECT;
  * @type {string}
  */
 var ARG_AXIS                   = "axis";
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_CALLBACK               = "callback";
 /**
  * @const
  * @type {string}
@@ -965,10 +985,11 @@ var RPAREN                     = ")";
  * @param {number} radialSegments
  * @param {number} heightSegments
  * @param {boolean} openEnded
+ * @param {Object} axis
  */
-Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded) {
+Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded, axis) {
 
-  THREE['Geometry'].call( this );
+  THREE['Geometry'].call(this);
 
   this.radiusTop = radiusTop = radiusTop !== undefined ? radiusTop : 20;
   this.radiusBottom = radiusBottom = radiusBottom !== undefined ? radiusBottom : 20;
@@ -981,73 +1002,119 @@ Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSe
 
   var heightHalf = height / 2;
 
-  var x, y, vertices = [], uvs = [];
+  var direction = Sk.stdlib.direction(axis.x, axis.y, axis.z);
+  var orientation = Sk.stdlib.orientation(axis.x, axis.y, axis.z);
+  /**
+   * Construct a vector with cyclic permutation of indices.
+   *
+   * When (cycle % 3) is zero, nothing changes.
+   * When (cycle % 3) is 1, the x value goes into the y vector slot.
+   *
+   * @param {number} x
+   * @param {number} y
+   * @param {number} z
+   * @param {number} cycle
+   */
+  function vector3(x, y, z, cycle) {
+    switch(cycle % 3) {
+      case 0: {
+        return new THREE['Vector3'](x, y, z);
+      }
+      case 1: {
+        return new THREE['Vector3'](z, x, y);
+      }
+      case 2: {
+        return new THREE['Vector3'](y, z, x);
+      }
+    }
+  }
 
-  for ( y = 0; y <= heightSegments; y ++ ) {
+  var idxAngle;
+  var idxSlice;
+//var x, y;
+  // Each entry corresponds to a horizontal slice through the cylinder and contains the vertex indices.
+  var vertices = [];
+  // Each entry corresponds to a horizontal slice through the cylinder and contains the texture coordinates.
+  var uvs = [];
+
+  // The height index must have an extra value.
+  for (idxSlice = 0; idxSlice <= heightSegments; idxSlice++) {
 
     var verticesRow = [];
     var uvsRow = [];
 
-    var v = y / heightSegments;
+    var v = idxSlice / heightSegments;
+    // The cylinder is built from top to bottom.
+    var z = - v * height + heightHalf;
     var radius = v * ( radiusBottom - radiusTop ) + radiusTop;
 
-    for ( x = 0; x <= radialSegments; x ++ ) {
+    // Notice how this loop computes the seam vetices twice.
+    // That could be improved by using modulo arithmetic later.
+    // I just changed the <= to <.
+    for (idxAngle = 0; idxAngle < radialSegments; idxAngle++) {
 
-      var u = x / radialSegments;
+      var u = idxAngle / radialSegments;
 
-      var vertex = new THREE['Vector3']();
-      vertex.y = radius * Math.sin( u * Math.PI * 2 );
-      vertex.z = - v * height + heightHalf;
-      vertex.x = radius * Math.cos( u * Math.PI * 2 );
+      var theta = u * Math.PI * 2;
+      var vertex = vector3(z, radius * Math.cos(theta), radius * Math.sin(theta), direction);
 
       this['vertices'].push( vertex );
 
-      verticesRow.push( this['vertices'].length - 1 );
-      uvsRow.push( new THREE['Vector2']( u, 1 - v ) );
-
+      verticesRow.push(this['vertices'].length - 1);
+      // Flip the t texture coordinate (s,t) because the cylinder builds from the top.
+      // The texture mapping is simply wrapping a label around a can - almost.
+      // I expect sloping cans trapezoidal cans will need some adjustment.
+      uvsRow.push(new THREE['Vector2'](u, 1 - v));
     }
-
     vertices.push( verticesRow );
     uvs.push( uvsRow );
-
   }
 
-  var tanTheta = ( radiusBottom - radiusTop ) / height;
+  var tanTheta = (radiusBottom - radiusTop) / height;
   var na, nb;
+  var c0, c1;
 
-  for ( x = 0; x < radialSegments; x ++ ) {
-
-    if ( radiusTop !== 0 ) {
-
-      na = this['vertices'][ vertices[ 0 ][ x ] ].clone();
-      nb = this['vertices'][ vertices[ 0 ][ x + 1 ] ].clone();
-
-    } else {
-
-      na = this['vertices'][ vertices[ 1 ][ x ] ].clone();
-      nb = this['vertices'][ vertices[ 1 ][ x + 1 ] ].clone();
-
+  // We now compute the faces and the normals for the sides of the cyclinder.
+  // The range of idxTheta is now the radial segment index (zero-based).
+  for (idxAngle = 0; idxAngle < radialSegments; idxAngle++) {
+    var idxThetaLo = (idxAngle + 0) % radialSegments;
+    var idxThetaHi = (idxAngle + 1) % radialSegments;
+    // The vertices already have much of the information required for the normals.
+    if (radiusTop !== 0) {
+      na = this['vertices'][vertices[0][idxThetaLo]].clone();
+      nb = this['vertices'][vertices[0][idxThetaHi]].clone();
+    }
+    else {
+      na = this['vertices'][vertices[1][idxThetaLo]].clone();
+      nb = this['vertices'][vertices[1][idxThetaHi]].clone();
     }
 
-    na['setY']( Math.sqrt( na.x * na.x + na.z * na.z ) * tanTheta ).normalize();
-    nb['setY']( Math.sqrt( nb.x * nb.x + nb.z * nb.z ) * tanTheta ).normalize();
+    c0 = na[METHOD_GET_COMPONENT]((direction + 2) % 3);
+    c1 = na[METHOD_GET_COMPONENT]((direction + 1) % 3);
+    na[METHOD_SET_COMPONENT]((direction + 0) % 3, Math.sqrt(c0 * c0 + c1 * c1) * tanTheta);
+    na.normalize();
+    c0 = nb[METHOD_GET_COMPONENT]((direction + 2) % 3);
+    c1 = nb[METHOD_GET_COMPONENT]((direction + 1) % 3);
+    nb[METHOD_SET_COMPONENT]((direction + 0) % 3, Math.sqrt(c0 * c0 + c1 * c1) * tanTheta);
+    nb.normalize();
 
-    for ( y = 0; y < heightSegments; y ++ ) {
+    // Not sure why the limits is one less in this case?
+    for (idxSlice = 0; idxSlice < heightSegments; idxSlice++) {
 
-      var v1 = vertices[ y ][ x ];
-      var v2 = vertices[ y + 1 ][ x ];
-      var v3 = vertices[ y + 1 ][ x + 1 ];
-      var v4 = vertices[ y ][ x + 1 ];
+      var v1 = vertices[idxSlice][idxThetaLo];
+      var v2 = vertices[idxSlice + 1][idxThetaLo];
+      var v3 = vertices[idxSlice + 1][idxThetaHi];
+      var v4 = vertices[idxSlice][idxThetaHi];
 
       var n1 = na.clone();
       var n2 = na.clone();
       var n3 = nb.clone();
       var n4 = nb.clone();
 
-      var uv1 = uvs[ y ][ x ].clone();
-      var uv2 = uvs[ y + 1 ][ x ].clone();
-      var uv3 = uvs[ y + 1 ][ x + 1 ].clone();
-      var uv4 = uvs[ y ][ x + 1 ].clone();
+      var uv1 = uvs[idxSlice][idxThetaLo].clone();
+      var uv2 = uvs[idxSlice + 1][idxThetaLo].clone();
+      var uv3 = uvs[idxSlice + 1][idxThetaHi].clone();
+      var uv4 = uvs[idxSlice][idxThetaHi].clone();
 
       this['faces'].push( new THREE['Face3']( v1, v2, v4, [ n1, n2, n4 ] ) );
       this['faceVertexUvs'][0].push([uv1, uv2, uv4]);
@@ -1057,48 +1124,50 @@ Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSe
     }
   }
   // top cap
-  if ( openEnded === false && radiusTop > 0 ) {
+  if (openEnded === false && radiusTop > 0) {
 
-    this['vertices'].push(new THREE['Vector3'](0, 0, heightHalf));
+    this['vertices'].push(vector3(+heightHalf, 0, 0, direction));
 
-    for ( x = 0; x < radialSegments; x ++ ) {
-
-      var v1 = vertices[ 0 ][ x ];
-      var v2 = vertices[ 0 ][ x + 1 ];
+    for (idxAngle = 0; idxAngle < radialSegments; idxAngle++) {
+      var idxThetaLo = (idxAngle + 0) % radialSegments;
+      var idxThetaHi = (idxAngle + 1) % radialSegments;
+      var v1 = vertices[0][idxThetaLo];
+      var v2 = vertices[0][idxThetaHi];
       var v3 = this['vertices'].length - 1;
 
-      var n1 = new THREE['Vector3']( 0, 1, 0 );
-      var n2 = new THREE['Vector3']( 0, 1, 0 );
-      var n3 = new THREE['Vector3']( 0, 1, 0 );
+      var n1 = vector3(+1, 0, 0, direction);
+      var n2 = vector3(+1, 0, 0, direction);
+      var n3 = vector3(+1, 0, 0, direction);
 
-      var uv1 = uvs[ 0 ][ x ].clone();
-      var uv2 = uvs[ 0 ][ x + 1 ].clone();
-      var uv3 = new THREE['Vector2']( uv2.u, 0 );
+      var uv1 = uvs[0][idxThetaLo].clone();
+      var uv2 = uvs[0][idxThetaHi].clone();
+      var uv3 = new THREE['Vector2'](uv2.u, 0);
 
-      this['faces'].push( new THREE['Face3']( v1, v2, v3, [ n1, n2, n3 ] ) );
-      this['faceVertexUvs'][ 0 ].push( [ uv1, uv2, uv3 ] );
+      this['faces'].push( new THREE['Face3'](v1, v2, v3, [n1, n2, n3]));
+      this['faceVertexUvs'][0].push([uv1, uv2, uv3]);
     }
   }
   // bottom cap
-  if ( openEnded === false && radiusBottom > 0 ) {
+  if (openEnded === false && radiusBottom > 0) {
 
-    this['vertices'].push(new THREE['Vector3'](0, 0, -heightHalf));
+    this['vertices'].push(vector3(-heightHalf, 0, 0, direction));
 
-    for ( x = 0; x < radialSegments; x ++ ) {
-
-      var v1 = vertices[ y ][ x + 1 ];
-      var v2 = vertices[ y ][ x ];
+    for (idxAngle = 0; idxAngle < radialSegments; idxAngle++) {
+      var idxThetaLo = (idxAngle + 0) % radialSegments;
+      var idxThetaHi = (idxAngle + 1) % radialSegments;
+      var v1 = vertices[heightSegments][idxThetaHi];
+      var v2 = vertices[heightSegments][idxThetaLo];
       var v3 = this['vertices'].length - 1;
 
-      var n1 = new THREE['Vector3']( 0, - 1, 0 );
-      var n2 = new THREE['Vector3']( 0, - 1, 0 );
-      var n3 = new THREE['Vector3']( 0, - 1, 0 );
+      var n1 = vector3(-1, 0, 0, direction);
+      var n2 = vector3(-1, 0, 0, direction);
+      var n3 = vector3(-1, 0, 0, direction);
 
-      var uv1 = uvs[ y ][ x + 1 ].clone();
-      var uv2 = uvs[ y ][ x ].clone();
-      var uv3 = new THREE['Vector2']( uv2.u, 1 );
+      var uv1 = uvs[heightSegments][idxThetaHi].clone();
+      var uv2 = uvs[heightSegments][idxThetaLo].clone();
+      var uv3 = new THREE['Vector2'](uv2.u, 1);
 
-      this['faces'].push( new THREE['Face3']( v1, v2, v3, [ n1, n2, n3 ] ) );
+      this['faces'].push( new THREE['Face3'](v1, v2, v3, [n1, n2, n3]));
       this['faceVertexUvs'][0].push([uv1, uv2, uv3]);
     }
   }
@@ -1595,46 +1664,6 @@ function methodRemove(target) {
     var child = Sk.ffi.remapToJs(childPy);
     target.remove(child);
   });
-}
-
-function verticesPy(vertices) {
-  return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
-      Sk.ffi.referenceToPy(vertices, PROP_VERTICES, undefined, selfPy);
-    });
-    $loc.__getattr__ = Sk.ffi.functionPy(function(verticesPy, name) {
-      var METHOD_APPEND = "append";
-      switch(name) {
-        case METHOD_APPEND: {
-          return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
-            $loc.__init__ = Sk.ffi.functionPy(function(self) {
-              self.tp$name = METHOD_APPEND;
-            });
-            $loc.__call__ = Sk.ffi.functionPy(function(self, vectorPy) {
-              vertices.push(Sk.ffi.remapToJs(vectorPy));
-            });
-            $loc.__str__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_APPEND)
-            });
-            $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-              return Sk.ffi.stringToPy(METHOD_APPEND)
-            });
-          }, METHOD_APPEND, []));
-        }
-      }
-    });
-    $loc.__getitem__ = Sk.ffi.functionPy(function(verticesPy, indexPy) {
-      var index = Sk.ffi.remapToJs(indexPy);
-      return vectorToEuclidean3Py(vertices[index]);
-    });
-    $loc.mp$length = function() {return vertices.length;};
-    $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      return Sk.ffi.stringToPy(PROP_VERTICES)
-    });
-    $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      return Sk.ffi.stringToPy(PROP_VERTICES)
-    });
-  }, PROP_VERTICES, []));
 }
 
 /*
@@ -2637,11 +2666,12 @@ mod[ORTHOGRAPHIC_CAMERA] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, ORTHOGRAPHIC_CAMERA, []);
 
 mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scalePy, attitudePy, segmentsPy, lengthPy, radiusShaft, radiusCone, lengthCone) {
-    Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 0, 6);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scalePy, attitudePy, segmentsPy, lengthPy, radiusShaft, radiusCone, lengthCone, axisPy) {
+    Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 0, 8);
     var scale;
     var attitude;
     var length;
+    var axis;
     if (Sk.ffi.isDefined(scalePy)) {
       if (Sk.ffi.isInstance(scalePy, ARROW_GEOMETRY)) {
         Sk.ffi.checkMethodArgs(ARROW_GEOMETRY, arguments, 1, 1);
@@ -2673,54 +2703,79 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     else {
       length = scale;
     }
+    if (Sk.ffi.isDefined(axisPy)) {
+      Sk.ffi.checkArgType(PROP_AXIS, EUCLIDEAN_3, Sk.ffi.isInstance(axisPy, EUCLIDEAN_3), axisPy);
+      axis = Sk.ffi.remapToJs(axisPy).vector;
+    }
+    else {
+      axis = new THREE[VECTOR_3](0, 0, 1);
+    }
     var segments = Sk.ffi.remapToJs(segmentsPy);
     radiusShaft  = (Sk.ffi.remapToJs(radiusShaft) || 0.01) * scale;
-    radiusCone   = (Sk.ffi.remapToJs(radiusCone) || 0.08) * scale;
-    lengthCone   = (Sk.ffi.remapToJs(lengthCone) || 0.2) * scale;
+    radiusCone   = (Sk.ffi.remapToJs(radiusCone)  || 0.08) * scale;
+    lengthCone   = (Sk.ffi.remapToJs(lengthCone)  || 0.20) * scale;
     var lengthShaft = length - lengthCone;
     var halfLength = length / 2;
-    var a = new THREE[VECTOR_3](0,           0, halfLength);
-    var b = new THREE[VECTOR_3](radiusCone,  0, lengthShaft - halfLength);
-    var c = new THREE[VECTOR_3](radiusShaft, 0, lengthShaft - halfLength);
-    var d = new THREE[VECTOR_3](radiusShaft, 0, -halfLength);
-    var e = new THREE[VECTOR_3](0,           0, -halfLength);
-    var points = [a, b, c, d, e];
-    var generator = new THREE[QUATERNION](0, 0, 1, 0);
-    Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(points, generator, segments, 0, 2 * Math.PI, attitude), ARROW_GEOMETRY, undefined, selfPy);
-  });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    switch(name) {
-      case PROP_ID: {
-        return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
+    var permutation = function(direction) {
+      if (direction.x) {
+        return 2;
       }
-      case PROP_UUID: {
-        return Sk.ffi.stringToPy(geometry[PROP_UUID]);
+      else if (direction.y) {
+        return 1;
       }
-      case PROP_NAME: {
-        return Sk.ffi.stringToPy(geometry[PROP_NAME]);
-      }
-      case PROP_VERTICES: {
-        return verticesPy(geometry[PROP_VERTICES]);
-      }
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(ARROW_GEOMETRY);
+      else {
+        return 0;
       }
     }
-  });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    switch(name) {
-      case PROP_NAME:
-      {
-        Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
-        geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
+    var orientation = function(direction) {
+      if (direction.x > 0) {
+        return +1;
       }
-      break;
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotSetableOnType(ARROW_GEOMETRY);
+      else if (direction.x < 0) {
+        return -1;
+      }
+      else if (direction.y > 0) {
+        return +1;
+      }
+      else if (direction.y < 0) {
+        return -1;
+      }
+      else if (direction.z > 0) {
+        return +1;
+      }
+      else if (direction.z < 0) {
+        return -1;
+      }
+      else {
+        return 0;
       }
     }
+    var computeArrow = function (direction) {
+      var cycle = permutation(direction);
+      var sign  = orientation(direction);
+      var i = (cycle + 0) % 3;
+      var j = (cycle + 1) % 3;
+      var k = (cycle + 2) % 3;
+      var shL = halfLength * sign;
+      var data = [
+        [0,           0, halfLength * sign],
+        [radiusCone,  0, (lengthShaft - halfLength) * sign],
+        [radiusShaft, 0, (lengthShaft - halfLength) * sign],
+        [radiusShaft, 0, (-halfLength) * sign],
+        [0,           0, (-halfLength) * sign]
+      ];
+      var points = data.map(function(point) {return new THREE[VECTOR_3](point[i], point[j], point[k])});
+      var generator = new THREE[QUATERNION](direction.x, direction.y, direction.z, 0);
+      return {"points": points, "generator": generator};
+    };
+    var arrow = computeArrow(axis);
+    Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(arrow.points, arrow.generator, segments, 0, 2 * Math.PI, attitude), ARROW_GEOMETRY, undefined, selfPy);
+  });
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return geometryGetAttr(ARROW_GEOMETRY, selfPy, name);
+  });
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return geometrySetAttr(ARROW_GEOMETRY, selfPy, name, valuePy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var args = {};
@@ -2750,38 +2805,10 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy(new THREE[CIRCLE_GEOMETRY](Sk.ffi.remapToJs(radiusPy), Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(thetaStartPy), Sk.ffi.remapToJs(thetaLengthPy)), CIRCLE_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
-    var geometry = Sk.ffi.remapToJs(selfPy);
-    switch(name) {
-      case PROP_ID: {
-        return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
-      }
-      case PROP_UUID: {
-        return Sk.ffi.stringToPy(geometry[PROP_UUID]);
-      }
-      case PROP_NAME: {
-        return Sk.ffi.stringToPy(geometry[PROP_NAME]);
-      }
-      case PROP_VERTICES: {
-        return verticesPy(geometry[PROP_VERTICES]);
-      }
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(CIRCLE_GEOMETRY);
-      }
-    }
+    return geometryGetAttr(CIRCLE_GEOMETRY, selfPy, name);
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(selfPy);
-    switch(name) {
-      case PROP_NAME:
-      {
-        Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
-        geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
-      }
-      break;
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotSetableOnType(CIRCLE_GEOMETRY);
-      }
-    }
+    return geometrySetAttr(CIRCLE_GEOMETRY, selfPy, name, valuePy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var args = {};
@@ -2863,12 +2890,12 @@ mod[ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, CUBE_GEOMETRY, []);
 
 mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusTopPy, radiusBottomPy, heightPy, radialSegmentsPy, heightSegmentsPy, openEndedPy) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, radiusTopPy, radiusBottomPy, heightPy, radialSegmentsPy, heightSegmentsPy, openEndedPy, axisPy) {
     if (Sk.ffi.isInstance(radiusTopPy, CYLINDER_GEOMETRY)) {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(radiusTopPy), CYLINDER_GEOMETRY, undefined, selfPy);
     }
     else {
-      Sk.ffi.checkMethodArgs(CYLINDER_GEOMETRY, arguments, 0, 6);
+      Sk.ffi.checkMethodArgs(CYLINDER_GEOMETRY, arguments, 0, 7);
       Sk.ffi.checkArgType(PROP_RADIUS_TOP, NUM, Sk.ffi.isNum(radiusTopPy)||Sk.ffi.isUndefined(radiusTopPy), radiusTopPy);
       Sk.ffi.checkArgType(PROP_RADIUS_BOTTOM, NUM, Sk.ffi.isNum(radiusBottomPy)||Sk.ffi.isUndefined(radiusBottomPy), radiusBottomPy);
       Sk.ffi.checkArgType(PROP_HEIGHT, NUM, Sk.ffi.isNum(heightPy)||Sk.ffi.isUndefined(heightPy), heightPy);
@@ -2881,7 +2908,15 @@ mod[CYLINDER_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var radialSegments = Sk.ffi.remapToJs(radialSegmentsPy);
       var heightSegments = Sk.ffi.remapToJs(heightSegmentsPy);
       var openEnded = Sk.ffi.remapToJs(openEndedPy);
-      Sk.ffi.referenceToPy(new Sk.stdlib.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded), CYLINDER_GEOMETRY, undefined, selfPy);
+      var axis;
+      if (Sk.ffi.isDefined(axisPy)) {
+        Sk.ffi.checkArgType(PROP_AXIS, EUCLIDEAN_3, Sk.ffi.isInstance(axisPy, EUCLIDEAN_3), axisPy);
+        axis = Sk.ffi.remapToJs(axisPy).vector;
+      }
+      else {
+        axis = new THREE[VECTOR_3](0, 0, 1);
+      }
+      Sk.ffi.referenceToPy(new Sk.stdlib.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded, axis), CYLINDER_GEOMETRY, undefined, selfPy);
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
@@ -2949,37 +2984,11 @@ mod[LATHE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var generator = new THREE[QUATERNION](0, 0, 1, 0);
     Sk.ffi.referenceToPy(new Sk.stdlib.RevolutionGeometry(points, generator, Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    switch(name) {
-      case PROP_ID: {
-        return Sk.ffi.numberToIntPy(geometry[PROP_ID]);
-      }
-      case PROP_NAME: {
-        return Sk.ffi.stringToPy(geometry[PROP_NAME]);
-      }
-      case PROP_VERTICES: {
-        return verticesPy(geometry[PROP_VERTICES]);
-      }
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotGetableOnType(LATHE_GEOMETRY);
-      }
-    }
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return geometryGetAttr(LATHE_GEOMETRY, selfPy, name);
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(geometryPy, name, valuePy) {
-    var geometry = Sk.ffi.remapToJs(geometryPy);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      case PROP_NAME:
-      {
-        Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
-        geometry[PROP_NAME] = Sk.ffi.remapToJs(valuePy);
-      }
-      break;
-      default: {
-        throw Sk.ffi.err.attribute(name).isNotSetableOnType(LATHE_GEOMETRY);
-      }
-    }
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return geometrySetAttr(LATHE_GEOMETRY, selfPy, name, valuePy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var args = {};
@@ -3186,9 +3195,6 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__getattr__ = Sk.ffi.functionPy(function(geometryPy, name) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
     switch(name) {
-      case PROP_VERTICES: {
-        return verticesPy(geometry[PROP_VERTICES]);
-      }
       default: {
         return geometryGetAttr(REVOLUTION_GEOMETRY, geometryPy, name);
       }
@@ -3534,9 +3540,15 @@ function geometryGetAttr(className, geometryPy, name) {
     case PROP_UUID: {
       return Sk.ffi.stringToPy(geometry[name]);
     }
+    case PROP_FACES: {
+      var facesJs = geometry[name];
+      var faces = facesJs.map(function(faceJs) {
+        return Sk.ffi.callsim(mod[FACE_3], Sk.ffi.referenceToPy(faceJs, FACE_3));
+      });
+      return Sk.ffi.listPy(faces);
+    }
     case PROP_VERTICES: {
-      // TODO: This isn't really possible with the current implementation.
-      return verticesPy(geometry[PROP_VERTICES]);
+      return Sk.ffi.listPy(geometry[PROP_VERTICES].map(function(vertexJs) {return vectorToEuclidean3Py(vertexJs);}));
     }
     case PROP_RADIUS: {
       return Sk.ffi.numberToFloatPy(geometry[name]);
@@ -3578,8 +3590,12 @@ mod[GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       Sk.ffi.referenceToPy(new THREE['Geometry'](), GEOMETRY, undefined, selfPy);
     }
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {return geometryGetAttr(GEOMETRY, selfPy, name);});
-  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {return geometrySetAttr(GEOMETRY, selfPy, name, valuePy);});
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return geometryGetAttr(GEOMETRY, selfPy, name);
+  });
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return geometrySetAttr(GEOMETRY, selfPy, name, valuePy);
+  });
   $loc.__str__ = Sk.ffi.functionPy(function(geometryPy) {
     var geometry = Sk.ffi.remapToJs(geometryPy);
     var args = {};
@@ -3600,13 +3616,12 @@ function object3DGetAttr(className, selfPy, name) {
   var self = Sk.ffi.remapToJs(selfPy);
   switch(name) {
     case PROP_ID: {
-      return Sk.ffi.numberToIntPy(self[PROP_ID]);
+      return Sk.ffi.numberToIntPy(self[name]);
     }
-    case PROP_NAME: {
-      return Sk.ffi.stringToPy(self[PROP_NAME]);
-    }
-    case PROP_UUID: {
-      return Sk.ffi.stringToPy(self[PROP_UUID]);
+    case PROP_NAME:
+    case PROP_UUID:
+    case PROP_EULER_ORDER: {
+      return Sk.ffi.stringToPy(self[name]);
     }
     case PROP_ATTITUDE: {
       return quaternionToEuclidean3Py(self[PROP_QUATERNION]);
@@ -3620,11 +3635,9 @@ function object3DGetAttr(className, selfPy, name) {
     case PROP_QUATERNION: {
       return Sk.ffi.callsim(mod[QUATERNION], Sk.ffi.referenceToPy(self[PROP_QUATERNION], QUATERNION));
     }
-    case PROP_EULER_ORDER: {
-      return Sk.ffi.stringToPy(self[PROP_EULER_ORDER]);
-    }
-    case PROP_USE_QUATERNION: {
-      return self[PROP_USE_QUATERNION];
+    case PROP_USE_QUATERNION:
+    case PROP_VISIBLE: {
+      return Sk.ffi.booleanToPy(self[name]);
     }
     case PROP_CHARGE:
     case PROP_MASS:
@@ -3650,6 +3663,18 @@ function object3DGetAttr(className, selfPy, name) {
     case METHOD_REMOVE: {
       return methodRemove(self);
     }
+    case METHOD_TRAVERSE: {
+      return Sk.ffi.callableToPy(mod, name, function(methodPy, callbackPy) {
+        Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+        Sk.ffi.checkArgType(ARG_CALLBACK, Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(callbackPy), callbackPy);
+        var callbackJs = function(objJs) {
+          var objPy = Sk.ffi.callsim(mod[OBJECT_3D], Sk.ffi.referenceToPy(objJs, OBJECT_3D));
+          return Sk.ffi.remapToJs(Sk.ffi.callsim(callbackPy, objPy));
+        };
+        self[name](callbackJs);
+        return selfPy;
+      });
+    }
     default: {
       throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
     }
@@ -3663,7 +3688,6 @@ function object3DGetAttr(className, selfPy, name) {
  */
 function object3DSetAttr(className, selfPy, name, valuePy) {
   var self = Sk.ffi.remapToJs(selfPy);
-  var value = Sk.ffi.remapToJs(valuePy);
   switch(name) {
     case PROP_ATTITUDE: {
       setQuaternionProperty(className, selfPy, PROP_QUATERNION, valuePy, name);
@@ -3677,20 +3701,19 @@ function object3DSetAttr(className, selfPy, name, valuePy) {
     }
     break;
     case PROP_QUATERNION: {
-      self[PROP_QUATERNION] = value;
+      Sk.ffi.checkArgType(name, QUATERNION, Sk.ffi.isInstance(valuePy, QUATERNION), valuePy);
+      self[name] = Sk.ffi.remapToJs(valuePy);
     }
     break;
     case PROP_EULER_ORDER: {
-      if (isString(value)) {
-        self[PROP_EULER_ORDER] = value;
-      }
-      else {
-        throw new Error(name + " must be a string");
-      }
+      Sk.ffi.checkArgType(name, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+      self[name] = Sk.ffi.remapToJs(valuePy);
     }
     break;
-    case PROP_USE_QUATERNION: {
-      self[PROP_USE_QUATERNION] = value;
+    case PROP_USE_QUATERNION:
+    case PROP_VISIBLE: {
+      Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
+      self[name] = Sk.ffi.remapToJs(valuePy);
     }
     break;
     case PROP_CHARGE:
@@ -4048,14 +4071,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_NAME: {
         return Sk.ffi.stringToPy(mesh[PROP_NAME]);
       }
-      case PROP_OVERDRAW: {
-        if (isBoolean(mesh[PROP_OVERDRAW])) {
-          return mesh[PROP_OVERDRAW];
-        }
-        else {
-          return null;
-        }
-      }
       case PROP_POSITION: {
         return vectorToEuclidean3Py(mesh[PROP_POSITION]);
       }
@@ -4070,9 +4085,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case PROP_UP: {
         return vectorToEuclidean3Py(mesh[PROP_UP]);
-      }
-      case PROP_VISIBLE: {
-        return mesh[PROP_VISIBLE];
       }
       case METHOD_LOOK_AT: {return methodLookAt(meshPy);}
       case METHOD_ROTATE_ON_AXIS: {
@@ -4155,18 +4167,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         mesh[PROP_NAME] = value;
       }
       break;
-      case PROP_OVERDRAW: {
-        if (isBoolean(value)) {
-          mesh[PROP_OVERDRAW] = value;
-        }
-        else if (isNull(value)) {
-          mesh[PROP_OVERDRAW] = null;
-        }
-        else {
-          throw new Error(name + " must be either Boolean or None");
-        }
-      }
-      break;
       case PROP_POSITION:
       case PROP_ROTATION:
       case PROP_SCALE:
@@ -4189,11 +4189,6 @@ mod[MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       break;
       case PROP_USE_QUATERNION: {
         mesh[PROP_USE_QUATERNION] = value;
-      }
-      break;
-      case PROP_VISIBLE: {
-        Sk.ffi.checkArgType(PROP_VISIBLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
-        mesh[PROP_VISIBLE] = value;
       }
       break;
       default: {
@@ -4229,26 +4224,18 @@ function materialGetAttr(className, materialPy, name) {
     case PROP_ID: {
       return Sk.ffi.numberToIntPy(material[PROP_ID]);
     }
-    case PROP_NAME: {
-      return Sk.ffi.stringToPy(material[PROP_NAME]);
-    }
-    case PROP_NEEDS_UPDATE: {
-      return Sk.ffi.booleanToPy(material[PROP_NEEDS_UPDATE]);
-    }
     case PROP_OPACITY: {
       return Sk.ffi.numberToFloatPy(material[PROP_OPACITY]);
     }
-    case PROP_OVERDRAW: {
-      return Sk.ffi.numberToFloatPy(material[PROP_OVERDRAW]);
-    }
-    case PROP_TRANSPARENT: {
-      return Sk.ffi.booleanToPy(material[PROP_TRANSPARENT]);
-    }
+    case PROP_NAME:
     case PROP_UUID: {
-      return Sk.ffi.stringToPy(material[PROP_UUID]);
+      return Sk.ffi.stringToPy(material[name]);
     }
+    case PROP_NEEDS_UPDATE:
+    case PROP_OVERDRAW:
+    case PROP_TRANSPARENT:
     case PROP_VISIBLE: {
-      return Sk.ffi.booleanToPy(material[PROP_VISIBLE]);
+      return Sk.ffi.booleanToPy(material[name]);
     }
     default: {
       throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
@@ -4263,11 +4250,18 @@ function materialGetAttr(className, materialPy, name) {
  */
 function materialSetAttr(className, materialPy, name, valuePy) {
   var material = Sk.ffi.remapToJs(materialPy);
-  var value = Sk.ffi.remapToJs(valuePy);
   switch(name) {
     case PROP_NAME: {
-      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
-      material[PROP_NAME] = value;
+      Sk.ffi.checkArgType(name, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+      material[name] = Sk.ffi.remapToJs(valuePy);
+    }
+    break;
+    case PROP_NEEDS_UPDATE:
+    case PROP_OVERDRAW:
+    case PROP_TRANSPARENT:
+    case PROP_VISIBLE: {
+      Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
+      material[name] = Sk.ffi.remapToJs(valuePy);
     }
     break;
     default: {
@@ -4351,39 +4345,12 @@ mod[MESH_BASIC_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_NEEDS_UPDATE: {
-        if (isBoolean(value)) {
-          material[PROP_NEEDS_UPDATE] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
-        }
-      }
-      break;
       case PROP_OPACITY: {
         if (isNumber(value)) {
           material.opacity = value;
         }
         else {
           throw new Sk.builtin.TypeError("'" + PROP_OPACITY + "' attribute must be a <type 'float'>.");
-        }
-      }
-      break;
-      case PROP_OVERDRAW: {
-        if (isBoolean(value)) {
-          material[PROP_OVERDRAW] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
-        }
-      }
-      break;
-      case PROP_TRANSPARENT: {
-        if (isBoolean(value)) {
-          material[PROP_TRANSPARENT] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
         }
       }
       break;
@@ -4402,15 +4369,6 @@ mod[MESH_BASIC_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
         else {
           throw new Error(name + " must be a number");
-        }
-      }
-      break;
-      case PROP_VISIBLE: {
-        if (isBoolean(value)) {
-          material[PROP_VISIBLE] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
         }
       }
       break;
@@ -4439,10 +4397,10 @@ mod[MESH_BASIC_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, MESH_BASIC_MATERIAL, []);
 
 mod[MESH_LAMBERT_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, parametersPy) {
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy) {
     Sk.ffi.checkMethodArgs(MESH_LAMBERT_MATERIAL, arguments, 0, 1);
     var parameters = Sk.ffi.remapToJs(parametersPy);
-    Sk.ffi.referenceToPy(new THREE[MESH_LAMBERT_MATERIAL](parameters), MESH_LAMBERT_MATERIAL, undefined, self);
+    Sk.ffi.referenceToPy(new THREE[MESH_LAMBERT_MATERIAL](parameters), MESH_LAMBERT_MATERIAL, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(materialPy, name) {
     var material = Sk.ffi.remapToJs(materialPy);
@@ -4456,20 +4414,8 @@ mod[MESH_LAMBERT_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_NAME: {
         return Sk.ffi.stringToPy(material[PROP_NAME]);
       }
-      case PROP_NEEDS_UPDATE: {
-        return material[PROP_NEEDS_UPDATE];
-      }
       case PROP_OPACITY: {
         return Sk.ffi.numberToFloatPy(material[PROP_OPACITY]);
-      }
-      case PROP_OVERDRAW: {
-        return material[PROP_OVERDRAW];
-      }
-      case PROP_TRANSPARENT: {
-        return material[PROP_TRANSPARENT];
-      }
-      case PROP_VISIBLE: {
-        return material[PROP_VISIBLE];
       }
       default: {
         return materialGetAttr(MESH_LAMBERT_MATERIAL, materialPy, name);
@@ -4493,39 +4439,12 @@ mod[MESH_LAMBERT_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_NEEDS_UPDATE: {
-        if (isBoolean(value)) {
-          material[PROP_NEEDS_UPDATE] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
-        }
-      }
-      break;
       case PROP_OPACITY: {
         if (isNumber(value)) {
           material.opacity = value;
         }
         else {
           throw new Sk.builtin.TypeError("'" + PROP_OPACITY + "' attribute must be a <type 'float'>.");
-        }
-      }
-      break;
-      case PROP_OVERDRAW: {
-        if (isBoolean(value)) {
-          material[PROP_OVERDRAW] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
-        }
-      }
-      break;
-      case PROP_TRANSPARENT: {
-        if (isBoolean(value)) {
-          material[PROP_TRANSPARENT] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
         }
       }
       break;
@@ -4547,17 +4466,8 @@ mod[MESH_LAMBERT_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         }
       }
       break;
-      case PROP_VISIBLE: {
-        if (isBoolean(value)) {
-          material[PROP_VISIBLE] = value;
-        }
-        else {
-          throw new Error(name + " must be Boolean");
-        }
-      }
-      break;
       default: {
-        throw new Error(name + " is not an attribute of " + MESH_LAMBERT_MATERIAL);
+        return materialSetAttr(MESH_LAMBERT_MATERIAL, materialPy, name, valuePy);
       }
     }
   });
@@ -4576,59 +4486,42 @@ mod[MESH_LAMBERT_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, MESH_LAMBERT_MATERIAL, []);
 
 mod[MESH_NORMAL_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, parameters) {
-    self.tp$name = MESH_NORMAL_MATERIAL;
-    parameters = Sk.ffi.remapToJs(parameters);
-    self.v = new THREE[MESH_NORMAL_MATERIAL](parameters);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy) {
+    var parameters = Sk.ffi.remapToJs(parametersPy);
+    Sk.ffi.referenceToPy(new THREE[MESH_NORMAL_MATERIAL](parameters), MESH_NORMAL_MATERIAL, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
-    switch(name) {
-      default: {
-        throw new Error(name + " is not an attribute of " + MESH_NORMAL_MATERIAL);
-      }
-    }
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return materialGetAttr(MESH_NORMAL_MATERIAL, selfPy, name);
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(material) {
-    material = Sk.ffi.remapToJs(material);
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return materialSetAttr(MESH_NORMAL_MATERIAL, selfPy, name, valuePy);
+  });
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var args = {};
     return Sk.ffi.stringToPy(MESH_NORMAL_MATERIAL + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(material) {
-    material = Sk.ffi.remapToJs(material);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var args = [{}];
     return Sk.ffi.stringToPy(MESH_NORMAL_MATERIAL + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
 }, MESH_NORMAL_MATERIAL, []);
 
 mod[MESH_PHONG_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(self, parameters) {
-    self.tp$name = MESH_PHONG_MATERIAL;
-    parameters = Sk.ffi.remapToJs(parameters);
-    self.v = new THREE[MESH_PHONG_MATERIAL](parameters);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy) {
+    var parameters = Sk.ffi.remapToJs(parametersPy);
+    Sk.ffi.referenceToPy(new THREE[MESH_PHONG_MATERIAL](parameters), MESH_PHONG_MATERIAL, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
-    switch(name) {
-      default: {
-        throw new Error(name + " is not an attribute of " + MESH_PHONG_MATERIAL);
-      }
-    }
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    return materialGetAttr(MESH_PHONG_MATERIAL, selfPy, name);
   });
-  $loc.__setattr__ = Sk.ffi.functionPy(function(materialPy, name, valuePy) {
-    var material = Sk.ffi.remapToJs(materialPy);
-    var value = Sk.ffi.remapToJs(valuePy);
-    switch(name) {
-      default: {
-        throw new Error(name + " is not an attribute of " + MESH_PHONG_MATERIAL);
-      }
-    }
+  $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    return materialSetAttr(MESH_PHONG_MATERIAL, selfPy, name, valuePy);
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(material) {
-    material = Sk.ffi.remapToJs(material);
+  $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var args = {};
     return Sk.ffi.stringToPy(MESH_PHONG_MATERIAL + "(" + JSON.stringify(args) + ")");
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(material) {
-    material = Sk.ffi.remapToJs(material);
+  $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var args = [{}];
     return Sk.ffi.stringToPy(MESH_PHONG_MATERIAL + "(" + args.map(function(x) {return JSON.stringify(x);}).join(", ") + ")");
   });
@@ -4671,6 +4564,9 @@ mod[FACE_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_NORMAL: {
         return vectorToEuclidean3Py(face[PROP_NORMAL]);
       }
+      case PROP_VERTEX_NORMALS: {
+        return Sk.ffi.listPy(face[PROP_VERTEX_NORMALS].map(function(vectorJs) {return vectorToEuclidean3Py(vectorJs);}));
+      }
       default: {
         throw Sk.ffi.err.attribute(name).isNotGetableOnType(FACE_3);
       }
@@ -4678,7 +4574,6 @@ mod[FACE_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
     var face = Sk.ffi.remapToJs(selfPy);
-    var value = Sk.ffi.remapToJs(valuePy);
     switch(name) {
       default: {
         throw Sk.ffi.err.attribute(name).isNotSetableOnType(FACE_3);

@@ -55,6 +55,11 @@ var PROP_ATTITUDE                   = "attitude";
  * @const
  * @type {string}
  */
+var PROP_AXIS                       = "axis";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_ORIGIN                     = "origin";
 /**
  * @const
@@ -381,6 +386,7 @@ var MATERIAL_GRID_MINOR = new THREE[LINE_BASIC_MATERIAL]({"color": COLOR_GRID,"o
 var e1 = new THREE[VECTOR_3](1, 0, 0);
 var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
+var E3  = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 1), new THREE[QUATERNION](0, 0, 0, 0), 0, false);
 var one = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 0), new THREE[QUATERNION](0, 0, 0, 1), 0, false);
 
 function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
@@ -685,6 +691,14 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case PROP_AXIS: {
+        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
+          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_AXIS, [EUCLIDEAN_3, Sk.ffi.PyType.NONE], Sk.ffi.isInstance(axisPy, EUCLIDEAN_3) || Sk.ffi.isNone(axisPy), axisPy);
+          arrow[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+          return selfPy;
+        });
+      }
       case PROP_RADIUS: {
         return Sk.ffi.callableToPy(mod, PROP_RADIUS, function(methodPy, radiusPy) {
           Sk.ffi.checkMethodArgs(PROP_RADIUS, arguments, 1, 1);
@@ -704,11 +718,12 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
-           * @return {{scale: number, attitude: Object, length: number, radius: number}}
+           * @return {{scale: number, attitude: Object, length: number, radius: number, axis: Object}}
            */
           function dimensionArrow() {
             var dims = {};
             dims.attitude = (arrow.attitude) ? arrow.attitude : one;
+            dims.axis     = (arrow[PROP_AXIS]) ? arrow[PROP_AXIS] : E3;
             if (arrow.volume) {
               var s = (arrow.scale)  ? arrow.scale  : 1;
               var h = (arrow.length) ? arrow.length : DEFAULT_CYLINDER_HEIGHT;
@@ -730,7 +745,8 @@ mod[ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var attitudePy = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_ATTITUDE], EUCLIDEAN_3));
           var segmentsPy = Sk.ffi.numberToIntPy(arrow[PROP_SEGMENTS] ? arrow[PROP_SEGMENTS] : 32);
           var lengthPy   = Sk.ffi.numberToFloatPy(dimensions[PROP_MAGNITUDE]);
-          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy);
+          var axisPy     = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_AXIS], EUCLIDEAN_3));
+          var geometryPy = Sk.ffi.callsim(mod[ARROW_GEOMETRY], scalePy, attitudePy, segmentsPy, lengthPy, undefined, undefined, undefined, axisPy);
           return completeMesh(geometryPy, arrow);
         });
       }
@@ -948,6 +964,14 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var cylinder = Sk.ffi.remapToJs(selfPy);
     switch(name) {
+      case PROP_AXIS: {
+        return Sk.ffi.callableToPy(mod, PROP_AXIS, function(methodPy, axisPy) {
+          Sk.ffi.checkMethodArgs(PROP_AXIS, arguments, 1, 1);
+          Sk.ffi.checkArgType(PROP_AXIS, [EUCLIDEAN_3, Sk.ffi.PyType.NONE], Sk.ffi.isInstance(axisPy, EUCLIDEAN_3) || Sk.ffi.isNone(axisPy), axisPy);
+          cylinder[PROP_AXIS] = Sk.ffi.remapToJs(axisPy);
+          return selfPy;
+        });
+      }
       case PROP_HEIGHT: {
         return Sk.ffi.callableToPy(mod, PROP_HEIGHT, function(methodPy, heightPy) {
           Sk.ffi.checkMethodArgs(PROP_HEIGHT, arguments, 1, 1);
@@ -992,10 +1016,11 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_BUILD: {
         return Sk.ffi.callableToPy(mod, METHOD_BUILD, function(methodPy) {
           /**
-           * @return {{a: number, b: number, h: number}}
+           * @return {{a: number, b: number, h: number, axis: Object}}
            */
           function dimensionCylinder() {
             var dims = {};
+            dims.axis     = (cylinder[PROP_AXIS]) ? cylinder[PROP_AXIS] : E3;
             if (cylinder.volume) {
               var a = (typeof cylinder.radiusTop    === 'number') ? cylinder.radiusTop    : DEFAULT_CYLINDER_RADIUS;
               var b = (typeof cylinder.radiusBottom === 'number') ? cylinder.radiusBottom : DEFAULT_CYLINDER_RADIUS;
@@ -1020,7 +1045,8 @@ mod[CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var radialSegments = Sk.ffi.numberToIntPy(cylinder[PROP_SEGMENTS] ? cylinder[PROP_SEGMENTS] : 32);
           var heightSegments = Sk.ffi.numberToIntPy(1);
           var openEnded      = Sk.ffi.booleanToPy(false);
-          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded);
+          var axisPy         = Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(dimensions[PROP_AXIS], EUCLIDEAN_3));
+          var geometryPy = Sk.ffi.callsim(mod[CYLINDER_GEOMETRY], radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded, axisPy);
           return completeMesh(geometryPy, cylinder);
         });
       }

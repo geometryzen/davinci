@@ -107,6 +107,11 @@ var METHOD_BUILD                    = "build";
  */
 var METHOD_NORMALIZE                = "normalize";
 /**
+ * @const
+ * @type {string}
+ */
+var METHOD_TRAVERSE                 = "traverse";
+/**
  * ProbeE3
  */
 mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -180,6 +185,14 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             return new THREE[QUATERNION](1, 0, 0, 0);
           }
         }
+        function show(composite, scale) {
+          composite.scale.set(scale, scale, scale);
+          composite[METHOD_TRAVERSE](function(x) {x.visible = true;});
+        }
+        function hide(composite) {
+          composite[METHOD_TRAVERSE](function(x) {x.visible = false;});
+          composite.scale.set(1, 1, 1);
+        }
         var value = Sk.ffi.remapToJs(valuePy);
         var w   = value.w;
         var x   = value.x;
@@ -193,51 +206,47 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade0 = Sk.ffi.remapToJs(probe[PROP_GRADE_0]);
         var s0 = Math.abs(w);
         if (s0 !== 0) {
-          grade0.scale.set(s0, s0, s0);
-          grade0.visible = true;
+          show(grade0, s0);
         }
         else {
-          grade0.visible = false;
-          grade0.scale.set(1, 1, 1);
+          hide(grade0);
         }
 
         var grade1 = Sk.ffi.remapToJs(probe[PROP_GRADE_1]);
         if (x !== 0 || y !== 0 || z !== 0) {
           var s1 = Math.sqrt(x * x + y * y + z * z);
-          grade1.scale.set(s1, s1, s1);
           grade1.quaternion = quaternion(x/s1, y/s1, z/s1);
-          grade1.visible = true;
+          show(grade1, s1);
         }
         else {
-          grade1.visible = false;
-          grade1.scale.set(1, 1, 1);
+          hide(grade1);
         }
 
         var grade2 = Sk.ffi.remapToJs(probe[PROP_GRADE_2]);
         if (xy !== 0 || yz !== 0 || zx !== 0) {
           var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
           var s2 = Math.pow(norm2, 1/2);
-          grade2.scale.set(s2, s2, s2);
           grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
-          grade2.visible = true;
+          show(grade2, s2);
         }
         else {
-          grade2.visible = false;
-          grade2.scale.set(1, 1, 1);
+          hide(grade2);
         }
 
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         if (xyz !== 0) {
           var s3 = Math.pow(Math.abs(xyz), 1/3);
-          grade3.scale.set(s3, s3, s3);
-          grade3.visible = true;
+          show(grade3, s3);
         }
         else {
-          grade3.visible = false;
-          grade3.scale.set(1, 1, 1);
+          hide(grade3);
         }
 
         probe[PROP_QUANTITY] = valuePy;
+      }
+      break;
+      case PROP_GRADE_3: {
+        probe[PROP_GRADE_3] = valuePy;
       }
       break;
       default: {
