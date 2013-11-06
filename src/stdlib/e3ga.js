@@ -139,6 +139,16 @@ var METHOD_ADD                 = "add";
  * @const
  * @type {string}
  */
+var METHOD_APPLY_MATRIX_3      = "applyMatrix3";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_APPLY_MATRIX_4      = "applyMatrix4";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CLIFFORD_CONJUGATE  = "cliffordConjugate";
 /**
  * @const
@@ -789,17 +799,17 @@ mod[SCALAR_E3] = Sk.ffi.functionPy(function(wPy, mutablePy) {
   return coordsJsToE3Py(Sk.ffi.numberToJs(wPy), 0, 0, 0, 0, 0, 0, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
-mod[Sk.e3ga.VECTOR_E3] = Sk.ffi.functionPy(function(x, y, z, mutablePy) {
+mod[Sk.e3ga.VECTOR_E3] = Sk.ffi.functionPy(function(xPy, yPy, zPy, mutablePy) {
   Sk.ffi.checkFunctionArgs(Sk.e3ga.VECTOR_E3, arguments, 3, 4);
-  Sk.ffi.checkArgType(PROP_X, NUMBER, Sk.ffi.isNum(x), x);
-  Sk.ffi.checkArgType(PROP_Y, NUMBER, Sk.ffi.isNum(y), y);
-  Sk.ffi.checkArgType(PROP_Z, NUMBER, Sk.ffi.isNum(z), z);
+  Sk.ffi.checkArgType(PROP_X, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(xPy), xPy);
+  Sk.ffi.checkArgType(PROP_Y, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(yPy), yPy);
+  Sk.ffi.checkArgType(PROP_Z, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(zPy), zPy);
   if (Sk.ffi.isDefined(mutablePy)) {
     Sk.ffi.checkArgType(PROP_MUTABLE, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(mutablePy), mutablePy);
   }
-  x = Sk.ffi.numberToJs(x);
-  y = Sk.ffi.numberToJs(y);
-  z = Sk.ffi.numberToJs(z);
+  var x = Sk.ffi.numberToJs(xPy);
+  var y = Sk.ffi.numberToJs(yPy);
+  var z = Sk.ffi.numberToJs(zPy);
   return coordsJsToE3Py(0, x, y, z, 0, 0, 0, 0, Sk.ffi.remapToJs(mutablePy));
 });
 
@@ -1448,6 +1458,22 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           quaternion.y += other.quaternion.y;
           quaternion.z += other.quaternion.z;
           self.xyz += other.xyz;
+          return selfPy;
+        });
+      }
+      case METHOD_APPLY_MATRIX_3: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, mPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType("m", Sk.three.MATRIX_3, Sk.ffi.isInstance(mPy, Sk.three.MATRIX_3), mPy);
+          vector[name](Sk.ffi.remapToJs(mPy));
+          return selfPy;
+        });
+      }
+      case METHOD_APPLY_MATRIX_4: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, mPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType("m", Sk.three.MATRIX_4, Sk.ffi.isInstance(mPy, Sk.three.MATRIX_4), mPy);
+          vector[name](Sk.ffi.remapToJs(mPy));
           return selfPy;
         });
       }
