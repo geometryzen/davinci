@@ -985,6 +985,22 @@ THREE.ParticleSystem = function(geometry, material) {};
 /** @type {boolean} */                          THREE.ParticleSystem.prototype.sortParticles;
 
 // ============================================================================
+// THREE.ParticleSystemMaterial
+// ============================================================================
+
+/**
+@constructor
+@param {Object} parameters
+*/
+THREE.ParticleSystemMaterial = function(parameters) {};
+
+/** @type {!THREE.Color}  */                    THREE.ParticleSystemMaterial.prototype.color;
+/** @type {!number}  */                         THREE.ParticleSystemMaterial.prototype.size;
+/** @type {!boolean} */                         THREE.ParticleSystemMaterial.prototype.sizeAttenuation;
+/** @type {!boolean} */                         THREE.ParticleSystemMaterial.prototype.vertexColors;
+/** @type {!boolean} */                         THREE.ParticleSystemMaterial.prototype.fog;
+
+// ============================================================================
 // THREE.SkinnedMesh
 // ============================================================================
 
@@ -996,7 +1012,7 @@ THREE.ParticleSystem = function(geometry, material) {};
 */
 THREE.SkinnedMesh = function(g,m){};
 
-/** @type {?Array.<!THREE.Matrix4>} */ THREE.SkinnedMesh.prototype.boneInverses;
+/** @type {?Array.<!THREE.Matrix4>} */          THREE.SkinnedMesh.prototype.boneInverses;
 
 // ============================================================================
 // THREE.Geometry

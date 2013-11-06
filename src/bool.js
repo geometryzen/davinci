@@ -3,11 +3,11 @@ Sk.builtin.bool = function(x)
     Sk.builtin.pyCheckArgs("bool", arguments, 1);
     if (Sk.misceval.isTrue(x))
     {
-	return Sk.builtin.bool.true$;
+        return Sk.builtin.bool.true$;
     }
     else
     {
-	return Sk.builtin.bool.false$;
+        return Sk.builtin.bool.false$;
     }
 };
 
@@ -17,11 +17,31 @@ Sk.builtin.bool.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('bool', Sk.b
 Sk.builtin.bool.prototype['$r'] = function()
 {
     if (this.v)
-	return new Sk.builtin.str('True');
+    return new Sk.builtin.str('True');
     return new Sk.builtin.str('False');
 }
 
 Sk.builtin.bool.true$ = Object.create(Sk.builtin.bool.prototype, {v: {value: true, enumerable: true}});
 Sk.builtin.bool.false$ = Object.create(Sk.builtin.bool.prototype, {v: {value: false, enumerable: true}});
+
+Sk.builtin.bool.prototype.tp$str = function()
+{
+    if (this.v) {
+        return new Sk.builtin.str("True");
+    }
+    else {
+        return new Sk.builtin.str("False");
+    }
+};
+
+Sk.builtin.bool.prototype.tp$repr = function()
+{
+    if (this.v) {
+        return new Sk.builtin.str("True");
+    }
+    else {
+        return new Sk.builtin.str("False");
+    }
+};
 
 goog.exportSymbol("Sk.builtin.bool", Sk.builtin.bool);

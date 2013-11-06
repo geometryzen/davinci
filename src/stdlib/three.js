@@ -458,6 +458,11 @@ var PROP_FAR                   = "far";
  * @const
  * @type {string}
  */
+var PROP_FOG                   = "fog";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_FOV                   = "fov";
 /**
  * @const
@@ -623,6 +628,16 @@ var PROP_RAY                   = "ray";
  * @const
  * @type {string}
  */
+var PROP_SIZE                  = "size";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_SIZE_ATTENUATION      = "sizeAttenuation";
+/**
+ * @const
+ * @type {string}
+ */
 var PROP_SPHERE                = "sphere";
 /**
  * @const
@@ -719,6 +734,11 @@ var PROP_USE_QUATERNION        = "useQuaternion";
  * @type {string}
  */
 var PROP_VELOCITY              = "velocity";
+/**
+ * @const
+ * @type {string}
+ */
+var PROP_VERTEX_COLORS         = "vertexColors";
 /**
  * @const
  * @type {string}
@@ -4710,14 +4730,64 @@ mod[Sk.three.PARTICLE_SYSTEM_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $
     }
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    /**
+     * @const
+     * @type {THREE.ParticleSystemMaterial}
+     */
+    var material = Sk.ffi.remapToJs(selfPy);
     switch(name) {
+      case PROP_COLOR: {
+        return colorToColorPy(material.color);
+      }
+      case PROP_SIZE: {
+        return Sk.ffi.numberToFloatPy(material.size);
+      }
+      case PROP_SIZE_ATTENUATION: {
+        return Sk.ffi.booleanToPy(material.sizeAttenuation);
+      }
+      case PROP_VERTEX_COLORS: {
+        return Sk.ffi.booleanToPy(material.vertexColors);
+      }
+      case PROP_FOG: {
+        return Sk.ffi.booleanToPy(material.fog);
+      }
       default: {
         return materialGetAttr(Sk.three.PARTICLE_SYSTEM_MATERIAL, selfPy, name);
       }
     }
   });
   $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+    /**
+     * @const
+     * @type {THREE.ParticleSystemMaterial}
+     */
+    var material = Sk.ffi.remapToJs(selfPy);
     switch(name) {
+      case PROP_COLOR: {
+        Sk.ffi.checkArgType(name, COLOR, Sk.ffi.isInstance(valuePy, COLOR), valuePy);
+        material.color = Sk.ffi.remapToJs(valuePy);
+      }
+      break;
+      case PROP_SIZE: {
+        Sk.ffi.checkArgType(name, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(valuePy), valuePy);
+        material.size = Sk.ffi.remapToJs(valuePy);
+      }
+      break;
+      case PROP_SIZE_ATTENUATION: {
+        Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
+        material.sizeAttenuation = Sk.ffi.remapToJs(valuePy);
+      }
+      break;
+      case PROP_VERTEX_COLORS: {
+        Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
+        material.vertexColors = Sk.ffi.remapToJs(valuePy);
+      }
+      break;
+      case PROP_FOG: {
+        Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
+        material.fog = Sk.ffi.remapToJs(valuePy);
+      }
+      break;
       default: {
         return materialSetAttr(Sk.three.PARTICLE_SYSTEM_MATERIAL, selfPy, name, valuePy);
       }
@@ -4725,14 +4795,13 @@ mod[Sk.three.PARTICLE_SYSTEM_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    var names  = [];
-    var argsPy = names.map(function(name) {return Sk.ffi.gattr(selfPy, name);});
-    var args = argsPy.map(function(valuePy) {return Sk.ffi.remapToJs(Sk.ffh.str(valuePy));});
+    var names = [PROP_COLOR, PROP_SIZE, PROP_SIZE_ATTENUATION, PROP_VERTEX_COLORS, PROP_FOG];
+    var args = names.map(function(name) {return [name, Sk.ffi.remapToJs(Sk.ffh.str(Sk.ffi.gattr(selfPy, name)))].join(EQUAL);});
     return Sk.ffi.stringToPy(Sk.three.PARTICLE_SYSTEM_MATERIAL + LPAREN + args.join(COMMA + SPACE) + RPAREN);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    var names  = [];
+    var names = [PROP_COLOR, PROP_SIZE, PROP_SIZE_ATTENUATION, PROP_VERTEX_COLORS, PROP_FOG];
     var argsPy = names.map(function(name) {return Sk.ffi.gattr(selfPy, name);});
     var args = argsPy.map(function(valuePy) {return Sk.ffi.remapToJs(Sk.ffh.repr(valuePy));});
     return Sk.ffi.stringToPy(Sk.three.PARTICLE_SYSTEM_MATERIAL + LPAREN + args.join(COMMA + SPACE) + RPAREN);
