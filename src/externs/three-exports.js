@@ -1,8 +1,7 @@
-/*
-A totally incomplete file containing three.js exports.
-Use it with google's closure compiler.
-
-*/
+/**
+ * three.js exports.
+ * For use with Google's closure compiler.
+ */
 var THREE = {};
 
 // ============================================================================
@@ -163,7 +162,7 @@ THREE.Matrix4.prototype.setPosition = function(p){};
 
 /**
 @param {!THREE.Matrix4} m
-@param {Boolean=} throwOnInvertible
+@param {boolean=} throwOnInvertible
 @return {!THREE.Matrix4}
 */
 THREE.Matrix4.prototype.getInverse = function(m, throwOnInvertible){};
@@ -654,7 +653,7 @@ THREE.Vector3.prototype.getScaleFromMatrix = function(m){};
 /**
 @nosideeffects
 @param {THREE.Vector3} v
-@return {Boolean}
+@return {boolean}
 */
 THREE.Vector3.prototype.equals = function(v){};
 
@@ -808,7 +807,7 @@ THREE.Quaternion.prototype.slerp = function(q, t){};
 /**
 @nosideeffects
 @param {THREE.Quaternion} q
-@return {Boolean}
+@return {boolean}
 */
 THREE.Quaternion.prototype.equals = function(q){};
 
@@ -884,15 +883,15 @@ THREE.Color.prototype.copy = function(c){};
 THREE.Face3 = function(a, b, c, normal, color, materialIndex){};
 
 /** @type {!number} */                   THREE.Face3.prototype.a;
-/** @type {!string} */                   THREE.Face3.prototype.b;
-/** @type {!string} */                   THREE.Face3.prototype.c;
+/** @type {!number} */                   THREE.Face3.prototype.b;
+/** @type {!number} */                   THREE.Face3.prototype.c;
 /** @type {!THREE.Vector3} */            THREE.Face3.prototype.normal;
 /** @type {!Array.<!THREE.Vector3>} */   THREE.Face3.prototype.vertexNormals;
 /** @type {!THREE.Color} */              THREE.Face3.prototype.color;
 /** @type {!Array.<!THREE.Color>} */     THREE.Face3.prototype.vertexColors;
 /** @type {!Array.<!THREE.Vector3>} */   THREE.Face3.prototype.vertexTangents;
 /** @type {!number} */                   THREE.Face3.prototype.materialIndex;
-
+/** @type {!THREE.Vector3} */            THREE.Face3.prototype.centroid;
 
 // ============================================================================
 // THREE.Object3D
@@ -914,18 +913,18 @@ THREE.Object3D = function(){};
 /** @type {!string} */                   THREE.Object3D.prototype.eulerOrder;
 /** @type {!THREE.Vector3} */            THREE.Object3D.prototype.scale;
 /** @type {?number} */                   THREE.Object3D.prototype.renderDepth;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.rotationAutoUpdate;
+/** @type {!boolean} */                  THREE.Object3D.prototype.rotationAutoUpdate;
 /** @type {!THREE.Matrix4} */            THREE.Object3D.prototype.matrix;
 /** @type {!THREE.Matrix4} */            THREE.Object3D.prototype.matrixWorld;
 /** @type {!THREE.Matrix4} */            THREE.Object3D.prototype.matrixRotationWorld;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.matrixAutoUpdate;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.matrixWorldNeedsUpdate;
+/** @type {!boolean} */                  THREE.Object3D.prototype.matrixAutoUpdate;
+/** @type {!boolean} */                  THREE.Object3D.prototype.matrixWorldNeedsUpdate;
 /** @type {!THREE.Quaternion} */         THREE.Object3D.prototype.quaternion;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.useQuaternion;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.visible;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.castShadow;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.receiveShadow;
-/** @type {!Boolean} */                  THREE.Object3D.prototype.frustumCulled;
+/** @type {!boolean} */                  THREE.Object3D.prototype.useQuaternion;
+/** @type {!boolean} */                  THREE.Object3D.prototype.visible;
+/** @type {!boolean} */                  THREE.Object3D.prototype.castShadow;
+/** @type {!boolean} */                  THREE.Object3D.prototype.receiveShadow;
+/** @type {!boolean} */                  THREE.Object3D.prototype.frustumCulled;
 
 /**
 @param {THREE.Matrix4} m
@@ -972,6 +971,20 @@ THREE.Mesh = function(g,m){};
 THREE.MorphAnimMesh = function(g,m){};
 
 // ============================================================================
+// THREE.ParticleSystem
+// ============================================================================
+
+/**
+@constructor
+@param {THREE.Geometry} geometry
+@param {THREE.Material|THREE.MeshFaceMaterial} material
+*/
+THREE.ParticleSystem = function(geometry, material) {};
+
+/** @type {boolean} */                          THREE.ParticleSystem.prototype.frustrumCulled;
+/** @type {boolean} */                          THREE.ParticleSystem.prototype.sortParticles;
+
+// ============================================================================
 // THREE.SkinnedMesh
 // ============================================================================
 
@@ -995,6 +1008,8 @@ THREE.SkinnedMesh = function(g,m){};
 */
 THREE.Geometry = function(){};
 
+/** @type {number} */                           THREE.Geometry.prototype.id;
+/** @type {string} */                           THREE.Geometry.prototype.uuid;
 /** @type {string} */                           THREE.Geometry.prototype.name;
 /** @type {Array.<!THREE.Vector3>} */           THREE.Geometry.prototype.vertices;
 /** @type {Array.<!THREE.Color>} */             THREE.Geometry.prototype.colors;
@@ -1010,16 +1025,16 @@ THREE.Geometry = function(){};
 /** @type {Array.<number>} */                   THREE.Geometry.prototype.lineDistances;
 /** @type {*} */                                THREE.Geometry.prototype.boundingBox;
 /** @type {*} */                                THREE.Geometry.prototype.boundingSphere;
-/** @type {Boolean} */                          THREE.Geometry.prototype.hasTangents;
-/** @type {Boolean} */                          THREE.Geometry.prototype.dynamic;
-/** @type {Boolean} */                          THREE.Geometry.prototype.verticesNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.elementsNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.uvsNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.normalsNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.tangentsNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.colorsNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.lineDistancesNeedUpdate;
-/** @type {Boolean} */                          THREE.Geometry.prototype.buffersNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.hasTangents;
+/** @type {boolean} */                          THREE.Geometry.prototype.dynamic;
+/** @type {boolean} */                          THREE.Geometry.prototype.verticesNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.elementsNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.uvsNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.normalsNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.tangentsNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.colorsNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.lineDistancesNeedUpdate;
+/** @type {boolean} */                          THREE.Geometry.prototype.buffersNeedUpdate;
 
 /**
 @param {THREE.Matrix4} m
