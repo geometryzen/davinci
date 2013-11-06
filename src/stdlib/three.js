@@ -4277,7 +4277,7 @@ Sk.three.meshGetAttr = function(className, meshPy, name) {
       });
     }
     default: {
-      throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
+      return Sk.three.object3DGetAttr(className, meshPy, name);
     }
   }
 }
@@ -4326,7 +4326,7 @@ Sk.three.meshSetAttr = function(className, meshPy, name, valuePy) {
     }
     break;
     default: {
-      throw Sk.ffi.err.attribute(name).isNotSetableOnType(className);
+      return Sk.three.object3DSetAttr(className, meshPy, name, valuePy);
     }
   }
 };
