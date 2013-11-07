@@ -90,6 +90,11 @@ var PROP_GRADE_3                    = "grade3";
  * @const
  * @type {string}
  */
+var PROP_ORIENTATION                = "orientation";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_BUILD                    = "build";
 /**
  * @const
@@ -174,19 +179,31 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             var xy =  0;
             var yz = +scale * y;
             var zx = -scale * x;
-            return new THREE[QUATERNION](-yz, -zx, -xy, scale * (1 + z));
+            return new THREE.Quaternion(-yz, -zx, -xy, scale * (1 + z));
           }
           else {
-            return new THREE[QUATERNION](1, 0, 0, 0);
+            return new THREE.Quaternion(1, 0, 0, 0);
           }
         }
+        /**
+         * Shows the specified object and all its descendants.
+         * @param {!THREE.Object3D} composite
+         * @param {!number} scale
+         */
         function show(composite, scale) {
           composite.scale.set(scale, scale, scale);
-          composite[METHOD_TRAVERSE](function(x) {x.visible = true;});
+          composite.traverse(function(x) {x.visible = true;});
         }
+        /**
+         * Hides the specified object and all its descendants.
+         * @param {!THREE.Object3D} composite
+         */
         function hide(composite) {
-          composite[METHOD_TRAVERSE](function(x) {x.visible = false;});
+          composite.traverse(function(x) {x.visible = false;});
           composite.scale.set(1, 1, 1);
+        }
+        function signum(x) {
+          return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : isNaN(x) ? NaN : 0 : NaN;
         }
         var value = Sk.ffi.remapToJs(valuePy);
         var w   = value.w;
@@ -231,6 +248,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         if (xyz !== 0) {
           var s3 = Math.pow(Math.abs(xyz), 1 / 3);
+          Sk.ffi.sattr(probe[PROP_GRADE_3], PROP_ORIENTATION, Sk.ffi.booleanToPy(signum(xyz) >= 0));
           show(grade3, s3);
         }
         else {

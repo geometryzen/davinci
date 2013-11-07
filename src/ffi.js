@@ -1144,6 +1144,15 @@ Sk.ffi.gattr = function(objectPy, name)
 goog.exportSymbol("Sk.ffi.gattr", Sk.ffi.gattr);
 
 /**
+ *
+ */
+Sk.ffi.sattr = function(objectPy, name, valuePy)
+{
+    return Sk.abstr.sattr(objectPy, name, valuePy);
+}
+goog.exportSymbol("Sk.ffi.sattr", Sk.ffi.sattr);
+
+/**
  * @param {...*} args
  * @return {!Sk.builtin.IndexError}
  */

@@ -942,6 +942,11 @@ THREE.Object3D.prototype.add = function(o){};
 THREE.Object3D.prototype.remove = function(o){};
 
 /**
+@param {function(THREE.Object3D)} callback
+*/
+THREE.Object3D.prototype.traverse = function(callback){};
+
+/**
 Note: this function has side effects
 @return {THREE.Object3D}
 */
