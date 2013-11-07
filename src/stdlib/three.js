@@ -828,6 +828,11 @@ var METHOD_APPEND              = "append";
  * @const
  * @type {string}
  */
+var METHOD_APPLY_MATRIX        = "applyMatrix";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CONTAINS_POINT      = "containsPoint";
 /**
  * @const
@@ -879,6 +884,21 @@ var METHOD_INTERSECTS_SPHERE   = "intersectsSphere";
  * @type {string}
  */
 var METHOD_INTERSECT_OBJECTS   = "intersectObjects";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_MAKE_ROTATION_X     = "makeRotationX";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_MAKE_ROTATION_Y     = "makeRotationY";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_MAKE_ROTATION_Z     = "makeRotationZ";
 /**
  * @const
  * @type {string}
@@ -1079,6 +1099,11 @@ var ARG_RADIUS_CONE            = PROP_RADIUS_CONE;
  * @type {string}
  */
 var ARG_RADIUS_SHAFT           = PROP_RADIUS_SHAFT;
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_THETA                  = "theta";
 /**
  * @const
  * @type {string}
@@ -3677,6 +3702,13 @@ function geometryGetAttr(className, geometryPy, name) {
     case PROP_HEIGHT: {
       return Sk.ffi.numberToFloatPy(geometry.height);
     }
+    case METHOD_APPLY_MATRIX: {
+      return Sk.ffi.callableToPy(mod, name, function(methodPy, matrixPy) {
+        Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+        Sk.ffi.checkArgType("matrix", Sk.three.MATRIX_4, Sk.ffi.isInstance(matrixPy, Sk.three.MATRIX_4), matrixPy);
+        geometry.applyMatrix(Sk.ffi.remapToJs(matrixPy));
+      });
+    }
     default: {
       throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
     }
@@ -4866,6 +4898,14 @@ mod[Sk.three.MATRIX_4] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var matrix = Sk.ffi.remapToJs(selfPy);
     switch(name) {
+      case METHOD_MAKE_ROTATION_X: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, thetaPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_THETA, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(thetaPy), thetaPy);
+          var theta = Sk.ffi.remapToJs(thetaPy);
+          return Sk.ffi.callsim(mod[Sk.three.MATRIX_4], Sk.ffi.referenceToPy(matrix.makeRotationX(theta), Sk.three.MATRIX_4));
+        });
+      }
       default: {
         throw Sk.ffi.err.attribute(name).isNotGetableOnType(Sk.three.MATRIX_4);
       }
