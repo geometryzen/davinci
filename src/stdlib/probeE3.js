@@ -248,7 +248,12 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade3 = Sk.ffi.remapToJs(probe[PROP_GRADE_3]);
         if (xyz !== 0) {
           var s3 = Math.pow(Math.abs(xyz), 1 / 3);
-          Sk.ffi.sattr(probe[PROP_GRADE_3], PROP_ORIENTATION, Sk.ffi.booleanToPy(signum(xyz) >= 0));
+          try {
+            Sk.ffi.sattr(probe[PROP_GRADE_3], PROP_ORIENTATION, Sk.ffi.booleanToPy(signum(xyz) >= 0));
+          }
+          catch(e) {
+            // orientation may not be defined.
+          }
           show(grade3, s3);
         }
         else {
