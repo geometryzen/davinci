@@ -134,7 +134,7 @@ THREE.Matrix4.prototype.crossVector = function(v){};
 @return {!number}
 @nosideeffects
 */
-THREE.Matrix4.prototype.determinant = function(v){};
+THREE.Matrix4.prototype.determinant = function(){};
 
 /**
 @return {!THREE.Matrix4}
@@ -334,6 +334,56 @@ THREE.Matrix4.prototype.clone = function(){};
 @param {?number=} n33
 */
 THREE.Matrix3 = function(n11, n12, n13, n21, n22, n23, n31, n32, n33){};
+
+/** @type {Array.<!number>} */ THREE.Matrix3.prototype.elements;
+
+/**
+@nosideeffects
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.clone = function(){};
+
+/**
+@param {THREE.Matrix3} m
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.copy = function(m){};
+
+/**
+@return {!number}
+@nosideeffects
+*/
+THREE.Matrix3.prototype.determinant = function(){};
+
+/**
+@param {!THREE.Matrix4} m
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.getNormalMatrix = function(m){};
+
+/**
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.identity = function(){};
+
+/**
+@param {?number=} n11 
+@param {?number=} n12
+@param {?number=} n13
+@param {?number=} n21
+@param {?number=} n22
+@param {?number=} n23
+@param {?number=} n31
+@param {?number=} n32
+@param {?number=} n33
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.set = function(n11, n12, n13, n21, n22, n23, n31, n32, n33){};
+
+/**
+@return {!THREE.Matrix3}
+*/
+THREE.Matrix3.prototype.transpose = function(){};
 
 // ============================================================================
 // THREE.Vector3

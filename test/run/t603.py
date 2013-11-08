@@ -8,16 +8,16 @@ def showValue(name, m):
     print name + " => " + str(m)
     return m
 
-zero  = ScalarE3(0)
-one   = ScalarE3(1)
-two   = ScalarE3(2)
-i     = VectorE3(1, 0, 0)
-j     = VectorE3(0, 1, 0)
-k     = VectorE3(0, 0, 1)
-ij    = BivectorE3(1, 0, 0)
-jk    = BivectorE3(0, 1, 0)
-ki    = BivectorE3(0, 0, 1)
-I     = PseudoscalarE3(1)
+zero  = ScalarE3(0.0)
+one   = ScalarE3(1.0)
+two   = ScalarE3(2.0)
+i     = VectorE3(1.0, 0.0, 0.0)
+j     = VectorE3(0.0, 1.0, 0.0)
+k     = VectorE3(0.0, 0.0, 1.0)
+ij    = BivectorE3(1.0, 0.0, 0.0)
+jk    = BivectorE3(0.0, 1.0, 0.0)
+ki    = BivectorE3(0.0, 0.0, 1.0)
+I     = PseudoscalarE3(1.0)
 
 blades = [zero, one, two, i, j, k, ij, jk, ki, I]
 

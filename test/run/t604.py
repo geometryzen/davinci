@@ -19,8 +19,8 @@ def makeCoord(n):
     return n
 
 # Start with two random vectors a and b:
-a = VectorE3(makeCoord(3), makeCoord(5), makeCoord(7))
-b = VectorE3(makeCoord(2), makeCoord(4), makeCoord(6))
+a = VectorE3(makeCoord(3.0), makeCoord(5.0), makeCoord(7.0))
+b = VectorE3(makeCoord(2.0), makeCoord(4.0), makeCoord(6.0))
 
 print "a => " + str(a)
 print "b => " + str(b)
@@ -46,9 +46,9 @@ sinTheta = sqrt(1 - cosTheta * cosTheta)
 #print "|a cross b|= " + str(c.magnitude())
 #print "|a||b|sin(theta)= " + str(a.magnitude() * b.magnitude() * sinTheta)
 print "3) The direction of a cross b follows the right-hand rule."
-i = VectorE3(1, 0, 0)
-j = VectorE3(0, 1, 0)
-k = VectorE3(0, 0, 1)
+i = VectorE3(1.0, 0.0, 0.0)
+j = VectorE3(0.0, 1.0, 0.0)
+k = VectorE3(0.0, 0.0, 1.0)
 print "e1 cross e2 => " + str(e1.clone().cross(e2))
 print "e2 cross e3 => " + str(e2.clone().cross(e3))
 print "e3 cross e1 => " + str(e3.clone().cross(e1))
@@ -60,7 +60,7 @@ print "e1, e2 and e3 are actually multivectors under the covers!"
 print "repr(e1) => " + repr(e1)
 print "repr(e2) => " + repr(e2)
 print "repr(e3) => " + repr(e3)
-I = PseudoscalarE3(1)
+I = PseudoscalarE3(1.0)
 print "PseudoscalarE3(1) => " + str(I)
 print "repr(PseudoscalarE3(1)) => " + repr(I)
 print "e1 * e2 * e3 => " + str(e1 * e2 * e3)
