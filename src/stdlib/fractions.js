@@ -142,25 +142,25 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       Sk.ffi.checkRhsOperandType(OP_ADD, RATIONAL_OR_INT, isRational(otherPy) || Sk.ffi.isInt(otherPy), otherPy);
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(a.add(b), RATIONAL));
+      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(a.add(b), RATIONAL));
     });
     $loc.__radd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       Sk.ffi.checkLhsOperandType(OP_ADD, RATIONAL_OR_INT, Sk.ffi.isInt(otherPy), otherPy);
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
-      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.add(self), RATIONAL));
+      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(other.add(self), RATIONAL));
     });
     $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       Sk.ffi.checkRhsOperandType(OP_SUB, RATIONAL_OR_INT, isRational(otherPy) || Sk.ffi.isInt(otherPy), otherPy);
       var a = Sk.ffi.remapToJs(selfPy);
       var b = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(a.sub(b), RATIONAL));
+      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(a.sub(b), RATIONAL));
     });
     $loc.__rsub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       Sk.ffi.checkLhsOperandType(OP_SUB, RATIONAL_OR_INT, Sk.ffi.isInt(otherPy), otherPy);
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
-      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.sub(self), RATIONAL));
+      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(other.sub(self), RATIONAL));
     });
     $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       var a = Sk.ffi.remapToJs(selfPy);
@@ -171,14 +171,14 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       }
       else {
         Sk.ffi.checkRhsOperandType(OP_MUL, RATIONAL_OR_INT, isRational(otherPy), otherPy);
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(a.mul(b), RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(a.mul(b), RATIONAL));
       }
     });
     $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       Sk.ffi.checkLhsOperandType(OP_MUL, RATIONAL_OR_INT, Sk.ffi.isInt(otherPy), otherPy);
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
-      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.mul(self), RATIONAL));
+      return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(other.mul(self), RATIONAL));
     });
     $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
       var numer = Sk.ffi.remapToJs(selfPy);
@@ -195,7 +195,7 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       else {
         Sk.ffi.checkRhsOperandType(OP_DIV, RATIONAL_OR_INT, isRational(otherPy), otherPy);
         if (denom.numer != 0) {
-          return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(numer.div(denom), RATIONAL));
+          return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(numer.div(denom), RATIONAL));
         }
         else {
           throw new Sk.builtin.ZeroDivisionError(DENOMINATOR_ZERO);
@@ -207,7 +207,7 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       var self = Sk.ffi.remapToJs(selfPy);
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
       if (self.numer != 0) {
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(other.div(self), RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(other.div(self), RATIONAL));
       }
       else {
         throw new Sk.builtin.ZeroDivisionError(DENOMINATOR_ZERO);
@@ -226,11 +226,11 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
     });
     $loc.__repr__ = Sk.ffi.functionPy(function(rationalPy) {
       var rational = Sk.ffi.remapToJs(rationalPy);
-      return Sk.ffi.remapToPy(RATIONAL + "(" + rational.numer + "," + rational.denom + ")");
+      return Sk.ffi.stringToPy(RATIONAL + "(" + rational.numer + "," + rational.denom + ")");
     });
     $loc.__str__ = Sk.ffi.functionPy(function(rationalPy) {
       var rational = Sk.ffi.remapToJs(rationalPy);
-      return Sk.ffi.remapToPy("" + rational);
+      return Sk.ffi.stringToPy("" + rational);
     });
   }, RATIONAL, []);
 };

@@ -29,7 +29,7 @@ var $builtinmodule = function(name)
 
     // ------------------------------------------------------------
     $loc.__str__ = new Sk.builtin.func(function(self) {
-      return Sk.ffi.remapToPy('<Response>');
+      return Sk.ffi.stringToPy('<Response>');
     });
 
 

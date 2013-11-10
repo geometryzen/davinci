@@ -70,7 +70,7 @@ var nodeToPy = function(node) {
     return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(node, NODE));
   }
   else {
-    return Sk.ffi.remapToPy(null);
+    return Sk.ffi.none.None;
   }
 }
 
@@ -98,7 +98,7 @@ return Sk.misceval.buildClass(mod, function($gbl, $loc) {
           $loc.__call__ = Sk.ffi.functionPy(function(self, typePy, listenerPy, useCapture) {
             var type = Sk.ffi.remapToJs(typePy);
             var listener = function(event) {
-              var eventPy = Sk.ffi.callsim(mod[EVENT], Sk.ffi.remapToPy(event, EVENT));
+              var eventPy = Sk.ffi.callsim(mod[EVENT], Sk.ffi.referenceToPy(event, EVENT));
               Sk.ffi.callsim(listenerPy, eventPy);
             };
             docListeners[type] = listener;

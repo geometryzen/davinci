@@ -1011,9 +1011,9 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionCube();
-          var width      = Sk.ffi.remapToPy(dimensions[PROP_WIDTH]);
-          var height     = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
-          var depth      = Sk.ffi.remapToPy(dimensions[PROP_DEPTH]);
+          var width      = Sk.ffi.numberToFloatPy(dimensions[PROP_WIDTH]);
+          var height     = Sk.ffi.numberToFloatPy(dimensions[PROP_HEIGHT]);
+          var depth      = Sk.ffi.numberToFloatPy(dimensions[PROP_DEPTH]);
           var segments   = Sk.ffi.numberToIntPy(cube[PROP_SEGMENTS] ? cube[PROP_SEGMENTS] : 1);
           var geometryPy = Sk.ffi.callsim(mod[CUBE_GEOMETRY], width, height, depth, segments, segments, segments);
           return completeMesh(geometryPy, cube);
@@ -1248,8 +1248,8 @@ mod[PLANE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionPlane();
-          var width      = Sk.ffi.remapToPy(dimensions[PROP_WIDTH]);
-          var height     = Sk.ffi.remapToPy(dimensions[PROP_HEIGHT]);
+          var width      = Sk.ffi.numberToFloatPy(dimensions[PROP_WIDTH]);
+          var height     = Sk.ffi.numberToFloatPy(dimensions[PROP_HEIGHT]);
           var segments   = Sk.ffi.numberToIntPy(plane[PROP_SEGMENTS] ? plane[PROP_SEGMENTS] : 1);
           var geometryPy = Sk.ffi.callsim(mod[PLANE_GEOMETRY], width, height, segments, segments);
           return completeMesh(geometryPy, plane);
@@ -1318,7 +1318,7 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionSphere();
-          var radius         = Sk.ffi.remapToPy(dimensions.radius);
+          var radius         = Sk.ffi.numberToFloatPy(dimensions.radius);
           var widthSegments  = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 24);
           var heightSegments = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 18);
           var geometryPy = Sk.ffi.callsim(mod[SPHERE_GEOMETRY], radius, widthSegments, heightSegments);
@@ -1394,11 +1394,11 @@ mod[Sk.geometry.VOLUME_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionPlane();
-          var radius      = Sk.ffi.remapToPy(dimensions[PROP_RADIUS]);
-          var radiusCone  = Sk.ffi.remapToPy(0.08);
-          var radiusShaft = Sk.ffi.remapToPy(0.01);
-          var lengthCone  = Sk.ffi.remapToPy(0.2);
-          var lengthShaft = Sk.ffi.remapToPy(0.8);
+          var radius      = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
+          var radiusCone  = Sk.ffi.numberToFloatPy(0.08);
+          var radiusShaft = Sk.ffi.numberToFloatPy(0.01);
+          var lengthCone  = Sk.ffi.numberToFloatPy(0.2);
+          var lengthShaft = Sk.ffi.numberToFloatPy(0.8);
           var arrows      = Sk.ffi.numberToIntPy(6);
           var segments    = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 32);
           return Sk.ffi.callsim(mod[Sk.geometry.VOLUME], createMaterialPy(args));
@@ -1599,11 +1599,11 @@ mod[Sk.geometry.VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           }
           Sk.ffi.checkMethodArgs(METHOD_BUILD, arguments, 0, 0);
           var dimensions = dimensionPlane();
-          var radius      = Sk.ffi.remapToPy(dimensions[PROP_RADIUS]);
-          var radiusCone  = Sk.ffi.remapToPy(0.08);
-          var radiusShaft = Sk.ffi.remapToPy(0.01);
-          var lengthCone  = Sk.ffi.remapToPy(0.2);
-          var lengthShaft = Sk.ffi.remapToPy(0.8);
+          var radius      = Sk.ffi.numberToFloatPy(dimensions[PROP_RADIUS]);
+          var radiusCone  = Sk.ffi.numberToFloatPy(0.08);
+          var radiusShaft = Sk.ffi.numberToFloatPy(0.01);
+          var lengthCone  = Sk.ffi.numberToFloatPy(0.2);
+          var lengthShaft = Sk.ffi.numberToFloatPy(0.8);
           var arrows      = Sk.ffi.numberToIntPy(6);
           var segments    = Sk.ffi.numberToIntPy(args[PROP_SEGMENTS] ? args[PROP_SEGMENTS] : 32);
           var geometryPy  = Sk.ffi.callsim(mod[Sk.three.VORTEX_GEOMETRY], radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrows, segments);

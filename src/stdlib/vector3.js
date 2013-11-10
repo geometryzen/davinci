@@ -310,7 +310,7 @@ Sk.builtin.defineVector3 = function(mod, THREE) {
           return Sk.ffi.callableToPy(mod, METHOD_GET_COMPONENT, function(methodPy, indexPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_COMPONENT, arguments, 1, 1);
             Sk.ffi.checkArgType("index", INT, Sk.ffi.isNum(indexPy), indexPy);
-            return Sk.ffi.remapToPy(vector[METHOD_GET_COMPONENT](Sk.ffi.remapToJs(indexPy)));
+            return Sk.ffi.numberToFloatPy(vector[METHOD_GET_COMPONENT](Sk.ffi.remapToJs(indexPy)));
           });
         }
         case METHOD_MAGNITUDE: {

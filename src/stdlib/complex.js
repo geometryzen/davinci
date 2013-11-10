@@ -374,10 +374,10 @@ mod.polar = Sk.ffi.functionPy(function(xPy) {
   Sk.ffi.checkFunctionArgs("polar", arguments, 1, 1);
   if (isComplexPy(xPy)) {
     var z = Sk.ffi.remapToJs(xPy);
-    return Sk.ffi.tuplePy([Sk.ffi.remapToPy(norm(z.x, z.y)), Sk.ffi.remapToPy(phase(z.x, z.y))]);
+    return Sk.ffi.tuplePy([Sk.ffi.numberToFloatPy(norm(z.x, z.y)), Sk.ffi.numberToFloatPy(phase(z.x, z.y))]);
   }
   else if (Sk.ffi.isNum(xPy)) {
-    return Sk.ffi.tuplePy([Sk.ffi.remapToPy(norm(Sk.ffi.remapToJs(xPy), 0)), Sk.ffi.remapToPy(0)]);
+    return Sk.ffi.tuplePy([Sk.ffi.numberToFloatPy(norm(Sk.ffi.remapToJs(xPy), 0)), Sk.ffi.numberToFloatPy(0)]);
   }
   else {
     Sk.ffi.checkArgType("x", COMPLEX, false, xPy);

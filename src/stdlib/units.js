@@ -245,16 +245,16 @@ mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var dimensions = Sk.ffi.remapToJs(dimensionsPy);
     switch(name) {
       case PROP_M: {
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(dimensions[PROP_M], RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(dimensions[PROP_M], RATIONAL));
       }
       case PROP_L: {
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(dimensions[PROP_L], RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(dimensions[PROP_L], RATIONAL));
       }
       case PROP_T: {
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(dimensions[PROP_T], RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(dimensions[PROP_T], RATIONAL));
       }
       case PROP_Q: {
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.remapToPy(dimensions[PROP_Q], RATIONAL));
+        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(dimensions[PROP_Q], RATIONAL));
       }
     }
   });
@@ -263,30 +263,30 @@ mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
     var c = a.mul(b);
-    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.remapToPy(c.M, RATIONAL), Sk.ffi.remapToPy(c.L, RATIONAL), Sk.ffi.remapToPy(c.T, RATIONAL), Sk.ffi.remapToPy(c.Q, RATIONAL));
+    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.referenceToPy(c.M, RATIONAL), Sk.ffi.referenceToPy(c.L, RATIONAL), Sk.ffi.referenceToPy(c.T, RATIONAL), Sk.ffi.referenceToPy(c.Q, RATIONAL));
   });
   $loc.__div__ = Sk.ffi.functionPy(function(aPy, bPy) {
     var a = Sk.ffi.remapToJs(aPy);
     var b = Sk.ffi.remapToJs(bPy);
     var c = a.div(b);
-    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.remapToPy(c.M, RATIONAL), Sk.ffi.remapToPy(c.L, RATIONAL), Sk.ffi.remapToPy(c.T, RATIONAL, Sk.ffi.remapToPy(c.Q, RATIONAL)));
+    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.referenceToPy(c.M, RATIONAL), Sk.ffi.referenceToPy(c.L, RATIONAL), Sk.ffi.referenceToPy(c.T, RATIONAL, Sk.ffi.referenceToPy(c.Q, RATIONAL)));
   });
   $loc.__pow__ = Sk.ffi.functionPy(function(basePy, exponentPy) {
     Sk.ffi.checkFunctionArgs("**", arguments, 2, 2);
     var base = Sk.ffi.remapToJs(basePy);
     var exponent = Sk.ffi.remapToJs(exponentPy);
     var x = base.pow(exponent);
-    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.remapToPy(x.M, RATIONAL), Sk.ffi.remapToPy(x.L, RATIONAL), Sk.ffi.remapToPy(x.T, RATIONAL, Sk.ffi.remapToPy(x.Q, RATIONAL)));
+    return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.referenceToPy(x.M, RATIONAL), Sk.ffi.referenceToPy(x.L, RATIONAL), Sk.ffi.referenceToPy(x.T, RATIONAL, Sk.ffi.referenceToPy(x.Q, RATIONAL)));
   });
   $loc.__str__ = Sk.ffi.functionPy(function(dimensionsPy) {
     var dimensions = Sk.ffi.remapToJs(dimensionsPy);
-    return Sk.ffi.remapToPy("" + dimensions);
+    return Sk.ffi.stringToPy("" + dimensions);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(dimensionsPy) {
     var names = [PROP_M, PROP_L, PROP_T, PROP_Q];
     var attrs = names.map(function(name) { return Sk.ffi.gattr(dimensionsPy, name); });
     var reprs = attrs.map(function(attr) { return Sk.ffi.remapToJs(Sk.ffi.callsim(attr["__repr__"], attr)); });
-    return Sk.ffi.remapToPy(DIMENSIONS + "(" + reprs.join(" , ")  + ")");
+    return Sk.ffi.stringToPy(DIMENSIONS + "(" + reprs.join(" , ")  + ")");
   });
 }, DIMENSIONS, []);
 
@@ -318,10 +318,10 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var unit = Sk.ffi.remapToJs(unitPy);
     switch(name) {
       case PROP_SCALE: {
-        return Sk.ffi.remapToPy(unit[PROP_SCALE]);
+        return Sk.ffi.numberToFloatPy(unit[PROP_SCALE]);
       }
       case PROP_DIMENSIONS: {
-        return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.remapToPy(unit[PROP_DIMENSIONS], DIMENSIONS));
+        return Sk.ffi.callsim(mod[DIMENSIONS], Sk.ffi.referenceToPy(unit[PROP_DIMENSIONS], DIMENSIONS));
       }
       case PROP_LABELS: {
         return Sk.ffi.remapToPy(unit[PROP_LABELS]);
@@ -370,7 +370,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var rhs = Sk.ffi.remapToJs(otherPy);
     try {
       var c = lhs.add(rhs);
-      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
     }
     catch(e) {
       throw Sk.ffi.assertionError(e.message)
@@ -381,7 +381,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var rhs = Sk.ffi.remapToJs(otherPy);
     try {
       var c = lhs.sub(rhs);
-      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
     }
     catch(e) {
       throw Sk.ffi.assertionError(e.message)
@@ -392,19 +392,19 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var lhs = Sk.ffi.remapToJs(selfPy);
     var rhs = Sk.ffi.remapToJs(otherPy);
     var c = lhs.mul(rhs);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
     var lhs = Sk.ffi.remapToJs(otherPy);
     var rhs = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(lhs * rhs.scale), Sk.ffi.remapToPy(rhs.dimensions, DIMENSIONS), Sk.ffi.remapToPy(rhs.labels));
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(lhs * rhs.scale), Sk.ffi.referenceToPy(rhs.dimensions, DIMENSIONS), Sk.ffi.remapToPy(rhs.labels));
   });
   $loc.__div__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
     var lhs = Sk.ffi.remapToJs(lhsPy);
     var rhs = Sk.ffi.remapToJs(rhsPy);
     var c = lhs.div(rhs);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
   });
   $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
@@ -419,17 +419,17 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var Q = new BLADE[RATIONAL](-rhs.dimensions.Q.numer, rhs.dimensions.Q.denom);
     var dimensions = new BLADE[DIMENSIONS](M, L, T, Q);
     var labels = rhs.labels;
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(scale), Sk.ffi.remapToPy(dimensions, DIMENSIONS), Sk.ffi.remapToPy(labels));
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(scale), Sk.ffi.referenceToPy(dimensions, DIMENSIONS), Sk.ffi.remapToPy(labels));
   });
   $loc.__pow__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
     var lhs = Sk.ffi.remapToJs(lhsPy);
     var rhs = Sk.ffi.remapToJs(rhsPy);
     var c = lhs.pow(rhs);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(c.scale), Sk.ffi.remapToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
   });
   $loc.__str__ = Sk.ffi.functionPy(function(unitPy) {
     var unit = Sk.ffi.remapToJs(unitPy);
-    return Sk.ffi.remapToPy("" + unit);
+    return Sk.ffi.stringToPy("" + unit);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(unitPy) {
     var props = [{"name":PROP_DIMENSIONS, "kind":"__repr__"}];
@@ -439,7 +439,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var scale = "" + unit.scale;
     var dimensions = reprs[0];
     var labels = "[" + unit.labels.map(function(label) {return "'" + label + "'";}).join(" , ") + "]";
-    return Sk.ffi.remapToPy(UNIT + "(" + [scale, dimensions, labels].join(" , ") + ")");
+    return Sk.ffi.stringToPy(UNIT + "(" + [scale, dimensions, labels].join(" , ") + ")");
   });
 }, UNIT, []);
 
@@ -594,29 +594,29 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     var qtyStr = Sk.ffi.remapToJs(Sk.ffh.str(self[QTY_PY]));
     var uomStr = Sk.ffi.remapToJs(Sk.ffh.str(self[UOM_PY]));
-    return Sk.ffi.remapToPy("" + qtyStr + " " + uomStr);
+    return Sk.ffi.stringToPy("" + qtyStr + " " + uomStr);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var qtyRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[QTY_PY]));
     var uomRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[UOM_PY]));
-    return Sk.ffi.remapToPy(MEASURE + "(" + qtyRepr + ", " + uomRepr + ")");
+    return Sk.ffi.stringToPy(MEASURE + "(" + qtyRepr + ", " + uomRepr + ")");
   });
 }, MEASURE, []);
 
-mod[KILOGRAM] = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[METER]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[SECOND]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 0, 1, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[COULOMB]  = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 0, 0, 1),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[KILOGRAM] = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[METER]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[SECOND]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 1, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[COULOMB]  = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 1),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 
-mod[GRAM]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(0.001), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[CM]       = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(0.01),  Sk.ffi.remapToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[GRAM]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(0.001), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[CM]       = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(0.01),  Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 1, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 
-mod[NEWTON]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 1, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[JOULE]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 2, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[WATT]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 2, -3,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[AMPERE]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(0, 0, -1,  1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[VOLT]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 2, -2, -1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
-mod[TESLA]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.remapToPy(1), Sk.ffi.remapToPy(new BLADE.Dimensions(1, 1, -2, -1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[NEWTON]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 1, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[JOULE]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -2,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[WATT]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -3,  0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[AMPERE]   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, -1,  1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[VOLT]     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -2, -1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
+mod[TESLA]    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 1, -2, -1), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS));
 };
 }).call(this);

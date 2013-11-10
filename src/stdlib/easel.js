@@ -722,10 +722,10 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var stage = Sk.ffi.remapToJs(stagePy);
     switch(name) {
       case PROP_MOUSE_IN_BOUNDS: {
-        return Sk.ffi.remapToPy(stage[PROP_MOUSE_IN_BOUNDS]);
+        return Sk.ffi.booleanToPy(stage[PROP_MOUSE_IN_BOUNDS]);
       }
       case PROP_MOUSE_MOVE_OUTSIDE: {
-        return Sk.ffi.remapToPy(stage[PROP_MOUSE_MOVE_OUTSIDE]);
+        return Sk.ffi.booleanToPy(stage[PROP_MOUSE_MOVE_OUTSIDE]);
       }
       case PROP_MOUSE_X: {
         return Sk.ffi.numberToIntPy(stage[PROP_MOUSE_X]);
@@ -1136,10 +1136,10 @@ mod[POINT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var point = Sk.ffi.remapToJs(pointPy);
     switch(name) {
       case PROP_X: {
-        return Sk.builtin.assk$(point.x, Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(point.x);
       }
       case PROP_Y: {
-        return Sk.builtin.assk$(point.y, Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToFloatPy(point.y);
       }
       case METHOD_CLONE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1147,7 +1147,7 @@ mod[POINT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.tp$name = METHOD_CLONE;
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy) {
-            return Sk.ffi.callsim(mod[POINT], Sk.ffi.remapToPy(point.x), Sk.ffi.remapToPy(point.y));
+            return Sk.ffi.callsim(mod[POINT], Sk.ffi.numberToFloatPy(point.x), Sk.ffi.numberToFloatPy(point.y));
           });
         }, METHOD_CLONE, []));
       }

@@ -339,7 +339,7 @@ var nodeToPy = function(node) {
     return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(node, NODE));
   }
   else {
-    return Sk.ffi.remapToPy(null);
+    return Sk.ffi.none.None;
   }
 }
 /**

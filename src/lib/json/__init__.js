@@ -22,7 +22,7 @@ var $builtinmodule = function(name)
         var value = Sk.ffi.remapToJs(valuePy);
         var replacer = Sk.ffi.remapToJs(replacerPy);
         var space = Sk.ffi.remapToJs(spacePy);
-        return Sk.ffi.remapToPy(JSON.stringify(value, replacer, space));
+        return Sk.ffi.stringToPy(JSON.stringify(value, replacer, space));
     });
 
     return mod;

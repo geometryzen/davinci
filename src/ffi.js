@@ -998,11 +998,10 @@ goog.exportSymbol("Sk.ffi.numberToJs", Sk.ffi.numberToJs);
  * valueJs = Sk.ffi.remapToJs(valuePy);
  *
  * @param {Object} valuePy The Python value to be mapped.
- * @param {boolean|Object=} defaultJs The optional default JavaScript value to use when the type of the value is undefined.
  */
-Sk.ffi.remapToJs = function(valuePy, defaultJs)
+Sk.ffi.remapToJs = function(valuePy)
 {
-    Sk.ffi.checkFunctionArgs("Sk.ffi.remapToJs", arguments, 1, 2);
+    Sk.ffi.checkFunctionArgs("Sk.ffi.remapToJs", arguments, 1, 1);
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.STR:
@@ -1074,7 +1073,7 @@ Sk.ffi.remapToJs = function(valuePy, defaultJs)
         }
         case Sk.ffi.PyType.UNDEFINED:
         {
-            return defaultJs;
+            return undefined;
         }
         case Sk.ffi.PyType.NONE:
         {

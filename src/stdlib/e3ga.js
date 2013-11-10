@@ -853,7 +853,7 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         yz  = Sk.ffi.remapToJs(yz);
         zx  = Sk.ffi.remapToJs(zx);
         xyz = Sk.ffi.remapToJs(xyz);
-        var mutable = Sk.ffi.remapToJs(mutablePy, true);
+        var mutable = Sk.ffi.isDefined(mutablePy) ? Sk.ffi.remapToJs(mutablePy) : true;
         var vector = new THREE[VECTOR_3](x,y,z);
         var quaternion = new THREE[QUATERNION](-yz, -zx, -xy, w);
         Sk.ffi.referenceToPy(new THREE.Euclidean3(vector, quaternion, xyz, mutable), EUCLIDEAN_3, undefined, self);
