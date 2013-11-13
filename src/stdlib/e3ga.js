@@ -154,6 +154,16 @@ var METHOD_CROSS               = "cross";
  * @const
  * @type {string}
  */
+var METHOD_DISTANCE_TO         = "distanceTo";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_DISTANCE_TO_SQUARED = "distanceToSquared";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_DOT                 = "dot";
 /**
  * @const
@@ -1504,9 +1514,25 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return coordsJsToE3Py(0, Cx, Cy, Cz, 0, 0, 0, 0);
         });
       }
+      case METHOD_DISTANCE_TO: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, pointPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(pointPy, EUCLIDEAN_3), pointPy);
+          var point  = Sk.ffi.remapToJs(pointPy);
+          return Sk.ffi.numberToFloatPy(vector[METHOD_DISTANCE_TO](point.vector));
+        });
+      }
+      case METHOD_DISTANCE_TO_SQUARED: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, pointPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(pointPy, EUCLIDEAN_3), pointPy);
+          var point  = Sk.ffi.remapToJs(pointPy);
+          return Sk.ffi.numberToFloatPy(vector[METHOD_DISTANCE_TO_SQUARED](point.vector));
+        });
+      }
       case METHOD_DOT: {
-        return Sk.ffi.callableToPy(mod, METHOD_DOT, function(methodPy, otherPy) {
-          Sk.ffi.checkMethodArgs(METHOD_DOT, arguments, 1, 1);
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, otherPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, EUCLIDEAN_3), otherPy);
           var other  = Sk.ffi.remapToJs(otherPy);
           return Sk.ffi.numberToFloatPy(vector[METHOD_DOT](other.vector));

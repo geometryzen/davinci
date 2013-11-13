@@ -624,7 +624,7 @@ function shapeGetAttr(shapePy, name, className) {
           self.v = shape[METHOD_HIT_TEST];
         });
         $loc.__call__ = Sk.ffi.functionPy(function(methodPy, x, y) {
-          return Sk.ffi.remapToPy(shape[METHOD_HIT_TEST](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y)));
+          return Sk.ffi.booleanToPy(shape[METHOD_HIT_TEST](Sk.ffi.remapToJs(x), Sk.ffi.remapToJs(y)));
         });
       }, METHOD_HIT_TEST, []));
     }

@@ -1076,9 +1076,8 @@ THREE.SkinnedMesh = function(g,m){};
 // ============================================================================
 
 /**
-@constructor
-@struct
-*/
+ * @constructor
+ */
 THREE.Geometry = function(){};
 
 /** @type {number} */                           THREE.Geometry.prototype.id;
@@ -1443,7 +1442,19 @@ THREE.FlatShading = 1;
 THREE.SmoothShading = 2;
 
 /** @const */
-THREE.RepeatWrapping = function(){};
+THREE.RepeatWrapping         = 1000;
 
 /** @const */
-THREE.DoubleSide = function(){};
+THREE.ClampToEdgeWrapping    = 1001;
+
+/** @const */
+THREE.MirroredRepeatWrapping = 1002;
+
+/** @const */
+THREE.FrontSide  = 0;
+
+/** @const */
+THREE.BackSide   = 1;
+
+/** @const */
+THREE.DoubleSide = 2;
