@@ -174,12 +174,27 @@ var METHOD_EXP                 = "exp";
  * @const
  * @type {string}
  */
+var METHOD_COPY                = "copy";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_CONSTANTIFY         = "constantify";
 /**
  * @const
  * @type {string}
  */
+var METHOD_DIVIDE_SCALAR       = "divideScalar";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_MAGNITUDE           = "magnitude";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_MULTIPLY_SCALAR     = "multiplyScalar";
 /**
  * @const
  * @type {string}
@@ -260,6 +275,11 @@ var ARG_INDEX                  = "index";
  * @type {string}
  */
 var ARG_OTHER                  = "other";
+/**
+ * @const
+ * @type {string}
+ */
+var ARG_S                      = "s";
 /**
  * @const
  * @type {string}
@@ -1497,6 +1517,22 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
+      case METHOD_COPY: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, otherPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, EUCLIDEAN_3), otherPy);
+          var other  = Sk.ffi.remapToJs(otherPy);
+          quaternion.w = other.quaternion.w;
+          vector.x     = other.vector.x;
+          vector.y     = other.vector.y;
+          vector.z     = other.vector.z;
+          quaternion.x = other.quaternion.x;
+          quaternion.y = other.quaternion.y;
+          quaternion.z = other.quaternion.z;
+          self.xyz     = other.xyz;
+          return selfPy;
+        });
+      }
       case METHOD_CROSS: {
         return Sk.ffi.callableToPy(mod, METHOD_CROSS, function(methodPy, otherPy) {
           Sk.ffi.checkMethodArgs(METHOD_CROSS, arguments, 1, 1);
@@ -1530,12 +1566,44 @@ mod[EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return Sk.ffi.numberToFloatPy(vector[METHOD_DISTANCE_TO_SQUARED](point.vector));
         });
       }
+      case METHOD_DIVIDE_SCALAR: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, sPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(sPy), sPy);
+          var s  = Sk.ffi.remapToJs(sPy);
+          quaternion.w /= s;
+          vector.x     /= s;
+          vector.y     /= s;
+          vector.z     /= s;
+          quaternion.x /= s;
+          quaternion.y /= s;
+          quaternion.z /= s;
+          self.xyz     /= s;
+          return selfPy;
+        });
+      }
       case METHOD_DOT: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, otherPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_OTHER, EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, EUCLIDEAN_3), otherPy);
           var other  = Sk.ffi.remapToJs(otherPy);
           return Sk.ffi.numberToFloatPy(vector[METHOD_DOT](other.vector));
+        });
+      }
+      case METHOD_MULTIPLY_SCALAR: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, sPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(sPy), sPy);
+          var s  = Sk.ffi.remapToJs(sPy);
+          quaternion.w *= s;
+          vector.x     *= s;
+          vector.y     *= s;
+          vector.z     *= s;
+          quaternion.x *= s;
+          quaternion.y *= s;
+          quaternion.z *= s;
+          self.xyz     *= s;
+          return selfPy;
         });
       }
       case METHOD_SET_X: {
