@@ -2,7 +2,6 @@ var $builtinmodule = function(name) {
   var mod = {};
 
   var EVENT                    = 'Event';
-  var FUNCTION                 = Sk.ffi.PyType.FUNCTION;
   var NODE                     = 'Node';
   var WINDOW                   = 'Window';
   var WINDOW_ANIMATION_RUNNER  = 'WindowAnimationRunner';
@@ -20,10 +19,10 @@ var $builtinmodule = function(name) {
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy) {
       Sk.ffi.checkMethodArgs(WINDOW_ANIMATION_RUNNER, arguments, 4, 4);
-      Sk.ffi.checkArgType("tick",      FUNCTION, Sk.ffi.isFunction(tickPy));
-      Sk.ffi.checkArgType("terminate", FUNCTION, Sk.ffi.isFunction(terminatePy));
-      Sk.ffi.checkArgType("setUp",     FUNCTION, Sk.ffi.isFunction(setUpPy));
-      Sk.ffi.checkArgType("tearDown",  FUNCTION, Sk.ffi.isFunction(tearDownPy));
+      Sk.ffi.checkArgType("tick",      Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tickPy));
+      Sk.ffi.checkArgType("terminate", Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(terminatePy));
+      Sk.ffi.checkArgType("setUp",     Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(setUpPy));
+      Sk.ffi.checkArgType("tearDown",  Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tearDownPy));
       var WindowAnimationRunner = function() {
         this.tick      = Sk.ffi.remapToJs(tickPy);
         this.terminate = Sk.ffi.remapToJs(terminatePy);

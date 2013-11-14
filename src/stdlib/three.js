@@ -1869,18 +1869,24 @@ function methodRemove(target) {
 function mutableVertexListPy(vertices) {
   return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy) {
-      Sk.ffi.referenceToPy(vertices, PROP_VERTICES, undefined, selfPy);
+      var custom = {};
+      custom[METHOD_APPEND] = Sk.ffi.callableToPy(mod, METHOD_APPEND, function(methodPy, vectorPy) {
+        vertices.push(remapToVector3(PROP_VECTOR, vectorPy));
+      });
+      Sk.ffi.referenceToPy(vertices, PROP_VERTICES, custom, selfPy);
     });
-    $loc.__getattr__ = Sk.ffi.functionPy(function(verticesPy, name) {
+    $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+      var self = Sk.ffi.remapToJs(selfPy);
       switch(name) {
         case METHOD_APPEND: {
-          return Sk.ffi.callableToPy(mod, METHOD_APPEND, function(methodPy, vectorPy) {
-              vertices.push(remapToVector3(PROP_VECTOR, vectorPy));
-          });
+          return selfPy.custom[METHOD_APPEND];
+//          return Sk.ffi.callableToPy(mod, METHOD_APPEND, function(methodPy, vectorPy) {
+//              vertices.push(remapToVector3(PROP_VECTOR, vectorPy));
+//          });
         }
       }
     });
-    $loc.__getitem__ = Sk.ffi.functionPy(function(verticesPy, indexPy) {
+    $loc.__getitem__ = Sk.ffi.functionPy(function(selfPy, indexPy) {
       var index = Sk.ffi.remapToJs(indexPy);
       return vectorToEuclidean3Py(vertices[index]);
     });
