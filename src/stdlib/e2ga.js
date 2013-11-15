@@ -71,6 +71,16 @@ var METHOD_CLONE        = "clone";
  * @const
  * @type {string}
  */
+var METHOD_COS          = "cos";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_SIN          = "sin";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_EXP          = "exp";
 /**
  * @const
@@ -177,6 +187,9 @@ function stringFromCoordinates(coordinates, labels, multiplier) {
   }
   return str;
 }
+
+function cosh(x) {return (Math.pow(Math.E, x) + Math.pow(Math.E, -x)) / 2;}
+function sinh(x) {return (Math.pow(Math.E, x) - Math.pow(Math.E, -x)) / 2;}
 
 function divide(a00, a01, a10, a11, b00, b01, b10, b11, m) {
   // r = ~b
@@ -664,12 +677,36 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     return coordsJsToE2Py(self.w, -self.x, -self.y, -self.xy);
   });
+  $loc.__cos__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_COS, arguments, 0, 0);
+    var mv = Sk.ffi.remapToJs(selfPy);
+    var x = mv.w;
+    var y = mv.xy;
+    var cosX  = Math.cos(x);
+    var coshY = cosh(y);
+    var sinX  = Math.sin(x);
+    var sinhY = sinh(y);
+    return coordsJsToE2Py(cosX * coshY, 0, 0, - sinX * sinhY);
+  });
+  $loc.__sin__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_SIN, arguments, 0, 0);
+    var mv = Sk.ffi.remapToJs(selfPy);
+    var x = mv.w;
+    var y = mv.xy;
+    var cosX  = Math.cos(x);
+    var coshY = cosh(y);
+    var sinX  = Math.sin(x);
+    var sinhY = sinh(y);
+    return coordsJsToE2Py(sinX * coshY, 0, 0, cosX * sinhY);
+  });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
-    var e = Math.exp(mv.w);
-    var c = Math.cos(mv.xy);
-    var s = Math.sin(mv.xy);
+    var x = mv.w;
+    var y = mv.xy;
+    var e = Math.exp(x);
+    var c = Math.cos(y);
+    var s = Math.sin(y);
     return coordsJsToE2Py(e * c, 0, 0, e * s);
   });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
@@ -756,6 +793,11 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, EUCLIDEAN_2, []);
 
+mod.one = coordsJsToE2Py(1, 0, 0, 0);
+mod.tao = coordsJsToE2Py(2 * Math.PI, 0, 0, 0);
+mod.pi  = coordsJsToE2Py(Math.PI, 0, 0, 0);
+mod.e   = coordsJsToE2Py(Math.E, 0, 0, 0);
+mod.i   = coordsJsToE2Py(0, 0, 0, 1);
 mod[UNIT_VECTOR_NAME_E1] = coordsJsToE2Py(0, 1, 0, 0);
 mod[UNIT_VECTOR_NAME_E2] = coordsJsToE2Py(0, 0, 1, 0);
 mod[PSEUDOSCALAR_NAME]   = coordsJsToE2Py(0, 0, 0, 1);

@@ -5,20 +5,17 @@ Sk.ffi.checkFunctionArgs("defineMath", arguments, 1, 1);
  * @const
  * @type {string}
  */
-var ARG_ANGLE = "angle";
+var ANGLE = "angle";
 /**
  * @const
  * @type {string}
  */
-var DIMENSIONLESS_NUMBER = "dimensionless number";
+var NUMBER = "Number";
 /**
- * @const
- * @type {!Array.<Sk.ffi.PyType>}
+ *
  */
-var NUMBER = [Sk.ffi.PyType.FLOAT, Sk.ffi.PyType.INT, Sk.ffi.PyType.LONG];
-
-mod.pi = Sk.builtin.assk$(Math.PI, Sk.builtin.nmber.float$);
-mod.e =  Sk.builtin.assk$(Math.E, Sk.builtin.nmber.float$);
+mod.pi = Sk.ffi.numberToFloatPy(Math.PI);
+mod.e  = Sk.ffi.numberToFloatPy(Math.E);
 
 mod.cliffordConjugate = Sk.ffi.functionPy(function(x) {
   Sk.ffi.checkFunctionArgs("cliffordConjugate", arguments, 1, 1);
@@ -61,7 +58,33 @@ mod.atan2 = Sk.ffi.functionPy(function(y, x) {
   Sk.builtin.pyCheckType("x", "number", Sk.builtin.checkNumber(x));
   return new Sk.builtin.nmber(Math.atan2(Sk.builtin.asnum$(y), Sk.builtin.asnum$(x)), Sk.builtin.nmber.float$);
 });
-
+/**
+ * exp
+ */
+mod.exp = Sk.ffi.functionPy(function(anglePy) {
+  Sk.ffi.checkFunctionArgs("exp", arguments, 1, 1);
+  if (Sk.ffi.isNum(anglePy)) {
+    return Sk.ffi.numberToFloatPy(Math.exp(Sk.ffi.remapToJs(anglePy)));
+  }
+  else {
+    return Sk.ffh.exp(anglePy);
+  }
+});
+/**
+ * cos
+ */
+mod.cos = Sk.ffi.functionPy(function(anglePy) {
+  Sk.ffi.checkFunctionArgs("cos", arguments, 1, 1);
+  if (Sk.ffi.isNum(anglePy)) {
+    return Sk.ffi.numberToFloatPy(Math.cos(Sk.ffi.remapToJs(anglePy)));
+  }
+  else {
+    return Sk.ffh.cos(anglePy);
+  }
+});
+/**
+ * sin
+ */
 mod.sin = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("sin", arguments, 1, 1);
   if (Sk.ffi.isNum(anglePy)) {
@@ -70,29 +93,10 @@ mod.sin = Sk.ffi.functionPy(function(anglePy) {
   else
   {
     try {
-      var methodPy = Sk.ffi.gattr(anglePy, "sin");
-      return Sk.ffi.callsim(methodPy);
+      return Sk.ffh.sin(anglePy);
     }
     catch(e) {
-//    throw Sk.ffi.err.argument("angle").inFunction("sin").mustHaveType(DIMENSIONLESS_NUMBER);
-      Sk.builtin.pyCheckType("rad", "number", false);
-    }
-  }
-});
-
-mod.cos = Sk.ffi.functionPy(function(anglePy) {
-  Sk.ffi.checkFunctionArgs("cos", arguments, 1, 1);
-  if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Math.cos(Sk.ffi.remapToJs(anglePy)));
-  }
-  else
-  {
-    try {
-      var methodPy = Sk.ffi.gattr(anglePy, "cos");
-      return Sk.ffi.callsim(methodPy);
-    }
-    catch(e) {
-      throw Sk.ffi.err.argument(ARG_ANGLE).inFunction("cos").mustHaveType(DIMENSIONLESS_NUMBER);
+      throw Sk.ffi.err.argument(ANGLE).inFunction("sin").mustHaveType(NUMBER);
     }
   }
 });
@@ -207,16 +211,6 @@ mod.log10 = Sk.ffi.functionPy(function(x) {
   Sk.builtin.pyCheckType("x", "number", Sk.builtin.checkNumber(x));
   var ret = Math.log(Sk.builtin.asnum$(x)) / Math.log(10);
   return new Sk.builtin.nmber(ret, Sk.builtin.nmber.float$);
-});
-
-mod.exp = Sk.ffi.functionPy(function(anglePy) {
-  Sk.ffi.checkFunctionArgs("exp", arguments, 1, 1);
-  if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Math.exp(Sk.ffi.remapToJs(anglePy)));
-  }
-  else {
-    return Sk.ffh.exp(anglePy);
-  }
 });
 
 mod.pow = Sk.ffi.functionPy(function(x,y) {

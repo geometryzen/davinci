@@ -1,1 +1,1 @@
-EXCEPTION: TypeError: rad must be a number on line 2
+EXCEPTION: TypeError: Expecting argument 'angle' in function 'sin' to have type <class 'Number'>. on line 2

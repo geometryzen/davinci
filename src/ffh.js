@@ -4,6 +4,7 @@ var SPECIAL_METHOD_ADD     = '__add__';
 var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
 var SPECIAL_METHOD_DIV     = '__div__';
 var SPECIAL_METHOD_EQ      = '__eq__';
+var SPECIAL_METHOD_COS     = '__cos__';
 var SPECIAL_METHOD_EXP     = '__exp__';
 var SPECIAL_METHOD_INVERT  = '__invert__';
 var SPECIAL_METHOD_LSHIFT  = '__lshift__';
@@ -13,6 +14,7 @@ var SPECIAL_METHOD_NONZERO = '__nonzero__';
 var SPECIAL_METHOD_POS     = '__pos__';
 var SPECIAL_METHOD_REPR    = '__repr__';
 var SPECIAL_METHOD_RSHIFT  = '__rshift__';
+var SPECIAL_METHOD_SIN     = '__sin__';
 var SPECIAL_METHOD_SQRT    = '__sqrt__';
 var SPECIAL_METHOD_STR     = '__str__';
 var SPECIAL_METHOD_SUB     = '__sub__';
@@ -93,6 +95,12 @@ goog.exportSymbol("Sk.ffh.equal", Sk.ffh.equal);
 
 Sk.ffh.cliffordConjugate = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_CLIFFORD_CONJUGATE, valuePy, "nb$cliffordConjugate");};
 goog.exportSymbol("Sk.ffh.cliffordConjugate", Sk.ffh.cliffordConjugate);
+
+Sk.ffh.cos = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_COS, valuePy, "nb$cos");};
+goog.exportSymbol("Sk.ffh.cos", Sk.ffh.cos);
+
+Sk.ffh.sin = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_SIN, valuePy, "nb$sin");};
+goog.exportSymbol("Sk.ffh.sin", Sk.ffh.sin);
 
 Sk.ffh.exp = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_EXP, valuePy, "nb$exp");};
 goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);

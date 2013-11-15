@@ -20,6 +20,11 @@ var METHOD_ABS       = "abs";
  * @const
  * @type {string}
  */
+var METHOD_COS       = "cos";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_EXP       = "exp";
 /**
  * @const
@@ -57,6 +62,9 @@ function isComplexPy(valuePy) {return Sk.ffi.isInstance(valuePy, COMPLEX);};
 function phase(x, y) {return Math.atan2(y, x);}
 
 function norm(x, y) {return Math.sqrt(x * x + y * y);}
+
+function cosh(x) {return (Math.pow(Math.E, x) + Math.pow(Math.E, -x)) / 2;}
+function sinh(x) {return (Math.pow(Math.E, x) - Math.pow(Math.E, -x)) / 2;}
 
 function stringFromCoordinates(coordinates, labels, multiplier) {
   var append, i, sb, str, _i, _ref;
@@ -99,7 +107,7 @@ function stringFromCoordinates(coordinates, labels, multiplier) {
  * @param {number} y
  * @return {!Object}
  */
-function cartesianToComplexPy(x, y) {return Sk.ffi.callsim(mod[COMPLEX], Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y));}
+function cartesianJsToComplexPy(x, y) {return Sk.ffi.callsim(mod[COMPLEX], Sk.ffi.numberToFloatPy(x), Sk.ffi.numberToFloatPy(y));}
 
 mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, rePy, imPy) {
@@ -108,8 +116,8 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkArgType(PROP_IMAG, NUM, Sk.ffi.isNum(imPy), imPy);
     Sk.ffi.referenceToPy({x: Sk.ffi.remapToJs(rePy), y: Sk.ffi.remapToJs(imPy)}, COMPLEX, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(z, name) {
-    z = Sk.ffi.remapToJs(z);
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+    var z = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_REAL: {
         return Sk.ffi.numberToFloatPy(z.x);
@@ -118,16 +126,16 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.numberToFloatPy(z.y);
       }
       case METHOD_ABS: {
-        return Sk.ffi.callableToPy(mod, METHOD_ABS, function(methodPy) {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy) {
           return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
         });
       }
       case METHOD_EXP: {
-        return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy) {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy) {
           var e = Math.exp(z.x);
           var c = Math.cos(z.y);
           var s = Math.sin(z.y);
-          return cartesianToComplexPy(e * c, e * s);
+          return cartesianJsToComplexPy(e * c, e * s);
         });
       }
     }
@@ -136,10 +144,10 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
     if (isComplexPy(otherPy)) {
-      return cartesianToComplexPy(a.x + b.x, a.y + b.y);
+      return cartesianJsToComplexPy(a.x + b.x, a.y + b.y);
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return cartesianToComplexPy(a.x + b, a.y);
+      return cartesianJsToComplexPy(a.x + b, a.y);
     }
     else {
       throw Sk.ffi.err.argument(ARG_OTHER).mustHaveType(COMPLEX);
@@ -149,7 +157,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkArgType(ARG_OTHER, NUM, Sk.ffi.isNum(otherPy), otherPy);
     var a = Sk.ffi.remapToJs(otherPy);
     var b = Sk.ffi.remapToJs(selfPy);
-    return cartesianToComplexPy(a + b.x, b.y);
+    return cartesianJsToComplexPy(a + b.x, b.y);
   });
   $loc.__iadd__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(selfPy);
@@ -170,10 +178,10 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
     if (isComplexPy(otherPy)) {
-      return cartesianToComplexPy(a.x - b.x, a.y - b.y);
+      return cartesianJsToComplexPy(a.x - b.x, a.y - b.y);
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return cartesianToComplexPy(a.x - b, a.y);
+      return cartesianJsToComplexPy(a.x - b, a.y);
     }
     else {
       throw Sk.ffi.err.argument(ARG_OTHER).mustHaveType([COMPLEX, NUM]);
@@ -186,7 +194,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (Sk.ffi.isNum(otherPy)) {
       x = a - b.x;
       y = -b.y;
-      return cartesianToComplexPy(x, y);
+      return cartesianJsToComplexPy(x, y);
     }
     else {
       throw Sk.ffi.err.argument(ARG_OTHER).mustHaveType(NUM);
@@ -216,7 +224,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       x = a.x * b.x - a.y * b.y;
       y = a.y * b.x + a.x * b.y;
     }
-    return cartesianToComplexPy(x, y);
+    return cartesianJsToComplexPy(x, y);
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var x, y;
@@ -225,7 +233,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (Sk.ffi.isNum(otherPy)) {
       x = a * b.x;
       y = a * b.y;
-      return cartesianToComplexPy(x, y);
+      return cartesianJsToComplexPy(x, y);
     }
     else {
       throw Sk.ffi.err.argument("a").mustHaveType(NUM);
@@ -246,40 +254,15 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
     return selfPy;
   });
-  // TODO: Use of nb$* will require fixes in abstract.js
-  /*
-  $loc.nb$divide = function(otherPy) {
-    Sk.ffi.checkArgType("self",  COMPLEX, isComplexPy(this));
-    var a = Sk.ffi.remapToJs(this);
-    var b = Sk.ffi.remapToJs(otherPy);
-    if (isComplexPy(otherPy)) {
-      var factor = b.x * b.x + b.y * b.y;
-      return cartesianToComplexPy((a.x * b.x + a.y * b.y) / factor, (a.y * b.x - a.x * b.y) / factor);
-    }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return cartesianToComplexPy(a.x / b, a.y / b);
-    }
-    else {
-      throw Sk.ffi.err.expectArg("other").toHaveType([COMPLEX, NUM]);
-    }
-  };
-  $loc.nb$rdiv = function(otherPy) {
-    Sk.ffi.checkArgType("other", NUM,  Sk.ffi.isNum(otherPy));
-    var a = Sk.ffi.remapToJs(otherPy);
-    var b = Sk.ffi.remapToJs(this);
-    var factor = b.x * b.x + b.y * b.y;
-    return cartesianToComplexPy((a * b.x) / factor, (-a * b.y) / factor);
-  };
-  */
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var a = Sk.ffi.remapToJs(selfPy);
     var b = Sk.ffi.remapToJs(otherPy);
     if (isComplexPy(otherPy)) {
       var factor = b.x * b.x + b.y * b.y;
-      return cartesianToComplexPy((a.x * b.x + a.y * b.y) / factor, (a.y * b.x - a.x * b.y) / factor);
+      return cartesianJsToComplexPy((a.x * b.x + a.y * b.y) / factor, (a.y * b.x - a.x * b.y) / factor);
     }
     else if (Sk.ffi.isNum(otherPy)) {
-      return cartesianToComplexPy(a.x / b, a.y / b);
+      return cartesianJsToComplexPy(a.x / b, a.y / b);
     }
     else {
       Sk.ffi.checkArgType(ARG_OTHER, [COMPLEX, NUM], false, otherPy);
@@ -291,7 +274,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var b = Sk.ffi.remapToJs(selfPy);
     if (Sk.ffi.isNum(otherPy)) {
       var factor = b.x * b.x + b.y * b.y;
-      return cartesianToComplexPy((a * b.x) / factor, (-a * b.y) / factor);
+      return cartesianJsToComplexPy((a * b.x) / factor, (-a * b.y) / factor);
     }
     else {
       throw Sk.ffi.err.argument(ARG_OTHER).mustHaveType(NUM);
@@ -317,22 +300,42 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var z = Sk.ffi.remapToJs(selfPy);
     return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
   });
+  $loc.__cos__ = Sk.ffi.functionPy(function(selfPy) {
+    var z = Sk.ffi.remapToJs(selfPy);
+    var x = z.x;
+    var y = z.y;
+    var cosX  = Math.cos(x);
+    var coshY = cosh(y);
+    var sinX  = Math.sin(x);
+    var sinhY = sinh(y);
+    return cartesianJsToComplexPy(cosX * coshY, - sinX * sinhY);
+  });
+  $loc.__sin__ = Sk.ffi.functionPy(function(selfPy) {
+    var z = Sk.ffi.remapToJs(selfPy);
+    var x = z.x;
+    var y = z.y;
+    var cosX  = Math.cos(x);
+    var coshY = cosh(y);
+    var sinX  = Math.sin(x);
+    var sinhY = sinh(y);
+    return cartesianJsToComplexPy(sinX * coshY, cosX * sinhY);
+  });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     var z = Sk.ffi.remapToJs(selfPy);
     var e = Math.exp(z.x);
     var c = Math.cos(z.y);
     var s = Math.sin(z.y);
-    return cartesianToComplexPy(e * c, e * s);
+    return cartesianJsToComplexPy(e * c, e * s);
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
     return selfPy;
   });
   $loc.__neg__ = Sk.ffi.functionPy(function(selfPy) {
     var z = Sk.ffi.remapToJs(selfPy);
-    return cartesianToComplexPy(-z.x, -z.y);
+    return cartesianJsToComplexPy(-z.x, -z.y);
   });
   $loc.__invert__ = Sk.ffi.functionPy(function(selfPy) {
-    var onePy = cartesianToComplexPy(1, 0);
+    var onePy = cartesianJsToComplexPy(1, 0);
     return Sk.ffi.callsim(selfPy['__div__'], onePy, selfPy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(z) {
@@ -384,8 +387,11 @@ mod.polar = Sk.ffi.functionPy(function(xPy) {
   }
 });
 
-// Constants
-mod.pi = Sk.ffi.numberToFloatPy(Math.PI);
-mod.e =  Sk.ffi.numberToFloatPy(Math.E);
+// Constants in complex python form.
+mod.one = cartesianJsToComplexPy(1, 0);
+mod.i   = cartesianJsToComplexPy(0, 1);
+mod.e   = cartesianJsToComplexPy(Math.E, 0);
+mod.pi  = cartesianJsToComplexPy(Math.PI, 0);
+mod.tao = cartesianJsToComplexPy(2 * Math.PI, 0);
 };
 }).call(this);
