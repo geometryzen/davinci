@@ -333,8 +333,8 @@ if (! TurtleGraphics) {
                             if (!filling)
 								beginPath();
                             arc(oper[1], oper[2], oper[3], oper[4], oper[5], oper[6]);
-                            currentPos = new Vector(oper[1]+Math.cos(oper[5])*oper[3],
-                                oper[2]+Math.sin(oper[5])*oper[3],0);
+                            currentPos = new Vector(oper[1]+Sk.math.cos(oper[5])*oper[3],
+                                oper[2]+Sk.math.sin(oper[5])*oper[3],0);
                             stroke();
                             if (! filling) {
                                 closePath();
@@ -916,8 +916,8 @@ if (! TurtleGraphics) {
 		var ty = this.position[1]
 
 		//	Figure out the circle center
-		var cx = tx + (radius * Math.cos((turtleHeading + 90) * Degree2Rad));
-		var cy = ty + (radius * Math.sin((turtleHeading + 90) * Degree2Rad));
+		var cx = tx + (radius * Sk.math.cos((turtleHeading + 90) * Degree2Rad));
+		var cy = ty + (radius * Sk.math.sin((turtleHeading + 90) * Degree2Rad));
 
 		//	Canvas arc angles go CLOCKWISE, not COUNTERCLOCKWISE like Turtle
 
@@ -977,8 +977,8 @@ if (! TurtleGraphics) {
 			if (newTurtleHeading < 0)
 				newTurtleHeading = newTurtleHeading + 360;
 
-			var nx = cx + (radius * Math.cos((newTurtleHeading - 90) * Degree2Rad));
-			var ny = cy + (radius * Math.sin((newTurtleHeading - 90) * Degree2Rad));	//	y coord is inverted in turtle
+			var nx = cx + (radius * Sk.math.cos((newTurtleHeading - 90) * Degree2Rad));
+			var ny = cy + (radius * Sk.math.sin((newTurtleHeading - 90) * Degree2Rad));	//	y coord is inverted in turtle
 
 			//	Move it internally
 			this.set_heading(newTurtleHeading);
@@ -1225,8 +1225,8 @@ if (! TurtleGraphics) {
     Vector.angle2vec = function(phi) {
         var res = new Vector([0.0,0.0,0.0]);
         phi = phi * Degree2Rad;
-        res[0] = Math.cos(phi);
-        res[1] = Math.sin(phi);
+        res[0] = Sk.math.cos(phi);
+        res[1] = Sk.math.sin(phi);
         return res.normalize();
     }
 
@@ -1260,8 +1260,8 @@ if (! TurtleGraphics) {
         // Rotate this counter clockwise by angle.
         var perp = new Vector(-this[1], this[0], 0);
         angle = angle * Degree2Rad;
-        var c = Math.cos(angle);
-        var s = Math.sin(angle);
+        var c = Sk.math.cos(angle);
+        var s = Sk.math.sin(angle);
         return new Vector(this[0] * c + perp[0] * s, this[1] * c + perp[1] * s, 0);
     }
 
@@ -1269,7 +1269,7 @@ if (! TurtleGraphics) {
         // Return rotation of this in direction of v about w over alpha
         // Requires: v, w are vectors; alpha is angle in radians
         //   this, v, w are orthonormal
-        return this.linear(Math.cos(alpha), Math.sin(alpha), v);
+        return this.linear(Sk.math.cos(alpha), Sk.math.sin(alpha), v);
     }
 
     Vector.prototype.normalize = function() {

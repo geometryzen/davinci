@@ -70,8 +70,8 @@ var $builtinmodule = function(name)
                 $loc.rotate = new Sk.builtin.func(function(self, angle, x, y, z)
                         {
                             var mag = Math.sqrt(x*x + y*y + z*z);
-                            var sinAngle = Math.sin(angle * Math.PI / 180.0);
-                            var cosAngle = Math.cos(angle * Math.PI / 180.0);
+                            var sinAngle = Sk.math.sin(angle * Math.PI / 180.0);
+                            var cosAngle = Sk.math.cos(angle * Math.PI / 180.0);
 
                             if (mag > 0)
                             {

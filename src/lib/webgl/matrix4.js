@@ -114,8 +114,8 @@ var $builtinmodule = function(name)
     mod.rotationY = new Sk.builtin.func(function(target, angle)
             {
                 var dst = target.v;
-                var c = Math.cos(angle * Math.PI / 180);
-                var s = Math.sin(angle * Math.PI / 180);
+                var c = Sk.math.cos(angle * Math.PI / 180);
+                var s = Sk.math.sin(angle * Math.PI / 180);
 
                 dst[ 0] = c;
                 dst[ 1] = 0;

@@ -1254,7 +1254,7 @@ Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSe
       var u = idxAngle / radialSegments;
 
       var theta = u * Math.PI * 2;
-      var vertex = Sk.three.vector3Cycle(z, radius * Math.cos(theta), radius * Math.sin(theta), direction);
+      var vertex = Sk.three.vector3Cycle(z, radius * Sk.math.cos(theta), radius * Sk.math.sin(theta), direction);
 
       this.vertices.push( vertex );
 
@@ -1482,8 +1482,8 @@ Sk.stdlib.RevolutionGeometry = function (points, generator, segments, phiStart, 
 
     var halfAngle = phi / 2;
 
-    var cosHA = Math.cos( halfAngle );
-    var sinHA = Math.sin( halfAngle );
+    var cosHA = Sk.math.cos( halfAngle );
+    var sinHA = Sk.math.sin( halfAngle );
     var rotor = new THREE.Quaternion(generator.x * sinHA, generator.y * sinHA, generator.z * sinHA, cosHA);
 
     for (var j = 0, jl = points.length; j < jl; j++) {
@@ -1577,13 +1577,13 @@ Sk.stdlib.TorusGeometry = function(radius, tube, radialSegments, tubularSegments
       var u = i / this.tubularSegments * this.arc;
       var v = j / this.radialSegments * Math.PI * 2;
 
-      center.x = this.radius * Math.cos( u );
-      center.y = this.radius * Math.sin( u );
+      center.x = this.radius * Sk.math.cos( u );
+      center.y = this.radius * Sk.math.sin( u );
 
       var vertex = new THREE.Vector3();
-      vertex.x = ( this.radius + this.tube * Math.cos( v ) ) * Math.cos( u );
-      vertex.y = ( this.radius + this.tube * Math.cos( v ) ) * Math.sin( u );
-      vertex.z = this.tube * Math.sin( v );
+      vertex.x = ( this.radius + this.tube * Sk.math.cos( v ) ) * Sk.math.cos( u );
+      vertex.y = ( this.radius + this.tube * Sk.math.cos( v ) ) * Sk.math.sin( u );
+      vertex.z = this.tube * Sk.math.sin( v );
 
       this['vertices'].push( vertex );
 
@@ -1687,15 +1687,15 @@ Sk.stdlib.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone,
 
     // v is the angle inside the vortex tube.
     var v = twoPI * j / this.radialSegments;
-    var cosV = Math.cos(v);
-    var sinV = Math.sin(v);
+    var cosV = Sk.math.cos(v);
+    var sinV = Sk.math.sin(v);
 
     for ( var i = 0; i <= this.circleSegments; i ++ ) {
 
       // u is the angle in the xy-plane measured from the x-axis clockwise about the z-axis.
       var u = computeAngle(this.circleSegments, i)
-      var cosU = Math.cos(u);
-      var sinU = Math.sin(u);
+      var cosU = Sk.math.cos(u);
+      var sinU = Sk.math.sin(u);
 
       center.x = R * cosU;
       center.y = R * sinU;

@@ -850,8 +850,8 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     var mv = Sk.ffi.remapToJs(selfPy);
     var e = Math.exp(mv.w);
-    var c = Math.cos(mv.xy);
-    var s = Math.sin(mv.xy);
+    var c = Sk.math.cos(mv.xy);
+    var s = Sk.math.sin(mv.xy);
     return coordJsToLorentzianPy(e * c, 0, 0, e * s);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(mv) {

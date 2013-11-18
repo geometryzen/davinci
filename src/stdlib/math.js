@@ -1,3 +1,111 @@
+Sk.math = Sk.math || {};
+
+Sk.math.PI_TIMES_1_OVER_4 =     Math.PI / 4;
+Sk.math.PI_TIMES_2_OVER_4 =     Math.PI / 2;
+Sk.math.PI_TIMES_3_OVER_4 = 3 * Math.PI / 4;
+Sk.math.PI_TIMES_4_OVER_4 =     Math.PI;
+Sk.math.PI_TIMES_5_OVER_4 = 5 * Math.PI / 4;
+Sk.math.PI_TIMES_6_OVER_4 = 3 * Math.PI / 2;
+Sk.math.PI_TIMES_7_OVER_4 = 7 * Math.PI / 4;
+Sk.math.PI_TIMES_8_OVER_4 = 2 * Math.PI;
+Sk.math.EPSILON           = 0.000000001
+
+Sk.math.isCloseTo = function(x1, x2, epsilon) {
+  return Math.abs(x1 - x2) < epsilon;
+}
+
+Sk.math.cos = function(x) {
+  if (Sk.math.isCloseTo(Math.abs(x), 0, Sk.math.EPSILON)) {
+    return +1;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_1_OVER_4, Sk.math.EPSILON)) {
+    return +Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_2_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_3_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_4_OVER_4, Sk.math.EPSILON)) {
+    return -1;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_5_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_6_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_7_OVER_4, Sk.math.EPSILON)) {
+    return +Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(Math.abs(x), Sk.math.PI_TIMES_8_OVER_4, Sk.math.EPSILON)) {
+    return +1;
+  }
+  else {
+    return Math.cos(x);
+  }
+};
+
+Sk.math.sin = function(x) {
+  if (Sk.math.isCloseTo(x, 0, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_1_OVER_4, Sk.math.EPSILON)) {
+    return Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_2_OVER_4, Sk.math.EPSILON)) {
+    return +1;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_3_OVER_4, Sk.math.EPSILON)) {
+    return Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_4_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_5_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_6_OVER_4, Sk.math.EPSILON)) {
+    return -1;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_7_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, +Sk.math.PI_TIMES_8_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_1_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_2_OVER_4, Sk.math.EPSILON)) {
+    return -1;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_3_OVER_4, Sk.math.EPSILON)) {
+    return -Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_4_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_5_OVER_4, Sk.math.EPSILON)) {
+    return +Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_6_OVER_4, Sk.math.EPSILON)) {
+    return +1;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_7_OVER_4, Sk.math.EPSILON)) {
+    return +Math.SQRT1_2;
+  }
+  else if (Sk.math.isCloseTo(x, -Sk.math.PI_TIMES_8_OVER_4, Sk.math.EPSILON)) {
+    return 0;
+  }
+  else {
+    var s = Math.sin(x);
+    Sk.debugout({x:x, s:s});
+    return s;
+  }
+};
+
 (function() {
 Sk.builtin.defineMath = function(mod) {
 Sk.ffi.checkFunctionArgs("defineMath", arguments, 1, 1);
@@ -14,8 +122,11 @@ var NUMBER = "Number";
 /**
  *
  */
-mod.pi = Sk.ffi.numberToFloatPy(Math.PI);
-mod.e  = Sk.ffi.numberToFloatPy(Math.E);
+mod.e       = Sk.ffi.numberToFloatPy(Math.E);
+mod.pi      = Sk.ffi.numberToFloatPy(Math.PI);
+mod.sqrt2   = Sk.ffi.numberToFloatPy(Math.SQRT2);
+mod.sqrt1_2 = Sk.ffi.numberToFloatPy(Math.SQRT1_2);
+mod.tao     = Sk.ffi.numberToFloatPy(2 * Math.PI);
 
 mod.cliffordConjugate = Sk.ffi.functionPy(function(x) {
   Sk.ffi.checkFunctionArgs("cliffordConjugate", arguments, 1, 1);
@@ -76,7 +187,7 @@ mod.exp = Sk.ffi.functionPy(function(anglePy) {
 mod.cos = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("cos", arguments, 1, 1);
   if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Math.cos(Sk.ffi.remapToJs(anglePy)));
+    return Sk.ffi.numberToFloatPy(Sk.math.cos(Sk.ffi.remapToJs(anglePy)));
   }
   else {
     return Sk.ffh.cos(anglePy);
@@ -88,7 +199,7 @@ mod.cos = Sk.ffi.functionPy(function(anglePy) {
 mod.sin = Sk.ffi.functionPy(function(anglePy) {
   Sk.ffi.checkFunctionArgs("sin", arguments, 1, 1);
   if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Math.sin(Sk.ffi.remapToJs(anglePy)));
+    return Sk.ffi.numberToFloatPy(Sk.math.sin(Sk.ffi.remapToJs(anglePy)));
   }
   else
   {

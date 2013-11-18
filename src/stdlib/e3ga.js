@@ -885,7 +885,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         xyz = Sk.ffi.remapToJs(xyz);
         var mutable = Sk.ffi.isDefined(mutablePy) ? Sk.ffi.remapToJs(mutablePy) : true;
         var vector = new THREE[VECTOR_3](x,y,z);
-        var quaternion = new THREE[QUATERNION](-yz, -zx, -xy, w);
+        var quaternion = new THREE.Quaternion(-yz, -zx, -xy, w);
         Sk.ffi.referenceToPy(new THREE.Euclidean3(vector, quaternion, xyz, mutable), Sk.e3ga.EUCLIDEAN_3, undefined, self);
       }
       break;
@@ -1726,11 +1726,28 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var xy = -quaternion.z;
     var yz = -quaternion.x;
     var zx = -quaternion.y;
-    var angle = Math.sqrt(xy * xy + yz * yz + zx * zx);
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
-    var k = s / angle;
-    return coordsJsToE3Py(c, 0, 0, 0, k * xy, k * yz, k * zx, 0);
+    if (xy === 0 && yz === 0) {
+      var c = Sk.math.cos(zx);
+      var s = Sk.math.sin(zx);
+      return coordsJsToE3Py(c, 0, 0, 0, 0, 0, s, 0);
+    }
+    else if (yz === 0 && zx === 0) {
+      var c = Sk.math.cos(xy);
+      var s = Sk.math.sin(xy);
+      return coordsJsToE3Py(c, 0, 0, 0, s, 0, 0, 0);
+    }
+    else if (zx === 0 && xy === 0) {
+      var c = Sk.math.cos(yz);
+      var s = Sk.math.sin(yz);
+      return coordsJsToE3Py(c, 0, 0, 0, 0, s, 0, 0);
+    }
+    else {
+      var angle = Math.sqrt(xy * xy + yz * yz + zx * zx);
+      var c = Sk.math.cos(angle);
+      var s = Sk.math.sin(angle);
+      var k = s / angle;
+      return coordsJsToE3Py(c, 0, 0, 0, k * xy, k * yz, k * zx, 0);
+    }
   });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
@@ -1790,7 +1807,6 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, Sk.e3ga.EUCLIDEAN_3, []);
 
-mod.pi                   = coordsJsToE3Py(Math.PI, 0, 0, 0, 0, 0, 0, 0, false);
 mod[UNIT_VECTOR_NAME_E1] = coordsJsToE3Py(0, 1, 0, 0, 0, 0, 0, 0, false);
 mod[UNIT_VECTOR_NAME_E2] = coordsJsToE3Py(0, 0, 1, 0, 0, 0, 0, 0, false);
 mod[UNIT_VECTOR_NAME_E3] = coordsJsToE3Py(0, 0, 0, 1, 0, 0, 0, 0, false);

@@ -20,6 +20,11 @@ var METHOD_ABS       = "abs";
  * @const
  * @type {string}
  */
+var METHOD_CONJUGATE = "conjugate";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_COS       = "cos";
 /**
  * @const
@@ -130,11 +135,16 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
         });
       }
+      case METHOD_CONJUGATE: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy) {
+          return cartesianJsToComplexPy(z.x, -z.y);
+        });
+      }
       case METHOD_EXP: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy) {
           var e = Math.exp(z.x);
-          var c = Math.cos(z.y);
-          var s = Math.sin(z.y);
+          var c = Sk.math.cos(z.y);
+          var s = Sk.math.sin(z.y);
           return cartesianJsToComplexPy(e * c, e * s);
         });
       }
@@ -304,9 +314,9 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var z = Sk.ffi.remapToJs(selfPy);
     var x = z.x;
     var y = z.y;
-    var cosX  = Math.cos(x);
+    var cosX  = Sk.math.cos(x);
     var coshY = cosh(y);
-    var sinX  = Math.sin(x);
+    var sinX  = Sk.math.sin(x);
     var sinhY = sinh(y);
     return cartesianJsToComplexPy(cosX * coshY, - sinX * sinhY);
   });
@@ -314,17 +324,17 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var z = Sk.ffi.remapToJs(selfPy);
     var x = z.x;
     var y = z.y;
-    var cosX  = Math.cos(x);
+    var cosX  = Sk.math.cos(x);
     var coshY = cosh(y);
-    var sinX  = Math.sin(x);
+    var sinX  = Sk.math.sin(x);
     var sinhY = sinh(y);
     return cartesianJsToComplexPy(sinX * coshY, cosX * sinhY);
   });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     var z = Sk.ffi.remapToJs(selfPy);
     var e = Math.exp(z.x);
-    var c = Math.cos(z.y);
-    var s = Math.sin(z.y);
+    var c = Sk.math.cos(z.y);
+    var s = Sk.math.sin(z.y);
     return cartesianJsToComplexPy(e * c, e * s);
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
@@ -340,7 +350,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);
-    return Sk.ffi.stringToPy("(" + stringFromCoordinates([z.x, z.y], ["1", "j"], "") + ")");
+    return Sk.ffi.stringToPy("(" + stringFromCoordinates([z.x, z.y], ["1", "i"], "") + ")");
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);
@@ -386,12 +396,5 @@ mod.polar = Sk.ffi.functionPy(function(xPy) {
     Sk.ffi.checkArgType("x", COMPLEX, false, xPy);
   }
 });
-
-// Constants in complex python form.
-mod.one = cartesianJsToComplexPy(1, 0);
-mod.i   = cartesianJsToComplexPy(0, 1);
-mod.e   = cartesianJsToComplexPy(Math.E, 0);
-mod.pi  = cartesianJsToComplexPy(Math.PI, 0);
-mod.tao = cartesianJsToComplexPy(2 * Math.PI, 0);
 };
 }).call(this);

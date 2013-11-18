@@ -346,7 +346,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var angle = unit.scale;
           var dimensions = unit.dimensions;
           var labels = unit.labels;
-          var cosAngle = new BLADE[UNIT](Math.cos(angle), dimensions, labels);
+          var cosAngle = new BLADE[UNIT](Sk.math.cos(angle), dimensions, labels);
           return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(cosAngle, UNIT));
         });
       }
@@ -356,7 +356,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var angle = unit.scale;
           var dimensions = unit.dimensions;
           var labels = unit.labels;
-          var cosAngle = new BLADE[UNIT](Math.sin(angle), dimensions, labels);
+          var cosAngle = new BLADE[UNIT](Sk.math.sin(angle), dimensions, labels);
           return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(cosAngle, UNIT));
         });
       }
