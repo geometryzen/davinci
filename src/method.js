@@ -42,9 +42,9 @@ Sk.builtin.method.prototype.tp$call = function(args, kw)
     return this.im_func.func_code.apply(this.im_func.func_globals, args);
 };
 
-Sk.builtin.method.prototype['$r'] = function()
+Sk.builtin.method.prototype.tp$repr = function()
 {
     var name = (this.im_func.func_code && this.im_func.func_code['co_name'] && this.im_func.func_code['co_name'].v) || '<native JS>';
     return new Sk.builtin.str("<bound method " + this.im_self.ob$type.tp$name + "." + name
-            + " of " + this.im_self['$r']().v + ">");
+            + " of " + this.im_self.tp$repr().v + ">");
 };

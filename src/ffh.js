@@ -14,6 +14,7 @@ var SPECIAL_METHOD_NEG     = '__neg__';
 var SPECIAL_METHOD_NONZERO = '__nonzero__';
 var SPECIAL_METHOD_POS     = '__pos__';
 var SPECIAL_METHOD_REPR    = '__repr__';
+var SPECIAL_METHOD_RMUL    = '__rmul__';
 var SPECIAL_METHOD_RSHIFT  = '__rshift__';
 var SPECIAL_METHOD_SIN     = '__sin__';
 var SPECIAL_METHOD_SQRT    = '__sqrt__';
@@ -87,6 +88,9 @@ goog.exportSymbol("Sk.ffh.subtract", Sk.ffh.subtract);
 Sk.ffh.multiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_MUL, lhsPy, rhsPy, "nb$multiply");};
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
+Sk.ffh.rmultiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_RMUL, lhsPy, rhsPy, "nb$multiply");};
+goog.exportSymbol("Sk.ffh.rmultiply", Sk.ffh.rmultiply);
+
 Sk.ffh.divide = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_DIV, lhsPy, rhsPy, "nb$divide");};
 goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
 
@@ -142,7 +146,7 @@ goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 Sk.ffh.str = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_STR, valuePy, "tp$str");};
 goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);
 
-Sk.ffh.repr = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_REPR, valuePy, "tp$str");};
+Sk.ffh.repr = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_REPR, valuePy, "tp$repr");};
 goog.exportSymbol("Sk.ffh.repr", Sk.ffh.repr);
 /**
  *

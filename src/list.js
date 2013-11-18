@@ -108,11 +108,13 @@ Sk.builtin.list.prototype.list_ass_slice_ = function(ilow, ihigh, v)
 };
 
 Sk.builtin.list.prototype.tp$name = "list";
-Sk.builtin.list.prototype['$r'] = function()
+Sk.builtin.list.prototype.tp$repr = function()
 {
     var ret = [];
     for (var it = this.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
+    {
         ret.push(Sk.misceval.objectRepr(i).v);
+    }
     return new Sk.builtin.str("[" + ret.join(", ") + "]");
 };
 Sk.builtin.list.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;

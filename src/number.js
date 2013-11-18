@@ -669,7 +669,7 @@ Sk.builtin.nmber.prototype.__ge__ = function(me, other) {
 
 Sk.builtin.nmber.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 
-Sk.builtin.nmber.prototype['$r'] = function()
+Sk.builtin.nmber.prototype.tp$repr = function()
 {
     return new Sk.builtin.str(this.str$(10, true));
 };

@@ -41,7 +41,7 @@ Sk.builtin.file.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('file', Sk.b
 
 Sk.builtin.file.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 
-Sk.builtin.file.prototype['$r'] = function()
+Sk.builtin.file.prototype.tp$repr = function()
 {
     return new Sk.builtin.str("<"
         + (this.closed ? "closed" : "open")

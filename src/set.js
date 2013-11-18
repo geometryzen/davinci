@@ -42,7 +42,7 @@ Sk.builtin.set.prototype.set_reset_ = function()
 };
 
 Sk.builtin.set.prototype.tp$name = 'set';
-Sk.builtin.set.prototype['$r'] = function()
+Sk.builtin.set.prototype.tp$repr = function()
 {
     var ret = [];
     for (var it = this.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())

@@ -79,7 +79,7 @@ Sk.builtin.type = function(name, bases, dict)
         klass.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
         klass.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
         klass.prototype.tp$descr_get = function() { goog.asserts.fail("in type tp$descr_get"); };
-        klass.prototype['$r'] = function()
+        klass.prototype.tp$repr = function()
         {
             var reprf = this.tp$getattr("__repr__");
             if (reprf !== undefined)
@@ -94,7 +94,7 @@ Sk.builtin.type = function(name, bases, dict)
             var strf = this.tp$getattr("__str__");
             if (strf !== undefined)
                 return Sk.misceval.apply(strf, undefined, undefined, undefined, []);
-            return this['$r']();
+            return this.tp$repr();
         };
         klass.prototype.tp$length = function()
         {
@@ -182,7 +182,7 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
     goog.asserts.assert(t !== undefined);
     t.ob$type = Sk.builtin.type;
     t.tp$name = name;
-    t['$r'] = function()
+    t.tp$repr = function()
     {
         var mod = t.__module__;
         var cname = "";
@@ -202,7 +202,7 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
 
 Sk.builtin.type.ob$type = Sk.builtin.type;
 Sk.builtin.type.tp$name = "type";
-Sk.builtin.type['$r'] = function() { return new Sk.builtin.str("<type 'type'>"); };
+Sk.builtin.type.tp$repr = function() { return new Sk.builtin.str("<type 'type'>"); };
 
 //Sk.builtin.type.prototype.tp$descr_get = function() { print("in type descr_get"); };
 
@@ -382,11 +382,11 @@ Sk.builtin.type.prototype.tp$richcompare = function(other, op)
 	if (other.ob$type != Sk.builtin.type)
 		return undefined;
 
-	if (!this['$r'] || !other['$r'])
+	if (!this.tp$repr || !other.tp$repr)
 		return undefined;
 
-	var r1 = this['$r']();
-	var r2 = other['$r']();
+	var r1 = this.tp$repr();
+	var r2 = other.tp$repr();
 
 	return r1.tp$richcompare(r2, op);
 };

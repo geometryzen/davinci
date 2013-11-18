@@ -370,7 +370,7 @@ Sk.misceval.objectRepr = function(v)
         return new Sk.builtin.str("False");
     else if (typeof v === "number")
         return new Sk.builtin.str("" + v);
-    else if (!v['$r']) {
+    else if (!v.tp$repr) {
         if (v.tp$name) {
             return new Sk.builtin.str("<" + v.tp$name + " object>");
         } else {
@@ -387,7 +387,7 @@ Sk.misceval.objectRepr = function(v)
             return new Sk.builtin.str("" + v.v);
     }
     else
-        return v['$r']();
+        return v.tp$repr();
 };
 goog.exportSymbol("Sk.misceval.objectRepr", Sk.misceval.objectRepr);
 

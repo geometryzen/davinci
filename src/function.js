@@ -208,7 +208,7 @@ Sk.builtin.func.prototype.tp$setattr = function(key,value) {
 //Sk.builtin.type.makeIntoTypeObj('function', Sk.builtin.func);
 Sk.builtin.func.prototype.ob$type = Sk.builtin.type.makeTypeObj('function', new Sk.builtin.func(null, null));
 
-Sk.builtin.func.prototype['$r'] = function()
+Sk.builtin.func.prototype.tp$repr = function()
 {
     var name = (this.func_code && this.func_code['co_name'] && this.func_code['co_name'].v) || '<native JS>';
     return new Sk.builtin.str("<function " + name + ">");

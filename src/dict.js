@@ -237,7 +237,7 @@ Sk.builtin.dict.prototype['__iter__'] = new Sk.builtin.func(function(self)
     return self.tp$iter();
 });
 
-Sk.builtin.dict.prototype['$r'] = function()
+Sk.builtin.dict.prototype.tp$repr = function()
 {
     var ret = [];
     for (var iter = this.tp$iter(), k = iter.tp$iternext();

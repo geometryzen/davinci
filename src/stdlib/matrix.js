@@ -225,14 +225,13 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    var a00 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 0);
+    var a01 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 1);
+    var a10 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 0);
+    var a11 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 1);
     switch(Sk.ffi.getType(otherPy)) {
       case Sk.ffi.PyType.INSTANCE: {
         if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_2x2)) {
-          var a00 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 0);
-          var a01 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 1);
-          var a10 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 0);
-          var a11 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 1);
-
           var b00 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 0), 0);
           var b01 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 0), 1);
           var b10 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 0);
@@ -247,7 +246,14 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
         }
         else {
-          throw Sk.ffi.err.operand(ARG_OTHER).toOperation(OP_MUL).mustHaveType([Sk.ffi.PyType.FLOAT, Sk.matrix.MATRIX_2x2]);
+          var x00 = Sk.ffh.multiply(a00, otherPy);
+          var x01 = Sk.ffh.multiply(a01, otherPy);
+          var x10 = Sk.ffh.multiply(a10, otherPy);
+          var x11 = Sk.ffh.multiply(a11, otherPy);
+
+          var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
+          var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
+          return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
         }
       }
       case Sk.ffi.PyType.FLOAT: {
@@ -268,6 +274,36 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       default: {
         throw Sk.ffi.err.operand(ARG_OTHER).toOperation(OP_MUL).mustHaveType([Sk.ffi.PyType.FLOAT, Sk.matrix.MATRIX_2x1]);
       }
+    }
+  });
+  $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    var a00 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 0);
+    var a01 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 1);
+    var a10 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 0);
+    var a11 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 1);
+    if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_1x2)) {
+      var b00 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 0), 0);
+      var b01 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 0), 1);
+      var b10 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 0);
+      var b11 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 1);
+
+      var x00 = Sk.ffh.add(Sk.ffh.multiply(a00, b00), Sk.ffh.multiply(a10, b01));
+      var x01 = Sk.ffh.add(Sk.ffh.multiply(a01, b00), Sk.ffh.multiply(a11, b01));
+      var x10 = Sk.ffh.add(Sk.ffh.multiply(a00, b10), Sk.ffh.multiply(a10, b11));
+      var x11 = Sk.ffh.add(Sk.ffh.multiply(a01, b10), Sk.ffh.multiply(a11, b11));
+      var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
+      var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
+      return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
+    }
+    else {
+      var x00 = Sk.ffh.rmultiply(a00, otherPy);
+      var x01 = Sk.ffh.rmultiply(a01, otherPy);
+      var x10 = Sk.ffh.rmultiply(a10, otherPy);
+      var x11 = Sk.ffh.rmultiply(a11, otherPy);
+
+      var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
+      var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
+      return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
     }
   });
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {

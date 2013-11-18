@@ -194,7 +194,7 @@ Sk.builtin.str.prototype.tp$richcompare = function(other, op)
     }
 };
 
-Sk.builtin.str.prototype['$r'] = function()
+Sk.builtin.str.prototype.tp$repr = function()
 {
     // single is preferred
     var quote = "'";

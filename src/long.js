@@ -546,7 +546,7 @@ Sk.builtin.lng.prototype.__ge__ = function(me, other) {
 	return me.longCompare(other) >= 0;
 };
 
-Sk.builtin.lng.prototype['$r'] = function()
+Sk.builtin.lng.prototype.tp$repr = function()
 {
     return new Sk.builtin.str(this.str$(10, true) + "L");
 };

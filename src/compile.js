@@ -518,12 +518,12 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
                 return "Sk.longFromStr('" + e.n.tp$str().v + "')";
             goog.asserts.fail("unhandled Num type");
         case Str:
-            return this._gr('str', "new Sk.builtins['str'](", e.s['$r']().v, ")");
+            return this._gr('str', "new Sk.builtins['str'](", e.s.tp$repr().v, ")");
         case Attribute:
             var val;
             if (e.ctx !== AugStore)
                 val = this.vexpr(e.value);
-            var mangled = e.attr['$r']().v;
+            var mangled = e.attr.tp$repr().v;
             mangled = mangled.substring(1, mangled.length-1);
             mangled = mangleName(this.u.private_, new Sk.builtin.str(mangled)).v;
             mangled = fixReservedWords(mangled);
@@ -1037,7 +1037,7 @@ Compiler.prototype.cimport = function(s)
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        var mod = this._gr('module', "Sk.builtin.__import__(", alias.name['$r']().v, ",$gbl,$loc,[])");
+        var mod = this._gr('module', "Sk.builtin.__import__(", alias.name.tp$repr().v, ",$gbl,$loc,[])");
 
         if (alias.asname)
         {
@@ -1059,8 +1059,8 @@ Compiler.prototype.cfromimport = function(s)
     var n = s.names.length;
     var names = [];
     for (var i = 0; i < n; ++i)
-        names[i] = s.names[i].name['$r']().v;
-    var mod = this._gr('module', "Sk.builtin.__import__(", s.module['$r']().v, ",$gbl,$loc,[", names, "])");
+        names[i] = s.names[i].name.tp$repr().v;
+    var mod = this._gr('module', "Sk.builtin.__import__(", s.module.tp$repr().v, ",$gbl,$loc,[", names, "])");
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
@@ -1071,7 +1071,7 @@ Compiler.prototype.cfromimport = function(s)
             return;
         }
 
-        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", alias.name['$r']().v, ")");
+        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", alias.name.tp$repr().v, ")");
         var storeName = alias.name;
         if (alias.asname)
             storeName = alias.asname;
@@ -1492,7 +1492,7 @@ Compiler.prototype.cclass = function(s)
     this.exitScope();
 
     // todo; metaclass
-    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name['$r']().v, ",[", bases, "])");
+    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name.tp$repr().v, ",[", bases, "])");
 
     // store our new class under the right name
     this.nameop(s.name, Store, wrapped);
@@ -1779,7 +1779,7 @@ Compiler.prototype.exitScope = function()
         this.u.activateScope();
 
     if (prev.name.v !== "<module>") {// todo; hacky
-        var mangled = prev.name['$r']().v;
+        var mangled = prev.name.tp$repr().v;
         mangled = mangled.substring(1, mangled.length-1);
         mangled = fixReservedWords(mangled);
         mangled = fixReservedNames(mangled);
