@@ -100,9 +100,7 @@ Sk.math.sin = function(x) {
     return 0;
   }
   else {
-    var s = Math.sin(x);
-    Sk.debugout({x:x, s:s});
-    return s;
+    return Math.sin(x);
   }
 };
 

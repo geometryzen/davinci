@@ -350,7 +350,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);
-    return Sk.ffi.stringToPy("(" + stringFromCoordinates([z.x, z.y], ["1", "i"], "") + ")");
+    return Sk.ffi.stringToPy(stringFromCoordinates([z.x, z.y], ["1", "i"], ""));
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);

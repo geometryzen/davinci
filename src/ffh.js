@@ -6,6 +6,7 @@ var SPECIAL_METHOD_DIV     = '__div__';
 var SPECIAL_METHOD_EQ      = '__eq__';
 var SPECIAL_METHOD_COS     = '__cos__';
 var SPECIAL_METHOD_EXP     = '__exp__';
+var SPECIAL_METHOD_GETITEM = '__getitem__';
 var SPECIAL_METHOD_INVERT  = '__invert__';
 var SPECIAL_METHOD_LSHIFT  = '__lshift__';
 var SPECIAL_METHOD_MUL     = '__mul__';
@@ -41,7 +42,9 @@ Sk.ffh.unaryExec = function(specialMethod, valuePy, internalMethod)
   }
 };
 goog.exportSymbol("Sk.ffh.unaryExec", Sk.ffh.unaryExec);
-
+/**
+ *
+ */
 Sk.ffh.binaryExec = function(specialMethod, lhsPy, rhsPy, internalMethod)
 {
   if (lhsPy[specialMethod])
@@ -58,6 +61,22 @@ Sk.ffh.binaryExec = function(specialMethod, lhsPy, rhsPy, internalMethod)
   }
 };
 goog.exportSymbol("Sk.ffh.binaryExec", Sk.ffh.binaryExec);
+/**
+ * @param {Object} objPy
+ * @param {number} index
+ */
+Sk.ffh.getitem = function(objPy, index)
+{
+  if (objPy[SPECIAL_METHOD_GETITEM])
+  {
+    return Sk.ffi.callsim(objPy[SPECIAL_METHOD_GETITEM], objPy, Sk.ffi.numberToIntPy(index));
+  }
+  else
+  {
+    throw Sk.ffi.notImplementedError(SPECIAL_METHOD_GETITEM);
+  }
+};
+goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
 Sk.ffh.add = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_ADD, lhsPy, rhsPy, "nb$add");};
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);

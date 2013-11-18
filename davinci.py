@@ -104,6 +104,7 @@ Files = [
         'src/builtindict.js',
         'src/stdlib/stdlib.js',
         'src/stdlib/math.js',
+        'src/stdlib/matrix.js',
         'src/stdlib/complex.js',
         'src/stdlib/quaternion.js',
         'src/stdlib/document.js',
