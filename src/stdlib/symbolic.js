@@ -345,6 +345,10 @@ mod[VARIABLE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.checkMethodArgs(OP_SYMBOL_MULTIPLY, arguments, 1, 1);
     return Sk.ffi.callsim(mod[MULTIPLY], selfPy, otherPy);
   });
+  $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    Sk.ffi.checkMethodArgs(OP_SYMBOL_MULTIPLY, arguments, 1, 1);
+    return Sk.ffi.callsim(mod[MULTIPLY], otherPy, selfPy);
+  });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
