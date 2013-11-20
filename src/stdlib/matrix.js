@@ -42,6 +42,11 @@ var OP_MUL = "*";
  * @const
  * @type {string}
  */
+var METHOD_CONJUGATE = "conjugate";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_TRANSPOSE = "transpose";
 /**
  * @const
@@ -122,6 +127,10 @@ mod[Sk.matrix.MATRIX_2x1] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var onePy = Sk.ffh.divide(lhs[0], otherPy);
     var twoPy = Sk.ffh.divide(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
+  });
+  $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_CONJUGATE, arguments, 0, 0);
+    return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 0)), Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 1)));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var matrix = Sk.ffi.remapToJs(selfPy);
@@ -225,6 +234,10 @@ mod[Sk.matrix.MATRIX_1x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var onePy = Sk.ffh.divide(lhs[0], otherPy);
     var twoPy = Sk.ffh.divide(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
+  });
+  $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_CONJUGATE, arguments, 0, 0);
+    return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 0)), Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 1)));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var matrix = Sk.ffi.remapToJs(selfPy);
@@ -377,6 +390,10 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var onePy = Sk.ffh.divide(lhs[0], otherPy);
     var twoPy = Sk.ffh.divide(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
+  });
+  $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_CONJUGATE, arguments, 0, 0);
+    return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 0)), Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 1)));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var matrix = Sk.ffi.remapToJs(selfPy);

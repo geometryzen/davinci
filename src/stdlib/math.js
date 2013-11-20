@@ -361,6 +361,18 @@ mod.factorial = Sk.ffi.functionPy(function(x) {
     r *= i;
   return new Sk.builtin.nmber(r, Sk.builtin.nmber.int$);
 });
+/**
+ * conjugate
+ */
+mod.conjugate = Sk.ffi.functionPy(function(numberPy) {
+  Sk.ffi.checkFunctionArgs("conjugate", arguments, 1, 1);
+  if (Sk.ffi.isNum(numberPy)) {
+    return numberPy;
+  }
+  else {
+    return Sk.ffh.conjugate(numberPy);
+  }
+});
 
 };
 }).call(this);

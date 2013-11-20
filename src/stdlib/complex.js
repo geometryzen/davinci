@@ -319,6 +319,10 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var z = Sk.ffi.remapToJs(selfPy);
     return Sk.ffi.numberToFloatPy(Math.sqrt(z.x * z.x + z.y * z.y));
   });
+  $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
+    var z = Sk.ffi.remapToJs(selfPy);
+    return cartesianJsToComplexPy(z.x, -z.y);
+  });
   $loc.__cos__ = Sk.ffi.functionPy(function(selfPy) {
     var z = Sk.ffi.remapToJs(selfPy);
     var x = z.x;

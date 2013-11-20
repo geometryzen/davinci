@@ -2,6 +2,7 @@ Sk.ffh = Sk.ffh || {};
 
 var SPECIAL_METHOD_ADD     = '__add__';
 var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
+var SPECIAL_METHOD_CONJUGATE = '__conjugate__';
 var SPECIAL_METHOD_DIV     = '__div__';
 var SPECIAL_METHOD_EQ      = '__eq__';
 var SPECIAL_METHOD_COS     = '__cos__';
@@ -118,6 +119,16 @@ goog.exportSymbol("Sk.ffh.equal", Sk.ffh.equal);
 
 Sk.ffh.cliffordConjugate = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_CLIFFORD_CONJUGATE, valuePy, "nb$cliffordConjugate");};
 goog.exportSymbol("Sk.ffh.cliffordConjugate", Sk.ffh.cliffordConjugate);
+
+Sk.ffh.conjugate = function(numberPy) {
+  if (Sk.ffi.isNum(numberPy)) {
+    return numberPy;
+  }
+  else {
+    return Sk.ffh.unaryExec(SPECIAL_METHOD_CONJUGATE, numberPy);
+  }
+};
+goog.exportSymbol("Sk.ffh.conjugate", Sk.ffh.conjugate);
 
 Sk.ffh.cos = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_COS, valuePy, "nb$cos");};
 goog.exportSymbol("Sk.ffh.cos", Sk.ffh.cos);
