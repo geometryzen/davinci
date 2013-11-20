@@ -405,5 +405,8 @@ mod.polar = Sk.ffi.functionPy(function(xPy) {
     Sk.ffi.checkArgType("x", COMPLEX, false, xPy);
   }
 });
+/**
+ *
+ */
 };
 }).call(this);
