@@ -148,7 +148,7 @@ TestFiles = [
 
 def isClean():
     repo = Repo(".")
-    return not repo.is_dirty()
+    return not repo.is_dirty
 
 def getTip():
     repo = Repo(".")
