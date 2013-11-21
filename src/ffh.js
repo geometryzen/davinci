@@ -80,7 +80,20 @@ Sk.ffh.getitem = function(objPy, index)
 };
 goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
-Sk.ffh.add = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_ADD, lhsPy, rhsPy, "nb$add");};
+Sk.ffh.add = function(lhsPy, rhsPy) {
+  if (lhsPy["__add__"])
+  {
+    return Sk.ffi.callsim(lhsPy["__add__"], lhsPy, rhsPy);
+  }
+  else if (lhsPy["nb$add"])
+  {
+    return lhsPy["nb$add"].call(lhsPy, rhsPy);
+  }
+  else
+  {
+    throw Sk.ffi.notImplementedError("add");
+  }
+};
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);
 
 Sk.ffh.subtract = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_SUB, lhsPy, rhsPy, "nb$subtract");};

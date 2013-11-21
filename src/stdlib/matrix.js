@@ -213,7 +213,10 @@ mod[Sk.matrix.MATRIX_1x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_1x2)) {
+    if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_2x1)) {
+      return Sk.ffh.add(Sk.ffh.multiply(Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(otherPy, 0)), Sk.ffh.multiply(Sk.ffh.getitem(selfPy, 1), Sk.ffh.getitem(otherPy, 1)));
+    }
+    else if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_1x2)) {
       throw Sk.ffi.assertionError("multiplication with 2x1 is not supported.");
     }
     else {
