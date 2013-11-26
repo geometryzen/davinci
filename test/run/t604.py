@@ -4,6 +4,10 @@
 from e3ga import *
 from math import acos, fabs, pi, pow, sqrt
 
+e1 = VectorE3(1.0, 0.0, 0.0)
+e2 = VectorE3(0.0, 1.0, 0.0)
+e3 = VectorE3(0.0, 0.0, 1.0)
+
 def isCloseTo(expected, actual, precision):
     return fabs(expected - actual) < (pow(10, -precision) / 2)
 

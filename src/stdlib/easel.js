@@ -842,7 +842,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       case PROP_TEXT: {
-        text[PROP_TEXT] = value;
+        text[PROP_TEXT] = Sk.ffi.remapToJs(Sk.ffi.isStr(valuePy) ? valuePy : Sk.ffh.str(valuePy));
       }
       break;
       case PROP_TEXT_ALIGN: {

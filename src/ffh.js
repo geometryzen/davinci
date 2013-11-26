@@ -167,10 +167,29 @@ goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
 Sk.ffh.sqrt = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_SQRT, valuePy);};
 goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 
-Sk.ffh.str = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_STR, valuePy, "tp$str");};
+Sk.ffh.str = function(valuePy) {
+  if (valuePy[SPECIAL_METHOD_STR])
+  {
+    return Sk.ffi.callsim(valuePy[SPECIAL_METHOD_STR], valuePy);
+  }
+  else if (valuePy["tp$str"])
+  {
+    return valuePy["tp$str"].call(valuePy);
+  }
+  else if (valuePy["tp$repr"])
+  {
+    return valuePy["tp$repr"].call(valuePy);
+  }
+  else
+  {
+    throw Sk.ffi.notImplementedError("str");
+  }
+};
 goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);
 
-Sk.ffh.repr = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_REPR, valuePy, "tp$repr");};
+Sk.ffh.repr = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_REPR, valuePy, "tp$repr");
+};
 goog.exportSymbol("Sk.ffh.repr", Sk.ffh.repr);
 /**
  *

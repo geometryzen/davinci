@@ -792,10 +792,8 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
 }, EUCLIDEAN_2, []);
-
-mod[UNIT_VECTOR_NAME_E1] = coordsJsToE2Py(0, 1, 0, 0);
-mod[UNIT_VECTOR_NAME_E2] = coordsJsToE2Py(0, 0, 1, 0);
-mod[PSEUDOSCALAR_NAME]   = coordsJsToE2Py(0, 0, 0, 1);
-
+/**
+ *
+ */
 };
 }).call(this);

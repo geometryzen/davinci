@@ -3116,9 +3116,9 @@ mod[Sk.three.ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  mod[CUBE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, widthPy, heightPy, depthPy, widthSegmentsPy, heightSegmentsPy, depthSegmentsPy) {
     Sk.ffi.checkMethodArgs(CUBE_GEOMETRY, arguments, 3, 6);
-    Sk.ffi.checkArgType(PROP_WIDTH,  NUM, Sk.ffi.isNum(widthPy),  widthPy);
-    Sk.ffi.checkArgType(PROP_HEIGHT, NUM, Sk.ffi.isNum(heightPy), heightPy);
-    Sk.ffi.checkArgType(PROP_DEPTH,  NUM, Sk.ffi.isNum(depthPy),  depthPy);
+    Sk.ffi.checkArgType(PROP_WIDTH,  Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(widthPy),  widthPy);
+    Sk.ffi.checkArgType(PROP_HEIGHT, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(heightPy), heightPy);
+    Sk.ffi.checkArgType(PROP_DEPTH,  Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(depthPy),  depthPy);
     if (Sk.ffi.isDefined(widthSegmentsPy)) {
       Sk.ffi.checkArgType(PROP_WIDTH_SEGMENTS, INT, Sk.ffi.isInt(widthSegmentsPy), widthSegmentsPy);
     }
@@ -3495,7 +3495,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return;
       }
       else {
-        Sk.ffi.checkArgType(PROP_RADIUS, NUM, Sk.ffi.isNum(radiusPy), radiusPy);
+        Sk.ffi.checkArgType(PROP_RADIUS, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(radiusPy), radiusPy);
       }
     }
     if (isDefined(widthSegmentsPy)) {

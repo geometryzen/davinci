@@ -1569,7 +1569,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_DIVIDE_SCALAR: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, sPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(sPy), sPy);
+          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(sPy), sPy);
           var s  = Sk.ffi.remapToJs(sPy);
           quaternion.w /= s;
           vector.x     /= s;
@@ -1593,7 +1593,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_MULTIPLY_SCALAR: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, sPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isFloat(sPy), sPy);
+          Sk.ffi.checkArgType(ARG_S, Sk.ffi.PyType.FLOAT, Sk.ffi.isNum(sPy), sPy);
           var s  = Sk.ffi.remapToJs(sPy);
           quaternion.w *= s;
           vector.x     *= s;
@@ -1806,11 +1806,8 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     return Sk.ffi.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_E1, UNIT_VECTOR_NAME_E2, UNIT_VECTOR_NAME_E3, UNIT_BIVECTOR_NAME_E12, UNIT_BIVECTOR_NAME_E23, UNIT_BIVECTOR_NAME_E31, PSEUDOSCALAR_NAME]));
   });
 }, Sk.e3ga.EUCLIDEAN_3, []);
-
-mod[UNIT_VECTOR_NAME_E1] = coordsJsToE3Py(0, 1, 0, 0, 0, 0, 0, 0, false);
-mod[UNIT_VECTOR_NAME_E2] = coordsJsToE3Py(0, 0, 1, 0, 0, 0, 0, 0, false);
-mod[UNIT_VECTOR_NAME_E3] = coordsJsToE3Py(0, 0, 0, 1, 0, 0, 0, 0, false);
-mod[PSEUDOSCALAR_NAME]   = coordsJsToE3Py(0, 0, 0, 0, 0, 0, 0, 1, false);
-
+/*
+ *
+ */
 };
 }).call(this);
