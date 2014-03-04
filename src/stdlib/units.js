@@ -115,6 +115,11 @@ var METHOD_EXP        = "exp";
  * @const
  * @type {string}
  */
+var METHOD_MAGNITUDE  = "magnitude";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_SIN        = "sin";
 /**
  * @const
@@ -481,6 +486,12 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy) {
           Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
           return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_EXP)), measure[UOM_PY]);
+        });
+      }
+      case METHOD_MAGNITUDE: {
+        return Sk.ffi.callableToPy(mod, METHOD_MAGNITUDE, function(methodPy) {
+          Sk.ffi.checkMethodArgs(METHOD_MAGNITUDE, arguments, 0, 0);
+          return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_MAGNITUDE)), measure[UOM_PY]);
         });
       }
     }
