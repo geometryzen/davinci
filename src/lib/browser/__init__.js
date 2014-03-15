@@ -23,6 +23,13 @@ var $builtinmodule = function(name) {
       Sk.ffi.checkArgType("terminate", Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(terminatePy));
       Sk.ffi.checkArgType("setUp",     Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(setUpPy));
       Sk.ffi.checkArgType("tearDown",  Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tearDownPy));
+      var onDocumentKeyDown = function(event) {
+        if (event.keyCode == 27) {
+          var war = Sk.ffi.remapToJs(selfPy);
+          war.escKeyPressed = true;
+          event.preventDefault();
+        }
+      };
       var WindowAnimationRunner = function() {
         this.tick      = Sk.ffi.remapToJs(tickPy);
         this.terminate = Sk.ffi.remapToJs(terminatePy);
@@ -31,12 +38,14 @@ var $builtinmodule = function(name) {
         this.startTime = null;
         this.elapsed   = null;
         this.requestID = null;
+        this.escKeyPressed = false;
       };
       WindowAnimationRunner.prototype = {
         constructor: WindowAnimationRunner,
         start: function() {
           var war = this;
           war.setUp();
+          document.addEventListener('keydown', onDocumentKeyDown, false);
           var animate = function(timestamp) {
             if (war.startTime) {
               war.elapsed = timestamp - war.startTime;
@@ -49,8 +58,9 @@ var $builtinmodule = function(name) {
                 war.elapsed = 0;
               }
             }
-            if (war.terminate(war.elapsed / 1000)) {
+            if (war.escKeyPressed || war.terminate(war.elapsed / 1000)) {
               window.cancelAnimationFrame(war.requestID);
+              document.removeEventListener('keydown', onDocumentKeyDown, false);
               war.tearDown();
             }
             else {
