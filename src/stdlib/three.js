@@ -2378,7 +2378,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case METHOD_RENDER: {
         return Sk.ffi.callableToPy(mod, METHOD_RENDER, function(methodPy, scenePy, cameraPy) {
-          Sk.ffi.checkMethodArgs(METHOD_GET_CLEAR_COLOR, arguments, 2, 2);
+          Sk.ffi.checkMethodArgs(METHOD_RENDER, arguments, 2, 2);
           var scene  = Sk.ffi.remapToJs(scenePy);
           var camera = Sk.ffi.remapToJs(cameraPy);
           return Sk.ffi.remapToPy(renderer[METHOD_RENDER](scene, camera));

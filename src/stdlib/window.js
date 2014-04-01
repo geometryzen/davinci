@@ -156,7 +156,7 @@ return Sk.misceval.buildClass(mod, function($gbl, $loc) {
       case METHOD_PROMPT: {
         return Sk.ffi.callableToPy(mod, METHOD_PROMPT, function(methodPy, textPy, valuePy) {
           Sk.ffi.checkMethodArgs(METHOD_PROMPT, arguments, 0, 2);
-          return Sk.ffi.booleanToPy(window[METHOD_PROMPT](Sk.ffi.remapToJs(textPy), Sk.ffi.remapToJs(valuePy)));
+          return Sk.ffi.stringToPy(window[METHOD_PROMPT](Sk.ffi.remapToJs(textPy), Sk.ffi.remapToJs(valuePy)));
         });
       }
       case METHOD_REQUEST_ANIMATION_FRAME: {
