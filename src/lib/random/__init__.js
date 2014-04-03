@@ -68,8 +68,8 @@
 var MersenneTwister = function(seed) {
   if (seed == undefined) {
     seed = new Date().getTime();
-  } 
-  /* Period parameters */  
+  }
+  /* Period parameters */
   this.N = 624;
   this.M = 397;
   this.MATRIX_A = 0x9908b0df;   /* constant vector a */
@@ -80,7 +80,7 @@ var MersenneTwister = function(seed) {
   this.mti=this.N+1; /* mti==N+1 means mt[N] is not initialized */
 
   this.init_genrand(seed);
-}  
+};
  
 /* initializes mt[N] with a seed */
 MersenneTwister.prototype.init_genrand = function(s) {
@@ -96,8 +96,8 @@ MersenneTwister.prototype.init_genrand = function(s) {
       this.mt[this.mti] >>>= 0;
       /* for >32 bit machines */
   }
-}
- 
+};
+
 /* initialize by an array with array-length */
 /* init_key is the array for initializing keys */
 /* key_length is its length */
@@ -126,8 +126,8 @@ MersenneTwister.prototype.init_by_array = function(init_key, key_length) {
   }
 
   this.mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */ 
-}
- 
+};
+
 /* generates a random number on [0,0xffffffff]-interval */
 MersenneTwister.prototype.genrand_int32 = function() {
   var y;
@@ -163,174 +163,182 @@ MersenneTwister.prototype.genrand_int32 = function() {
   y ^= (y >>> 18);
 
   return y >>> 0;
-}
- 
+};
+
 /* generates a random number on [0,0x7fffffff]-interval */
 MersenneTwister.prototype.genrand_int31 = function() {
   return (this.genrand_int32()>>>1);
-}
- 
+};
+
 /* generates a random number on [0,1]-real-interval */
 MersenneTwister.prototype.genrand_real1 = function() {
-  return this.genrand_int32()*(1.0/4294967295.0); 
-  /* divided by 2^32-1 */ 
-}
+  return this.genrand_int32()*(1.0/4294967295.0);
+  /* divided by 2^32-1 */
+};
 
 /* generates a random number on [0,1)-real-interval */
 MersenneTwister.prototype.random = function() {
   return this.genrand_int32()*(1.0/4294967296.0); 
   /* divided by 2^32 */
-}
- 
+};
+
 /* generates a random number on (0,1)-real-interval */
 MersenneTwister.prototype.genrand_real3 = function() {
-  return (this.genrand_int32() + 0.5)*(1.0/4294967296.0); 
+  return (this.genrand_int32() + 0.5)*(1.0/4294967296.0);
   /* divided by 2^32 */
-}
- 
+};
+
 /* generates a random number on [0,1) with 53-bit resolution*/
-MersenneTwister.prototype.genrand_res53 = function() { 
-  var a=this.genrand_int32()>>>5, b=this.genrand_int32()>>>6; 
-  return(a*67108864.0+b)*(1.0/9007199254740992.0); 
-} 
+MersenneTwister.prototype.genrand_res53 = function() {
+  var a=this.genrand_int32()>>>5, b=this.genrand_int32()>>>6;
+  return(a*67108864.0+b)*(1.0/9007199254740992.0);
+};
 
 /* These real versions are due to Isaku Wada, 2002/01/09 added */
 
+var $builtinmodule = function(name) {
 
+  var mod = {};
 
-var $builtinmodule = function(name)
-{
+  var myGenerator = new MersenneTwister();
 
-    var mod = {};
+  mod.seed = new Sk.builtin.func(function(x) {
+    Sk.builtin.pyCheckArgs("seed", arguments, 0, 1);
+    x = Sk.builtin.asnum$(x);
 
-    var myGenerator = new MersenneTwister();
+    if (arguments.length > 0)
+      myGenerator = new MersenneTwister(x);
+    else
+      myGenerator = new MersenneTwister();
+    return Sk.builtin.none.none$;
+  });
 
-    mod.seed = new Sk.builtin.func(function(x) {
-        Sk.builtin.pyCheckArgs("seed", arguments, 0, 1);
-	x = Sk.builtin.asnum$(x);
+  mod.random = new Sk.builtin.func(function() {
+    Sk.builtin.pyCheckArgs("random", arguments, 0, 0);
+    return new Sk.builtin.nmber(myGenerator.genrand_res53(), Sk.builtin.nmber.float$);
+  });
 
-        if (arguments.length > 0)
-            myGenerator = new MersenneTwister(x);
-        else
-            myGenerator = new MersenneTwister();
+  var toInt = function(num) {
+    return num | 0;
+  };
 
-	return Sk.builtin.none.none$;
-    });
+  var randrange = function(start, stop, step) {
+    // Ported from CPython 2.7
+    var width, n, ret;
 
-    mod.random = new Sk.builtin.func(function() {
-        Sk.builtin.pyCheckArgs("random", arguments, 0, 0);
-
-	return new Sk.builtin.nmber(myGenerator.genrand_res53(), Sk.builtin.nmber.float$);
-    });
-
-    var toInt = function(num) {
-        return num | 0;
+    if (!Sk.builtin.checkInt(start)) {
+      throw new Sk.builtin.ValueError("non-integer first argument for randrange()");
     };
 
-    var randrange = function(start, stop, step) {
-        // Ported from CPython 2.7
-        var width, n, ret;
-
-        if (!Sk.builtin.checkInt(start)) {
-            throw new Sk.builtin.ValueError("non-integer first argument for randrange()");
-        };
-
-        if (stop === undefined) {
-            // Random in [0, start)
-            return toInt(myGenerator.genrand_res53() * start);
-        };
-
-        if (!Sk.builtin.checkInt(stop)) {
-            throw new Sk.builtin.ValueError("non-integer stop for randrange()");
-        };
-
-        if (step === undefined) {
-            step = 1;
-        };
-
-        width = stop - start;
-
-        if ((step == 1) && (width > 0)) {
-            // Random in [start, stop), must use toInt on product for correct results with negative ranges
-            ret = start + toInt(myGenerator.genrand_res53() * width);
-	    return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
-        };
-
-        if (step == 1) {
-            throw new Sk.builtin.ValueError("empty range for randrange() (" + start + ", " + stop + ", " + width + ")");
-        };
-
-        if (!Sk.builtin.checkInt(step)) {
-            throw new Sk.builtin.ValueError("non-integer step for randrange()");
-        };
-
-        if (step > 0) {
-            n = toInt((width + step - 1) / step);
-        } else if (step < 0) {
-            n = toInt((width + step + 1) / step);
-        } else {
-            throw new Sk.builtin.ValueError("zero step for randrange()");
-        };
-
-        if (n <= 0) {
-            throw new Sk.builtin.ValueError("empty range for randrange()");
-        };
-
-        // Random in range(start, stop, step)
-        ret = start + (step * toInt(myGenerator.genrand_res53() * n));
-	return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
+    if (stop === undefined) {
+      // Random in [0, start)
+      return toInt(myGenerator.genrand_res53() * start);
     };
 
-    mod.randint = new Sk.builtin.func(function(a, b) {
-        Sk.builtin.pyCheckArgs("randint", arguments, 2, 2);
+    if (!Sk.builtin.checkInt(stop)) {
+      throw new Sk.builtin.ValueError("non-integer stop for randrange()");
+    };
 
-	a = Sk.builtin.asnum$(a);
-	b = Sk.builtin.asnum$(b);
-        return randrange(a, b+1);
-    });
+    if (step === undefined) {
+      step = 1;
+    };
 
-    mod.randrange = new Sk.builtin.func(function(start, stop, step) {
-        Sk.builtin.pyCheckArgs("randrange", arguments, 1, 3);
+    width = stop - start;
 
-	start = Sk.builtin.asnum$(start);
-	stop = Sk.builtin.asnum$(stop);
-	step = Sk.builtin.asnum$(step);
-        return randrange(start, stop, step);
-    });
+    if ((step == 1) && (width > 0)) {
+      // Random in [start, stop), must use toInt on product for correct results with negative ranges
+      ret = start + toInt(myGenerator.genrand_res53() * width);
+      return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
+    };
 
-    mod.choice = new Sk.builtin.func(function(seq) {
-        Sk.builtin.pyCheckArgs("choice", arguments, 1, 1);
-        Sk.builtin.pyCheckType("seq", "sequence", Sk.builtin.checkSequence(seq));
+    if (step == 1) {
+      throw new Sk.builtin.ValueError("empty range for randrange() (" + start + ", " + stop + ", " + width + ")");
+    };
 
-        if (seq.sq$length !== undefined) {
-            var r = toInt(myGenerator.genrand_res53() * seq.sq$length());
-            return seq.mp$subscript(r);
-        } else {
-            throw new Sk.builtin.TypeError("object has no length");
-        }
-    });
+    if (!Sk.builtin.checkInt(step)) {
+      throw new Sk.builtin.ValueError("non-integer step for randrange()");
+    };
 
-    mod.shuffle = new Sk.builtin.func(function(x) {
-        Sk.builtin.pyCheckArgs("shuffle", arguments, 1, 1);
-        Sk.builtin.pyCheckType("x", "sequence", Sk.builtin.checkSequence(x));
+    if (step > 0) {
+      n = toInt((width + step - 1) / step);
+    } else if (step < 0) {
+      n = toInt((width + step + 1) / step);
+    } else {
+      throw new Sk.builtin.ValueError("zero step for randrange()");
+    };
 
-        if (x.sq$length !== undefined) {
-            if (x.mp$ass_subscript !== undefined) {
-                for (var i = x.sq$length() - 1; i > 0; i -= 1) {
-                    var r = toInt(myGenerator.genrand_res53() * (i + 1));
-                    var tmp = x.mp$subscript(r);
-                    x.mp$ass_subscript(r, x.mp$subscript(i));
-                    x.mp$ass_subscript(i, tmp);
-                };
-            } else {
-                throw new Sk.builtin.TypeError("object is immutable");
-            };
-        } else {
-            throw new Sk.builtin.TypeError("object has no length");
-        };        
+    if (n <= 0) {
+      throw new Sk.builtin.ValueError("empty range for randrange()");
+    };
 
-	return Sk.builtin.none.none$;
-    });
+    // Random in range(start, stop, step)
+    ret = start + (step * toInt(myGenerator.genrand_res53() * n));
+    return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
+  };
 
-    return mod;
-}
+  mod.randint = new Sk.builtin.func(function(a, b) {
+    Sk.builtin.pyCheckArgs("randint", arguments, 2, 2);
+
+    a = Sk.builtin.asnum$(a);
+    b = Sk.builtin.asnum$(b);
+    return randrange(a, b+1);
+  });
+
+  mod.randrange = new Sk.builtin.func(function(start, stop, step) {
+    Sk.builtin.pyCheckArgs("randrange", arguments, 1, 3);
+
+    start = Sk.builtin.asnum$(start);
+    stop = Sk.builtin.asnum$(stop);
+    step = Sk.builtin.asnum$(step);
+    return randrange(start, stop, step);
+  });
+
+  mod.choice = new Sk.builtin.func(function(seq) {
+    Sk.builtin.pyCheckArgs("choice", arguments, 1, 1);
+    Sk.builtin.pyCheckType("seq", "sequence", Sk.builtin.checkSequence(seq));
+
+    if (seq.sq$length !== undefined) {
+      var r = toInt(myGenerator.genrand_res53() * seq.sq$length());
+      return seq.mp$subscript(r);
+    }
+    else {
+      throw new Sk.builtin.TypeError("object has no length");
+    }
+  });
+
+  mod.shuffle = new Sk.builtin.func(function(x) {
+    Sk.builtin.pyCheckArgs("shuffle", arguments, 1, 1);
+    Sk.builtin.pyCheckType("x", "sequence", Sk.builtin.checkSequence(x));
+
+    if (x.sq$length !== undefined) {
+      if (x.mp$ass_subscript !== undefined) {
+        for (var i = x.sq$length() - 1; i > 0; i -= 1) {
+            var r = toInt(myGenerator.genrand_res53() * (i + 1));
+            var tmp = x.mp$subscript(r);
+            x.mp$ass_subscript(r, x.mp$subscript(i));
+            x.mp$ass_subscript(i, tmp);
+        };
+      }
+      else {
+        throw new Sk.builtin.TypeError("object is immutable");
+      };
+    }
+    else {
+      throw new Sk.builtin.TypeError("object has no length");
+    }
+    return Sk.builtin.none.none$;
+  });
+
+  mod['uniform'] = new Sk.builtin.func(function(minPy, maxPy) {
+    Sk.ffi.checkFunctionArgs("uniform", arguments, 2, 2);
+    Sk.ffi.checkArgType("min", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(minPy), minPy);
+    Sk.ffi.checkArgType("max", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(maxPy), maxPy);
+    var min = Sk.ffi.remapToJs(minPy);
+    var max = Sk.ffi.remapToJs(maxPy);
+    var x = myGenerator.genrand_res53();
+    var y = x * (max - min) + min;
+    return Sk.ffi.numberToFloatPy(y);
+  });
+
+  return mod;
+};
