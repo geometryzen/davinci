@@ -1081,8 +1081,26 @@ Sk.ffi.remapToJs = function(valuePy)
         }
         case Sk.ffi.PyType.FUNCTION: {
             return function() {
-                var argsPy = Array.prototype.slice.call(arguments, 0).map(function(argJs) {return Sk.ffi.remapToPy(argJs);});
-                return Sk.ffi.remapToJs(Sk.misceval.apply(valuePy, undefined, undefined, undefined, argsPy));
+                var argsJs = Array.prototype.slice.call(arguments, 0);
+                var argsPy = argsJs.map(function(argJs) {return Sk.ffi.remapToPy(argJs);});
+                // Improve interoperability by allowing third-party JavaScript libraries
+                // to call functions in Python which are declared with less variables.
+                var maxargs = argsPy.length;
+                var done = false;
+                while(!done) {
+                    var args = []
+                    for (var i = 0; i < maxargs; i++)
+                    {
+                        args.push(argsPy[i]);
+                    }
+                    try {
+                        return Sk.ffi.remapToJs(Sk.misceval.apply(valuePy, undefined, undefined, undefined, args));
+                    }
+                    catch(e) {
+                        maxargs -= 1;
+                        done = (maxargs == -1);
+                    }
+                }
             };
         }
         default:

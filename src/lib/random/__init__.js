@@ -331,8 +331,8 @@ var $builtinmodule = function(name) {
 
   mod['uniform'] = new Sk.builtin.func(function(minPy, maxPy) {
     Sk.ffi.checkFunctionArgs("uniform", arguments, 2, 2);
-    Sk.ffi.checkArgType("min", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(minPy), minPy);
-    Sk.ffi.checkArgType("max", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(maxPy), maxPy);
+    Sk.ffi.checkArgType("min", [Sk.ffi.PyType.FLOAT], Sk.ffi.isNum(minPy), minPy);
+    Sk.ffi.checkArgType("max", [Sk.ffi.PyType.FLOAT], Sk.ffi.isNum(maxPy), maxPy);
     var min = Sk.ffi.remapToJs(minPy);
     var max = Sk.ffi.remapToJs(maxPy);
     var x = myGenerator.genrand_res53();

@@ -23,6 +23,11 @@ Sk.builtin.buildDocumentClass = function(mod) {
    * @const
    * @type {string}
    */
+  var PROP_TITLE                            = "title";
+  /**
+   * @const
+   * @type {string}
+   */
   var PROP_WEBKIT_HIDDEN                    = "webkitHidden";
   /**
    * @const
@@ -189,7 +194,13 @@ Sk.builtin.buildDocumentClass = function(mod) {
       }
     });
     $loc.__setattr__ = Sk.ffi.functionPy(function(selfPy, name, valuePy) {
+      var documentJs = Sk.ffi.remapToJs(selfPy);
       switch(name) {
+        case PROP_TITLE: {
+          Sk.ffi.checkArgType(name, [Sk.ffi.PyType.STR], Sk.ffi.isStr(valuePy), valuePy);
+          documentJs[name] = Sk.ffi.remapToJs(valuePy);
+        }
+        break;
         default: {
           throw Sk.ffi.err.attribute(name).isNotSetableOnType(DOCUMENT_CLASS);
         }
