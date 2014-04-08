@@ -6,7 +6,7 @@
  * @type
  * {
  *   {
- *     remapToJs: function(Object, Object=)
+ *     remapToJs: function(Object, boolean=)
  *   }
  * }
  */
@@ -532,6 +532,9 @@ goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
 Sk.ffi.isList = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LIST;};
 goog.exportSymbol("Sk.ffi.isList", Sk.ffi.isList);
 
+Sk.ffi.isTuple = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.TUPLE;};
+goog.exportSymbol("Sk.ffi.isTuple", Sk.ffi.isTuple);
+
 /**
  * @nosideeffects
  * @param {Object} valuePy
@@ -998,10 +1001,11 @@ goog.exportSymbol("Sk.ffi.numberToJs", Sk.ffi.numberToJs);
  * valueJs = Sk.ffi.remapToJs(valuePy);
  *
  * @param {Object} valuePy The Python value to be mapped.
+ * @param {boolean=} shallow
  */
-Sk.ffi.remapToJs = function(valuePy)
+Sk.ffi.remapToJs = function(valuePy, shallow)
 {
-    Sk.ffi.checkFunctionArgs("Sk.ffi.remapToJs", arguments, 1, 1);
+    Sk.ffi.checkFunctionArgs("Sk.ffi.remapToJs", arguments, 1, 2);
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.STR:
@@ -1024,12 +1028,17 @@ Sk.ffi.remapToJs = function(valuePy)
         }
         case Sk.ffi.PyType.LIST:
         {
-            var ret = [];
-            for (var i = 0; i < valuePy.v.length; ++i)
-            {
-                ret.push(Sk.ffi.remapToJs(valuePy.v[i]));
+            if (shallow) {
+                return valuePy.v;
             }
-            return ret;
+            else {
+                var ret = [];
+                for (var i = 0; i < valuePy.v.length; ++i)
+                {
+                    ret.push(Sk.ffi.remapToJs(valuePy.v[i]));
+                }
+                return ret;
+            }
         }
         case Sk.ffi.PyType.TUPLE:
         {
@@ -1084,7 +1093,7 @@ Sk.ffi.remapToJs = function(valuePy)
                 var argsJs = Array.prototype.slice.call(arguments, 0);
                 var argsPy = argsJs.map(function(argJs) {return Sk.ffi.remapToPy(argJs);});
                 // Improve interoperability by allowing third-party JavaScript libraries
-                // to call functions in Python which are declared with less variables.
+                // to call functions in Python which are declared with lower arity.
                 var maxargs = argsPy.length;
                 var done = false;
                 while(!done) {
@@ -1152,7 +1161,8 @@ Sk.ffi.callableToPy = function(mod, nameJs, functionJs)
 goog.exportSymbol("Sk.ffi.callableToPy", Sk.ffi.callableToPy);
 
 /**
- *
+ * @param {Object} objectPy The Python object containing the attribute.
+ * @param {string} name The name of the attribute.
  */
 Sk.ffi.gattr = function(objectPy, name)
 {
@@ -1161,7 +1171,8 @@ Sk.ffi.gattr = function(objectPy, name)
 goog.exportSymbol("Sk.ffi.gattr", Sk.ffi.gattr);
 
 /**
- *
+ * @param {Object} objectPy The Python object containing the attribute.
+ * @param {string} name The name of the attribute.
  */
 Sk.ffi.sattr = function(objectPy, name, valuePy)
 {
