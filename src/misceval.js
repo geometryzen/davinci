@@ -359,6 +359,9 @@ Sk.misceval.richCompareBool = function(v, w, op)
 };
 goog.exportSymbol("Sk.misceval.richCompareBool", Sk.misceval.richCompareBool);
 
+/**
+ * This function returns Pythonic strings but is ambiguous on what it accepts!
+ */
 Sk.misceval.objectRepr = function(v)
 {
     goog.asserts.assert(v !== undefined, "trying to repr undefined");

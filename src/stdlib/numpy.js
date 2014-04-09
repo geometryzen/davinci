@@ -133,10 +133,13 @@
         }
         else if (Sk.ffi.isFunction(indexPy)) {
           var indices = indexPy.indices();
-//        Sk.debugout("indices: " + indices);
-          var start = indices[0];
-          var stop  = indices[1];
-          var step  = indices[2];
+//        Sk.debugout("indices[0]: " + indices[0]);
+//        Sk.debugout("indices[1]: " + indices[1]);
+//        Sk.debugout("indices[2]: " + indices[2]);
+          var start = typeof indices[0] !== 'undefined' ? indices[0] : 0;
+          var stop  = typeof indices[1] !== 'undefined' ? indices[1] : ndarrayJs.buffer.length;
+          stop = stop > ndarrayJs.buffer.length ? ndarrayJs.buffer.length : stop;
+          var step  = typeof indices[2] !== 'undefined' ? indices[2] : 1;
           var buffer = [];
           var index = 0;
           if (step > 0) {
@@ -231,6 +234,22 @@
         var bufferPy = Sk.ffi.listPy(buffer);
         return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
       });
+      $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+        var selfJs = Sk.ffi.remapToJs(selfPy);
+        var ret = [];
+        for (var i = 0, len = selfJs.buffer.length; i < len; i++) {
+          ret.push(Sk.ffi.remapToJs(Sk.ffh.str(selfJs.buffer[i])));
+        }
+        return Sk.ffi.stringToPy("[" + ret.join(", ") + "]");
+      })
+      $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
+        var selfJs = Sk.ffi.remapToJs(selfPy);
+        var ret = [];
+        for (var i = 0, len = selfJs.buffer.length; i < len; i++) {
+          ret.push(Sk.ffi.remapToJs(Sk.ffh.str(selfJs.buffer[i])));
+        }
+        return Sk.ffi.stringToPy("array([" + ret.join(", ") + "])");
+      })
     }, 'ndarray', []);
 
     mod['array'] = Sk.ffi.functionPy(function(objectPy, dtypePy, copyPy, orderPy, subokPy, ndminPy) {

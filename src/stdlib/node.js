@@ -1226,10 +1226,10 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(self) {
     return Sk.ffi.stringToPy(self.v.tagName)
-  })
+  });
   $loc.__repr__ = Sk.ffi.functionPy(function(self) {
     return Sk.ffi.stringToPy(NODE)
-  })
+  });
 }, NODE, []);
 
 };
