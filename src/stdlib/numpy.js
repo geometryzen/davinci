@@ -103,36 +103,75 @@
         }
       });
       $loc.__getitem__ = Sk.ffi.functionPy(function(selfPy, indexPy) {
+        var ndarrayJs = Sk.ffi.remapToJs(selfPy);
         Sk.ffi.checkMethodArgs("[]", arguments, 1, 1);
         if (Sk.ffi.isInt(indexPy)) {
           var offset  = Sk.ffi.remapToJs(indexPy);
-          var ndarrayJs = Sk.ffi.remapToJs(selfPy);
-          if (offset >= 0 && offset < ndarrayJs.buffer.length) {
-            return ndarrayJs.buffer[offset];
+          if (ndarrayJs.shape.length > 1) {
+            var stride = ndarrayJs.strides[0];
+            var buffer = [];
+            var index = 0;
+            for (var i = offset * stride, ubound = (offset + 1) * stride; i < ubound; i++) {
+              buffer[index++] = ndarrayJs.buffer[i];
+            }
+            var bufferPy = Sk.ffi.listPy(buffer);
+            var shapePy = Sk.ffi.tuplePy(Array.prototype.slice.call(ndarrayJs.shape,1).map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+            return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
           }
           else {
-            throw new Sk.builtin.IndexError("array index out of range");
+            if (offset >= 0 && offset < ndarrayJs.buffer.length) {
+              return ndarrayJs.buffer[offset];
+            }
+            else {
+              throw new Sk.builtin.IndexError("array index out of range");
+            }
           }
         }
         else if (Sk.ffi.isTuple(indexPy)) {
           var keyJs  = Sk.ffi.remapToJs(indexPy);
-          var ndarrayJs = Sk.ffi.remapToJs(selfPy);
           return ndarrayJs.buffer[computeOffset(ndarrayJs.strides, keyJs)];
         }
+        else if (Sk.ffi.isFunction(indexPy)) {
+          var indices = indexPy.indices();
+//        Sk.debugout("indices: " + indices);
+          var start = indices[0];
+          var stop  = indices[1];
+          var step  = indices[2];
+          var buffer = [];
+          var index = 0;
+          if (step > 0) {
+            for (var i = start; i < stop; i += step) {
+              buffer[index++] = ndarrayJs.buffer[i];
+            }
+          }
+          var bufferPy = Sk.ffi.listPy(buffer);
+          var shapePy = Sk.ffi.tuplePy([buffer.length].map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+        }
         else {
-          Sk.ffi.checkArgType('index', [Sk.ffi.PyType.INT, Sk.ffi.PyType.TUPLE], false, indexPy);
+          Sk.ffi.checkArgType('index', [Sk.ffi.PyType.INT, Sk.ffi.PyType.TUPLE, Sk.ffi.PyType.FUNCTION], false, indexPy);
         }
       });
       $loc.__setitem__ = Sk.ffi.functionPy(function(selfPy, indexPy, valuePy) {
+        var ndarrayJs = Sk.ffi.remapToJs(selfPy);
         Sk.ffi.checkMethodArgs("[]", arguments, 2, 2);
         if (Sk.ffi.isInt(indexPy)) {
           var offset  = Sk.ffi.remapToJs(indexPy);
-          var ndarrayJs = Sk.ffi.remapToJs(selfPy);
-          if (offset >= 0 && offset < ndarrayJs.buffer.length) {
-            ndarrayJs.buffer[offset] = valuePy;
+          if (ndarrayJs.shape.length > 1) {
+            var valueJs = Sk.ffi.remapToJs(valuePy);
+            var stride = ndarrayJs.strides[0];
+            var index = 0;
+            for (var i = offset * stride, ubound = (offset + 1) * stride; i < ubound; i++) {
+              ndarrayJs.buffer[i] = valueJs.buffer[index++];
+            }
           }
           else {
-            throw new Sk.builtin.IndexError("array index out of range");
+            if (offset >= 0 && offset < ndarrayJs.buffer.length) {
+              ndarrayJs.buffer[offset] = valuePy;
+            }
+            else {
+              throw new Sk.builtin.IndexError("array index out of range");
+            }
           }
         }
         else if (Sk.ffi.isTuple(indexPy)) {
