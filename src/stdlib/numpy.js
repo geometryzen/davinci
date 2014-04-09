@@ -123,6 +123,27 @@
           Sk.ffi.checkArgType('index', [Sk.ffi.PyType.INT, Sk.ffi.PyType.TUPLE], false, indexPy);
         }
       });
+      $loc.__setitem__ = Sk.ffi.functionPy(function(selfPy, indexPy, valuePy) {
+        Sk.ffi.checkMethodArgs("[]", arguments, 2, 2);
+        if (Sk.ffi.isInt(indexPy)) {
+          var offset  = Sk.ffi.remapToJs(indexPy);
+          var ndarrayJs = Sk.ffi.remapToJs(selfPy);
+          if (offset >= 0 && offset < ndarrayJs.buffer.length) {
+            ndarrayJs.buffer[offset] = valuePy;
+          }
+          else {
+            throw new Sk.builtin.IndexError("array index out of range");
+          }
+        }
+        else if (Sk.ffi.isTuple(indexPy)) {
+          var keyJs  = Sk.ffi.remapToJs(indexPy);
+          var ndarrayJs = Sk.ffi.remapToJs(selfPy);
+          ndarrayJs.buffer[computeOffset(ndarrayJs.strides, keyJs)] = valuePy;
+        }
+        else {
+          Sk.ffi.checkArgType('index', [Sk.ffi.PyType.INT, Sk.ffi.PyType.TUPLE], false, indexPy);
+        }
+      });
       $loc.__add__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
         var lhs = selfJs.buffer;
@@ -200,8 +221,46 @@
       Sk.ffi.checkFunctionArgs("empty", arguments, 1, 3);
     });
 
-    mod['sqrt'] = Sk.ffi.functionPy(function() {
-      Sk.ffi.checkFunctionArgs("sqrt", arguments, 1, 1);
+    mod['linspace'] = Sk.ffi.functionPy(function(startPy, stopPy, numPy, endpointPy, retstepPy) {
+      Sk.ffi.checkFunctionArgs("linspace", arguments, 2, 5);
+      Sk.ffi.checkArgType("start", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(startPy), startPy);
+      var start = Sk.ffi.remapToJs(startPy);
+      Sk.ffi.checkArgType("stop",  [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(stopPy),  stopPy);
+      var stop = Sk.ffi.remapToJs(stopPy);
+      var num;
+      if (Sk.ffi.isDefined(numPy)) {
+        Sk.ffi.checkArgType("num",   [Sk.ffi.PyType.INT],   Sk.ffi.isInt(numPy),     numPy);
+        num = Sk.ffi.remapToJs(numPy);
+      }
+      else {
+        num = 50;
+      }
+      var endpoint;
+      if (Sk.ffi.isDefined(endpointPy)) {
+        Sk.ffi.checkArgType("endpoint", [Sk.ffi.PyType.BOOL], Sk.ffi.isBool(endpointPy), endpointPy);
+        endpoint = Sk.ffi.remapToJs(endpointPy);
+      }
+      else {
+        endpoint = true;
+      }
+      var retstep;
+      if (Sk.ffi.isDefined(retstepPy)) {
+        Sk.ffi.checkArgType("retstep", [Sk.ffi.PyType.BOOL], Sk.ffi.isBool(retstepPy), retstepPy);
+        retstep = Sk.ffi.remapToJs(retstepPy);
+      }
+      else {
+        retstep = false;
+      }
+      var step = endpoint ? ((stop - start)/(num - 1)) : ((stop - start)/num);
+      var buffer = [];
+      for (var i = 0; i < num; i++) {
+        buffer[i] = Sk.ffi.numberToFloatPy(i * step + start);
+      }
+      var shapeJs = [];
+      shapeJs[0] = Sk.ffi.numberToIntPy(num);
+      var shapePy = Sk.ffi.tuplePy(shapeJs);
+      var arrayPy = Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, Sk.ffi.listPy(buffer));
+      return retstep ? Sk.ffi.tuplePy([arrayPy, Sk.ffi.numberToFloatPy(step)]) : arrayPy;
     });
 
     mod['zeros'] = Sk.ffi.functionPy(function(shapePy, dtypePy, orderPy) {

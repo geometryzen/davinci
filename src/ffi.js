@@ -167,7 +167,7 @@ Sk.ffi.numberToPy = function(valueJs, kind)
             throw Sk.ffi.assertionError("ead77baa-30b2-470a-bb18-9db949965e45, kind => " + kind);
         }
     }
-}
+};
 goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
 
 /**
@@ -395,7 +395,7 @@ goog.exportSymbol("Sk.ffi.functionPy", Sk.ffi.functionPy);
 Sk.ffi.listPy = function(valuesPy)
 {
     return new Sk.builtin.list(valuesPy);
-}
+};
 goog.exportSymbol("Sk.ffi.listPy", Sk.ffi.listPy);
 
 /**
@@ -406,7 +406,7 @@ goog.exportSymbol("Sk.ffi.listPy", Sk.ffi.listPy);
 Sk.ffi.tuplePy = function(valuesPy)
 {
     return new Sk.builtin.tuple(valuesPy);
-}
+};
 goog.exportSymbol("Sk.ffi.tuplePy", Sk.ffi.tuplePy);
 
 /**
@@ -508,7 +508,7 @@ Sk.ffi.isInstance = function(valuePy, className)
             return true;
         }
         else if (Object.prototype.toString.call(className) === '[object Array]') {
-            var name = Sk.ffi.typeName(valuePy)
+            var name = Sk.ffi.typeName(valuePy);
             return className.some(function(x) {return name === x;});
         }
         else
@@ -752,7 +752,7 @@ Sk.ffi.typeString = function(kind, name)
      * @return {string}
      */
     function typeBrackets(s) {
-        return "<type '" + s + "'>"
+        return "<type '" + s + "'>";
     }
     /**
      * @param {Sk.ffi.PyType} kind
@@ -782,7 +782,7 @@ Sk.ffi.typeString = function(kind, name)
      * @return {string}
      */
     function classBrackets(name) {
-        return "<class '" + name + "'>"
+        return "<class '" + name + "'>";
     }
 
     if (typeof kind === Sk.ffi.JsType.STRING) {
@@ -802,7 +802,7 @@ Sk.ffi.typeString = function(kind, name)
             case Sk.ffi.PyType.NONE:
             case Sk.ffi.PyType.FUNCTION:
             {
-                return typePy(kind)
+                return typePy(kind);
             }
             case Sk.ffi.PyType.INSTANCE:
             {
@@ -821,7 +821,7 @@ Sk.ffi.typeString = function(kind, name)
     else {
         throw Sk.ffi.assertionError("c32e2f75-a391-49aa-b567-b376955b4b4c, typeof kind => " + typeof kind);
     }
-}
+};
 goog.exportSymbol("Sk.ffi.typeString", Sk.ffi.typeString);
 
 /**
