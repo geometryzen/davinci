@@ -1,6 +1,6 @@
 var $builtinmodule = function(name)
 {
   var mod = {};
-  Sk.builtin.defineUrlLib(mod);
+  Sk.builtin.defineHttp(mod);
   return mod;
 };

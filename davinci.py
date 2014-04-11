@@ -111,6 +111,7 @@ Files = [
         'src/stdlib/easel.js',
         'src/stdlib/event.js',
         'src/stdlib/geometry.js',
+        'src/stdlib/http.js',
         'src/stdlib/node.js',
         'src/stdlib/numpy.js',
         'src/stdlib/probeE3.js',
