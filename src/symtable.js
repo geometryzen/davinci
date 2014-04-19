@@ -79,6 +79,9 @@ function SymbolTableScope(table, name, type, ast, lineno)
     this.symFlags = {};
     this.name = name;
     this.varnames = [];
+    /**
+     * @type Array.<SymbolTableScope>
+     */
     this.children = [];
     this.blockType = type;
 
@@ -231,6 +234,10 @@ function SymbolTable(filename)
     // here for the compiler to lookup later.
     this.stss = {};
 }
+
+/**
+ * Lookup the SymbolTableScope for a scopeId of the AST.
+ */
 SymbolTable.prototype.getStsForAst = function(ast)
 {
     goog.asserts.assert(ast.scopeId !== undefined, "ast wasn't added to st?");
@@ -681,6 +688,9 @@ function _dictUpdate(a, b)
     }
 }
 
+/**
+ * @param {SymbolTableScope} ste The Symbol Table Scope.
+ */
 SymbolTable.prototype.analyzeBlock = function(ste, bound, free, global)
 {
     var local = {};
@@ -789,6 +799,9 @@ SymbolTable.prototype.updateSymbols = function(symbols, scope, bound, free, clas
     }
 };
 
+/**
+ * @param {SymbolTableScope} ste The Symbol Table Scope.
+ */
 SymbolTable.prototype.analyzeName = function(ste, dict, name, flags, bound, local, free, global)
 {
     if (flags & DEF_GLOBAL)

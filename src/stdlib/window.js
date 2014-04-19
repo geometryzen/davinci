@@ -232,11 +232,18 @@ Sk.builtin.buildWindowClass = function(mod) {
             }
             break;
             default: {
-              throw Sk.ffi.err.attribute(typeof propJs).isNotSetableOnType(JS_WRAP_CLASS);
+              selfJs[name] = Sk.ffi.remapToJs(valuePy);
+//            throw Sk.ffi.err.attribute(typeof propJs).isNotSetableOnType(JS_WRAP_CLASS);
             }
           }
         }
       }
+    });
+    $loc.__getitem__ = Sk.ffi.functionPy(function(selfPy, indexPy) {
+      Sk.ffi.checkMethodArgs("[]", arguments, 1, 1);
+      Sk.ffi.checkArgType("index", Sk.ffi.PyType.INT, Sk.ffi.isInt(indexPy), indexPy);
+      var index  = Sk.ffi.remapToJs(indexPy);
+      return defaultGetAttribute(mod, Sk.ffi.remapToJs(selfPy), "" + index, JS_WRAP_CLASS);
     });
     $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var selfJs = Sk.ffi.remapToJs(selfPy);

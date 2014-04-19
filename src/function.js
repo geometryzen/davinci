@@ -100,30 +100,32 @@ goog.exportSymbol("Sk.builtin.checkFunction", Sk.builtin.checkFunction);
  * @param {Object=} globals the globals where this function was defined.
  * Can be undefined (which will be stored as null) for builtins. (is
  * that ok?)
- * @param {Object=} closure dict of free variables
- * @param {Object=} closure2 another dict of free variables that will be
- * merged into 'closure'. there's 2 to simplify generated code (one is $free,
+ * @param {Object=} cellVars dict of free variables
+ * @param {Object=} freeVars another dict of free variables that will be
+ * merged into 'cellVars'. there's 2 to simplify generated code (one is $free,
  * the other is $cell)
  *
- * closure is the cell variables from the parent scope that we need to close
- * over. closure2 is the free variables in the parent scope that we also might
+ * cellVars is the cell variables from the parent scope that we need to close
+ * over. freeVars is the free variables in the parent scope that we also might
  * need to access.
  *
  * NOTE: co_varnames and co_name are defined by compiled code only, so we have
- * to access them via dict-style lookup for closure.
+ * to access them via dict-style lookup for cellVars.
  *
  */
-Sk.builtin.func = function(code, globals, closure, closure2)
+Sk.builtin.func = function(code, globals, cellVars, freeVars)
 {
     this.func_code = code;
     this.func_globals = globals || null;
-    if (closure2 !== undefined)
+    if (freeVars !== undefined)
     {
         // todo; confirm that modification here can't cause problems
-        for (var k in closure2)
-            closure[k] = closure2[k];
+        for (var k in freeVars)
+            cellVars[k] = freeVars[k];
     }
-    this.func_closure = closure;
+    // This is Python 2.x. Python 3 uses __closure__.
+    // But does this actually work?
+    this.func_closure = cellVars;
     return this;
 };
 goog.exportSymbol("Sk.builtin.func", Sk.builtin.func);

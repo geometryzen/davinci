@@ -81,6 +81,8 @@ Sk.ffh.getitem = function(objPy, index)
 goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
 Sk.ffh.add = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Add");
+  /*
   if (lhsPy["__add__"])
   {
     return Sk.ffi.callsim(lhsPy["__add__"], lhsPy, rhsPy);
@@ -93,13 +95,20 @@ Sk.ffh.add = function(lhsPy, rhsPy) {
   {
     throw Sk.ffi.notImplementedError("add");
   }
+  */
 };
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);
 
-Sk.ffh.subtract = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_SUB, lhsPy, rhsPy, "nb$subtract");};
+Sk.ffh.subtract = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Sub");
+//return Sk.ffh.binaryExec(SPECIAL_METHOD_SUB, lhsPy, rhsPy, "nb$subtract");
+};
 goog.exportSymbol("Sk.ffh.subtract", Sk.ffh.subtract);
 
-Sk.ffh.multiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_MUL, lhsPy, rhsPy, "nb$multiply");};
+Sk.ffh.multiply = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Mult");
+//return Sk.ffh.binaryExec(SPECIAL_METHOD_MUL, lhsPy, rhsPy, "nb$multiply");
+};
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
 Sk.ffh.rmultiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_RMUL, lhsPy, rhsPy, "nb$multiply");};

@@ -13,18 +13,30 @@ Sk.gensymcount = 0;
 function Compiler(filename, st, flags, sourceCodeForAnnotation)
 {
     this.filename = filename;
+    /**
+     * @type {SymbolTable}
+     * @private
+     */
     this.st = st;
     this.flags = flags;
     this.interactive = false;
     this.nestlevel = 0;
 
     this.u = null;
+    /**
+     * @type Array.<CompilerUnit>
+     * @private
+     */
     this.stack = [];
 
     this.result = [];
 
     // this.gensymcount = 0;
 
+    /**
+     * @type Array.<CompilerUnit>
+     * @private
+     */
     this.allUnits = [];
 
     this.source = sourceCodeForAnnotation ? sourceCodeForAnnotation.split("\n") : false;
@@ -41,6 +53,9 @@ function Compiler(filename, st, flags, sourceCodeForAnnotation)
 
 function CompilerUnit()
 {
+    /**
+     * @type {?SymbolTableScope}
+     */
     this.ste = null;
     this.name = null;
 
@@ -96,8 +111,8 @@ Compiler.prototype.annotateSource = function(ast)
         for (var i = 0; i < col_offset; ++i) out(" ");
         out("^\n//\n");
 
-		out("\nSk.currLineNo = ",lineno, ";\nSk.currColNo = ",col_offset,"\n\n");	//	Added by RNL
-		out("\nSk.currFilename = '",this.filename,"';\n\n");	//	Added by RNL
+        out("\nSk.currLineNo = ",lineno, ";\nSk.currColNo = ",col_offset,"\n\n");
+        out("\nSk.currFilename = '",this.filename,"';\n\n");
     }
 };
 
@@ -202,34 +217,35 @@ Compiler.prototype._gr = function(hint, rest)
 * Function to test if an interrupt should occur if the program has been running for too long.
 * This function is executed at every test/branch operation.
 */
-Compiler.prototype._interruptTest = function() { // Added by RNL
-	out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
-  	out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError(Sk.timeoutMsg())}");
+Compiler.prototype._interruptTest = function()
+{
+    out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
+    out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError(Sk.timeoutMsg())}");
 }
 
 Compiler.prototype._jumpfalse = function(test, block)
 {
     var cond = this._gr('jfalse', "(", test, "===false||!Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();
     out("if(", cond, "){/*test failed */$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jumpundef = function(test, block)
 {
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();
     out("if(", test, "===undefined){$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jumptrue = function(test, block)
 {
     var cond = this._gr('jtrue', "(", test, "===true||Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();
     out("if(", cond, "){/*test passed */$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jump = function(block)
 {
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();
     out("$blk=", block, ";/* jump */continue;");
 };
 
@@ -512,8 +528,8 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
         case Num:
             if (typeof e.n === "number")
                 return e.n;
-	    else if (e.n instanceof Sk.builtin.nmber)
-		return "new Sk.builtin.nmber(" + e.n.v + ",'" + e.n.skType + "')";
+            else if (e.n instanceof Sk.builtin.nmber)
+                return "new Sk.builtin.nmber(" + e.n.v + ",'" + e.n.skType + "')";
             else if (e.n instanceof Sk.builtin.lng)
                 return "Sk.longFromStr('" + e.n.tp$str().v + "')";
             goog.asserts.fail("unhandled Num type");
@@ -1120,14 +1136,40 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     if (args && args.kwarg)
         kwarg = args.kwarg;
 
-    //
-    // enter the new scope, and create the first block
-    //
+    /**
+     * @const
+     * @type {boolean}
+     */
+    var containingHasFree = this.u.ste.hasFree;
+    /**
+     * @const
+     * @type {boolean}
+     */
+    var containingHasCell = this.u.ste.childHasFree;
+
+    /**
+     * enter the new scope, and create the first block
+     * @const
+     * @type {string}
+     */
     var scopename = this.enterScope(coname, n, n.lineno);
 
     var isGenerator = this.u.ste.generator;
+    /**
+     * @const
+     * @type {boolean}
+     */
     var hasFree = this.u.ste.hasFree;
+    /**
+     * @const
+     * @type {boolean}
+     */
     var hasCell = this.u.ste.childHasFree;
+    /**
+     * @const
+     * @type {boolean}
+     */
+    var descendantOrSelfHasFree = this.u.ste.hasFree/* || this.u.ste.childHasFree*/;
 
     var entryBlock = this.newBlock('codeobj entry');
 
@@ -1156,13 +1198,17 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         for (var i = 0; args && i < args.args.length; ++i)
             funcArgs.push(this.nameop(args.args[i].id, Param));
     }
-    if (hasFree)
+    if (descendantOrSelfHasFree)
+    {
         funcArgs.push("$free");
+    }
     this.u.prefixCode += funcArgs.join(",");
 
     this.u.prefixCode += "){";
 
     if (isGenerator) this.u.prefixCode += "\n// generator\n";
+    if (containingHasFree) this.u.prefixCode += "\n// containing has free\n";
+    if (containingHasCell) this.u.prefixCode += "\n// containing has cell\n";
     if (hasFree) this.u.prefixCode += "\n// has free\n";
     if (hasCell) this.u.prefixCode += "\n// has cell\n";
 
@@ -1203,7 +1249,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var kw = kwarg ? true : false;
         this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname.v + 
             "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
-            ", " + hasFree + ");";
+            ", " + descendantOrSelfHasFree + ");";
     }
 
     //
@@ -1324,7 +1370,6 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         // if the scope we're in where we're defining this one has free
         // vars, they may also be cell vars, so we pass those to the
         // closure too.
-        var containingHasFree = this.u.ste.hasFree;
         if (containingHasFree)
             frees += ",$free";
     }
@@ -1472,6 +1517,10 @@ Compiler.prototype.cclass = function(s)
     
     var bases = this.vseqexpr(s.bases);
 
+    /**
+     * @const
+     * @type {string}
+     */
     var scopename = this.enterScope(s.name, s, s.lineno);
     var entryBlock = this.newBlock('class entry');
 
@@ -1744,6 +1793,10 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
     }
 };
 
+/**
+ * @param {Sk.builtin.str} name
+ * @return {string} The generated name of the scope, usually $scopeN.
+ */
 Compiler.prototype.enterScope = function(name, key, lineno)
 {
     var u = new CompilerUnit();
@@ -1807,10 +1860,15 @@ Compiler.prototype.cprint = function(s)
     if (s.nl)
         out('Sk.misceval.print_(', /*dest, ',*/ '"\\n");');
 };
+
 Compiler.prototype.cmod = function(mod)
 {
     //print("-----");
     //print(Sk.astDump(mod));
+    /**
+     * @const
+     * @type {string}
+     */
     var modf = this.enterScope(new Sk.builtin.str("<module>"), mod, 0);
 
     var entryBlock = this.newBlock('module entry');

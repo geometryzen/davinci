@@ -1,0 +1,11 @@
+a = 10
+def outer(x):
+    def middle(y):
+        b = 1.0
+        def inner(z):
+            c = y
+            d = b
+            return x
+        return inner
+    return middle
+print outer(23)(45)(67)
