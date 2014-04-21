@@ -82,39 +82,25 @@ goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
 Sk.ffh.add = function(lhsPy, rhsPy) {
   return Sk.abstr.binary_op_(lhsPy, rhsPy, "Add");
-  /*
-  if (lhsPy["__add__"])
-  {
-    return Sk.ffi.callsim(lhsPy["__add__"], lhsPy, rhsPy);
-  }
-  else if (lhsPy["nb$add"])
-  {
-    return lhsPy["nb$add"].call(lhsPy, rhsPy);
-  }
-  else
-  {
-    throw Sk.ffi.notImplementedError("add");
-  }
-  */
 };
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);
 
 Sk.ffh.subtract = function(lhsPy, rhsPy) {
   return Sk.abstr.binary_op_(lhsPy, rhsPy, "Sub");
-//return Sk.ffh.binaryExec(SPECIAL_METHOD_SUB, lhsPy, rhsPy, "nb$subtract");
 };
 goog.exportSymbol("Sk.ffh.subtract", Sk.ffh.subtract);
 
 Sk.ffh.multiply = function(lhsPy, rhsPy) {
   return Sk.abstr.binary_op_(lhsPy, rhsPy, "Mult");
-//return Sk.ffh.binaryExec(SPECIAL_METHOD_MUL, lhsPy, rhsPy, "nb$multiply");
 };
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
 Sk.ffh.rmultiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_RMUL, lhsPy, rhsPy, "nb$multiply");};
 goog.exportSymbol("Sk.ffh.rmultiply", Sk.ffh.rmultiply);
 
-Sk.ffh.divide = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_DIV, lhsPy, rhsPy, "nb$divide");};
+Sk.ffh.divide = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Div");
+};
 goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
 
 Sk.ffh.xor = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_XOR, lhsPy, rhsPy, "nb$xor");};

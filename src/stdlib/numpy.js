@@ -163,7 +163,6 @@
         }
       });
       $loc.__getitem__ = Sk.ffi.functionPy(function(selfPy, indexPy) {
-//      Sk.debugout("__getitem__: " + Sk.ffi.getType(indexPy));
         var ndarrayJs = Sk.ffi.remapToJs(selfPy);
         Sk.ffi.checkMethodArgs("[]", arguments, 1, 1);
         if (Sk.ffi.isInt(indexPy)) {
@@ -194,9 +193,6 @@
         }
         else if (Sk.ffi.isFunction(indexPy)) {
           var indices = indexPy.indices();
-//        Sk.debugout("indices[0]: " + indices[0]);
-//        Sk.debugout("indices[1]: " + indices[1]);
-//        Sk.debugout("indices[2]: " + indices[2]);
           var start = typeof indices[0] !== 'undefined' ? indices[0] : 0;
           var stop  = typeof indices[1] !== 'undefined' ? indices[1] : ndarrayJs.buffer.length;
           stop = stop > ndarrayJs.buffer.length ? ndarrayJs.buffer.length : stop;
@@ -327,15 +323,27 @@
       });
       $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        var lhs = selfJs.buffer;
-        var rhs = Sk.ffi.remapToJs(otherPy).buffer;
-        var buffer = [];
-        for (var i = 0, len = lhs.length; i < len; i++) {
-          buffer[i] = Sk.ffh.divide(lhs[i], rhs[i]);
+        if (Sk.ffi.isNum(otherPy)) {
+          var lhs = selfJs.buffer;
+          var buffer = [];
+          for (var i = 0, len = lhs.length; i < len; i++) {
+            buffer[i] = Sk.ffh.divide(lhs[i], otherPy);
+          }
+          var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+          var bufferPy = Sk.ffi.listPy(buffer);
+          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
         }
-        var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
-        var bufferPy = Sk.ffi.listPy(buffer);
-        return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+        else {
+          var lhs = selfJs.buffer;
+          var rhs = Sk.ffi.remapToJs(otherPy).buffer;
+          var buffer = [];
+          for (var i = 0, len = lhs.length; i < len; i++) {
+            buffer[i] = Sk.ffh.divide(lhs[i], rhs[i]);
+          }
+          var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+          var bufferPy = Sk.ffi.listPy(buffer);
+          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+        }
       });
       $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
