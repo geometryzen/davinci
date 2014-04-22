@@ -104,7 +104,9 @@ Sk.abstr.binary_op_ = function(v, w, opname)
     {   
         if (vop.call) {
             ret = vop.call(v, w);
-        } else {  // assume that vop is an __xxx__ type method
+        }
+        else {
+            // assume that vop is an __xxx__ type method
             ret = Sk.misceval.callsim(vop,v,w)
         }
         if (ret !== undefined) return ret;
@@ -114,7 +116,9 @@ Sk.abstr.binary_op_ = function(v, w, opname)
     {
         if (wop.call) {
             ret = wop.call(w, v);
-        } else { // assume that wop is an __xxx__ type method
+        }
+        else {
+            // assume that wop is an __xxx__ type method
             ret = Sk.misceval.callsim(wop,w,v)
         }
         if (ret !== undefined) return ret;

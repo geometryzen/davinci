@@ -378,10 +378,10 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
     }
     else {
-      var x00 = Sk.ffh.rmultiply(a00, otherPy);
-      var x01 = Sk.ffh.rmultiply(a01, otherPy);
-      var x10 = Sk.ffh.rmultiply(a10, otherPy);
-      var x11 = Sk.ffh.rmultiply(a11, otherPy);
+      var x00 = Sk.ffh.multiply(otherPy, a00);
+      var x01 = Sk.ffh.multiply(otherPy, a01);
+      var x10 = Sk.ffh.multiply(otherPy, a10);
+      var x11 = Sk.ffh.multiply(otherPy, a11);
 
       var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
       var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);

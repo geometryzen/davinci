@@ -237,7 +237,7 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return cartesianJsToComplexPy(x, y);
     }
     else {
-      return Sk.ffh.rmultiply(otherPy, selfPy);
+      return undefined;
     }
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {

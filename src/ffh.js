@@ -95,21 +95,29 @@ Sk.ffh.multiply = function(lhsPy, rhsPy) {
 };
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
-Sk.ffh.rmultiply = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_RMUL, lhsPy, rhsPy, "nb$multiply");};
-goog.exportSymbol("Sk.ffh.rmultiply", Sk.ffh.rmultiply);
-
 Sk.ffh.divide = function(lhsPy, rhsPy) {
   return Sk.abstr.binary_op_(lhsPy, rhsPy, "Div");
 };
 goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
 
-Sk.ffh.xor = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_XOR, lhsPy, rhsPy, "nb$xor");};
+Sk.ffh.modulo = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Mod");
+};
+goog.exportSymbol("Sk.ffh.modulo", Sk.ffh.modulo);
+
+Sk.ffh.xor = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "BitXor");
+};
 goog.exportSymbol("Sk.ffh.xor", Sk.ffh.xor);
 
-Sk.ffh.lshift = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_LSHIFT, lhsPy, rhsPy, "nb$lshift");};
+Sk.ffh.lshift = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "LShift");
+};
 goog.exportSymbol("Sk.ffh.lshift", Sk.ffh.lshift);
 
-Sk.ffh.rshift = function(lhsPy, rhsPy) {return Sk.ffh.binaryExec(SPECIAL_METHOD_RSHIFT, lhsPy, rhsPy, "nb$rshift");};
+Sk.ffh.rshift = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "RShift");
+};
 goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
 
 Sk.ffh.equal = function(lhsPy, rhsPy)
