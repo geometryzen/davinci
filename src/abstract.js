@@ -351,9 +351,9 @@ Sk.abstr.numberUnaryOp = function(valuePy, op)
     else if (valuePy instanceof Sk.builtin.nmber || valuePy instanceof Sk.builtin.bool)
     {
         var value = Sk.builtin.asnum$(valuePy);
-        if (op === "USub") return new Sk.builtin.nmber(-value, value.skType);
+        if (op === "USub")   return new Sk.builtin.nmber(-value, value.skType);
         if (op === "Invert") return new Sk.builtin.nmber(~value, value.skType);
-        if (op === "UAdd") return new Sk.builtin.nmber(value, value.skType);
+        if (op === "UAdd")   return new Sk.builtin.nmber(value, value.skType);
     }
     else
     {

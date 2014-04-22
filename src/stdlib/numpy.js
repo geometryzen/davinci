@@ -116,6 +116,15 @@
         return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
       };
     }
+    function makeUnaryOp(operationPy) {
+      return function(selfPy) {
+        var selfJs = Sk.ffi.remapToJs(selfPy);
+        var buffer = selfJs.buffer.map(function(valuePy) {return operationPy(valuePy);});
+        var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+        var bufferPy = Sk.ffi.listPy(buffer);
+        return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+      };
+    }
     /**
      * @param {Array.<number>} buffer
      * @param {Array.<number>} shape
@@ -366,6 +375,12 @@
 
       $loc.__rshift__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.rshift));
       $loc.__rrshift__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.rshift));
+
+      $loc.__pos__ = Sk.ffi.functionPy(makeUnaryOp(Sk.ffh.positive));
+      $loc.__neg__ = Sk.ffi.functionPy(makeUnaryOp(Sk.ffh.negative));
+
+      $loc.__exp__ = Sk.ffi.functionPy(makeUnaryOp(Sk.ffh.exp));
+      $loc.__sin__ = Sk.ffi.functionPy(makeUnaryOp(Sk.ffh.sin));
 
       $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);

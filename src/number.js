@@ -594,10 +594,23 @@ Sk.builtin.nmber.prototype.nb$inplace_rshift = Sk.builtin.nmber.prototype.nb$rsh
 
 Sk.builtin.nmber.prototype.nb$negative = function()
 {
-	return new Sk.builtin.nmber(-this.v, undefined);
+    return new Sk.builtin.nmber(-this.v, undefined);
 };
 
-Sk.builtin.nmber.prototype.nb$positive = function() { return this.clone(); };
+Sk.builtin.nmber.prototype.nb$positive = function()
+{
+    return this.clone();
+};
+
+Sk.builtin.nmber.prototype.nb$exp = function()
+{
+    return new Sk.builtin.nmber(Math.exp(this.v), this.skType);
+};
+
+Sk.builtin.nmber.prototype.nb$sin = function()
+{
+    return new Sk.builtin.nmber(Math.sin(this.v), this.skType);
+};
 
 Sk.builtin.nmber.prototype.nb$nonzero = function()
 {

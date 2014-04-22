@@ -45,25 +45,6 @@ Sk.ffh.unaryExec = function(specialMethod, valuePy, internalMethod)
 };
 goog.exportSymbol("Sk.ffh.unaryExec", Sk.ffh.unaryExec);
 /**
- *
- */
-Sk.ffh.binaryExec = function(specialMethod, lhsPy, rhsPy, internalMethod)
-{
-  if (lhsPy[specialMethod])
-  {
-    return Sk.ffi.callsim(lhsPy[specialMethod], lhsPy, rhsPy);
-  }
-  else if (typeof internalMethod !== 'undefined' && lhsPy[internalMethod])
-  {
-    return lhsPy[internalMethod].call(lhsPy, rhsPy);
-  }
-  else
-  {
-    throw Sk.ffi.notImplementedError(specialMethod);
-  }
-};
-goog.exportSymbol("Sk.ffh.binaryExec", Sk.ffh.binaryExec);
-/**
  * @param {Object} objPy
  * @param {number} index
  */
@@ -146,19 +127,29 @@ Sk.ffh.conjugate = function(numberPy) {
 };
 goog.exportSymbol("Sk.ffh.conjugate", Sk.ffh.conjugate);
 
-Sk.ffh.cos = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_COS, valuePy, "nb$cos");};
+Sk.ffh.cos = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_COS, valuePy, "nb$cos");
+};
 goog.exportSymbol("Sk.ffh.cos", Sk.ffh.cos);
 
-Sk.ffh.sin = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_SIN, valuePy, "nb$sin");};
+Sk.ffh.sin = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_SIN, valuePy, "nb$sin");
+};
 goog.exportSymbol("Sk.ffh.sin", Sk.ffh.sin);
 
-Sk.ffh.exp = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_EXP, valuePy, "nb$exp");};
+Sk.ffh.exp = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_EXP, valuePy, "nb$exp");
+};
 goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);
 
-Sk.ffh.positive = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_POS, valuePy, "nb$positive");};
+Sk.ffh.positive = function(valuePy) {
+  return Sk.abstr.numberUnaryOp(valuePy, "UAdd");
+};
 goog.exportSymbol("Sk.ffh.positive", Sk.ffh.positive);
 
-Sk.ffh.negative = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_NEG, valuePy, "nb$negative");};
+Sk.ffh.negative = function(valuePy) {
+  return Sk.abstr.numberUnaryOp(valuePy, "USub");
+};
 goog.exportSymbol("Sk.ffh.negative", Sk.ffh.negative);
 
 Sk.ffh.invert = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_INVERT, valuePy, "nb$invert");};
