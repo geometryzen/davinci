@@ -179,42 +179,31 @@ mod.exp = Sk.ffi.functionPy(function(anglePy) {
     return Sk.ffh.exp(anglePy);
   }
 });
+
+function makeTrigFunction(name, f1, f2) {
+  return function(anglePy) {
+    Sk.ffi.checkFunctionArgs(name, arguments, 1, 1);
+    if (Sk.ffi.isNum(anglePy)) {
+      return Sk.ffi.numberToFloatPy(f1(Sk.ffi.remapToJs(anglePy)));
+    }
+    else {
+      return f2(anglePy);
+    }
+  };
+}
+
 /**
  * cos
  */
-mod.cos = Sk.ffi.functionPy(function(anglePy) {
-  Sk.ffi.checkFunctionArgs("cos", arguments, 1, 1);
-  if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Sk.math.cos(Sk.ffi.remapToJs(anglePy)));
-  }
-  else {
-    return Sk.ffh.cos(anglePy);
-  }
-});
+mod.cos = Sk.ffi.functionPy(makeTrigFunction("cos", Sk.math.cos, Sk.ffh.cos));
 /**
  * sin
  */
-mod.sin = Sk.ffi.functionPy(function(anglePy) {
-  Sk.ffi.checkFunctionArgs("sin", arguments, 1, 1);
-  if (Sk.ffi.isNum(anglePy)) {
-    return Sk.ffi.numberToFloatPy(Sk.math.sin(Sk.ffi.remapToJs(anglePy)));
-  }
-  else
-  {
-    try {
-      return Sk.ffh.sin(anglePy);
-    }
-    catch(e) {
-      throw Sk.ffi.err.argument(ANGLE).inFunction("sin").mustHaveType(NUMBER);
-    }
-  }
-});
-
-mod.tan = Sk.ffi.functionPy(function(rad) {
-  Sk.ffi.checkFunctionArgs("tan", arguments, 1, 1);
-  Sk.builtin.pyCheckType("rad", "number", Sk.builtin.checkNumber(rad));
-  return new Sk.builtin.nmber(Math.tan(Sk.builtin.asnum$(rad)), Sk.builtin.nmber.float$);
-});
+mod.sin = Sk.ffi.functionPy(makeTrigFunction("sin", Sk.math.sin, Sk.ffh.sin));
+/**
+ * tan
+ */
+mod.tan = Sk.ffi.functionPy(makeTrigFunction("tan", Math.tan, Sk.ffh.tan));
 
 mod.asinh = Sk.ffi.functionPy(function(x) {
   Sk.ffi.checkFunctionArgs("asinh", arguments, 1, 1);

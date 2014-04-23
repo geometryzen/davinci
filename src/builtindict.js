@@ -10,7 +10,7 @@ Sk.builtins = {
 'sum': Sk.builtin.sum,
 'zip': Sk.builtin.zip,
 'abs': Sk.builtin.abs,
-'fabs': Sk.builtin.abs,	//	Added by RNL
+'fabs': Sk.builtin.abs,
 'ord': Sk.builtin.ord,
 'chr': Sk.builtin.chr,
 'hex': Sk.builtin.hex,

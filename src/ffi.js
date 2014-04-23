@@ -355,12 +355,14 @@ Sk.ffi.referenceToPy = function(valueJs, className, custom, targetPy)
     {
         if (typeof className === Sk.ffi.JsType.STRING)
         {
-            if (targetPy) {
+            if (targetPy)
+            {
                 targetPy.v = valueJs;
                 targetPy.tp$name = className;
                 targetPy.custom = custom;
             }
-            else {
+            else
+            {
                 return {"v": valueJs, "tp$name": className, "custom": custom};
             }
         }
@@ -1119,6 +1121,16 @@ Sk.ffi.remapToJs = function(valuePy, shallow)
     }
 };
 goog.exportSymbol("Sk.ffi.remapToJs", Sk.ffi.remapToJs);
+
+/**
+ *
+ * @param {Object} valuePy The Python value containing the custom JavaScript object.
+ */
+Sk.ffi.customToJs = function(valuePy)
+{
+    return valuePy.custom;
+}
+goog.exportSymbol("Sk.ffi.customToJs", Sk.ffi.customToJs);
 
 /**
  *

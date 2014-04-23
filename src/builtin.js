@@ -347,7 +347,7 @@ Sk.builtin.zip = function zip()
         }
         if (!done)
         {
-            res.push(new Sk.builtin.tuple(tup));    
+            res.push(new Sk.builtin.tuple(tup));
         }
     }
     return new Sk.builtin.list(res);
@@ -707,10 +707,25 @@ Sk.builtin.raw_input = function(obj, name, default_)
     return new Sk.builtin.str(x);
 };
 
-Sk.builtin.input = function(obj, name, default_)
+/**
+ * @param {Sk.builtin.str} promptPy
+ * @param {string} name
+ * @param {Object} default_
+ */
+Sk.builtin.input = function(promptPy, name, default_)
 {
-    var x = Sk.inputfun(obj.v);
-    return new Sk.builtin.str(x);
+    Sk.ffi.checkFunctionArgs("input", arguments, 0, 1);
+    if (Sk.ffi.isDefined(promptPy))
+    {
+        Sk.ffi.checkArgType("prompt", Sk.ffi.PyType.STR, Sk.ffi.isStr(promptPy), promptPy);
+        var x = Sk.inputfun(Sk.ffi.remapToJs(promptPy));
+        return Sk.ffi.stringToPy(x);
+    }
+    else
+    {
+        var x = Sk.inputfun("");
+        return Sk.ffi.stringToPy(x);
+    }
 };
 
 Sk.builtin.jseval = function jseval(evalcode)

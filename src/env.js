@@ -30,15 +30,18 @@ Sk.configure = function(options)
     Sk.read = options["read"] || Sk.read;
     goog.asserts.assert(typeof Sk.read === "function");
 
-    Sk.timeoutMsg = options["timeoutMsg"] || Sk.timeoutMsg;											// RNL
-    goog.asserts.assert(typeof Sk.timeoutMsg === "function");										// RNL
-	goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
+    Sk.timeoutMsg = options["timeoutMsg"] || Sk.timeoutMsg;
+    goog.asserts.assert(typeof Sk.timeoutMsg === "function");
+    goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
 
     Sk.sysargv = options["sysargv"] || Sk.sysargv;
     goog.asserts.assert(goog.isArrayLike(Sk.sysargv));
 
+    Sk.physics = options["physics"] || Sk.physics;
+    goog.asserts.assertBoolean(Sk.physics, "Sk.physics must be set to a JavaScript boolean value.");
+
     Sk.python3 = options["python3"] || Sk.python3;
-    goog.asserts.assert(typeof Sk.python3 === "boolean");
+    goog.asserts.assertBoolean(Sk.python3);
 
     Sk.inputfun = options["inputfun"] || Sk.inputfun;
     goog.asserts.assert(typeof Sk.inputfun === "function")
@@ -61,7 +64,7 @@ Sk.configure = function(options)
 goog.exportSymbol("Sk.configure", Sk.configure);
 
 /*
-*	Replaceable message for message timeouts
+*   Replaceable message for message timeouts
 */
 Sk.timeoutMsg=function() { return "Program exceeded run time limit."; }
 goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
@@ -123,11 +126,20 @@ if (!Sk.inBrowser)
     };
 }
 
+/**
+ * The physics mode.
+ * @type {boolean}
+ */
+Sk.physics = false;
+goog.exportSymbol("Sk.physics", Sk.physics);
 
 Sk.python3 = false;
-Sk.inputfun = function(args) { return prompt(args); };
-goog.exportSymbol("Sk.python3",Sk.python3)
-goog.exportSymbol("Sk.inputfun",Sk.inputfun)
+goog.exportSymbol("Sk.python3", Sk.python3);
+
+Sk.inputfun = function(args)
+{
+    return window.prompt(args);
+};
+goog.exportSymbol("Sk.inputfun", Sk.inputfun);
 
 goog.require("goog.asserts");
-

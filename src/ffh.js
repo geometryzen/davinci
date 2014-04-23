@@ -21,6 +21,7 @@ var SPECIAL_METHOD_SIN     = '__sin__';
 var SPECIAL_METHOD_SQRT    = '__sqrt__';
 var SPECIAL_METHOD_STR     = '__str__';
 var SPECIAL_METHOD_SUB     = '__sub__';
+var SPECIAL_METHOD_TAN     = '__tan__';
 var SPECIAL_METHOD_XOR     = '__xor__';
 
 /**
@@ -101,6 +102,11 @@ Sk.ffh.rshift = function(lhsPy, rhsPy) {
 };
 goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
 
+Sk.ffh.pow = function(lhsPy, rhsPy) {
+  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Pow");
+};
+goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
+
 Sk.ffh.equal = function(lhsPy, rhsPy)
 {
     if (lhsPy[SPECIAL_METHOD_EQ])
@@ -136,6 +142,11 @@ Sk.ffh.sin = function(valuePy) {
   return Sk.ffh.unaryExec(SPECIAL_METHOD_SIN, valuePy, "nb$sin");
 };
 goog.exportSymbol("Sk.ffh.sin", Sk.ffh.sin);
+
+Sk.ffh.tan = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_TAN, valuePy, "nb$tan");
+};
+goog.exportSymbol("Sk.ffh.tan", Sk.ffh.tan);
 
 Sk.ffh.exp = function(valuePy) {
   return Sk.ffh.unaryExec(SPECIAL_METHOD_EXP, valuePy, "nb$exp");
