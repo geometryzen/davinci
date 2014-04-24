@@ -34,6 +34,18 @@ Sk.builtin.tuple = function(L)
 };
 
 Sk.builtin.tuple.prototype.tp$name = "tuple";
+Sk.builtin.tuple.prototype.tp$str = function()
+{
+    if (this.v.length === 0) return new Sk.builtin.str("()");
+    var bits = [];
+    for (var i = 0; i < this.v.length; ++i)
+    {
+        bits[i] = Sk.ffi.remapToJs(Sk.ffh.str(this.v[i]));
+    }
+    var ret = bits.join(', ');
+    if (this.v.length === 1) ret += ",";
+    return new Sk.builtin.str("(" + ret + ")");
+};
 Sk.builtin.tuple.prototype.tp$repr = function()
 {
     if (this.v.length === 0) return new Sk.builtin.str("()");
@@ -51,15 +63,15 @@ Sk.builtin.tuple.prototype.mp$subscript = function(index)
 {
     if (Sk.misceval.isIndex(index))
     {
-	var i = Sk.misceval.asIndex(index);
-	if (i !== undefined)
-	{
+    var i = Sk.misceval.asIndex(index);
+    if (i !== undefined)
+    {
             if (i < 0) i = this.v.length + i;
             if (i < 0 || i >= this.v.length) {
-		throw new Sk.builtin.IndexError("tuple index out of range");
-	    }
+        throw new Sk.builtin.IndexError("tuple index out of range");
+        }
             return this.v[i];
-	}
+    }
     }
     else if (index instanceof Sk.builtin.slice)
     {

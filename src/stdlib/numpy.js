@@ -426,17 +426,18 @@
 
     mod['linspace'] = Sk.ffi.functionPy(function(startPy, stopPy, numPy, endpointPy, retstepPy) {
       Sk.ffi.checkFunctionArgs("linspace", arguments, 2, 5);
-      Sk.ffi.checkArgType("start", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(startPy), startPy);
-      var start = Sk.ffi.remapToJs(startPy);
-      Sk.ffi.checkArgType("stop",  [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(stopPy),  stopPy);
-      var stop = Sk.ffi.remapToJs(stopPy);
+//    Sk.ffi.checkArgType("start", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(startPy), startPy);
+//    var start = Sk.ffi.remapToJs(startPy);
+//    Sk.ffi.checkArgType("stop",  [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(stopPy),  stopPy);
+//    var stop = Sk.ffi.remapToJs(stopPy);
       var num;
       if (Sk.ffi.isDefined(numPy)) {
-        Sk.ffi.checkArgType("num",   [Sk.ffi.PyType.INT],   Sk.ffi.isInt(numPy),     numPy);
+        Sk.ffi.checkArgType("num", [Sk.ffi.PyType.INT], Sk.ffi.isInt(numPy), numPy);
         num = Sk.ffi.remapToJs(numPy);
       }
       else {
         num = 50;
+        numPy = Sk.ffi.numberToIntPy(50);
       }
       var endpoint;
       if (Sk.ffi.isDefined(endpointPy)) {
@@ -454,16 +455,17 @@
       else {
         retstep = false;
       }
-      var step = endpoint ? ((stop - start)/(num - 1)) : ((stop - start)/num);
+      var diffPy = Sk.ffh.subtract(stopPy, startPy);
+      var stepPy = endpoint ? Sk.ffh.divide(diffPy, Sk.ffh.subtract(numPy, Sk.ffi.numberToIntPy(1))) : Sk.ffh.divide(diffPy, numPy);
       var buffer = [];
       for (var i = 0; i < num; i++) {
-        buffer[i] = Sk.ffi.numberToFloatPy(i * step + start);
+        buffer[i] = Sk.ffh.add(Sk.ffh.multiply(Sk.ffi.numberToFloatPy(i), stepPy), startPy);
       }
       var shapeJs = [];
-      shapeJs[0] = Sk.ffi.numberToIntPy(num);
+      shapeJs[0] = numPy;
       var shapePy = Sk.ffi.tuplePy(shapeJs);
       var arrayPy = Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, Sk.ffi.listPy(buffer));
-      return retstep ? Sk.ffi.tuplePy([arrayPy, Sk.ffi.numberToFloatPy(step)]) : arrayPy;
+      return retstep ? Sk.ffi.tuplePy([arrayPy, stepPy]) : arrayPy;
     });
 
     mod['zeros'] = Sk.ffi.functionPy(function(shapePy, dtypePy, orderPy) {
