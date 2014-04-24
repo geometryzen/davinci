@@ -1,1 +1,1 @@
-EXCEPTION: TypeError: range() takes at least 1 arguments (0 given) on line 1
+EXCEPTION: AssertionError: range(stop) or range(start, stop[, step]) takes at least 1 arguments (0 given) on line 1

@@ -1,7 +1,11 @@
 (function() {
   Sk.builtin.defineNumPy = function(mod) {
     Sk.ffi.checkFunctionArgs("defineNumPy", arguments, 1, 1);
-
+    /**
+     * @const
+     * @type {string}
+     */
+    var CLASS_NDARRAY         = "ndarray";
     /**
      * @const
      * @type {string}
@@ -80,17 +84,8 @@
     function makeNumericBinaryOpLhs(operationPy) {
       return function(selfPy, otherPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        if (Sk.ffi.isNum(otherPy)) {
-          var lhs = selfJs.buffer;
-          var buffer = [];
-          for (var i = 0, len = lhs.length; i < len; i++) {
-            buffer[i] = operationPy(lhs[i], otherPy);
-          }
-          var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
-          var bufferPy = Sk.ffi.listPy(buffer);
-          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
-        }
-        else {
+        if (Sk.ffi.isInstance(otherPy, CLASS_NDARRAY))
+        {
           var lhs = selfJs.buffer;
           var rhs = Sk.ffi.remapToJs(otherPy).buffer;
           var buffer = [];
@@ -99,7 +94,18 @@
           }
           var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
           var bufferPy = Sk.ffi.listPy(buffer);
-          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+          return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
+        }
+        else
+        {
+          var lhs = selfJs.buffer;
+          var buffer = [];
+          for (var i = 0, len = lhs.length; i < len; i++) {
+            buffer[i] = operationPy(lhs[i], otherPy);
+          }
+          var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
+          var bufferPy = Sk.ffi.listPy(buffer);
+          return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
         }
       };
     }
@@ -113,7 +119,7 @@
         }
         var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
         var bufferPy = Sk.ffi.listPy(buffer);
-        return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+        return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
       };
     }
     function makeUnaryOp(operationPy) {
@@ -122,7 +128,7 @@
         var buffer = selfJs.buffer.map(function(valuePy) {return operationPy(valuePy);});
         var shapePy = Sk.ffi.tuplePy(selfJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
         var bufferPy = Sk.ffi.listPy(buffer);
-        return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+        return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
       };
     }
     /**
@@ -162,7 +168,7 @@
       return str;
     }
 
-    mod['ndarray'] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+    mod[CLASS_NDARRAY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       $loc.__init__ = Sk.ffi.functionPy(function(selfPy, shapePy, dtypePy, bufferPy, offsetPy, stridesPy, orderPy) {
         var ndarrayJs = {};
         ndarrayJs.shape = Sk.ffi.remapToJs(shapePy);
@@ -172,7 +178,7 @@
           Sk.ffi.checkArgType('buffer', [Sk.ffi.PyType.LIST], Sk.ffi.isList(bufferPy), bufferPy);
           ndarrayJs.buffer = Sk.ffi.remapToJs(bufferPy, true);
         }
-        Sk.ffi.referenceToPy(ndarrayJs, 'ndarray', undefined, selfPy);
+        Sk.ffi.referenceToPy(ndarrayJs, CLASS_NDARRAY, undefined, selfPy);
       });
       $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
         var ndarrayJs = Sk.ffi.remapToJs(selfPy);
@@ -204,7 +210,7 @@
                 Sk.ffi.checkMethodArgs(METHOD_COPY, arguments, 0, 0);
                 var shapePy = Sk.ffi.tuplePy(ndarrayJs.shape.map(function(x) {return Sk.ffi.numberToIntPy(x);}));
                 var buffer = ndarrayJs.buffer.map(function(x) {return x;});
-                return Sk.ffi.callsim(mod['ndarray'], shapePy, ndarrayJs.dtypePy, Sk.ffi.listPy(buffer));
+                return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, ndarrayJs.dtypePy, Sk.ffi.listPy(buffer));
               });
             }, METHOD_COPY, []));
           }
@@ -230,7 +236,7 @@
               });
               $loc.__call__ = Sk.ffi.functionPy(function(methodPy, shapePy) {
                 Sk.ffi.checkMethodArgs(METHOD_RESHAPE, arguments, 0, 1);
-                return Sk.ffi.callsim(mod['ndarray'], shapePy, ndarrayJs.dtypePy, Sk.ffi.listPy(ndarrayJs.buffer));
+                return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, ndarrayJs.dtypePy, Sk.ffi.listPy(ndarrayJs.buffer));
               });
             }, METHOD_RESHAPE, []));
           }
@@ -247,7 +253,7 @@
             }, METHOD_TOLIST, []));
           }
           default: {
-            throw Sk.ffi.err.attribute(name).isNotGetableOnType('ndarray');
+            throw Sk.ffi.err.attribute(name).isNotGetableOnType(CLASS_NDARRAY);
           }
         }
       });
@@ -265,7 +271,7 @@
             }
             var bufferPy = Sk.ffi.listPy(buffer);
             var shapePy = Sk.ffi.tuplePy(Array.prototype.slice.call(ndarrayJs.shape,1).map(function(x) {return Sk.ffi.numberToIntPy(x);}));
-            return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+            return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
           }
           else {
             if (offset >= 0 && offset < ndarrayJs.buffer.length) {
@@ -295,7 +301,7 @@
           }
           var bufferPy = Sk.ffi.listPy(buffer);
           var shapePy = Sk.ffi.tuplePy([buffer.length].map(function(x) {return Sk.ffi.numberToIntPy(x);}));
-          return Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, bufferPy);
+          return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, bufferPy);
         }
         else {
           Sk.ffi.checkArgType('index', [Sk.ffi.PyType.INT, Sk.ffi.PyType.TUPLE, Sk.ffi.PyType.FUNCTION], false, indexPy);
@@ -390,7 +396,7 @@
         var selfJs = Sk.ffi.remapToJs(selfPy);
         return Sk.ffi.stringToPy("array(" + stringify(selfJs.buffer, selfJs.shape) + ")");
       })
-    }, 'ndarray', []);
+    }, CLASS_NDARRAY, []);
 
     mod['array'] = Sk.ffi.functionPy(function(objectPy, dtypePy, copyPy, orderPy, subokPy, ndminPy) {
       Sk.ffi.checkFunctionArgs("array", arguments, 1, 6);
@@ -417,7 +423,7 @@
 
       var shapePy = Sk.ffi.tuplePy(state.shape.map(function(x) {return Sk.ffi.numberToFloatPy(x);}));
       var bufferPy = Sk.ffi.listPy(elementsPy);
-      return Sk.ffi.callsim(mod['ndarray'], shapePy, dtypePy, bufferPy);
+      return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, dtypePy, bufferPy);
     });
 
     mod['empty'] = Sk.ffi.functionPy(function(shapePy, dtypePy, orderPy) {
@@ -425,7 +431,7 @@
     });
 
     mod['linspace'] = Sk.ffi.functionPy(function(startPy, stopPy, numPy, endpointPy, retstepPy) {
-      Sk.ffi.checkFunctionArgs("linspace", arguments, 2, 5);
+      Sk.ffi.checkFunctionArgs("linspace(start, stop, num=50, endpoint=True, retstep=False)", arguments, 2, 5);
 //    Sk.ffi.checkArgType("start", [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(startPy), startPy);
 //    var start = Sk.ffi.remapToJs(startPy);
 //    Sk.ffi.checkArgType("stop",  [Sk.ffi.PyType.FLOAT], Sk.ffi.isFloat(stopPy),  stopPy);
@@ -464,7 +470,7 @@
       var shapeJs = [];
       shapeJs[0] = numPy;
       var shapePy = Sk.ffi.tuplePy(shapeJs);
-      var arrayPy = Sk.ffi.callsim(mod['ndarray'], shapePy, undefined, Sk.ffi.listPy(buffer));
+      var arrayPy = Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, undefined, Sk.ffi.listPy(buffer));
       return retstep ? Sk.ffi.tuplePy([arrayPy, stepPy]) : arrayPy;
     });
 
@@ -478,7 +484,7 @@
       for (var i = 0; i < size; i++) {
         buffer[i] = zero;
       }
-      return Sk.ffi.callsim(mod['ndarray'], shapePy, dtypePy, Sk.ffi.listPy(buffer));
+      return Sk.ffi.callsim(mod[CLASS_NDARRAY], shapePy, dtypePy, Sk.ffi.listPy(buffer));
     });
   };
 }).call(this);

@@ -10,12 +10,15 @@ Sk.builtin.range = function range(start, stop, step)
     var ret = [];
     var i;
 
-    Sk.builtin.pyCheckArgs("range", arguments, 1, 3);
+    Sk.ffi.checkFunctionArgs("range(stop) or range(start, stop[, step])", arguments, 1, 3);
+
     Sk.builtin.pyCheckType("start", "integer", Sk.builtin.checkInt(start));
-    if (stop !== undefined) {
+    if (stop !== undefined)
+    {
         Sk.builtin.pyCheckType("stop", "integer", Sk.builtin.checkInt(stop));
     }
-    if (step !== undefined) {
+    if (step !== undefined)
+    {
         Sk.builtin.pyCheckType("step", "integer", Sk.builtin.checkInt(step));
     }
 
@@ -23,24 +26,33 @@ Sk.builtin.range = function range(start, stop, step)
     stop = Sk.builtin.asnum$(stop);
     step = Sk.builtin.asnum$(step);
 
-    if ((stop === undefined) && (step === undefined)) {
+    if ((stop === undefined) && (step === undefined))
+    {
         stop = start;
         start = 0;
         step = 1;
-    } else if (step === undefined) {
+    }
+    else if (step === undefined)
+    {
         step = 1;
     }
 
-    if (step === 0) {
+    if (step === 0)
+    {
         throw new Sk.builtin.ValueError("range() step argument must not be zero");
     }
 
-    if (step > 0) {
-        for (i=start; i<stop; i+=step) {
+    if (step > 0)
+    {
+        for (i=start; i<stop; i+=step)
+        {
             ret.push(new Sk.builtin.nmber(i, Sk.builtin.nmber.int$));
         }
-    } else {
-        for (i=start; i>stop; i+=step) {
+    }
+    else
+    {
+        for (i=start; i>stop; i+=step)
+        {
             ret.push(new Sk.builtin.nmber(i, Sk.builtin.nmber.int$));
         }
     }
@@ -749,76 +761,109 @@ Sk.builtin.eval_ =  function eval_()
     throw new Sk.builtin.NotImplementedError("eval is not yet implemented");
 }
 
-Sk.builtin.map = function map(fun, seq) {
-    Sk.builtin.pyCheckArgs("map", arguments, 2);
+Sk.builtin.map = function map(fun, seq)
+{
+    Sk.ffi.checkFunctionArgs("map(function, iterable, ...)", arguments, 2);
 
-    if (fun instanceof Sk.builtin.none){
-        fun = { func_code: function (x) { return x; } }
-    }
-
-    if (arguments.length > 2){
+    if (arguments.length > 2)
+    {
+        // Pack sequences into one list of JavaScript Arrays.
         var combined = [];
         var iterables = Array.prototype.slice.apply(arguments).slice(1);
-        for (var i in iterables){
-            if (iterables[i].tp$iter === undefined){
+        for (var i in iterables)
+        {
+            // TODO: checkIterable
+            if (iterables[i].tp$iter === undefined)
+            {
                 var argnum = parseInt(i,10) + 2;
                 throw new Sk.builtin.TypeError("argument " + argnum + " to map() must support iteration");
             }
             iterables[i] = iterables[i].tp$iter()
         }
 
-        while(true) {
+        while(true)
+        {
             var args = [];
             var nones = 0;
-            for (var i in iterables){
+            for (var i in iterables)
+            {
                 var next = iterables[i].tp$iternext()
-                if (next === undefined) {
+                if (next === undefined)
+                {
                     args.push(Sk.builtin.none.none$);
                     nones++;
                 }
-                else{
+                else
+                {
                     args.push(next);
                 }
             }
-            if (nones !== iterables.length) {
+            if (nones !== iterables.length)
+            {
                 combined.push(args);
             }
-            else {
+            else
+            {
+                // All iterables are done.
                 break;
             }
         }
         seq = new Sk.builtin.list(combined);
     }
 
-    if (seq.tp$iter === undefined){
+    if (seq.tp$iter === undefined)
+    {
         throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(seq) + "' object is not iterable");
     }
 
-    var retval = [],
-        iter = seq.tp$iter(),
-        next = iter.tp$iternext();
+    var retval = [];
+    var iter, item;
 
-    while (next !== undefined){
-        if (!(next instanceof Array)){ next = [next]; }
-        retval.push(fun.func_code.apply(this, next));
-        next = iter.tp$iternext();
+    for (iter = seq.tp$iter(), item = iter.tp$iternext();
+         item !== undefined;
+         item = iter.tp$iternext())
+    {
+        if (fun === Sk.builtin.none.none$)
+        {
+            if (item instanceof Array)
+            {
+                // With None function and multiple sequences, 
+                // map should return a list of tuples
+                item = new Sk.builtin.tuple(item);
+            }
+            retval.push(item);
+        }
+        else
+        {
+            if (!(item instanceof Array))
+            {
+                // If there was only one iterable, convert to Javascript
+                // Array for call to apply.
+                item = [item];
+            }
+            retval.push(Sk.misceval.apply(fun, undefined, undefined, undefined, item));
+        }
     }
-
+    
     return new Sk.builtin.list(retval);
 }
 
-Sk.builtin.reduce = function reduce(fun, seq, initializer) {
+Sk.builtin.reduce = function reduce(fun, seq, initializer)
+{
     Sk.builtin.pyCheckArgs("reduce", arguments, 2, 3);
     var iter = seq.tp$iter();
-    if (initializer === undefined){
+    if (initializer === undefined)
+    {
         initializer = iter.tp$iternext();
-        if (initializer === undefined){
+        if (initializer === undefined)
+        {
             throw new Sk.builtin.TypeError('reduce() of empty sequence with no initial value');
         }
     }
     var accum_value = initializer;
     var next = iter.tp$iternext();
-    while (next !== undefined){
+    while (next !== undefined)
+    {
         accum_value = fun.func_code(accum_value, next)
         next = iter.tp$iternext();
     }

@@ -89,7 +89,7 @@ Sk.builtin.list.prototype.list_del_slice_ = function(ilow, ihigh)
 
 Sk.builtin.list.prototype.list_ass_item_ = function(i, v)
 {
-	i = Sk.builtin.asnum$(i);
+    i = Sk.builtin.asnum$(i);
     if (i < 0 || i >= this.v.length)
         throw new Sk.builtin.IndexError("list assignment index out of range");
     this.v[i] = v;
@@ -97,8 +97,8 @@ Sk.builtin.list.prototype.list_ass_item_ = function(i, v)
 
 Sk.builtin.list.prototype.list_ass_slice_ = function(ilow, ihigh, v)
 {
-	ilow = Sk.builtin.asnum$(ilow);
-	ihigh = Sk.builtin.asnum$(ihigh);
+    ilow = Sk.builtin.asnum$(ilow);
+    ihigh = Sk.builtin.asnum$(ihigh);
 
     // todo; item rather list/null
     var args = v.v.slice(0);
@@ -108,6 +108,15 @@ Sk.builtin.list.prototype.list_ass_slice_ = function(ilow, ihigh, v)
 };
 
 Sk.builtin.list.prototype.tp$name = "list";
+Sk.builtin.list.prototype.tp$str = function()
+{
+    var ret = [];
+    for (var it = this.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
+    {
+        ret.push(Sk.ffi.remapToJs(Sk.misceval.objectRepr(i)));
+    }
+    return Sk.ffi.stringToPy("[" + ret.join(", ") + "]");
+};
 Sk.builtin.list.prototype.tp$repr = function()
 {
     var ret = [];
@@ -185,7 +194,11 @@ Sk.builtin.list.prototype.nb$add = Sk.builtin.list.prototype.list_concat_;
 Sk.builtin.list.prototype.nb$inplace_add = Sk.builtin.list.prototype.list_concat_;
 Sk.builtin.list.prototype.sq$repeat = function(n)
 {
-	n = Sk.builtin.asnum$(n);
+    if (!Sk.builtin.checkInt(n))
+    {
+        throw new Sk.builtin.TypeError("can't multiply sequence by non-int of type '" + Sk.abstr.typeName(n) +"'");
+    }
+    n = Sk.builtin.asnum$(n);
     var ret = [];
     for (var i = 0; i < n; ++i)
         for (var j = 0; j < this.v.length; ++j)
@@ -418,7 +431,7 @@ Sk.builtin.list.prototype['insert'] = new Sk.builtin.func(function(self, i, x)
         throw new Sk.builtin.TypeError("an integer is required");
     };
 
-	i = Sk.builtin.asnum$(i);
+    i = Sk.builtin.asnum$(i);
     if (i < 0) i = 0;
     else if (i > self.v.length) i = self.v.length;
     self.v.splice(i, 0, x);
@@ -485,14 +498,16 @@ Sk.builtin.list.prototype['index'] = new Sk.builtin.func(function(self, item)
     for (var i = 0; i < len; ++i)
     {
         if (Sk.misceval.richCompareBool(obj[i], item, "Eq"))
+        {
             return i;
+        }
     }
     throw new Sk.builtin.ValueError("list.index(x): x not in list");
 });
 
 Sk.builtin.list.prototype['count'] = new Sk.builtin.func(function(self, item)
 {
-    Sk.builtin.pyCheckArgs("count", arguments, 2, 2);
+    Sk.ffi.checkMethodArgs("count()", arguments, 1, 1);
 
     var len = self.v.length;
     var obj = self.v;

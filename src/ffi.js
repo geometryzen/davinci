@@ -586,18 +586,15 @@ goog.exportSymbol("Sk.ffi.isUndefined", Sk.ffi.isUndefined);
  *
  * Use this function whenever there is no self argument.
  *
- * @param {string} name the name of the attribute
- * @param {{length: number}} args the args passed to the attribute
- * @param {number} minargs the minimum number of allowable arguments
- * @param {number=} maxargs optional maximum number of allowable
- * arguments (default: Infinity)
- * @param {boolean=} kwargs optional true if kwargs, false otherwise
- * (default: false)
- * @param {boolean=} free optional true if free vars, false otherwise
- * (default: false)
+ * @param {string} prototype The prototype of the function.
+ * @param {{length: number}} args The args passed to the function.
+ * @param {number} minargs The minimum number of allowable arguments.
+ * @param {number=} maxargs Optional maximum number of allowable arguments (default: Infinity).
+ * @param {boolean=} kwargs Optional true if kwargs, false otherwise (default: false).
+ * @param {boolean=} free Optional true if free vars, false otherwise (default: false).
  * @return {number} The number of arguments.
  */
-Sk.ffi.checkFunctionArgs = function(name, args, minargs, maxargs, kwargs, free)
+Sk.ffi.checkFunctionArgs = function(prototype, args, minargs, maxargs, kwargs, free)
 {
     var nargs = args.length;
     var msg = "";
@@ -609,15 +606,15 @@ Sk.ffi.checkFunctionArgs = function(name, args, minargs, maxargs, kwargs, free)
     {
         if (minargs === maxargs)
         {
-            msg = name + "() takes exactly " + minargs + " arguments";
+            msg = prototype + " takes exactly " + minargs + " arguments";
         }
         else if (nargs < minargs)
         {
-            msg = name + "() takes at least " + minargs + " arguments";
+            msg = prototype + " takes at least " + minargs + " arguments";
         }
         else
         {
-            msg = name + "() takes at most " + maxargs + " arguments";
+            msg = prototype + " takes at most " + maxargs + " arguments";
         }
         msg += " (" + nargs + " given)";
         throw Sk.ffi.assertionError(msg);
@@ -636,7 +633,7 @@ goog.exportSymbol("Sk.ffi.checkFunctionArgs", Sk.ffi.checkFunctionArgs);
  *
  * Use this function whenever you want to ignore the first (self) argument.
  *
- * @param {string} name the name of the callable attribute or class.
+ * @param {string} prototype The prototype of the callable attribute or class.
  * @param {{length: number}} args the arguments passed to the attribute.
  * @param {number} minargs the minimum number of allowable arguments.
  * @param {number=} maxargs optional maximum number of allowable arguments (default: Infinity).
@@ -645,9 +642,9 @@ goog.exportSymbol("Sk.ffi.checkFunctionArgs", Sk.ffi.checkFunctionArgs);
  *
  * @return {number} The number of arguments.
  */
-Sk.ffi.checkMethodArgs = function(name, args, minargs, maxargs, kwargs, free)
+Sk.ffi.checkMethodArgs = function(prototype, args, minargs, maxargs, kwargs, free)
 {
-    return Sk.ffi.checkFunctionArgs(name, Array.prototype.slice.call(args, 1), minargs, maxargs, kwargs, free);
+    return Sk.ffi.checkFunctionArgs(prototype, Array.prototype.slice.call(args, 1), minargs, maxargs, kwargs, free);
 };
 goog.exportSymbol("Sk.ffi.checkMethodArgs", Sk.ffi.checkMethodArgs);
 
