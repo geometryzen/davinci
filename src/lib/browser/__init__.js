@@ -15,16 +15,19 @@ var $builtinmodule = function(name) {
 
   mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod), Sk.ffi.referenceToPy(window, WINDOW_CLASS));
 
-  mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod), Sk.ffi.referenceToPy(document, DOCUMENT_CLASS));
+  mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod), Sk.ffi.referenceToPy(window.document, DOCUMENT_CLASS));
 
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy) {
-      var prototype = WINDOW_ANIMATION_RUNNER + "(tick, terminate, setUp, tearDown)";
-      Sk.ffi.checkMethodArgs(prototype, arguments, 4, 4);
+    $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy, windowPy) {
+      var prototype = WINDOW_ANIMATION_RUNNER + "(tick, terminate, setUp, tearDown[, window])";
+      Sk.ffi.checkMethodArgs(prototype, arguments, 4, 5);
       Sk.ffi.checkArgType("tick",      Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tickPy));
       Sk.ffi.checkArgType("terminate", Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(terminatePy));
       Sk.ffi.checkArgType("setUp",     Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(setUpPy));
       Sk.ffi.checkArgType("tearDown",  Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tearDownPy));
+      if (Sk.ffi.isDefined(windowPy)) {
+        Sk.ffi.checkArgType("window", Sk.ffi.PyType.INSTANCE, Sk.ffi.isInstance(windowPy), windowPy);
+      }
       var onDocumentKeyDown = function(event) {
         if (event.keyCode == 27) {
           var war = Sk.ffi.remapToJs(selfPy);
@@ -33,21 +36,19 @@ var $builtinmodule = function(name) {
         }
       };
       var WindowAnimationRunner = function() {
-        this.tick      = Sk.ffi.remapToJs(tickPy);
-        this.terminate = Sk.ffi.remapToJs(terminatePy);
-        this.setUp     = Sk.ffi.remapToJs(setUpPy);
-        this.tearDown  = Sk.ffi.remapToJs(tearDownPy);
+        this.window    = Sk.ffi.isDefined(windowPy) ? Sk.ffi.remapToJs(windowPy) : window;
         this.startTime = null;
         this.elapsed   = null;
         this.requestID = null;
         this.escKeyPressed = false;
+        this.exceptionPy = Sk.ffi.none.None;
       };
       WindowAnimationRunner.prototype = {
         constructor: WindowAnimationRunner,
         start: function() {
           var war = this;
-          war.setUp();
-          document.addEventListener('keydown', onDocumentKeyDown, false);
+          Sk.misceval.apply(setUpPy, undefined, undefined, undefined, []);
+          war.window.document.addEventListener('keydown', onDocumentKeyDown, false);
           var animate = function(timestamp) {
             if (war.startTime) {
               war.elapsed = timestamp - war.startTime;
@@ -60,14 +61,37 @@ var $builtinmodule = function(name) {
                 war.elapsed = 0;
               }
             }
-            if (war.escKeyPressed || war.terminate(war.elapsed / 1000)) {
-              window.cancelAnimationFrame(war.requestID);
-              document.removeEventListener('keydown', onDocumentKeyDown, false);
-              war.tearDown();
+            function terminate() {
+                var timePy = Sk.ffi.numberToFloatPy(war.elapsed / 1000);
+                var responsePy = Sk.misceval.apply(terminatePy, undefined, undefined, undefined, [timePy]);
+                return Sk.ffi.remapToJs(responsePy);
+            }
+            if (war.escKeyPressed || terminate()) {
+              war.window.cancelAnimationFrame(war.requestID);
+              war.window.document.removeEventListener('keydown', onDocumentKeyDown, false);
+              try {
+                Sk.misceval.apply(tearDownPy, undefined, undefined, undefined, [war.exceptionPy]);
+              }
+              catch(e) {
+                // For backwards compatibility, try again with zero arguments.
+                try {
+                  Sk.misceval.apply(tearDownPy, undefined, undefined, undefined, []);
+                }
+                catch(e) {
+                  // We're just going to have to eat this one or log it.
+                }
+              }
             }
             else {
-              war.requestID = window.requestAnimationFrame(animate);
-              war.tick(war.elapsed / 1000);
+              war.requestID = war.window.requestAnimationFrame(animate);
+              try {
+                var timePy = Sk.ffi.numberToFloatPy(war.elapsed / 1000);
+                Sk.misceval.apply(tickPy, undefined, undefined, undefined, [timePy]);
+              }
+              catch(e) {
+                war.exceptionPy = e;
+                war.escKeyPressed = true;
+              }
             }
           };
           animate(null);
