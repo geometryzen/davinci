@@ -1750,9 +1750,16 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return coordsJsToE3Py(c, 0, 0, 0, k * xy, k * yz, k * zx, 0);
     }
   });
+  $loc.__pow__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    var self  = Sk.ffi.remapToJs(selfPy);
+    var other = Sk.ffi.remapToJs(otherPy);
+    // TODO: generalize.
+    return coordsJsToE3Py(Math.pow(self.w, other), 0, 0, 0, 0, 0, 0, 0);
+  });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
     var self = Sk.ffi.remapToJs(selfPy);
+    // TODO: generalize.
     return coordsJsToE3Py(Math.sqrt(self.w), 0, 0, 0, 0, 0, 0, 0);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {

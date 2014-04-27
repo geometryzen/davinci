@@ -507,6 +507,10 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var c = lhs.pow(rhs);
     return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
   });
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(unitPy) {
+    var unitJs = Sk.ffi.remapToJs(unitPy);
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(unitJs.pow(0.5), UNIT));
+  });
   $loc.__str__ = Sk.ffi.functionPy(function(unitPy) {
     var unitJs = Sk.ffi.remapToJs(unitPy);
     var custom = Sk.ffi.customToJs(unitPy);
@@ -819,6 +823,11 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     var quantityPy = Sk.ffh.exp(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
     var uomPy      = Sk.ffi.gattr(selfPy, PROP_UOM);
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
+  });
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
+    var quantityPy = Sk.ffh.sqrt(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
+    var uomPy      = Sk.ffh.sqrt(Sk.ffi.gattr(selfPy, PROP_UOM));
     return Sk.ffi.callsim(mod[MEASURE], quantityPy, uomPy);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {

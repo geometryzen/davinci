@@ -41,7 +41,7 @@ Sk.ffh.unaryExec = function(specialMethod, valuePy, internalMethod)
   }
   else
   {
-    throw Sk.ffi.notImplementedError(specialMethod);
+    throw Sk.ffi.notImplementedError(specialMethod + Sk.ffi.remapToJs(Sk.ffh.repr(valuePy)));
   }
 };
 goog.exportSymbol("Sk.ffh.unaryExec", Sk.ffh.unaryExec);
@@ -169,7 +169,9 @@ goog.exportSymbol("Sk.ffh.invert", Sk.ffh.invert);
 Sk.ffh.nonzero = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_NONZERO, valuePy, "nb$nonzero");};
 goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
 
-Sk.ffh.sqrt = function(valuePy) {return Sk.ffh.unaryExec(SPECIAL_METHOD_SQRT, valuePy);};
+Sk.ffh.sqrt = function(valuePy) {
+  return Sk.ffh.unaryExec(SPECIAL_METHOD_SQRT, valuePy);
+};
 goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 
 Sk.ffh.str = function(valuePy) {
