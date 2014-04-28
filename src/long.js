@@ -456,7 +456,7 @@ Sk.builtin.lng.prototype.nb$xor = function(other)
 
 Sk.builtin.lng.prototype.nb$inplace_xor = Sk.builtin.lng.prototype.nb$xor;
 
-Sk.builtin.lng.prototype.nb$negative = function()
+Sk.builtin.lng.prototype.nu$negative = function()
 {
 	return new Sk.builtin.lng(this.biginteger.negate());
 };

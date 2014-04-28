@@ -592,14 +592,14 @@ Sk.builtin.nmber.prototype.nb$inplace_lshift = Sk.builtin.nmber.prototype.nb$lsh
 
 Sk.builtin.nmber.prototype.nb$inplace_rshift = Sk.builtin.nmber.prototype.nb$rshift;
 
-Sk.builtin.nmber.prototype.nb$negative = function()
+Sk.builtin.nmber.prototype.nu$negative = function()
 {
-    return new Sk.builtin.nmber(-this.v, undefined);
+    return new Sk.builtin.nmber(-this.v, this.skType);
 };
 
 Sk.builtin.nmber.prototype.nb$positive = function()
 {
-    return this.clone();
+    return this;
 };
 
 Sk.builtin.nmber.prototype.nb$cos = function()
@@ -617,9 +617,19 @@ Sk.builtin.nmber.prototype.nb$tan = function()
     return new Sk.builtin.nmber(Math.tan(this.v), this.skType);
 };
 
-Sk.builtin.nmber.prototype.nb$exp = function()
+Sk.builtin.nmber.prototype.nu$exponential = function()
 {
     return new Sk.builtin.nmber(Math.exp(this.v), this.skType);
+};
+
+Sk.builtin.nmber.prototype.nu$magnitude = function()
+{
+    return new Sk.builtin.nmber(Math.abs(this.v), this.skType);
+};
+
+Sk.builtin.nmber.prototype.nu$quadrance = function()
+{
+    return new Sk.builtin.nmber(this.v * this.v, this.skType);
 };
 
 Sk.builtin.nmber.prototype.nb$nonzero = function()

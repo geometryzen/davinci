@@ -84,6 +84,29 @@ Sk.ffi.JsType = {
 };
 
 /**
+ * FIXME: Having some problems using this to observe the type of a klass.
+ * @nosideeffects
+ * @param {*} valuePy
+ * @return {Sk.builtin.type}
+ */
+Sk.ffi.type = function(valuePy)
+{
+    if (valuePy.constructor === Sk.builtin.nmber)
+    {
+        if (valuePy.skType === Sk.builtin.nmber.int$)
+        {
+            return Sk.builtin.int_.prototype.ob$type;
+        }
+        else
+        {
+            return Sk.builtin.float_.prototype.ob$type;
+        }
+    }
+    return valuePy.ob$type;
+}
+goog.exportSymbol("Sk.ffi.type", Sk.ffi.type);
+
+/**
  * Enumeration for Python bool values.
  *
  * @enum {!Object}

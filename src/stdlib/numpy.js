@@ -370,8 +370,8 @@
       $loc.__div__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.divide));
       $loc.__rdiv__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.divide));
 
-      $loc.__mod__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.modulo));
-      $loc.__rmod__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.modulo));
+      $loc.__mod__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.mod));
+      $loc.__rmod__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.mod));
 
       $loc.__xor__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.xor));
       $loc.__rxor__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.xor));

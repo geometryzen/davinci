@@ -21,6 +21,7 @@ Sk.builtin.type = function(name, bases, dict)
 {
     if (bases === undefined && dict === undefined)
     {
+        // FIXME: This part of the code is not usually accessible because of the @constructor!
         // 1 arg version of type()
         // the argument is an object, not a name and returns a type object
         var obj = name;

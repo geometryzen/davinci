@@ -1169,7 +1169,8 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var s  = Sk.ffi.remapToJs(selfPy);
     var o = Sk.ffi.remapToJs(otherPy);
-    return Sk.ffi.numberToFloatPy(s.x * o.x + s.y * o.y + s.z * o.z);
+    // FIXME: This should be generalized to the full scalar product between multivectors.
+    return coordsJsToE3Py(s.x * o.x + s.y * o.y + s.z * o.z, 0, 0, 0, 0, 0, 0, 0);
   });
   $loc.__xor__ = Sk.ffi.functionPy(function(a, b) {
     a = Sk.ffi.remapToJs(a);
@@ -1756,6 +1757,15 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     // TODO: generalize.
     return coordsJsToE3Py(Math.pow(self.w, other), 0, 0, 0, 0, 0, 0, 0);
   });
+  $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy));
+  });
+  $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy));
+  });
+  $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffh.mod(selfPy, selfPy);
+  });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
     var self = Sk.ffi.remapToJs(selfPy);
@@ -1800,6 +1810,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs("__str__", arguments, 0, 0);
     Sk.ffi.checkFunctionArgs("str", arguments, 1, 1);
     Sk.ffi.checkArgType(ARG_SELF, Sk.e3ga.EUCLIDEAN_3, isEuclidean3Py(selfPy), selfPy);
     var self = Sk.ffi.remapToJs(selfPy);

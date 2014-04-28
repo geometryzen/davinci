@@ -350,6 +350,49 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var s = Sk.math.sin(z.y);
     return cartesianJsToComplexPy(e * c, e * s);
   });
+  $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy));
+  });
+  $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy) {
+    var z = Sk.ffi.remapToJs(selfPy);
+    return cartesianJsToComplexPy(z.x * z.x + z.y * z.y, 0);
+  });
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
+    var z = Sk.ffi.remapToJs(selfPy);
+    if (z.y !== 0)
+    {
+      if (z.x !== 0)
+      {
+        var a = Math.sqrt((z.x + Math.sqrt(z.x * z.x + z.y * z.y))/2);
+        var b = z.y / (2 * a);
+        return cartesianJsToComplexPy(a, b);
+      }
+      else
+      {
+        var a = Math.sqrt(Math.abs(z.y)/2);
+        var b = z.y / (2 * a);
+        return cartesianJsToComplexPy(a, b);
+      }
+    }
+    else
+    {
+      if (z.x !== 0)
+      {
+        if (z.x > 0)
+        {
+          return cartesianJsToComplexPy(Math.sqrt(z.x), 0);
+        }
+        else
+        {
+          return cartesianJsToComplexPy(0, Math.sqrt(-z.x));
+        }
+      }
+      else
+      {
+        return cartesianJsToComplexPy(0, 0);
+      }
+    }
+  });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
     return selfPy;
   });

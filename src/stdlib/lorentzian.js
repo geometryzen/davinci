@@ -817,7 +817,7 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return selfPy;
     }
   });
-  $loc.nb$negative = function() {
+  $loc.nu$negative = function() {
     var self = Sk.ffi.remapToJs(this);
     return coordJsToLorentzianPy(-self.w, -self.x, -self.y, -self.xy);
   };

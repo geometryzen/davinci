@@ -374,24 +374,27 @@ Sk.builtin.abs = function abs(xPy)
   }
   else
   {
-      try
+    return Sk.ffh.abs(xPy);
+    /*
+    try
+    {
+      var methodPy = xPy['__abs__'];
+      if (methodPy)
       {
-        var methodPy = xPy['__abs__'];
-        if (methodPy)
-        {
-            return Sk.ffi.callsim(methodPy, xPy);
-        }
-        else
-        {
-            throw new Sk.builtin.NotImplementedError("abs");
-        }
-//      var methodPy = Sk.ffi.gattr(xPy, "abs");
-//      return Sk.ffi.callsim(methodPy);
+        return Sk.ffi.callsim(methodPy, xPy);
+      }
+      else
+      {
+        throw new Sk.builtin.NotImplementedError("abs");
+      }
+//    var methodPy = Sk.ffi.gattr(xPy, "abs");
+//    return Sk.ffi.callsim(methodPy);
     }
     catch(e)
     {
         throw Sk.ffi.err.argument("x").inFunction("abs").mustHaveType("number");
     }
+    */
   }
 };
 

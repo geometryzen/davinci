@@ -297,7 +297,7 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.nb$positive = function() {
     return this;
   };
-  $loc.nb$negative = function() {
+  $loc.nu$negative = function() {
     var q = Sk.ffi.remapToJs(this);
     return wxyzToPy(-q.w, -q.x, -q.y, -q.z);
   };

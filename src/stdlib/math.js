@@ -350,6 +350,7 @@ mod.factorial = Sk.ffi.functionPy(function(x) {
     r *= i;
   return new Sk.builtin.nmber(r, Sk.builtin.nmber.int$);
 });
+
 /**
  * conjugate
  */
@@ -361,6 +362,22 @@ mod.conjugate = Sk.ffi.functionPy(function(numberPy) {
   else {
     return Sk.ffh.conjugate(numberPy);
   }
+});
+
+/**
+ * magnitude
+ */
+mod.magnitude = Sk.ffi.functionPy(function(numberPy) {
+  Sk.ffi.checkFunctionArgs("magnitude", arguments, 1, 1);
+  return Sk.ffh.magnitude(numberPy);
+});
+
+/**
+ * quadrance
+ */
+mod.quadrance = Sk.ffi.functionPy(function(numberPy) {
+  Sk.ffi.checkFunctionArgs("quadrance", arguments, 1, 1);
+  return Sk.ffh.quadrance(numberPy);
 });
 
 };

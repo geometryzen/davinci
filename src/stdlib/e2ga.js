@@ -642,7 +642,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return selfPy;
     }
   });
-  $loc.nb$negative = function() {
+  $loc.nu$negative = function() {
     var self = Sk.ffi.remapToJs(this);
     return coordsJsToE2Py(-self.w, -self.x, -self.y, -self.xy);
   };
@@ -708,6 +708,9 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var c = Sk.math.cos(y);
     var s = Sk.math.sin(y);
     return coordsJsToE2Py(e * c, 0, 0, e * s);
+  });
+  $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy) {
+    return Sk.ffh.multiply(selfPy, selfPy);
   });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);

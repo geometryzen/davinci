@@ -328,7 +328,7 @@ Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
   };
   switch (name) {
     case "USub": {
-        return obj.nb$negative          ? obj.nb$negative        : obj['__neg__'];
+        return obj.nu$negative          ? obj.nu$negative        : obj['__neg__'];
     }
     case "Invert": {
         return obj.nb$invert            ? obj.nb$invert          : obj['__invert__'];
