@@ -284,42 +284,53 @@ Sk.builtin.sum = function sum(iter,start)
 
     Sk.builtin.pyCheckArgs("sum", arguments, 1, 2);
     Sk.builtin.pyCheckType("iter", "iterable", Sk.builtin.checkIterable(iter));
-    if (start !== undefined && Sk.builtin.checkString(start)) {
-    throw new Sk.builtin.TypeError("sum() can't sum strings [use ''.join(seq) instead]");
+    if (start !== undefined && Sk.builtin.checkString(start))
+    {
+        throw new Sk.builtin.TypeError("sum() can't sum strings [use ''.join(seq) instead]");
     };
 
-    if (start === undefined ) {
-    tot = new Sk.builtin.nmber(0, Sk.builtin.nmber.int$);
+    if (start === undefined )
+    {
+        tot = new Sk.builtin.nmber(0, Sk.builtin.nmber.int$);
     }
-    else {
-    tot = start;
+    else
+    {
+        tot = start;
     }
 
     it = iter.tp$iter();
-    for (i = it.tp$iternext(); i !== undefined; i = it.tp$iternext()) {
-    if (i.skType === Sk.builtin.nmber.float$) {
-        has_float = true;
-        if (tot.skType !== Sk.builtin.nmber.float$) {
-        tot = new Sk.builtin.nmber(Sk.builtin.asnum$(tot),
-                       Sk.builtin.nmber.float$)
+    for (i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
+    {
+        if (i.skType === Sk.builtin.nmber.float$)
+        {
+            has_float = true;
+            if (tot.skType !== Sk.builtin.nmber.float$)
+            {
+                tot = new Sk.builtin.nmber(Sk.builtin.asnum$(tot), Sk.builtin.nmber.float$);
+            }
         }
-    } else if (i instanceof Sk.builtin.lng) {
-        if (!has_float) {
-        if (!(tot instanceof Sk.builtin.lng)) {
-            tot = new Sk.builtin.lng(tot)
+        else if (i instanceof Sk.builtin.lng)
+        {
+            if (!has_float)
+            {
+                if (!(tot instanceof Sk.builtin.lng))
+                {
+                    tot = new Sk.builtin.lng(tot);
+                }
+            }
         }
-        }
-    }
 
-    if (tot.nb$add(i) !== undefined) {
-        tot = tot.nb$add(i);
-    } else {
-        throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '"
+        if (tot.nb$add(i) !== undefined)
+        {
+            tot = tot.nb$add(i);
+        }
+        else
+        {
+            throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '"
                        + Sk.abstr.typeName(tot) + "' and '"
                        + Sk.abstr.typeName(i)+"'");
+        }
     }
-    }
-
     return tot;
 };
 

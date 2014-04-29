@@ -265,7 +265,7 @@ var DEGREE            = "degree";
  * @const
  * @type {string}
  */
-var DIMENSIONLESS     = "dimensionless";
+var DIMLESS           = "dimensionless";
 
 var isMeasurePy    = function(valuePy) {return Sk.ffi.isInstance(valuePy, MEASURE);};
 var isDimensionsPy = function(valuePy) {return Sk.ffi.isInstance(valuePy, DIMENSIONS);};
@@ -464,12 +464,48 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       throw Sk.ffi.assertionError(e.message)
     }
   });
-  $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    Sk.ffi.checkRhsOperandType(OP_MUL, UNIT, isUnitPy(otherPy), otherPy);
-    var lhs = Sk.ffi.remapToJs(selfPy);
-    var rhs = Sk.ffi.remapToJs(otherPy);
-    var c = lhs.mul(rhs);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    if (isMeasurePy(otherPy))
+    {
+      var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
+      var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
+      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.multiply(selfPy, uomPy));
+    }
+    else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
+    {
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(selfJs.mul(Sk.ffi.remapToJs(otherPy)), UNIT));
+    }
+    else
+    {
+      // TODO: How to check that otherPy is a reasonable quantity.
+      return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
+    }
+  });
+  $loc.__rmod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
+    // TODO: How to check that otherPy is a reasonable quantity.
+    return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
+  });
+  $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    if (isMeasurePy(otherPy))
+    {
+      var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
+      var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
+      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.multiply(selfPy, uomPy));
+    }
+    else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
+    {
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(selfJs.mul(Sk.ffi.remapToJs(otherPy)), UNIT));
+    }
+    else
+    {
+      // TODO: How to check that otherPy is a reasonable quantity.
+      return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
+    }
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
@@ -477,11 +513,23 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var rhs = Sk.ffi.remapToJs(selfPy);
     return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(lhs * rhs.scale), Sk.ffi.referenceToPy(rhs.dimensions, DIMENSIONS), Sk.ffi.remapToPy(rhs.labels));
   });
-  $loc.__div__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
-    var lhs = Sk.ffi.remapToJs(lhsPy);
-    var rhs = Sk.ffi.remapToJs(rhsPy);
-    var c = lhs.div(rhs);
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(c.scale), Sk.ffi.referenceToPy(c.dimensions, DIMENSIONS), Sk.ffi.remapToPy(c.labels));
+  $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    if (isMeasurePy(otherPy))
+    {
+      var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
+      var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(Sk.ffi.numberToFloatPy(1), quantityPy), Sk.ffh.divide(selfPy, uomPy));
+    }
+    else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
+    {
+      return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(selfJs.div(Sk.ffi.remapToJs(otherPy)), UNIT));
+    }
+    else
+    {
+      // TODO: How to check that otherPy is a reasonable quantity.
+      return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
+    }
   });
   $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
@@ -580,7 +628,14 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             amount.numer      === pattern[10] && amount.denom      === pattern[11] &&
             intensity.numer   === pattern[12] && intensity.denom   === pattern[13])
         {
-          return Sk.ffi.stringToPy(pattern[14]);
+          if (unitJs.scale !== 1)
+          {
+            return Sk.ffi.stringToPy(unitJs.scale + " * " + pattern[14]);
+          }
+          else
+          {
+            return Sk.ffi.stringToPy(pattern[14]);
+          }
         }
       }
       return Sk.ffi.stringToPy("" + unitJs);
@@ -598,23 +653,76 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, UNIT, []);
 
-mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
+{
   var QTY_PY = "qtyPy";
   var UOM_PY = "uomPy";
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, qtyPy, uomPy) {
+  var getQuantityPy = function(measurePy)
+  {
+    return Sk.ffi.gattr(measurePy, PROP_QUANTITY);
+  };
+  var getUomPy = function(measurePy)
+  {
+    return Sk.ffi.gattr(measurePy, PROP_UOM);
+  };
+  var makeMeasureLhsBinary = function(op)
+  {
+    return function(selfPy, otherPy)
+    {
+      var self = Sk.ffi.remapToJs(selfPy);
+      if (isMeasurePy(otherPy))
+      {
+        var other = Sk.ffi.remapToJs(otherPy);
+        return Sk.ffi.callsim(mod[MEASURE], op(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
+      }
+      else
+      {
+        var quantityPy = op(self[QTY_PY], otherPy);
+        if (typeof quantityPy !== 'undefined')
+        {
+          return Sk.ffi.callsim(mod[MEASURE], quantityPy, self[UOM_PY]);
+        }
+        else
+        {
+          return undefined;
+        }
+      }
+    };
+  };
+  var makeMeasureRhsBinary = function(op)
+  {
+    return function(selfPy, otherPy)
+    {
+      var quantityPy = op(otherPy, getQuantityPy(selfPy));
+      if (typeof quantityPy !== 'undefined')
+      {
+        return Sk.ffi.callsim(mod[MEASURE], quantityPy, getUomPy(selfPy));
+      }
+      else
+      {
+        return undefined;
+      }
+    };
+  };
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, qtyPy, uomPy)
+  {
     Sk.ffi.checkMethodArgs(MEASURE, arguments, 1, 2);
-    if (Sk.ffi.typeName(qtyPy) === MEASURE) {
+    if (Sk.ffi.typeName(qtyPy) === MEASURE)
+    {
       Sk.ffi.referenceToPy(Sk.ffi.remapToJs(qtyPy), MEASURE, qtyPy.custom, selfPy);
     }
-    else {
+    else
+    {
       var scalePy = Sk.ffi.gattr(uomPy, PROP_SCALE);
-      if (Sk.ffi.remapToJs(scalePy) === 1) {
+      if (Sk.ffi.remapToJs(scalePy) === 1)
+      {
         var measure = {};
         measure[QTY_PY] = qtyPy;
         measure[UOM_PY] = uomPy;
         Sk.ffi.referenceToPy(measure, MEASURE, undefined, selfPy);
       }
-      else {
+      else
+      {
         var measure = {};
         measure[QTY_PY] = Sk.ffh.multiply(qtyPy, scalePy);
         measure[UOM_PY] = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.gattr(uomPy, PROP_DIMENSIONS), Sk.ffi.gattr(uomPy, PROP_LABELS), Sk.ffi.gattr(uomPy, PROP_NAME));
@@ -622,22 +730,28 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(measurePy, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(measurePy, name)
+  {
     var measure = Sk.ffi.remapToJs(measurePy);
     switch(name) {
-      case PROP_QUANTITY: {
+      case PROP_QUANTITY:
+      {
         return measure[QTY_PY];
       }
-      case PROP_UOM: {
+      case PROP_UOM:
+      {
         return measure[UOM_PY];
       }
-      case METHOD_EXP: {
-        return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy) {
+      case METHOD_EXP:
+      {
+        return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy)
+        {
           Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
           return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_EXP)), measure[UOM_PY]);
         });
       }
-      case METHOD_MAGNITUDE: {
+      case METHOD_MAGNITUDE:
+      {
         return Sk.ffi.callableToPy(mod, METHOD_MAGNITUDE, function(methodPy) {
           Sk.ffi.checkMethodArgs(METHOD_MAGNITUDE, arguments, 0, 0);
           return Sk.ffi.callsim(mod[MEASURE], Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_MAGNITUDE)), measure[UOM_PY]);
@@ -659,25 +773,13 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var other = Sk.ffi.remapToJs(otherPy);
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.subtract(self[QTY_PY], other[QTY_PY]), Sk.ffi.callsim(Sk.ffi.gattr(self[UOM_PY], METHOD_COMPATIBLE), other[UOM_PY]));
   });
-  $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy)) {
-      var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.multiply(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
-    }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.multiply(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else {
-      return undefined;
-    }
-  });
-  $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    // TODO: The quantity should probably satisfy field axioms? add, multiply, ...
-    // Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
-    return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.multiply(otherPy, self[QTY_PY]), self[UOM_PY]);
-  });
+
+  $loc.__mod__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.mod));
+  $loc.__rmod__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.mod));
+
+  $loc.__mul__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.multiply));
+  $loc.__rmul__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.multiply));
+
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy)) {
@@ -700,62 +802,16 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     // Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(otherPy, self[QTY_PY]), Sk.ffh.divide(Sk.ffi.numberToFloatPy(1.0),self[UOM_PY]));
   });
-  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
-  {
-    var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy))
-    {
-      var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.mod(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
-    }
-    else if (Sk.ffi.isNum(otherPy))
-    {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.mod(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else
-    {
-      Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
-    }
-  });
-  $loc.__xor__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy)) {
-      var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.xor(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
-    }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.xor(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else {
-      Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
-    }
-  });
-  $loc.__lshift__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy)) {
-      var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.lshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
-    }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.lshift(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else {
-      Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
-    }
-  });
-  $loc.__rshift__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-    var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy)) {
-      var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.rshift(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
-    }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.rshift(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else {
-      Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], false, otherPy);
-    }
-  });
+
+  $loc.__xor__     = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.xor));
+  $loc.__rxor__    = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.xor));
+
+  $loc.__lshift__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.lshift));
+  $loc.__rlshift__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.lshift));
+
+  $loc.__rshift__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.rshift));
+  $loc.__rrshift__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.rshift));
+
   $loc.__pow__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var isMeasure = isMeasurePy(otherPy);
     Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER], Sk.ffi.isNum(otherPy) || isMeasure, otherPy);
@@ -801,7 +857,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         quantityPy = Sk.ffh.cos(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
       }
     }
-    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMENSIONLESS], PROP_UOM));
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMLESS], PROP_UOM));
   });
   $loc.__sin__ = Sk.ffi.functionPy(function(selfPy) {
     var quantityPy;
@@ -824,7 +880,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         quantityPy = Sk.ffh.sin(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
       }
     }
-    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMENSIONLESS], PROP_UOM));
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMLESS], PROP_UOM));
   });
   $loc.__tan__ = Sk.ffi.functionPy(function(selfPy) {
     var quantityPy;
@@ -847,7 +903,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         quantityPy = Sk.ffh.tan(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
       }
     }
-    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMENSIONLESS], PROP_UOM));
+    return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffi.gattr(mod[DIMLESS], PROP_UOM));
   });
   $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
     var quantityPy = Sk.ffh.exp(Sk.ffi.gattr(selfPy, PROP_QUANTITY));
@@ -889,61 +945,40 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 }, MEASURE, []);
 
 (function(){
-  var onePy      = Sk.ffi.numberToFloatPy(1);
-  
-  var kilogramPy = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_KILOGRAM, UNIT));
-  mod[KILOGRAM]  = Sk.ffi.callsim(mod[MEASURE], onePy, kilogramPy);
+  var onePy     = Sk.ffi.numberToFloatPy(1);
 
-  var meterPy    = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_METER, UNIT));
-  mod[METER]     = Sk.ffi.callsim(mod[MEASURE], onePy, meterPy);
+  function makeUnitPy(unitJs)
+  {
+    var unitPy = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(unitJs, UNIT));
+    return Sk.ffi.callsim(mod[MEASURE], onePy, unitPy);
+  }
 
-  var secondPy   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_SECOND, UNIT));
-  mod[SECOND]    = Sk.ffi.callsim(mod[MEASURE], onePy, secondPy);
+  mod[DIMLESS]  = makeUnitPy(new BLADE.Unit(1, new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), SI_LABELS));
 
-  var amperePy   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_AMPERE, UNIT));
-  mod[AMPERE]    = Sk.ffi.callsim(mod[MEASURE], onePy, amperePy);
+  mod[KILOGRAM] = makeUnitPy(BLADE.UNIT_KILOGRAM);
+  mod[METER]    = makeUnitPy(BLADE.UNIT_METER);
+  mod[SECOND]   = makeUnitPy(BLADE.UNIT_SECOND);
+  mod[AMPERE]   = makeUnitPy(BLADE.UNIT_AMPERE);
+  mod[KELVIN]   = makeUnitPy(BLADE.UNIT_KELVIN);
+  mod[MOLE]     = makeUnitPy(BLADE.UNIT_MOLE);
+  mod[CANDELA]  = makeUnitPy(BLADE.UNIT_CANDELA);
 
-  var kelvinPy   = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_KELVIN, UNIT));
-  mod[KELVIN]    = Sk.ffi.callsim(mod[MEASURE], onePy, kelvinPy);
+  mod[COULOMB]  = makeUnitPy(BLADE.UNIT_COULOMB);
 
-  var molePy     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_MOLE, UNIT));
-  mod[MOLE]      = Sk.ffi.callsim(mod[MEASURE], onePy, molePy);
+  mod[GRAM]     = Sk.ffh.multiply(mod.milli, mod[KILOGRAM]);
+  mod[CM]       = Sk.ffh.multiply(mod.centi, mod[METER]);
 
-  var candelaPy  = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_CANDELA, UNIT));
-  mod[CANDELA]   = Sk.ffi.callsim(mod[MEASURE], onePy, candelaPy);
+  mod[NEWTON]   = Sk.ffh.divide(Sk.ffh.multiply(mod[KILOGRAM], mod[METER]), Sk.ffh.multiply(mod[SECOND], mod[SECOND]));
+  mod[JOULE]    = Sk.ffh.multiply(mod[NEWTON], mod[METER]);
+  mod[WATT]     = Sk.ffh.divide(mod[JOULE], mod[SECOND]);
+  mod[VOLT]     = Sk.ffh.divide(mod[JOULE], mod[COULOMB]);
+  mod[TESLA]    = makeUnitPy(new BLADE.Unit(1, new BLADE.Dimensions(1, 0, -1, -1, 0, 0, 0), SI_LABELS));
 
-  var coulombPy  = Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(BLADE.UNIT_COULOMB, UNIT));
-  mod[COULOMB]   = Sk.ffi.callsim(mod[MEASURE], onePy, coulombPy);
+  var radianPy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("radian"));
+  mod[RADIAN]   = makeUnitPy(Sk.ffi.remapToJs(radianPy));
 
-  var gramPy     = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(0.001), Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 0, 0, 0, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("g"));
-  mod[GRAM]      = Sk.ffi.callsim(mod[MEASURE], onePy, gramPy);
-
-  var cmPy       = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(0.01),  Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 1, 0, 0, 0, 0, 0),  DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("cm"));
-  mod[CM]        = Sk.ffi.callsim(mod[MEASURE], onePy, cmPy);
-
-  var newtonPy   = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 1, -2, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("N"));
-  mod[NEWTON]    = Sk.ffi.callsim(mod[MEASURE], onePy, newtonPy);
-
-  var joulePy    = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -2, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("J"));
-  mod[JOULE]     = Sk.ffi.callsim(mod[MEASURE], onePy, joulePy);
-
-  var wattPy     = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -3, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("W"));
-  mod[WATT]      = Sk.ffi.callsim(mod[MEASURE], onePy, wattPy);
-
-  var voltPy     = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 2, -2, -1, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("V"));
-  mod[VOLT]      = Sk.ffi.callsim(mod[MEASURE], onePy, voltPy);
-
-  var teslaPy    = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(1, 0, -1, -1, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("T"));
-  mod[TESLA]     = Sk.ffi.callsim(mod[MEASURE], onePy, teslaPy);
-
-  var radianPy   = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("radian"));
-  mod[RADIAN]    = Sk.ffi.callsim(mod[MEASURE], onePy, radianPy);
-
-  var degreePy   = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("degree"));
-  mod[DEGREE]    = Sk.ffi.callsim(mod[MEASURE], onePy, degreePy);
-
-  var dimlessPy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy(""));
-  mod[DIMENSIONLESS]  = Sk.ffi.callsim(mod[MEASURE], onePy, dimlessPy);
+  var degreePy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("degree"));
+  mod[DEGREE]   = makeUnitPy(Sk.ffi.remapToJs(degreePy));
 })();
 
 };

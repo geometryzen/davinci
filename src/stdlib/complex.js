@@ -240,22 +240,26 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return undefined;
     }
   });
-  $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+  $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
     var x, y;
     var a = Sk.ffi.remapToJs(otherPy);
     var b = Sk.ffi.remapToJs(selfPy);
-    if (isComplexPy(otherPy)) {
+    if (isComplexPy(otherPy))
+    {
       x = b.x * a.x - b.y * a.y;
       y = b.y * a.x + b.x * a.y;
       return cartesianJsToComplexPy(x, y);
     }
-    else if (Sk.ffi.isNum(otherPy)) {
+    else if (Sk.ffi.isNum(otherPy))
+    {
       x = a * b.x;
       y = a * b.y;
       return cartesianJsToComplexPy(x, y);
     }
-    else {
-      throw Sk.ffi.err.argument(ARG_OTHER).mustHaveType(NUM);
+    else
+    {
+      return undefined;
     }
   });
   $loc.__imul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {

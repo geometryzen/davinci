@@ -10,7 +10,8 @@ Sk.abstr = {};
 //
 //
 
-Sk.abstr.typeName = function(valuePy) {
+Sk.abstr.typeName = function(valuePy)
+{
     if (valuePy instanceof Sk.builtin.nmber)
     {
         return valuePy.skType;
