@@ -385,10 +385,10 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return nodeToPy(node[PROP_PREVIOUS_SIBLING]);
       }
       case PROP_HEIGHT: {
-        return Sk.builtin.assk$(node[PROP_HEIGHT], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(node[PROP_HEIGHT]);
       }
       case PROP_WIDTH: {
-        return Sk.builtin.assk$(node[PROP_WIDTH], Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(node[PROP_WIDTH]);
       }
       case PROP_STYLE: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -490,19 +490,19 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
                     return Sk.ffi.stringToPy(context[PROP_LINE_JOIN]);
                   }
                   case PROP_LINE_WIDTH: {
-                    return Sk.builtin.assk$(context[PROP_LINE_WIDTH], Sk.builtin.nmber.int$);
+                    return Sk.ffi.numberToIntPy(context[PROP_LINE_WIDTH]);
                   }
                   case PROP_SHADOW_BLUR: {
-                    return Sk.builtin.assk$(context[PROP_SHADOW_BLUR], Sk.builtin.nmber.int$);
+                    return Sk.ffi.numberToIntPy(context[PROP_SHADOW_BLUR]);
                   }
                   case PROP_SHADOW_COLOR: {
                     return Sk.ffi.stringToPy(context[PROP_SHADOW_COLOR]);
                   }
                   case PROP_SHADOW_OFFSET_X: {
-                    return Sk.builtin.assk$(context[PROP_SHADOW_OFFSET_X], Sk.builtin.nmber.int$);
+                    return Sk.ffi.numberToIntPy(context[PROP_SHADOW_OFFSET_X]);
                   }
                   case PROP_SHADOW_OFFSET_Y: {
-                    return Sk.builtin.assk$(context[PROP_SHADOW_OFFSET_Y], Sk.builtin.nmber.int$);
+                    return Sk.ffi.numberToIntPy(context[PROP_SHADOW_OFFSET_Y]);
                   }
                   case PROP_STROKE_STYLE: {
                     return Sk.ffi.stringToPy(context[PROP_STROKE_STYLE]);
@@ -514,7 +514,7 @@ mod[NODE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
                     return Sk.ffi.stringToPy(context[PROP_TEXT_BASELINE]);
                   }
                   case PROP_WEBKIT_BACKING_STORE_PIXEL_RATIO: {
-                    return Sk.builtin.assk$(context[PROP_WEBKIT_BACKING_STORE_PIXEL_RATIO], Sk.builtin.nmber.int$);
+                    return Sk.ffi.numberToIntPy(context[PROP_WEBKIT_BACKING_STORE_PIXEL_RATIO]);
                   }
                   case METHOD_ARC: {
                     return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {

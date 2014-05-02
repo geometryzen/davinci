@@ -813,7 +813,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.v = text[METHOD_GET_MEASURED_WIDTH];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
-            return Sk.builtin.assk$(text[METHOD_GET_MEASURED_WIDTH](), Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(text[METHOD_GET_MEASURED_WIDTH]());
           });
         }, METHOD_GET_MEASURED_WIDTH, []));
       }
@@ -824,7 +824,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.v = text[METHOD_GET_MEASURED_HEIGHT];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
-            return Sk.builtin.assk$(text[METHOD_GET_MEASURED_HEIGHT](), Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(text[METHOD_GET_MEASURED_HEIGHT]());
           });
         }, METHOD_GET_MEASURED_HEIGHT, []));
       }
@@ -1001,13 +1001,13 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         return Sk.ffi.stringToPy(container[PROP_NAME]);
       }
       case PROP_X: {
-        return Sk.builtin.assk$(container[PROP_X], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(container[PROP_X]);
       }
       case PROP_Y: {
-        return Sk.builtin.assk$(container[PROP_Y], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(container[PROP_Y]);
       }
       case PROP_ROTATION: {
-        return Sk.builtin.assk$(container[PROP_ROTATION], Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(container[PROP_ROTATION]);
       }
       case METHOD_ADD_CHILD: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1043,7 +1043,7 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.v = container[METHOD_GET_NUM_CHILDREN];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
-            return Sk.builtin.assk$(container[METHOD_GET_NUM_CHILDREN](), Sk.builtin.nmber.int$);
+            return Sk.ffi.numberToIntPy(container[METHOD_GET_NUM_CHILDREN]());
           });
         }, METHOD_GET_NUM_CHILDREN, []));
       }

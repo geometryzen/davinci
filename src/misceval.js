@@ -353,8 +353,8 @@ Sk.misceval.richCompareBool = function(v, w, op)
         return v !== w;
     }
 
-    var vname = Sk.abstr.typeName(v);
-    var wname = Sk.abstr.typeName(w);
+    var vname = Sk.ffi.typeName(v);
+    var wname = Sk.ffi.typeName(w);
     throw new Sk.builtin.ValueError("don't know how to compare '" + vname + "' and '" + wname + "'");
 };
 goog.exportSymbol("Sk.misceval.richCompareBool", Sk.misceval.richCompareBool);
@@ -562,7 +562,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
 {
     if (func === null || func instanceof Sk.builtin.none)
     {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(func) + "' object is not callable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(func) + "' object is not callable");
     }
     else if (typeof func === "function")
     {
@@ -626,7 +626,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
             args.unshift(func);
             return Sk.misceval.apply(fcall, kws, args, kwdict, varargseq);
         }
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(func) + "' object is not callable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(func) + "' object is not callable");
     }
 };
 goog.exportSymbol("Sk.misceval.apply", Sk.misceval.apply);

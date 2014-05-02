@@ -10,11 +10,11 @@ Sk.builtin.enumerate = function(iterable, start)
 
     Sk.builtin.pyCheckArgs("enumerate", arguments, 1, 2);
     if (!Sk.builtin.checkIterable(iterable)) {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iterable) + "' object is not iterable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(iterable) + "' object is not iterable");
     }
     if (start !== undefined) {
         if (!Sk.misceval.isIndex(start)) {
-            throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(start) + "' object cannot be interpreted as an index");
+            throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(start) + "' object cannot be interpreted as an index");
         } else {
 	    start = Sk.misceval.asIndex(start);
 	}

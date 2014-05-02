@@ -40,6 +40,9 @@ Sk.configure = function(options)
     Sk.physics = options["physics"] || Sk.physics;
     goog.asserts.assertBoolean(Sk.physics, "Sk.physics must be set to a JavaScript boolean value.");
 
+    Sk.flyweight = options["flyweight"] || Sk.flyweight;
+    goog.asserts.assertBoolean(Sk.flyweight, "Sk.flyweight must be set to a JavaScript boolean value.");
+
     Sk.python3 = options["python3"] || Sk.python3;
     goog.asserts.assertBoolean(Sk.python3);
 
@@ -132,6 +135,17 @@ if (!Sk.inBrowser)
  */
 Sk.physics = false;
 goog.exportSymbol("Sk.physics", Sk.physics);
+
+/**
+ * The flyweight mode.
+ * Flyweight mode means that we are going to avoid wrapping JavaScript types.
+ * This has the potential for better interoperability with JavaScript and better
+ * performance at the possible expense of Python conformance.
+ * The generated code is synched with the runtime through this flag.
+ * @type {boolean}
+ */
+Sk.flyweight = false;
+goog.exportSymbol("Sk.flyweight", Sk.flyweight);
 
 Sk.python3 = false;
 goog.exportSymbol("Sk.python3", Sk.python3);

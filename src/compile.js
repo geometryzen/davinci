@@ -172,12 +172,17 @@ function fixReservedNames(name)
  * @param {string} name
  * @return {string} The mangled name.
  */
-Sk.mangleName = function(name) {return fixReservedNames(name)};
+Sk.mangleName = function(name)
+{
+    return fixReservedNames(name)
+};
 goog.exportSymbol("Sk.mangleName", Sk.mangleName);
 
 function mangleName(priv, ident)
 {
-    var name = ident.v;
+//  Sk.ffi.checkArgType("priv", Sk.ffi.PyType.STR, Sk.ffi.isStr(priv), priv);
+    Sk.ffi.checkArgType("ident", Sk.ffi.PyType.STR, Sk.ffi.isStr(ident), ident);
+    var name = Sk.ffi.remapToJs(ident);
     var strpriv = null;
 
     if (priv === null || name === null || name.charAt(0) !== '_' || name.charAt(1) !== '_')
@@ -186,14 +191,14 @@ function mangleName(priv, ident)
     if (name.charAt(name.length - 1) === '_' && name.charAt(name.length - 2) === '_')
         return ident;
     // don't mangle classes that are all _ (obscure much?)
-    strpriv = priv.v;
+    strpriv = Sk.ffi.remapToJs(priv);
     strpriv.replace(/_/g, '');
     if (strpriv === '')
         return ident;
 
-    strpriv = priv.v;
+    strpriv = Sk.ffi.remapToJs(priv);
     strpriv.replace(/^_*/, '');
-    strpriv = new Sk.builtin.str('_' + strpriv + name);
+    strpriv = Sk.ffi.stringToPy('_' + strpriv + name);
     return strpriv;
 }
 
@@ -527,21 +532,29 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             return result;
         case Num:
             if (typeof e.n === "number")
+            {
                 return e.n;
-            else if (e.n instanceof Sk.builtin.nmber)
-                return "new Sk.builtin.nmber(" + e.n.v + ",'" + e.n.skType + "')";
-            else if (e.n instanceof Sk.builtin.lng)
-                return "Sk.longFromStr('" + e.n.tp$str().v + "')";
+            }
+            else if (Sk.ffi.isFloat(e.n) || Sk.ffi.isInt(e.n))
+            {
+                return "new Sk.builtin.nmber(" + Sk.ffi.remapToJs(e.n) + ",'" + e.n.skType + "')";
+            }
+            else if (Sk.ffi.isLong(e.n))
+            {
+                return "Sk.longFromStr('" + Sk.ffi.remapToJs(e.n.tp$str()) + "')";
+            }
             goog.asserts.fail("unhandled Num type");
         case Str:
-            return this._gr('str', "new Sk.builtins['str'](", e.s.tp$repr().v, ")");
+        {
+            return this._gr('str', "Sk.ffi.stringToPy(", Sk.ffi.remapToJs(e.s.tp$repr()), ")");
+        }
         case Attribute:
             var val;
             if (e.ctx !== AugStore)
                 val = this.vexpr(e.value);
-            var mangled = e.attr.tp$repr().v;
+            var mangled = Sk.ffi.remapToJs(e.attr.tp$repr());
             mangled = mangled.substring(1, mangled.length-1);
-            mangled = mangleName(this.u.private_, new Sk.builtin.str(mangled)).v;
+            mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, Sk.ffi.stringToPy(mangled)));
             mangled = fixReservedWords(mangled);
             mangled = fixReservedNames(mangled);
             switch (e.ctx)
@@ -727,7 +740,6 @@ Compiler.prototype.endExcept = function()
 Compiler.prototype.outputLocals = function(unit)
 {
     var have = {};
-    //print("args", unit.name.v, JSON.stringify(unit.argnames));
     for (var i = 0; unit.argnames && i < unit.argnames.length; ++i)
         have[unit.argnames[i]] = true;
     unit.localnames.sort();
@@ -892,7 +904,7 @@ Compiler.prototype.cfor = function(s)
 
 Compiler.prototype.craise = function(s)
 {
-    if (s && s.type && s.type.id && (s.type.id.v === "StopIteration"))
+    if (s && s.type && s.type.id && (Sk.ffi.remapToJs(s.type.id) === "StopIteration"))
     {
         // currently, we only handle StopIteration, and all it does it return
         // undefined which is what our iterator protocol requires.
@@ -1023,7 +1035,7 @@ Compiler.prototype.cassert = function(s)
 
 Compiler.prototype.cimportas = function(name, asname, mod)
 {
-    var src = name.v;
+    var src = Sk.ffi.remapToJs(name);
     var dotLoc = src.indexOf(".");
     //print("src", src);
     //print("dotLoc", dotLoc);
@@ -1053,7 +1065,7 @@ Compiler.prototype.cimport = function(s)
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        var mod = this._gr('module', "Sk.builtin.__import__(", alias.name.tp$repr().v, ",$gbl,$loc,[])");
+        var mod = this._gr('module', "Sk.builtin.__import__(", Sk.ffi.remapToJs(alias.name.tp$repr()), ",$gbl,$loc,[])");
 
         if (alias.asname)
         {
@@ -1064,7 +1076,9 @@ Compiler.prototype.cimport = function(s)
             var tmp = alias.name;
             var lastDot = tmp.v.indexOf('.');
             if (lastDot !== -1)
-                tmp = new Sk.builtin.str(tmp.v.substr(0, lastDot));
+            {
+                tmp = Sk.ffi.stringToPy(Sk.ffi.remapToJs(tmp).substr(0, lastDot));
+            }
             this.nameop(tmp, Store, mod);
         }
     }
@@ -1075,19 +1089,21 @@ Compiler.prototype.cfromimport = function(s)
     var n = s.names.length;
     var names = [];
     for (var i = 0; i < n; ++i)
-        names[i] = s.names[i].name.tp$repr().v;
-    var mod = this._gr('module', "Sk.builtin.__import__(", s.module.tp$repr().v, ",$gbl,$loc,[", names, "])");
+    {
+        names[i] = Sk.ffi.remapToJs(s.names[i].name.tp$repr());
+    }
+    var mod = this._gr('module', "Sk.builtin.__import__(", Sk.ffi.remapToJs(s.module.tp$repr()), ",$gbl,$loc,[", names, "])");
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        if (i === 0 && alias.name.v === "*")
+        if (i === 0 && Sk.ffi.remapToJs(alias.name) === "*")
         {
             goog.asserts.assert(n === 1);
             out("Sk.importStar(", mod,  ",$loc, $gbl);");
             return;
         }
 
-        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", alias.name.tp$repr().v, ")");
+        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", Sk.ffi.remapToJs(alias.name.tp$repr()), ")");
         var storeName = alias.name;
         if (alias.asname)
             storeName = alias.asname;
@@ -1176,18 +1192,18 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // the header of the function, and arguments
     //
-    this.u.prefixCode = "var " + scopename + "=(function " + this.niceName(coname.v) + "$(";
+    this.u.prefixCode = "var " + scopename + "=(function " + this.niceName(Sk.ffi.remapToJs(coname)) + "$(";
 
     var funcArgs = [];
     if (isGenerator)
     {
         if (kwarg)
         {
-            throw new SyntaxError(coname.v + "(): keyword arguments in generators not supported");
+            throw new SyntaxError(Sk.ffi.remapToJs(coname) + "(): keyword arguments in generators not supported");
         }
         if (vararg)
         {
-            throw new SyntaxError(coname.v + "(): variable number of arguments in generators not supported");    
+            throw new SyntaxError(Sk.ffi.remapToJs(coname) + "(): variable number of arguments in generators not supported");    
         }
         funcArgs.push("$gen");
     }
@@ -1237,7 +1253,9 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     {
         var id = args.args[i].id;
         if (this.isCell(id))
-            this.u.varDeclsCode += "$cell." + id.v + "=" + id.v + ";";
+        {
+            this.u.varDeclsCode += "$cell." + Sk.ffi.remapToJs(id) + "=" + Sk.ffi.remapToJs(id) + ";";
+        }
     }
 
     //
@@ -1247,7 +1265,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var minargs = args ? args.args.length - defaults.length : 0;
         var maxargs = vararg ? Infinity : (args ? args.args.length : 0);
         var kw = kwarg ? true : false;
-        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname.v + 
+        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + Sk.ffi.remapToJs(coname) + 
             "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
             ", " + descendantOrSelfHasFree + ");";
     }
@@ -1275,7 +1293,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     if (vararg)
     {
         var start = funcArgs.length;
-        this.u.varDeclsCode += vararg.v + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
+        this.u.varDeclsCode += Sk.ffi.remapToJs(vararg) + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
     }
 
     //
@@ -1283,7 +1301,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     if (kwarg)
     {
-        this.u.varDeclsCode += kwarg.v + "=new Sk.builtins['dict']($kwa);";
+        this.u.varDeclsCode += Sk.ffi.remapToJs(kwarg) + "=new Sk.builtins['dict']($kwa);";
     }
 
     //
@@ -1312,7 +1330,9 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     {
         var argnamesarr = [];
         for (var i = 0; i < args.args.length; ++i)
-            argnamesarr.push(args.args[i].id.v);
+        {
+            argnamesarr.push(Sk.ffi.remapToJs(args.args[i].id));
+        }
 
         argnames = argnamesarr.join("', '");
         // store to unit so we know what local variables not to declare
@@ -1378,10 +1398,10 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         // The call to pyCheckArgs assumes they can't be true.
         if (args && args.args.length > 0)
             return this._gr("gener", "(function(){var $origargs=Array.prototype.slice.call(arguments);Sk.builtin.pyCheckArgs(\"", 
-                                     coname.v, "\",arguments,", args.args.length - defaults.length, ",", args.args.length, 
+                                     Sk.ffi.remapToJs(coname), "\",arguments,", args.args.length - defaults.length, ",", args.args.length, 
                                      ");return new Sk.builtins['generator'](", scopename, ",$gbl,$origargs", frees, ");})");
         else
-            return this._gr("gener", "(function(){Sk.builtin.pyCheckArgs(\"", coname.v, 
+            return this._gr("gener", "(function(){Sk.builtin.pyCheckArgs(\"", Sk.ffi.remapToJs(coname), 
                                      "\",arguments,0,0);return new Sk.builtins['generator'](", scopename, ",$gbl,[]", frees, ");})");
     else
         return this._gr("funcobj", "new Sk.builtins['function'](", scopename, ",$gbl", frees ,")");
@@ -1524,8 +1544,8 @@ Compiler.prototype.cclass = function(s)
     var scopename = this.enterScope(s.name, s, s.lineno);
     var entryBlock = this.newBlock('class entry');
 
-    this.u.prefixCode = "var " + scopename + "=(function $" + s.name.v + "$class_outer($globals,$locals,$rest){var $gbl=$globals,$loc=$locals;";
-    this.u.switchCode += "return(function " + s.name.v + "(){";
+    this.u.prefixCode = "var " + scopename + "=(function $" + Sk.ffi.remapToJs(s.name) + "$class_outer($globals,$locals,$rest){var $gbl=$globals,$loc=$locals;";
+    this.u.switchCode += "return(function " + Sk.ffi.remapToJs(s.name) + "(){";
     this.u.switchCode += "var $blk=" + entryBlock + ",$exc=[];while(true){switch($blk){";
     this.u.suffixCode = "}break;}}).apply(null,$rest);});";
 
@@ -1541,7 +1561,7 @@ Compiler.prototype.cclass = function(s)
     this.exitScope();
 
     // todo; metaclass
-    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name.tp$repr().v, ",[", bases, "])");
+    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", Sk.ffi.remapToJs(s.name.tp$repr()), ",[", bases, "])");
 
     // store our new class under the right name
     this.nameop(s.name, Store, wrapped);
@@ -1648,7 +1668,7 @@ var D_CELLVARS = 2;
 
 Compiler.prototype.isCell = function(name)
 {
-    var mangled = mangleName(this.u.private_, name).v;
+    var mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, name));
     var scope = this.u.ste.getScope(mangled);
     var dict = null;
     if (scope === CELL)
@@ -1663,16 +1683,16 @@ Compiler.prototype.isCell = function(name)
  */
 Compiler.prototype.nameop = function(name, ctx, dataToStore)
 {
-    if ((ctx === Store || ctx === AugStore || ctx === Del) && name.v === "__debug__")
+    if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "__debug__")
         throw new Sk.builtin.SyntaxError("can not assign to __debug__");
-    if ((ctx === Store || ctx === AugStore || ctx === Del) && name.v === "None")
+    if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "None")
         throw new Sk.builtin.SyntaxError("can not assign to None");
 
-    if (name.v === "None") return "Sk.builtin.none.none$";
-    if (name.v === "True") return "Sk.builtin.bool.true$";
-    if (name.v === "False") return "Sk.builtin.bool.false$";
+    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.builtin.none.none$";
+    if (Sk.ffi.remapToJs(name) === "True")  return "Sk.builtin.bool.true$";
+    if (Sk.ffi.remapToJs(name) === "False") return "Sk.builtin.bool.false$";
 
-    var mangled = mangleName(this.u.private_, name).v;
+    var mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, name));
     // Have to do this before looking it up in the scope
     mangled = fixReservedNames(mangled);
     var op = 0;
@@ -1709,7 +1729,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
 
     //print("mangled", mangled);
     // TODO TODO TODO todo; import * at global scope failing here
-    goog.asserts.assert(scope || name.v.charAt(1) === '_');
+    goog.asserts.assert(scope || Sk.ffi.remapToJs(name).charAt(1) === '_');
 
     // in generator or at module scope, we need to store to $loc, rather that
     // to actual JS stack variables.
@@ -1831,19 +1851,23 @@ Compiler.prototype.exitScope = function()
     if (this.u)
         this.u.activateScope();
 
-    if (prev.name.v !== "<module>") {// todo; hacky
-        var mangled = prev.name.tp$repr().v;
+    if (Sk.ffi.remapToJs(prev.name) !== "<module>")
+    {
+        // todo; hacky
+        var mangled = Sk.ffi.remapToJs(prev.name.tp$repr());
         mangled = mangled.substring(1, mangled.length-1);
         mangled = fixReservedWords(mangled);
         mangled = fixReservedNames(mangled);
-        out(prev.scopename, ".co_name=new Sk.builtins['str']('", mangled, "');");
+        out(prev.scopename, ".co_name=Sk.ffi.stringToPy('", mangled, "');");
     }
 };
 
 Compiler.prototype.cbody = function(stmts)
 {
     for (var i = 0; i < stmts.length; ++i)
+    {
         this.vstmt(stmts[i]);
+    }
 };
 
 Compiler.prototype.cprint = function(s)
@@ -1856,9 +1880,14 @@ Compiler.prototype.cprint = function(s)
     var n = s.values.length;
     // todo; dest disabled
     for (var i = 0; i < n; ++i)
+    {
+        // TODO: What is the Sk.builtins.str?
         out('Sk.misceval.print_(', /*dest, ',',*/ "new Sk.builtins['str'](", this.vexpr(s.values[i]), ').v);');
+    }
     if (s.nl)
+    {
         out('Sk.misceval.print_(', /*dest, ',*/ '"\\n");');
+    }
 };
 
 Compiler.prototype.cmod = function(mod)
@@ -1934,12 +1963,10 @@ Sk.compile = function(source, filename, mode)
         code: ret
     };
 };
-
 goog.exportSymbol("Sk.compile", Sk.compile);
 
 Sk.resetCompiler = function()
 {
     Sk.gensymcount = 0;
 }
-
 goog.exportSymbol("Sk.resetCompiler", Sk.resetCompiler);

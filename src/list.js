@@ -196,7 +196,7 @@ Sk.builtin.list.prototype.sq$repeat = function(n)
 {
     if (!Sk.builtin.checkInt(n))
     {
-        throw new Sk.builtin.TypeError("can't multiply sequence by non-int of type '" + Sk.abstr.typeName(n) +"'");
+        throw new Sk.builtin.TypeError("can't multiply sequence by non-int of type '" + Sk.ffi.typeName(n) +"'");
     }
     n = Sk.builtin.asnum$(n);
     var ret = [];
@@ -245,7 +245,7 @@ Sk.builtin.list.prototype.list_subscript_ = function(index)
         return new Sk.builtin.list(ret);
     }
 
-    throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.abstr.typeName(index));
+    throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.ffi.typeName(index));
 };
 
 Sk.builtin.list.prototype.list_ass_subscript_ = function(index, value)
@@ -280,7 +280,7 @@ Sk.builtin.list.prototype.list_ass_subscript_ = function(index, value)
         return;
     }
 
-    throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.abstr.typeName(index));
+    throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.ffi.typeName(index));
 };
 
 Sk.builtin.list.prototype.list_del_subscript_ = function(index)
@@ -340,25 +340,33 @@ Sk.builtin.list.prototype.list_sort_ = function(self, cmp, key, reverse) {
     var timsort = new Sk.builtin.timSort(self);
 
     self.v = [];
-    var zero = new Sk.builtin.nmber(0, Sk.builtin.nmber.int$);
+    var zero = Sk.ffi.numberToIntPy(0);
 
-    if (has_key){
-        if (has_cmp) {
-            timsort.lt = function(a, b){
+    if (has_key)
+    {
+        if (has_cmp)
+        {
+            timsort.lt = function(a, b)
+            {
                 return Sk.misceval.richCompareBool(cmp.func_code(a[0], b[0]), zero, "Lt");
             };
         }
-        else{
-            timsort.lt = function(a, b) {
+        else
+        {
+            timsort.lt = function(a, b)
+            {
                 return Sk.misceval.richCompareBool(a[0], b[0], "Lt");
             }
         }
-        for (var i =0; i < timsort.listlength; i++){
+        for (var i =0; i < timsort.listlength; i++)
+        {
             var item = timsort.list.v[i];
             var keyvalue = key.func_code(item);
             timsort.list.v[i] = [keyvalue, item];
         }
-    } else if (has_cmp) {
+    }
+    else if (has_cmp)
+    {
         timsort.lt = function(a, b){
             return Sk.misceval.richCompareBool(cmp.func_code(a, b), zero, "Lt");
         };
@@ -441,7 +449,7 @@ Sk.builtin.list.prototype['extend'] = new Sk.builtin.func(function(self, b)
 {
     Sk.builtin.pyCheckArgs("extend", arguments, 2, 2);
     if (!Sk.builtin.checkIterable(b)) {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(b) 
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(b) 
                                         + "' object is not iterable");  
     };
     if (self == b) {

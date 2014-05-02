@@ -1548,12 +1548,14 @@ function parsenumber(c, s, lineno)
     var end = s.charAt(s.length - 1);
 
     // todo; no complex support
-    if (end === 'j' || end === 'J') {
-	throw new Sk.builtin.SyntaxError("complex numbers are currently unsupported", c.c_filename, lineno);
+    if (end === 'j' || end === 'J')
+    {
+        throw new Sk.builtin.SyntaxError("complex numbers are currently unsupported", c.c_filename, lineno);
     }
 
     // Handle longs
-    if (end === 'l' || end === 'L') {
+    if (end === 'l' || end === 'L')
+    {
         return Sk.longFromStr(s.substr(0, s.length - 1), 0);
     }
     
@@ -1561,7 +1563,7 @@ function parsenumber(c, s, lineno)
     // str is wrong for these.
     if (s.indexOf('.') !== -1)
     {
-        return new Sk.builtin.nmber(parseFloat(s), Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(parseFloat(s));
     }
 
     // Handle integers of various bases
@@ -1578,8 +1580,8 @@ function parsenumber(c, s, lineno)
         tmp = tmp.substring(2);
         val = parseInt(tmp, 16);
     } else if ((s.indexOf('e') !== -1) || (s.indexOf('E') !== -1)) {
-	// Float with exponent (needed to make sure e/E wasn't hex first)
-	return new Sk.builtin.nmber(parseFloat(s), Sk.builtin.nmber.float$);
+    // Float with exponent (needed to make sure e/E wasn't hex first)
+    return Sk.ffi.numberToPy(parseFloat(s));
     } else if (tmp.charAt(0) === '0' && (tmp.charAt(1) === 'b' || tmp.charAt(1) === 'B')) {
         // Binary
         tmp = tmp.substring(2);

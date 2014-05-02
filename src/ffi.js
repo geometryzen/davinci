@@ -91,6 +91,13 @@ Sk.ffi.JsType = {
  */
 Sk.ffi.type = function(valuePy)
 {
+    if (Sk.flyweight)
+    {
+        if (typeof valuePy === Sk.ffi.JsType.NUMBER)
+        {
+            return Sk.builtin.float_.prototype.ob$type;
+        }
+    }
     if (valuePy.constructor === Sk.builtin.nmber)
     {
         if (valuePy.skType === Sk.builtin.nmber.int$)
@@ -173,23 +180,21 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
 };
 goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
 
-Sk.ffi.numberToPy = function(valueJs, kind)
+/**
+ * @param {number|string} valueJs
+ */
+Sk.ffi.numberToPy = function(valueJs)
 {
-    switch(kind)
-    {
-        case Sk.ffi.PyType.FLOAT:
-        {
-            return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.float$);
-        }
-        case Sk.ffi.PyType.INT:
-        {
-            return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.int$);
-        }
-        default:
-        {
-            throw Sk.ffi.assertionError("ead77baa-30b2-470a-bb18-9db949965e45, kind => " + kind);
-        }
-    }
+  goog.asserts.assert(typeof valueJs === Sk.ffi.JsType.NUMBER || typeof valueJs === Sk.ffi.JsType.STRING);
+  if (Sk.flyweight)
+  {
+    return valueJs;
+  }
+  else
+  {
+    // This is the one place where we can legitimately construct a float.
+    return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.float$);
+  }
 };
 goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
 
@@ -205,7 +210,7 @@ Sk.ffi.numberToFloatPy = function(valueJs, defaultJs)
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.NUMBER)
     {
-        return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(/** @type {number} */ (valueJs));
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
@@ -490,7 +495,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     }
     else if (t === Sk.ffi.JsType.NUMBER)
     {
-        return Sk.ffi.numberToFloatPy(/** @type {number} */ (valueJs));
+        return Sk.ffi.numberToPy(/** @type {number} */ (valueJs));
     }
     else if (t === Sk.ffi.JsType.BOOLEAN)
     {
@@ -576,7 +581,10 @@ goog.exportSymbol("Sk.ffi.isTuple", Sk.ffi.isTuple);
  * @param {Object} valuePy
  * @return {boolean}
  */
-Sk.ffi.isFloat = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FLOAT;};
+Sk.ffi.isFloat = function(valuePy)
+{
+    return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FLOAT;
+};
 goog.exportSymbol("Sk.ffi.isFloat", Sk.ffi.isFloat);
 
 Sk.ffi.isFunction = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.FUNCTION;};
@@ -590,7 +598,10 @@ goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
  * @param {Object} valuePy
  * @return {boolean}
  */
-Sk.ffi.isInt = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT;};
+Sk.ffi.isInt = function(valuePy)
+{
+    return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.INT;
+};
 goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 
 /**
@@ -601,10 +612,31 @@ goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 Sk.ffi.isLong = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LONG;};
 goog.exportSymbol("Sk.ffi.isLong", Sk.ffi.isLong);
 
+/**
+ * @nosideeffects
+ * @param {Object} valuePy
+ * @return {boolean}
+ */
+Sk.ffi.isBigInteger = function(valuePy)
+{
+    return valuePy instanceof Sk.builtin.biginteger;
+};
+goog.exportSymbol("Sk.ffi.isBigInteger", Sk.ffi.isBigInteger);
+
 Sk.ffi.isNone = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.NONE;};
 goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
-Sk.ffi.isNum = function(valuePy) {return Sk.builtin.checkNumber(valuePy);};
+Sk.ffi.isNum = function(valuePy)
+{
+    if (valuePy instanceof Sk.builtin.nmber)
+    {
+        return true;
+    }
+    else
+    {
+        return Sk.ffi.isFloat(valuePy) || Sk.ffi.isInt(valuePy) || Sk.ffi.isLong(valuePy);
+    }
+};
 goog.exportSymbol("Sk.ffi.isNum", Sk.ffi.isNum);
 
 Sk.ffi.isStr = function(valuePy) {return Sk.builtin.checkString(valuePy);};
@@ -867,6 +899,14 @@ goog.exportSymbol("Sk.ffi.typeString", Sk.ffi.typeString);
  */
 Sk.ffi.getType = function(valuePy)
 {
+    if (Sk.flyweight)
+    {
+        if (typeof valuePy === Sk.ffi.JsType.NUMBER)
+        {
+            return Sk.ffi.PyType.FLOAT;
+        }
+    }
+
     if (typeof valuePy === Sk.ffi.JsType.UNDEFINED)
     {
         return Sk.ffi.PyType.UNDEFINED;
@@ -894,9 +934,17 @@ Sk.ffi.getType = function(valuePy)
     }
     else if (valuePy instanceof Sk.builtin.nmber)
     {
+        // This is the legitimate test for a float in non-flyweight mode.
         if (valuePy.skType === Sk.builtin.nmber.float$)
         {
-            return Sk.ffi.PyType.FLOAT;
+            if (Sk.flyweight)
+            {
+                goog.asserts.assertNumber(valuePy, "You're kidding me?");
+            }
+            else
+            {
+                return Sk.ffi.PyType.FLOAT;
+            }
         }
         else if (valuePy.skType === Sk.builtin.nmber.int$)
         {
@@ -964,6 +1012,26 @@ goog.exportSymbol("Sk.ffi.getType", Sk.ffi.getType);
 
 Sk.ffi.typeName = function(valuePy)
 {
+    if (Sk.flyweight)
+    {
+        if (typeof valuePy === Sk.ffi.JsType.NUMBER)
+        {
+            return 'float';
+        }
+    }
+    if (valuePy instanceof Sk.builtin.nmber)
+    {
+        return valuePy.skType;
+    }
+    else if (valuePy.tp$name !== undefined)
+    {
+        return valuePy.tp$name;
+    }
+    else 
+    {
+        return "<invalid type>";
+    }
+    /*
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.INSTANCE:
@@ -972,13 +1040,25 @@ Sk.ffi.typeName = function(valuePy)
         case Sk.ffi.PyType.INT:
         case Sk.ffi.PyType.STR:
         {
-            return Sk.abstr.typeName(valuePy);
+            if (valuePy instanceof Sk.builtin.nmber)
+            {
+                return valuePy.skType;
+            }
+            else if (valuePy.tp$name !== undefined)
+            {
+                return valuePy.tp$name;
+            }
+            else 
+            {
+                return "<invalid type>";
+            }
         }
         default:
         {
             throw Sk.ffi.assertionError("0d35490f-ac78-45d7-ac5e-af6ef09278b1, Sk.ffi.getType(valuePy) => " + Sk.ffi.getType(valuePy));
         }
     }
+    */
 };
 goog.exportSymbol("Sk.ffi.typeName", Sk.ffi.typeName);
 
@@ -1052,6 +1132,12 @@ goog.exportSymbol("Sk.ffi.numberToJs", Sk.ffi.numberToJs);
 Sk.ffi.remapToJs = function(valuePy, shallow)
 {
     Sk.ffi.checkFunctionArgs("Sk.ffi.remapToJs", arguments, 1, 2);
+    if (Sk.flyweight)
+    {
+        if (typeof valuePy === Sk.ffi.JsType.NUMBER) {
+            return valuePy;
+        }
+    }
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.STR:
@@ -1115,6 +1201,16 @@ Sk.ffi.remapToJs = function(valuePy, shallow)
             }
         }
         case Sk.ffi.PyType.FLOAT:
+        {
+            if (Sk.flyweight)
+            {
+                goog.asserts.assertNumber(valuePy, "5fd1f529-f9b2-4d0c-9775-36e782973986");
+            }
+            else
+            {
+                return Sk.builtin.asnum$(valuePy);
+            }
+        }
         case Sk.ffi.PyType.INT:
         case Sk.ffi.PyType.LONG:
         {
@@ -1517,7 +1613,7 @@ Sk.ffi.ObjectPy.prototype.mp$subscript = function(index)
 {
   if (!Array.isArray(this.v))
   {
-    throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object does not support indexing.");
+    throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(this) + "' object does not support indexing.");
   }
   if (Sk.misceval.isIndex(index))
   {
@@ -1545,7 +1641,7 @@ Sk.ffi.ObjectPy.prototype.mp$subscript = function(index)
     index.sssiter$(this, function(i, wrt) {ret.push(wrt.v[i]);});
     return new Sk.builtin.list(ret);
   }
-  throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.abstr.typeName(index));
+  throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.ffi.typeName(index));
 };
 
 Sk.ffi.ObjectPy.prototype.tp$iter = function()

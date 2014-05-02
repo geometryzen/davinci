@@ -49,7 +49,7 @@ if (! TurtleGraphics) {
         TurtleGraphics.canvasInit = true;
         this.tlist = []
 
-		this.timeFactor = 5;
+        this.timeFactor = 5;
         if (TurtleGraphics.defaults.animate) {
             this.delay = 5 * this.timeFactor;
         } else {
@@ -59,7 +59,7 @@ if (! TurtleGraphics) {
         this.renderCounter = 1;
         this.clearPoint = 0;
         TurtleGraphics.canvasLib[this.canvasID] = this;
-		Sk.tg.fadeOnExit = true;	//	This can be set to false AFTER the program completes to turn off the fade out on the canvas as a result of exitonclick
+        Sk.tg.fadeOnExit = true;    //  This can be set to false AFTER the program completes to turn off the fade out on the canvas as a result of exitonclick
     }
 
     TurtleCanvas.prototype.setup = function(width, height) {
@@ -75,7 +75,7 @@ if (! TurtleGraphics) {
         this.ury = this.canvas.height / 2;
         this.renderCounter = 1;
         this.clearPoint = 0;
-		this.timeFactor = 5;
+        this.timeFactor = 5;
         if (TurtleGraphics.defaults.animate ) {
             this.delay = 5 * this.timeFactor;
         } else {
@@ -89,7 +89,7 @@ if (! TurtleGraphics) {
             TurtleGraphics.canvasInit = true;
             TurtleGraphics.eventCount = 0;
             TurtleGraphics.renderClock = 0;
-            TurtleGraphics.renderTime = 0;	// RNL
+            TurtleGraphics.renderTime = 0;  // RNL
         } else {
             this.context.restore();
             this.context.translate(this.canvas.width / 2, this.canvas.height / 2); // move 0,0 to center.
@@ -99,7 +99,7 @@ if (! TurtleGraphics) {
         }
     }
     TurtleCanvas.prototype.addToCanvas = function(t) {
-	        this.tlist.push(t);
+            this.tlist.push(t);
     }
 
     TurtleCanvas.prototype.onCanvas = function(t) {
@@ -111,11 +111,11 @@ if (! TurtleGraphics) {
     }
 
     TurtleCanvas.prototype.startAnimating = function(t) {
-		if (! this.isAnimating()) {
-        	this.intervalId = setTimeout(render, this.delay);	//	setInterval(render, this.delay);
-		}
-    	if (!this.onCanvas(t))	//	Added by RNL in case startAnimating is called after it's already been added
-       		this.addToCanvas(t);
+        if (! this.isAnimating()) {
+            this.intervalId = setTimeout(render, this.delay);   //  setInterval(render, this.delay);
+        }
+        if (!this.onCanvas(t))  //  Added by RNL in case startAnimating is called after it's already been added
+            this.addToCanvas(t);
         Sk.isTurtleProgram = true;
     }
 
@@ -127,7 +127,7 @@ if (! TurtleGraphics) {
 
     TurtleCanvas.prototype.cancelAnimation = function() {
         if (this.intervalId) {
-            clearTimeout(this.intervalId)	//	clearInterval(this.intervalId);
+            clearTimeout(this.intervalId)   //  clearInterval(this.intervalId);
         }
 
         for (var t in this.tlist) {
@@ -136,9 +136,9 @@ if (! TurtleGraphics) {
         render();
     }
 
-    TurtleCanvas.prototype.setSpeedDelay = function(s) {	// RNL
+    TurtleCanvas.prototype.setSpeedDelay = function(s) {    // RNL
         var df = 10 - (s % 11) + 1;
-        this.delay = df * this.timeFactor;	//	RNL was 10;
+        this.delay = df * this.timeFactor;  //  RNL was 10;
     }
 
     TurtleCanvas.prototype.setDelay = function(d) {
@@ -150,8 +150,8 @@ if (! TurtleGraphics) {
     }
 
     TurtleCanvas.prototype.setCounter = function(s) {
-		if (!s || s <= 0)	//	Don't let this be less than 1
-			s = 1;
+        if (!s || s <= 0)   //  Don't let this be less than 1
+            s = 1;
         this.renderCounter = s;
     }
 
@@ -211,8 +211,8 @@ if (! TurtleGraphics) {
         var theCanvas = this;
         $(this.canvas).click(function() {
             if (! theCanvas.isAnimating()) {
-				if (Sk.tg.fadeOnExit)	//	Let's this be configurable
-                	$("#"+canvas_id).hide();
+                if (Sk.tg.fadeOnExit)   //  Let's this be configurable
+                    $("#"+canvas_id).hide();
                 $("#"+canvas_id).unbind('click');
                 Sk.tg.canvasInit = false;
                 delete Sk.tg.canvasLib[canvas_id];
@@ -224,16 +224,16 @@ if (! TurtleGraphics) {
         return TurtleGraphics.turtleList;
     }
 
-	TurtleCanvas.prototype.tracer = function(t, d) {	//	New version NOT attached to a turtle (as per real turtle)
+    TurtleCanvas.prototype.tracer = function(t, d) {    //  New version NOT attached to a turtle (as per real turtle)
         this.setCounter(t);
-		if (t == 0) {
-			for (var i in this.turtleList)
-				this.turtleList[i].animate = false;
-			this.cancelAnimation();
-		}
-		if (d !== undefined)
-			this.setDelay(d);
-	}
+        if (t == 0) {
+            for (var i in this.turtleList)
+                this.turtleList[i].animate = false;
+            this.cancelAnimation();
+        }
+        if (d !== undefined)
+            this.setDelay(d);
+    }
 
     // check if all turtles are done
     allDone = function() {
@@ -273,18 +273,18 @@ if (! TurtleGraphics) {
                 strokeStyle = 'black';
                 var filling = false;
                 if (isNaN(t.turtleCanvas.delay))
-                	t.turtleCanvas.delay = 0
-//				console.log(tix + " : " + t.clearPoint + " to " + t.aCount)
+                    t.turtleCanvas.delay = 0
+//              console.log(tix + " : " + t.clearPoint + " to " + t.aCount)
                 for (var i = t.clearPoint; (i <= t.aCount || t.turtleCanvas.delay == 0) && i < t.drawingEvents.length; i++) {
-                	if (i > t.aCount)	//	If se jump past aCount, jump it ahead
-                		t.aCount = i
+                    if (i > t.aCount)   //  If se jump past aCount, jump it ahead
+                        t.aCount = i
                     var oper = t.drawingEvents[i];
                     var ts = oper[oper.length-1];
-//					console.log(i + "/" + ts + oper [0] + "{" + oper [1] + "}" + t.turtleCanvas.delay)
+//                  console.log(i + "/" + ts + oper [0] + "{" + oper [1] + "}" + t.turtleCanvas.delay)
                     if (ts <= TurtleGraphics.renderClock || t.turtleCanvas.delay == 0) {
-                    	if (ts > TurtleGraphics.renderClock)	//	If we go past the render clock, jump it ahead
-                    		TurtleGraphics.renderClock = ts
-//						console.log("<==")
+                        if (ts > TurtleGraphics.renderClock)    //  If we go past the render clock, jump it ahead
+                            TurtleGraphics.renderClock = ts
+//                      console.log("<==")
                         if (oper[0] == "LT") {  //  line to
                             if (! filling) {
                                 beginPath();
@@ -331,7 +331,7 @@ if (! TurtleGraphics) {
                         }
                         else if (oper[0] == "CI") {  // Circle
                             if (!filling)
-								beginPath();
+                                beginPath();
                             arc(oper[1], oper[2], oper[3], oper[4], oper[5], oper[6]);
                             currentPos = new Vector(oper[1]+Sk.math.cos(oper[5])*oper[3],
                                 oper[2]+Sk.math.sin(oper[5])*oper[3],0);
@@ -355,36 +355,36 @@ if (! TurtleGraphics) {
                         } else if (oper[0] == "TT") {
                             currentHead = oper[1];
                         } else if (oper[0] == "CL") { // RNL clear
-                        	clear_canvas(t.canvasID);
-                        	t.clearPoint = i;	// Different from reset that calls clear because it leaves the turtles where they are
+                            clear_canvas(t.canvasID);
+                            t.clearPoint = i;   // Different from reset that calls clear because it leaves the turtles where they are
                         } else if (oper[0] == "DL") { // RNL delay
-                        	var df = oper[1]
-//                      	console.log("animated delay set " + df)
-                        	t.turtleCanvas.delay = df
+                            var df = oper[1]
+//                          console.log("animated delay set " + df)
+                            t.turtleCanvas.delay = df
                         } else if (oper[0] == "SC") { // RNL speed change
-                        	var s = oper[1]
-                        	if (s < 0)
-                        		s = 0
-                        	if (s > 10)
-                        		s = 10
-       						var df = (10 - (s % 11) + 1) * t.turtleCanvas.timeFactor	//	10
-       						if (s == 0) {
-       							df = 0
-       						}
-	                        //	t.turtleCanvas.intervalId = clearInterval(t.turtleCanvas.intervalId);
-	       					t.turtleCanvas.delay = df;
-	       					//	t.turtleCanvas.intervalId = setInterval(render, t.turtleCanvas.delay)
-       						if (oper[2]) {
-       							t.turtleCanvas.setSegmentLength(oper[2]);
-       						}
-       					} else if (oper[0] == "NO") { // RNL no op                	
+                            var s = oper[1]
+                            if (s < 0)
+                                s = 0
+                            if (s > 10)
+                                s = 10
+                            var df = (10 - (s % 11) + 1) * t.turtleCanvas.timeFactor    //  10
+                            if (s == 0) {
+                                df = 0
+                            }
+                            //  t.turtleCanvas.intervalId = clearInterval(t.turtleCanvas.intervalId);
+                            t.turtleCanvas.delay = df;
+                            //  t.turtleCanvas.intervalId = setInterval(render, t.turtleCanvas.delay)
+                            if (oper[2]) {
+                                t.turtleCanvas.setSegmentLength(oper[2]);
+                            }
+                        } else if (oper[0] == "NO") { // RNL no op                  
                         } else {
-							console.log("unknown op: " + oper[0]);
+                            console.log("unknown op: " + oper[0]);
                         } // end of oper[0] test
                     } // end of if ts < render clock
                 } // end of for
-//				console.log(TurtleGraphics.renderClock + " / " + t.aCount)
-//				console.log("------------------------------")
+//              console.log(TurtleGraphics.renderClock + " / " + t.aCount)
+//              console.log("------------------------------")
                 t.aCount += incr;
                 if (t.visible) {
                     // draw the turtle
@@ -394,13 +394,13 @@ if (! TurtleGraphics) {
             //if (t.aCount >= t.drawingEvents.length) {
             if (TurtleGraphics.renderClock > TurtleGraphics.eventCount ){ // && allDone() ){
 //              t.turtleCanvas.doneAnimating(t);
-//				console.log("done animating")
+//              console.log("done animating")
                 if (lastCanvas) lastCanvas.doneAnimating(t);
             } else {
-//    			t.turtleCanvas.intervalId = setTimeout(render, t.turtleCanvas.delay)
-    			if (lastCanvas) {
-    				lastCanvas.intervalId = setTimeout(render, lastCanvas.delay)
-    			}
+//              t.turtleCanvas.intervalId = setTimeout(render, t.turtleCanvas.delay)
+                if (lastCanvas) {
+                    lastCanvas.intervalId = setTimeout(render, lastCanvas.delay)
+                }
             }
         }
     }
@@ -487,7 +487,7 @@ if (! TurtleGraphics) {
             this.normal = [ ];
             this.go_home();
             this.aCount = 0;
-            this.clearPoint = 0;	// RNL for clear/clearScreen
+            this.clearPoint = 0;    // RNL for clear/clearScreen
         }
     }
     function turtleShapePoints() {
@@ -708,15 +708,15 @@ if (! TurtleGraphics) {
         this.forward(-d);
     }
 
-//	This is an internal function that sets the position without doing any drawing
+//  This is an internal function that sets the position without doing any drawing
     Turtle.prototype.teleport_to = function(nx, ny) {
         if (nx instanceof Vector)
             var newposition = nx;
         else
             var newposition = new Vector([nx,ny,0]);
         this.context.moveTo(newposition[0], newposition[1]);
-		this.position = newposition;
-	}
+        this.position = newposition;
+    }
 
     Turtle.prototype.goto = function(nx, ny) {
         if (nx instanceof Vector)
@@ -746,18 +746,18 @@ if (! TurtleGraphics) {
         }
     }
 
-    Turtle.prototype.delay = function(d) {	// RNL
-    	if (d != null) {
-    		if (d < 0)
-    			d = -d
-    		if (!this.animate) 
-    			this.turtleCanvas.setDelay(d)
-    		else {
-    			this.turtleCanvas.setDelay(d)
-	    		this.addDrawingEvent(["DL", d])
-	    		this.addDrawingEvent(["NO"])
-    		}
-    	}
+    Turtle.prototype.delay = function(d) {  // RNL
+        if (d != null) {
+            if (d < 0)
+                d = -d
+            if (!this.animate) 
+                this.turtleCanvas.setDelay(d)
+            else {
+                this.turtleCanvas.setDelay(d)
+                this.addDrawingEvent(["DL", d])
+                this.addDrawingEvent(["NO"])
+            }
+        }
         return this.turtleCanvas.getDelay();
     }
 
@@ -766,12 +766,12 @@ if (! TurtleGraphics) {
             this.animate = true;
             this.turtleCanvas.setSpeedDelay(s)
         } else if (s == 0 && !this.animate) {
-        	this.turtleCanvas.setSpeedDelay(s)
+            this.turtleCanvas.setSpeedDelay(s)
         } else {
 //          this.animate = false;
 //          this.turtleCanvas.cancelAnimation();
-			this.addDrawingEvent(["SC", s, t])
-			this.addDrawingEvent(["NO"])
+            this.addDrawingEvent(["SC", s, t])
+            this.addDrawingEvent(["NO"])
         }
         if (t) {
             this.turtleCanvas.setSegmentLength(t);
@@ -783,12 +783,12 @@ if (! TurtleGraphics) {
 
     Turtle.prototype.tracer = function(t, d) {
         this.turtleCanvas.setCounter(t);
-		if (t == 0) {
-			this.animate=false;
-			this.turtleCanvas.cancelAnimation();
-		}
-		if (d !== undefined)
-			this.turtleCanvas.setDelay(d);
+        if (t == 0) {
+            this.animate=false;
+            this.turtleCanvas.cancelAnimation();
+        }
+        if (d !== undefined)
+            this.turtleCanvas.setDelay(d);
     }
 
     Turtle.prototype.getRenderCounter = function() {
@@ -888,107 +888,107 @@ if (! TurtleGraphics) {
         if (extent === undefined) {
             extent = 360
         }
-		if (this.animate) {
-			var arcLen = Math.abs(radius * Math.PI * 2.0  * extent / 360);
-			var segLen = this.turtleCanvas.getSegmentLength();
-			if (arcLen <= segLen)
-				this.arc(radius,extent);
-			else {
-				//	Break the arc into segments for animation
-				var extentPart = (segLen / arcLen) * extent;
-				var extentLeft = extent;
-				while (Math.abs(extentLeft) > Math.abs(extentPart)) {
-					this.arc(radius, extentPart);
-					extentLeft = extentLeft - extentPart;
-				}
-				if (Math.abs(extentLeft) > 0.01)
-					this.arc(radius, extentLeft);
-			}
-		} else {
-			this.arc(radius,extent);
-		}
-	}
-	
-    Turtle.prototype.arc = function(radius, extent) {
-		//	Figure out where the turtle is and which way it's facing
-		var turtleHeading = this.get_heading()
-		var tx = this.position[0]
-		var ty = this.position[1]
-
-		//	Figure out the circle center
-		var cx = tx + (radius * Sk.math.cos((turtleHeading + 90) * Degree2Rad));
-		var cy = ty + (radius * Sk.math.sin((turtleHeading + 90) * Degree2Rad));
-
-		//	Canvas arc angles go CLOCKWISE, not COUNTERCLOCKWISE like Turtle
-
-		//	Figure out our arc angles
-		var startAngleDeg;
-		if (radius >= 0)
-			startAngleDeg = turtleHeading - 90;
-		else
-			startAngleDeg = turtleHeading + 90;
-
-		var endAngleDeg;
-        if (extent) {
-			if (radius >= 0)
-	            endAngleDeg = startAngleDeg + extent;
-			else
-	            endAngleDeg = startAngleDeg - extent;
+        if (this.animate) {
+            var arcLen = Math.abs(radius * Math.PI * 2.0  * extent / 360);
+            var segLen = this.turtleCanvas.getSegmentLength();
+            if (arcLen <= segLen)
+                this.arc(radius,extent);
+            else {
+                //  Break the arc into segments for animation
+                var extentPart = (segLen / arcLen) * extent;
+                var extentLeft = extent;
+                while (Math.abs(extentLeft) > Math.abs(extentPart)) {
+                    this.arc(radius, extentPart);
+                    extentLeft = extentLeft - extentPart;
+                }
+                if (Math.abs(extentLeft) > 0.01)
+                    this.arc(radius, extentLeft);
+            }
         } else {
-			if (radius >= 0)
-	            endAngleDeg = startAngleDeg + 360;
-			else
-				endAngleDeg = startAngleDeg - 360;
-		}
+            this.arc(radius,extent);
+        }
+    }
+    
+    Turtle.prototype.arc = function(radius, extent) {
+        //  Figure out where the turtle is and which way it's facing
+        var turtleHeading = this.get_heading()
+        var tx = this.position[0]
+        var ty = this.position[1]
 
-		//	Canvas angles are opposite
-		startAngleDeg = 360 - startAngleDeg
-		endAngleDeg   = 360 - endAngleDeg
+        //  Figure out the circle center
+        var cx = tx + (radius * Sk.math.cos((turtleHeading + 90) * Degree2Rad));
+        var cy = ty + (radius * Sk.math.sin((turtleHeading + 90) * Degree2Rad));
 
-		//	Becuase the y axis has been flipped in HTML5 Canvas with a tanslation, we need to adjust the angles
-		startAngleDeg = -startAngleDeg
-		endAngleDeg   = -endAngleDeg
+        //  Canvas arc angles go CLOCKWISE, not COUNTERCLOCKWISE like Turtle
 
-		//	Convert to radians
-		var startAngle = startAngleDeg * Degree2Rad;
-		var endAngle   = endAngleDeg   * Degree2Rad;
+        //  Figure out our arc angles
+        var startAngleDeg;
+        if (radius >= 0)
+            startAngleDeg = turtleHeading - 90;
+        else
+            startAngleDeg = turtleHeading + 90;
+
+        var endAngleDeg;
+        if (extent) {
+            if (radius >= 0)
+                endAngleDeg = startAngleDeg + extent;
+            else
+                endAngleDeg = startAngleDeg - extent;
+        } else {
+            if (radius >= 0)
+                endAngleDeg = startAngleDeg + 360;
+            else
+                endAngleDeg = startAngleDeg - 360;
+        }
+
+        //  Canvas angles are opposite
+        startAngleDeg = 360 - startAngleDeg
+        endAngleDeg   = 360 - endAngleDeg
+
+        //  Becuase the y axis has been flipped in HTML5 Canvas with a tanslation, we need to adjust the angles
+        startAngleDeg = -startAngleDeg
+        endAngleDeg   = -endAngleDeg
+
+        //  Convert to radians
+        var startAngle = startAngleDeg * Degree2Rad;
+        var endAngle   = endAngleDeg   * Degree2Rad;
 
 
-		//	Do the drawing
+        //  Do the drawing
         if (! this.animate) {
-			if (!this.filling)
-				this.context.beginPath();
+            if (!this.filling)
+                this.context.beginPath();
             this.context.arc(cx, cy, Math.abs(radius), startAngle, endAngle, (radius * extent <= 0));
             this.context.stroke();
-			if (!this.filling)
-				this.context.closePath();
+            if (!this.filling)
+                this.context.closePath();
         } else {
             this.addDrawingEvent(["CI", cx, cy, Math.abs(radius), startAngle, endAngle, (radius * extent <= 0)]);
         }
 
-		//	Move the turtle only if we have to
-		if (extent && (extent % 360) != 0) {
-			var turtleArc;
-			if (radius >= 0)
-				turtleArc = extent;
-			else 
-				turtleArc = -extent;
-			var newTurtleHeading = (turtleHeading + turtleArc) % 360;
-			if (newTurtleHeading < 0)
-				newTurtleHeading = newTurtleHeading + 360;
+        //  Move the turtle only if we have to
+        if (extent && (extent % 360) != 0) {
+            var turtleArc;
+            if (radius >= 0)
+                turtleArc = extent;
+            else 
+                turtleArc = -extent;
+            var newTurtleHeading = (turtleHeading + turtleArc) % 360;
+            if (newTurtleHeading < 0)
+                newTurtleHeading = newTurtleHeading + 360;
 
-			var nx = cx + (radius * Sk.math.cos((newTurtleHeading - 90) * Degree2Rad));
-			var ny = cy + (radius * Sk.math.sin((newTurtleHeading - 90) * Degree2Rad));	//	y coord is inverted in turtle
+            var nx = cx + (radius * Sk.math.cos((newTurtleHeading - 90) * Degree2Rad));
+            var ny = cy + (radius * Sk.math.sin((newTurtleHeading - 90) * Degree2Rad)); //  y coord is inverted in turtle
 
-			//	Move it internally
-			this.set_heading(newTurtleHeading);
-			this.teleport_to(nx,ny);
+            //  Move it internally
+            this.set_heading(newTurtleHeading);
+            this.teleport_to(nx,ny);
 
-			//	If we're animating the turtle, move it on the screen
-			if (this.animate) {
-				this.addDrawingEvent(["TT", this.heading]);
-			}
-		}
+            //  If we're animating the turtle, move it on the screen
+            if (this.animate) {
+                this.addDrawingEvent(["TT", this.heading]);
+            }
+        }
 
     }
 
@@ -1045,18 +1045,18 @@ if (! TurtleGraphics) {
         if (typeof(c) == "string") {
             this.penStyle = c;
         } else {
-        	var rs
-        	var gs
-        	var bs
-        	if (typeof( c) == "object" && c.length == 3) {
-				var c0 = Sk.builtin.asnum$(c[0]);
-				var c1 = Sk.builtin.asnum$(c[1]);
-				var c2 = Sk.builtin.asnum$(c[2]);
-        	} else {
+            var rs
+            var gs
+            var bs
+            if (typeof( c) == "object" && c.length == 3) {
+                var c0 = Sk.builtin.asnum$(c[0]);
+                var c1 = Sk.builtin.asnum$(c[1]);
+                var c2 = Sk.builtin.asnum$(c[2]);
+            } else {
                 var c0 = Sk.builtin.asnum$(c);
                 var c1 = Sk.builtin.asnum$(g);
                 var c2 = Sk.builtin.asnum$(b);
-        	}
+            }
             rs = c0.toString(16);
             gs = c1.toString(16);
             bs = c2.toString(16);
@@ -1076,18 +1076,18 @@ if (! TurtleGraphics) {
         if (typeof(c) == "string") {
             this.fillStyle = c;
         } else {
-        	var rs
-        	var gs
-        	var bs
-        	if (typeof( c) == "object" && c.length == 3) {
-				var c0 = Sk.builtin.asnum$(c[0]);
-				var c1 = Sk.builtin.asnum$(c[1]);
-				var c2 = Sk.builtin.asnum$(c[2]);
-        	} else {
+            var rs
+            var gs
+            var bs
+            if (typeof( c) == "object" && c.length == 3) {
+                var c0 = Sk.builtin.asnum$(c[0]);
+                var c1 = Sk.builtin.asnum$(c[1]);
+                var c2 = Sk.builtin.asnum$(c[2]);
+            } else {
                 var c0 = Sk.builtin.asnum$(c);
                 var c1 = Sk.builtin.asnum$(g);
                 var c2 = Sk.builtin.asnum$(b);
-        	}
+            }
             rs = c0.toString(16)
             gs = c1.toString(16)
             bs = c2.toString(16)
@@ -1187,18 +1187,18 @@ if (! TurtleGraphics) {
     }
     
     Turtle.prototype.clear = function () {
-    	if (this.animate) {
-    		this.addDrawingEvent(["CL"])
-    	} else {
-    		clear_canvas(this.canvasID);
-    	}
+        if (this.animate) {
+            this.addDrawingEvent(["CL"])
+        } else {
+            clear_canvas(this.canvasID);
+        }
     }
 
     function clear_canvas(canId) {
         with (document.getElementById(canId).getContext('2d')) {
             if (arguments.length >= 2) {
-//		fillStyle = arguments[1];
-//		fillRect(0, 0, canvas.width, canvas.height);
+//      fillStyle = arguments[1];
+//      fillRect(0, 0, canvas.width, canvas.height);
             }
             clearRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
         }
@@ -1382,7 +1382,7 @@ var $builtinmodule = function(name) {
         // Move and Draw
         //
         $loc.forward = new Sk.builtin.func(function(self, dist) {
-			dist = Sk.builtin.asnum$(dist);
+            dist = Sk.builtin.asnum$(dist);
             checkArgs(2,arguments.length,"forward()");
             self.theTurtle.forward(dist);
         });
@@ -1390,7 +1390,7 @@ var $builtinmodule = function(name) {
         $loc.fd = $loc.forward;
 
         $loc.backward = new Sk.builtin.func(function(self, dist) {
-			dist = Sk.builtin.asnum$(dist);
+            dist = Sk.builtin.asnum$(dist);
             checkArgs(2,arguments.length,"backward()");
             self.theTurtle.forward(-dist);
         });
@@ -1399,7 +1399,7 @@ var $builtinmodule = function(name) {
         $loc.bk = $loc.backward;
 
         $loc.right = new Sk.builtin.func(function(self, angle) {
-			angle = Sk.builtin.asnum$(angle);
+            angle = Sk.builtin.asnum$(angle);
             checkArgs(2,arguments.length,"right()");
             self.theTurtle.turn(angle);
         });
@@ -1407,7 +1407,7 @@ var $builtinmodule = function(name) {
         $loc.rt = $loc.right;
 
         $loc.left = new Sk.builtin.func(function(self, angle) {
-			angle = Sk.builtin.asnum$(angle);
+            angle = Sk.builtin.asnum$(angle);
             checkArgs(2,arguments.length,"left()");
             self.theTurtle.turn(-angle);
         });
@@ -1415,15 +1415,15 @@ var $builtinmodule = function(name) {
         $loc.lt = $loc.left;
 
         $loc.goto_$rw$ = new Sk.builtin.func(function(self, nx, ny) {
-			nx = Sk.builtin.asnum$(nx);
-			ny = Sk.builtin.asnum$(ny);
+            nx = Sk.builtin.asnum$(nx);
+            ny = Sk.builtin.asnum$(ny);
             checkArgs(3,arguments.length,"goto()");
             self.theTurtle.goto(nx, ny);
         });
 
         $loc.setposition = new Sk.builtin.func(function(self,nx,ny) {
-			nx = Sk.builtin.asnum$(nx);
-			ny = Sk.builtin.asnum$(ny);
+            nx = Sk.builtin.asnum$(nx);
+            ny = Sk.builtin.asnum$(ny);
             checkArgs(3,arguments.length,"setposition()");
             self.theTurtle.up();
             self.theTurtle.goto(nx,ny);
@@ -1432,19 +1432,19 @@ var $builtinmodule = function(name) {
         $loc.setpos = $loc.setposition;
 
         $loc.setx = new Sk.builtin.func(function(self, nx) {
-			nx = Sk.builtin.asnum$(nx);
+            nx = Sk.builtin.asnum$(nx);
             checkArgs(2,arguments.length,"setx()");
             self.theTurtle.goto(nx, self.theTurtle.GetY());
         });
 
         $loc.sety = new Sk.builtin.func(function(self, ny) {
-			ny = Sk.builtin.asnum$(ny);
+            ny = Sk.builtin.asnum$(ny);
             checkArgs(2,arguments.length,"sety()");
             self.theTurtle.goto(self.theTurtle.GetX(), ny);
         });
 
         $loc.setheading = new Sk.builtin.func(function(self, newhead) {
-			newhead = Sk.builtin.asnum$(newhead);
+            newhead = Sk.builtin.asnum$(newhead);
             checkArgs(2,arguments.length,"setheading()");
             return self.theTurtle.set_heading(newhead);
         });
@@ -1456,7 +1456,7 @@ var $builtinmodule = function(name) {
         });
 
         $loc.dot = new Sk.builtin.func(function(self, /*opt*/ size, color) {
-			size = Sk.builtin.asnum$(size);
+            size = Sk.builtin.asnum$(size);
             size = size || 1;
             if (color) {
                 color = color.v || self.theTurtle.penStyle;
@@ -1465,31 +1465,31 @@ var $builtinmodule = function(name) {
         });
 
         $loc.circle = new Sk.builtin.func(function(self, radius, extent) {
-			radius = Sk.builtin.asnum$(radius);
-			extent = Sk.builtin.asnum$(extent);
+            radius = Sk.builtin.asnum$(radius);
+            extent = Sk.builtin.asnum$(extent);
             self.theTurtle.circle(radius, extent);
         });
 
         $loc.delay = new Sk.builtin.func(function(self, d) {
-			d = Sk.builtin.asnum$(d);
+            d = Sk.builtin.asnum$(d);
             return self.theTurtle.delay(d);
         });
 
         $loc.speed = new Sk.builtin.func(function(self, s, t) {
-			s = Sk.builtin.asnum$(s);
-			t = Sk.builtin.asnum$(t);
+            s = Sk.builtin.asnum$(s);
+            t = Sk.builtin.asnum$(t);
             self.theTurtle.speed(s,t);
         });
 
         $loc.tracer = new Sk.builtin.func(function(self, t, d) {
-			t = Sk.builtin.asnum$(t);
-			d = Sk.builtin.asnum$(d);
+            t = Sk.builtin.asnum$(t);
+            d = Sk.builtin.asnum$(d);
             self.theTurtle.tracer(t, d);
         });
 
-		$loc.update = new Sk.builtin.func(function(self) {
-			//	Dummy function to emulate update... when not animating, we don't save the drawing operations, so this is pointless for us
-		});
+        $loc.update = new Sk.builtin.func(function(self) {
+            //  Dummy function to emulate update... when not animating, we don't save the drawing operations, so this is pointless for us
+        });
 
         // todo:  stamp, clearstamp, clearstamps, undo, speed
 
@@ -1498,14 +1498,14 @@ var $builtinmodule = function(name) {
         //
         $loc.heading = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"heading()");
-            return Sk.builtin.assk$(self.theTurtle.get_heading(),Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(self.theTurtle.get_heading());
         });
 
         $loc.position = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"position()");
             var res = self.theTurtle.get_position();
-            var x = new Sk.builtin.tuple([Sk.builtin.assk$(res[0],Sk.builtin.nmber.float$),
-                                          Sk.builtin.assk$(res[1],Sk.builtin.nmber.float$) ]);
+            var x = new Sk.builtin.tuple([Sk.ffi.numberToPy(res[0]),
+                                          Sk.ffi.numberToPy(res[1]) ]);
             return x;
         });
 
@@ -1514,37 +1514,37 @@ var $builtinmodule = function(name) {
         $loc.xcor = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"xcor()");
             var res = self.theTurtle.getx();
-            return Sk.builtin.assk$(res,Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(res);
         });
 
         $loc.ycor = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"ycor()");
             var res = self.theTurtle.gety();
-            return Sk.builtin.assk$(res,Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(res);
         });
 
         $loc.towards = new Sk.builtin.func(function(self, tx, ty) {
-			tx = Sk.builtin.asnum$(tx);
-			ty = Sk.builtin.asnum$(ty);
+            tx = Sk.builtin.asnum$(tx);
+            ty = Sk.builtin.asnum$(ty);
             if ((typeof(tx)).toLowerCase() === 'number') {
                 tx = [tx, ty, 0];
             } else {
                 tx = [Sk.builtin.asnum$(tx.theTurtle.getx()),Sk.builtin.asnum$(tx.theTurtle.gety()),Sk.builtin.asnum$(0)]
             }
-            return Sk.builtin.assk$(self.theTurtle.towards(tx),Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(self.theTurtle.towards(tx));
         });
 
         // tx can be either a number or a vector position.
         // tx can not be a turtle at this time as multiple turtles have not been implemented yet.
         $loc.distance = new Sk.builtin.func(function(self, tx, ty) {
-			tx = Sk.builtin.asnum$(tx);
-			ty = Sk.builtin.asnum$(ty);
+            tx = Sk.builtin.asnum$(tx);
+            ty = Sk.builtin.asnum$(ty);
             if ((typeof(tx)).toLowerCase() === 'number') {
                 tx = [tx, ty, 0];
             } else {
                 tx = [tx.theTurtle.getx(), tx.theTurtle.gety(), 0];
             }
-            return Sk.builtin.assk$(self.theTurtle.distance(tx),Sk.builtin.nmber.float$);
+            return Sk.ffi.numberToPy(self.theTurtle.distance(tx));
         });
 
         //
@@ -1578,7 +1578,7 @@ var $builtinmodule = function(name) {
         $loc.pd = $loc.down;
 
         $loc.width = new Sk.builtin.func(function(self, w) {
-			w = Sk.builtin.asnum$(w);
+            w = Sk.builtin.asnum$(w);
             checkArgs(2,arguments.length,"width()");
             self.theTurtle.set_pen_width(w);
         });
@@ -1611,9 +1611,9 @@ var $builtinmodule = function(name) {
         $loc.pencolor = new Sk.builtin.func(function(self, color, green, blue) {
             if (color) {
                 if (blue) {
-					color = Sk.builtin.asnum$(color);
-					green = Sk.builtin.asnum$(green);
-					blue = Sk.builtin.asnum$(blue);
+                    color = Sk.builtin.asnum$(color);
+                    green = Sk.builtin.asnum$(green);
+                    blue = Sk.builtin.asnum$(blue);
                     self.theTurtle.set_pen_color(color, green, blue);
                 } else {
                     color = color.v || self.theTurtle.context.fillStyle;
@@ -1652,8 +1652,8 @@ var $builtinmodule = function(name) {
         });
 
         $loc.fill = new Sk.builtin.func(function(self, fillt) {
-			if (fillt === undefined)
-				return self.theTurtle.filling;
+            if (fillt === undefined)
+                return self.theTurtle.filling;
             if (fillt)
                 self.theTurtle.begin_fill();
             else
@@ -1704,18 +1704,18 @@ var $builtinmodule = function(name) {
         // todo clean  -- again multiple turtles
 
         $loc.setworldcoordinates = new Sk.builtin.func(function(self, llx, lly, urx, ury) {
-			llx = Sk.builtin.asnum$(llx);
-			lly = Sk.builtin.asnum$(lly);
-			urx = Sk.builtin.asnum$(urx);
-			ury = Sk.builtin.asnum$(ury);
+            llx = Sk.builtin.asnum$(llx);
+            lly = Sk.builtin.asnum$(lly);
+            urx = Sk.builtin.asnum$(urx);
+            ury = Sk.builtin.asnum$(ury);
             self.theTurtle.setworldcoordinates(llx, lly, urx, ury);
         });
 
-		//	Added by RNL
+        //  Added by RNL
 
-		$loc.clear = new Sk.builtin.func(function(self) {
-			self.theTurtle.clear()
-		});
+        $loc.clear = new Sk.builtin.func(function(self) {
+            self.theTurtle.clear()
+        });
 
     }
 
@@ -1737,10 +1737,10 @@ var $builtinmodule = function(name) {
         });
 
         $loc.setworldcoordinates = new Sk.builtin.func(function(self, llx,lly,urx,ury) {
-			llx = Sk.builtin.asnum$(llx);
-			lly = Sk.builtin.asnum$(lly);
-			urx = Sk.builtin.asnum$(urx);
-			ury = Sk.builtin.asnum$(ury);
+            llx = Sk.builtin.asnum$(llx);
+            lly = Sk.builtin.asnum$(lly);
+            urx = Sk.builtin.asnum$(urx);
+            ury = Sk.builtin.asnum$(ury);
             self.theScreen.setworldcoordinates(llx,lly,urx,ury);
         });
 
@@ -1764,17 +1764,17 @@ var $builtinmodule = function(name) {
             return self.theScreen.turtles();
         });
 
-		$loc.colormode = new Sk.builtin.func(function(self) {
-			//	Empty function to emulate compatibility
-		});
+        $loc.colormode = new Sk.builtin.func(function(self) {
+            //  Empty function to emulate compatibility
+        });
         
 //        $loc.clear = new Sk.builtin.func(function(self) {
-//        	
+//          
 //        });
 
         var myfunc = function(self, width, height, startx, starty) {
-			width = Sk.builtin.asnum$(width);
-			height = Sk.builtin.asnum$(height);
+            width = Sk.builtin.asnum$(width);
+            height = Sk.builtin.asnum$(height);
             self.theScreen.setup(width,height);
         }
         // this should allow for named parameters
@@ -1786,15 +1786,15 @@ var $builtinmodule = function(name) {
     mod.Screen = Sk.misceval.buildClass(mod, screen, 'Screen', []);
 
     mod.tracer = new Sk.builtin.func(function(t, d) {
-		t = Sk.builtin.asnum$(t);
-		d = Sk.builtin.asnum$(d);
-		for (var i in Sk.tg.canvasLib)
-			Sk.tg.canvasLib[i].tracer(t, d);
+        t = Sk.builtin.asnum$(t);
+        d = Sk.builtin.asnum$(d);
+        for (var i in Sk.tg.canvasLib)
+            Sk.tg.canvasLib[i].tracer(t, d);
     });
 
-	mod.update = new Sk.builtin.func(function(self) {
-		//	Dummy function to emulate update... when not animating, we don't save the drawing operations, so this is pointless for us
-	});
+    mod.update = new Sk.builtin.func(function(self) {
+        //  Dummy function to emulate update... when not animating, we don't save the drawing operations, so this is pointless for us
+    });
 
 
     return mod

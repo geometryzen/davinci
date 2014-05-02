@@ -177,7 +177,7 @@ Sk.builtin.round = function round(number, ndigits)
     throw new Sk.builtin.TypeError("a float is required");
     }
     if ((ndigits !== undefined) && !Sk.misceval.isIndex(ndigits)) {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(ndigits) + "' object cannot be interpreted as an index");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(ndigits) + "' object cannot be interpreted as an index");
     };
 
     if (ndigits === undefined) {
@@ -190,7 +190,7 @@ Sk.builtin.round = function round(number, ndigits)
     multiplier = Math.pow(10, ndigits);
     result = Math.round(number * multiplier) / multiplier;
 
-    return new Sk.builtin.nmber(result, Sk.builtin.nmber.float$);
+    return Sk.ffi.numberToPy(result);
 };
 
 Sk.builtin.len = function len(item)
@@ -206,7 +206,7 @@ Sk.builtin.len = function len(item)
     if (item.tp$length)
     return new Sk.builtin.nmber(item.tp$length(), Sk.builtin.nmber.int$);
 
-    throw new Sk.builtin.TypeError("object of type '" + Sk.abstr.typeName(item) + "' has no len()");
+    throw new Sk.builtin.TypeError("object of type '" + Sk.ffi.typeName(item) + "' has no len()");
 };
 
 Sk.builtin.min = function min()
@@ -243,7 +243,7 @@ Sk.builtin.any = function any(iter)
 
     Sk.builtin.pyCheckArgs("any", arguments, 1);
     if (!Sk.builtin.checkIterable(iter)) {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter) + "' object is not iterable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(iter) + "' object is not iterable");
     }
 
     it = iter.tp$iter();
@@ -262,7 +262,7 @@ Sk.builtin.all = function all(iter)
 
     Sk.builtin.pyCheckArgs("all", arguments, 1);
      if (!Sk.builtin.checkIterable(iter)) {
-    throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter)
+    throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(iter)
                        + "' object is not iterable");
     }
 
@@ -301,12 +301,12 @@ Sk.builtin.sum = function sum(iter,start)
     it = iter.tp$iter();
     for (i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
     {
-        if (i.skType === Sk.builtin.nmber.float$)
+        if (Sk.ffi.isFloat(i))
         {
             has_float = true;
-            if (tot.skType !== Sk.builtin.nmber.float$)
+            if (!Sk.ffi.isFloat(tot))
             {
-                tot = new Sk.builtin.nmber(Sk.builtin.asnum$(tot), Sk.builtin.nmber.float$);
+                tot = Sk.ffi.numberToPy(Sk.builtin.asnum$(tot));
             }
         }
         else if (i instanceof Sk.builtin.lng)
@@ -327,8 +327,8 @@ Sk.builtin.sum = function sum(iter,start)
         else
         {
             throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '"
-                       + Sk.abstr.typeName(tot) + "' and '"
-                       + Sk.abstr.typeName(i)+"'");
+                       + Sk.ffi.typeName(tot) + "' and '"
+                       + Sk.ffi.typeName(i)+"'");
         }
     }
     return tot;
@@ -378,35 +378,7 @@ Sk.builtin.zip = function zip()
 
 Sk.builtin.abs = function abs(xPy)
 {
-  Sk.ffi.checkFunctionArgs("abs", arguments, 1, 1);
-  if (Sk.ffi.isNum(xPy))
-  {
-    return Sk.ffi.numberToPy(Math.abs(Sk.ffi.remapToJs(xPy)), Sk.ffi.getType(xPy));
-  }
-  else
-  {
-    return Sk.ffh.abs(xPy);
-    /*
-    try
-    {
-      var methodPy = xPy['__abs__'];
-      if (methodPy)
-      {
-        return Sk.ffi.callsim(methodPy, xPy);
-      }
-      else
-      {
-        throw new Sk.builtin.NotImplementedError("abs");
-      }
-//    var methodPy = Sk.ffi.gattr(xPy, "abs");
-//    return Sk.ffi.callsim(methodPy);
-    }
-    catch(e)
-    {
-        throw Sk.ffi.err.argument("x").inFunction("abs").mustHaveType("number");
-    }
-    */
-  }
+  return Sk.ffh.abs(xPy);
 };
 
 Sk.builtin.ord = function ord(x)
@@ -415,7 +387,7 @@ Sk.builtin.ord = function ord(x)
 
     if (!Sk.builtin.checkString(x))
     {
-        throw new Sk.builtin.TypeError("ord() expected a string of length 1, but " + Sk.abstr.typeName(x) + " found");
+        throw new Sk.builtin.TypeError("ord() expected a string of length 1, but " + Sk.ffi.typeName(x) + " found");
     }
     else if (x.v.length !== 1) {
     throw new Sk.builtin.TypeError("ord() expected a character, but string of length " + x.v.length + " found");
@@ -485,7 +457,7 @@ Sk.builtin.bin = function bin(x)
 {
     Sk.builtin.pyCheckArgs("bin", arguments, 1, 1);
     if (!Sk.misceval.isIndex(x)) {
-    throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(x) + "' object can't be interpreted as an index");
+    throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(x) + "' object can't be interpreted as an index");
     }
     return Sk.builtin.int2str_(x, 2, "0b");
 };
@@ -615,7 +587,7 @@ Sk.builtin.isinstance = function isinstance(obj, type)
     }
 
     if (type === Sk.builtin.float_.prototype.ob$type) {
-        return (obj.tp$name === 'number') && (obj.skType === Sk.builtin.nmber.float$); 
+        return (obj.tp$name === 'number') && (Sk.ffi.isFloat(obj)); 
     }
 
     if (type === Sk.builtin.none.prototype.ob$type) {
@@ -722,7 +694,7 @@ Sk.builtin.getattr = function getattr(obj, name, default_)
         if (default_ !== undefined)
             return default_;
         else
-            throw new Sk.builtin.AttributeError("'" + Sk.abstr.typeName(obj) + "' object has no attribute '" + name.v + "'");
+            throw new Sk.builtin.AttributeError("'" + Sk.ffi.typeName(obj) + "' object has no attribute '" + name.v + "'");
     }
     return ret;
 };
@@ -827,7 +799,7 @@ Sk.builtin.map = function map(fun, seq)
 
     if (seq.tp$iter === undefined)
     {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(seq) + "' object is not iterable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(seq) + "' object is not iterable");
     }
 
     var retval = [];
@@ -889,7 +861,7 @@ Sk.builtin.filter = function filter(fun, iterable) {
     
     //todo: need to find a proper way to tell what type it is.
     if (iterable.tp$iter === undefined){
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iterable) + "' object is not iterable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(iterable) + "' object is not iterable");
     }
     
     //simulate default identity function
@@ -954,24 +926,24 @@ Sk.builtin.pow = function pow(a, b, c) {
     {
     if (c === undefined)
     {
-        throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.abstr.typeName(a) + "' and '" + Sk.abstr.typeName(b) + "'");
+        throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.ffi.typeName(a) + "' and '" + Sk.ffi.typeName(b) + "'");
     }
     else
     {
-        throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.abstr.typeName(a) + "', '" + Sk.abstr.typeName(b) + "', '" + Sk.abstr.typeName(c) + "'");
+        throw new Sk.builtin.TypeError("unsupported operand type(s) for pow(): '" + Sk.ffi.typeName(a) + "', '" + Sk.ffi.typeName(b) + "', '" + Sk.ffi.typeName(c) + "'");
     }
     }
-    if (a_num < 0 && b.skType === Sk.builtin.nmber.float$)
+    if (a_num < 0 && Sk.ffi.isFloat(b))
     {
-    throw new Sk.builtin.ValueError("negative number cannot be raised to a fractional power");
+        throw new Sk.builtin.ValueError("negative number cannot be raised to a fractional power");
     }
 
     if (c === undefined)
     {
     var res = Math.pow(a_num, b_num);
-    if ((a.skType === Sk.builtin.nmber.float$ || b.skType === Sk.builtin.nmber.float$) || (b_num < 0))
+    if ((Sk.ffi.isFloat(a) || Sk.ffi.isFloat(b)) || (b_num < 0))
     {
-        return new Sk.builtin.nmber(res, Sk.builtin.nmber.float$);
+        return Sk.ffi.numberToPy(res);
     }
     else if (a instanceof Sk.builtin.lng || b instanceof Sk.builtin.lng)
     {

@@ -85,7 +85,7 @@ Sk.builtin.str.prototype.sq$concat = function(other)
 { 
     if (!other || !Sk.builtin.checkString(other))
     {
-        var otypename = Sk.abstr.typeName(other);
+        var otypename = Sk.ffi.typeName(other);
         throw new Sk.builtin.TypeError("cannot concatenate 'str' and '"
                             + otypename + "' objects");
     }
@@ -477,12 +477,12 @@ Sk.builtin.str.prototype['ljust'] = new Sk.builtin.func(function(self, len, fill
     Sk.builtin.pyCheckArgs("ljust", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
     throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.abstr.typeName(len));
+                       + Sk.ffi.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
                      || fillchar.v.length !== 1)) {
     throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.abstr.typeName(fillchar))
+                       + Sk.ffi.typeName(fillchar))
     }
     if (fillchar === undefined) {
     fillchar = " ";
@@ -502,12 +502,12 @@ Sk.builtin.str.prototype['rjust'] = new Sk.builtin.func(function(self, len, fill
     Sk.builtin.pyCheckArgs("rjust", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
     throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.abstr.typeName(len));
+                       + Sk.ffi.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
                      || fillchar.v.length !== 1)) {
     throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.abstr.typeName(fillchar))
+                       + Sk.ffi.typeName(fillchar))
     }
     if (fillchar === undefined) {
     fillchar = " ";
@@ -528,12 +528,12 @@ Sk.builtin.str.prototype['center'] = new Sk.builtin.func(function(self, len, fil
     Sk.builtin.pyCheckArgs("center", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
     throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.abstr.typeName(len));
+                       + Sk.ffi.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
                      || fillchar.v.length !== 1)) {
     throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.abstr.typeName(fillchar))
+                       + Sk.ffi.typeName(fillchar))
     }
     if (fillchar === undefined) {
     fillchar = " ";
@@ -583,7 +583,7 @@ Sk.builtin.str.prototype['find'] = new Sk.builtin.func(function(self, tgt, start
     var idx = self.v.indexOf(tgt.v, start);
     idx = ((idx >= start) && (idx < end)) ? idx : -1;
 
-    return new Sk.builtin.nmber(idx, Sk.builtin.nmber.int$);
+    return Sk.ffi.numberToIntPy(idx);
 });
 
 Sk.builtin.str.prototype['index'] = new Sk.builtin.func(function(self, tgt, start, end) {
@@ -595,43 +595,55 @@ Sk.builtin.str.prototype['index'] = new Sk.builtin.func(function(self, tgt, star
     return idx;
 });
 
-Sk.builtin.str.prototype['rfind'] = new Sk.builtin.func(function(self, tgt, start, end) {
+Sk.builtin.str.prototype['rfind'] = new Sk.builtin.func(function(self, tgt, start, end)
+{
     Sk.builtin.pyCheckArgs("rfind", arguments, 2, 4);
-    if (!Sk.builtin.checkString(tgt)) {
-    throw new Sk.builtin.TypeError("expected a character buffer object");
+    if (!Sk.builtin.checkString(tgt))
+    {
+        throw new Sk.builtin.TypeError("expected a character buffer object");
     }
-    if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((start !== undefined) && !Sk.builtin.checkInt(start))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
-    if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((end !== undefined) && !Sk.builtin.checkInt(end))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)
-    start = 0;
-    else {
-    start = Sk.builtin.asnum$(start);
-    start = start >= 0 ? start : self.v.length + start;
+    {
+        start = 0;
+    }
+    else
+    {
+        start = Sk.builtin.asnum$(start);
+        start = start >= 0 ? start : self.v.length + start;
     }
 
     if (end === undefined)
-    end = self.v.length;
-    else {
-    end = Sk.builtin.asnum$(end);
-    end = end >= 0 ? end : self.v.length + end;
+    {
+        end = self.v.length;
+    }
+    else
+    {
+        end = Sk.builtin.asnum$(end);
+        end = end >= 0 ? end : self.v.length + end;
     }
 
     var idx = self.v.lastIndexOf(tgt.v, end);
     idx = (idx !== end) ? idx : self.v.lastIndexOf(tgt.v, end-1);
     idx = ((idx >= start) && (idx < end)) ? idx : -1;
 
-    return new Sk.builtin.nmber(idx, Sk.builtin.nmber.int$);
+    return Sk.ffi.numberToIntPy(idx);
 });
 
-Sk.builtin.str.prototype['rindex'] = new Sk.builtin.func(function(self, tgt, start, end) {
+Sk.builtin.str.prototype['rindex'] = new Sk.builtin.func(function(self, tgt, start, end)
+{
     Sk.builtin.pyCheckArgs('rindex', arguments, 2, 4);
     var idx = Sk.misceval.callsim(self['rfind'], self, tgt, start, end);
-    if (Sk.builtin.asnum$(idx) === -1) {
+    if (Sk.builtin.asnum$(idx) === -1)
+    {
         throw new Sk.builtin.ValueError("substring not found");
     };
     return idx;
@@ -657,7 +669,7 @@ Sk.builtin.str.prototype['replace'] = new Sk.builtin.func(function(self, oldS, n
     Sk.builtin.pyCheckType("newS", "string", Sk.builtin.checkString(newS));
     if ((count !== undefined) && !Sk.builtin.checkInt(count)) {
     throw new Sk.builtin.TypeError("integer argument expected, got " +
-                       Sk.abstr.typeName(count));
+                       Sk.ffi.typeName(count));
     }
     count = Sk.builtin.asnum$(count);
     var patt = new RegExp(Sk.builtin.str.re_escape_(oldS.v), "g");
@@ -761,14 +773,14 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
                 }
                 r = n.toString(base);
             }
-            else if (n instanceof Sk.builtin.nmber)
+            else if (Sk.ffi.isFloat(n) || Sk.ffi.isInt(n))
             {
                 r = n.str$(base, false);
                 if (r.length > 2 && r.substr(-2) === ".0")
                     r = r.substr(0, r.length - 2);
                 neg = n.nb$isnegative();
             }
-            else if (n instanceof Sk.builtin.lng)
+            else if (Sk.ffi.isLong(n))
             {
                 r = n.str$(base, false);
                 neg = n.nb$isnegative();    //  neg = n.size$ < 0;  RNL long.js change
@@ -880,13 +892,21 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
 
             case 'c':
                 if (typeof value === "number")
+                {
                     return String.fromCharCode(value);
-                else if (value instanceof Sk.builtin.nmber)
-                    return String.fromCharCode(value.v);
-                else if (value instanceof Sk.builtin.lng)
+                }
+                else if (Sk.ffi.isFloat(value) || Sk.ffi.isInt(value))
+                {
+                    return String.fromCharCode(Sk.ffi.remapToJs(value));
+                }
+                else if (Sk.ffi.isLong(value))
+                {
                     return String.fromCharCode(value.str$(10,false)[0]);
-                else if (value.constructor === Sk.builtin.str)
-                    return value.v.substr(0, 1);
+                }
+                else if (Sk.ffi.isStr(value))
+                {
+                    return Sk.ffi.remapToJs(value).substr(0, 1);
+                }
                 else
                     throw new Sk.builtin.TypeError("an integer is required");
                 break; // stupid lint

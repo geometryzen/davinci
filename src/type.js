@@ -21,22 +21,10 @@ Sk.builtin.type = function(name, bases, dict)
 {
     if (bases === undefined && dict === undefined)
     {
-        // FIXME: This part of the code is not usually accessible because of the @constructor!
+        // FIXME?: This part of the code is not usually accessible because of the @constructor!
         // 1 arg version of type()
         // the argument is an object, not a name and returns a type object
-        var obj = name;
-        if (obj.constructor === Sk.builtin.nmber)
-        {
-            if (obj.skType === Sk.builtin.nmber.int$)
-            {
-                return Sk.builtin.int_.prototype.ob$type;
-            }
-            else
-            {
-                return Sk.builtin.float_.prototype.ob$type;
-            }
-        }
-        return obj.ob$type;
+        return Sk.ffi.type(name);
     }
     else
     {
@@ -102,7 +90,7 @@ Sk.builtin.type = function(name, bases, dict)
             var lenf = this.tp$getattr("__len__");
             if (lenf !== undefined)
                 return Sk.misceval.apply(lenf, undefined, undefined, undefined, []);
-            var tname = Sk.abstr.typeName(this);
+            var tname = Sk.ffi.typeName(this);
             throw new Sk.builtin.AttributeError(tname + " instance has no attribute '__len__'");
         };
         klass.prototype.tp$call = function(args, kw)
@@ -111,12 +99,12 @@ Sk.builtin.type = function(name, bases, dict)
             /* todo; vararg kwdict */
             if (callf)
                 return Sk.misceval.apply(callf, undefined, undefined, kw, args);
-            throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object is not callable");
+            throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(this) + "' object is not callable");
         };
         klass.prototype.tp$iter = function()
         {
             var iterf = this.tp$getattr("__iter__");
-            var tname = Sk.abstr.typeName(this);
+            var tname = Sk.ffi.typeName(this);
             if (iterf)
             {
                  var ret = Sk.misceval.callsim(iterf);
@@ -140,14 +128,14 @@ Sk.builtin.type = function(name, bases, dict)
             {
                 return Sk.misceval.apply(getf, undefined, undefined, undefined, [key]);
             }
-            throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object does not support indexing");
+            throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(this) + "' object does not support indexing");
         }
         klass.prototype.tp$setitem = function(key, value)
         {
             var setf = this.tp$getattr("__setitem__");
             if (setf !== undefined)
             return Sk.misceval.apply(setf, undefined, undefined, undefined, [key,value]);
-            throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object does not support item assignment");
+            throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(this) + "' object does not support item assignment");
         }
         klass.prototype.tp$name = name;
 

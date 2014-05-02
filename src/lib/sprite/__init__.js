@@ -1609,12 +1609,12 @@ var $builtinmodule = function(name) {
               switch(key) {
                 case "x": {
                   var position = target.get_position();
-                  return Sk.builtin.assk$(position[0], Sk.builtin.nmber.float$);
+                  return Sk.ffi.numberToPy(position[0]);
                 }
                 break;
                 case "y": {
                   var position = target.get_position();
-                  return Sk.builtin.assk$(position[1], Sk.builtin.nmber.float$);
+                  return Sk.ffi.numberToPy(position[1]);
                 }
                 break;
                 default: {

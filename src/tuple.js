@@ -83,7 +83,7 @@ Sk.builtin.tuple.prototype.mp$subscript = function(index)
         return new Sk.builtin.tuple(ret);
     }
 
-    throw new Sk.builtin.TypeError("tuple indices must be integers, not " + Sk.abstr.typeName(index));
+    throw new Sk.builtin.TypeError("tuple indices must be integers, not " + Sk.ffi.typeName(index));
 };
 
 // todo; the numbers and order are taken from python, but the answer's

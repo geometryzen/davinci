@@ -10,26 +10,10 @@ Sk.abstr = {};
 //
 //
 
-Sk.abstr.typeName = function(valuePy)
-{
-    if (valuePy instanceof Sk.builtin.nmber)
-    {
-        return valuePy.skType;
-    }
-    else if (valuePy.tp$name !== undefined)
-    {
-        return valuePy.tp$name;
-    }
-    else 
-    {
-        return "<invalid type>";
-    }
-};
-
 Sk.abstr.binop_type_error = function(lhsPy, rhsPy, name)
 {
-    var lhs = Sk.abstr.typeName(lhsPy);
-    var rhs = Sk.abstr.typeName(rhsPy);
+    var lhs = Sk.ffi.typeName(lhsPy);
+    var rhs = Sk.ffi.typeName(rhsPy);
 
     throw new Sk.builtin.TypeError("unsupported operand type(s) for " + name + ": '" + lhs + "' and '" + rhs + "'");
 };
@@ -176,21 +160,36 @@ Sk.abstr.numOpAndPromote = function(a, b, opfn)
         throw new Sk.builtin.NameError('Undefined variable in expression')
     }
 
-    if (a.constructor === Sk.builtin.lng) {
-//      if (b.constructor == Sk.builtin.nmber)
-//          if (b.skType == Sk.builtin.nmber.float$) {
-//              var tmp = new Sk.builtin.nmber(a.tp$str(), Sk.builtin.nmber.float$);
-//              return [tmp, b];
-//          } else
-//              return [a, b.v];
-return [a, b];
-} else if (a.constructor === Sk.builtin.nmber) {
-    return [a, b];
-} else if (typeof a === "number") {
-    var tmp = new Sk.builtin.nmber(a, undefined);
-    return [tmp, b];
-} else
-return undefined;
+    if (a.constructor === Sk.builtin.lng)
+    {
+        /*
+        if (b.constructor == Sk.builtin.nmber)
+        {
+            if (Sk.ffi.isFloat(b))
+            {
+                var tmp = Sk.ffi.numberToPy(a.tp$str());
+                return [tmp, b];
+            }
+            else
+            {
+                return [a, b.v];
+            }
+        }
+        */
+        return [a, b];
+    }
+    else if (a.constructor === Sk.builtin.nmber) {
+        return [a, b];
+    }
+    else if (typeof a === "number")
+    {
+        var tmp = new Sk.builtin.nmber(a, undefined);
+        return [tmp, b];
+    }
+    else
+    {
+        return undefined;
+    }
 };
 
 Sk.abstr.boNumPromote_ = {
@@ -372,7 +371,7 @@ Sk.abstr.numberUnaryOp = function(valuePy, op)
         }
     }
 
-    var vtypename = Sk.abstr.typeName(valuePy);
+    var vtypename = Sk.ffi.typeName(valuePy);
     throw new Sk.builtin.TypeError("unsupported operand type for " + op + " '" + vtypename + "'");
 };
 goog.exportSymbol("Sk.abstr.numberUnaryOp", Sk.abstr.numberUnaryOp);
@@ -399,7 +398,7 @@ Sk.abstr.sequenceContains = function(seq, ob)
 {
     if (seq.sq$contains) return seq.sq$contains(ob);
 
-    var seqtypename = Sk.abstr.typeName(seq);
+    var seqtypename = Sk.ffi.typeName(seq);
     if (!seq.tp$iter) throw new Sk.builtin.TypeError("argument of type '" + seqtypename + "' is not iterable");
     
     for (var it = seq.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
@@ -429,7 +428,7 @@ Sk.abstr.sequenceDelItem = function(seq, i)
         return;
     }
 
-    var seqtypename = Sk.abstr.typeName(seq);
+    var seqtypename = Sk.ffi.typeName(seq);
     throw new Sk.builtin.TypeError("'" + seqtypename + "' object does not support item deletion");
 };
 
@@ -439,7 +438,7 @@ Sk.abstr.sequenceRepeat = function(f, seq, n)
     var count = Sk.misceval.asIndex(n);
     if (count === undefined)
     {
-        var ntypename = Sk.abstr.typeName(n);
+        var ntypename = Sk.ffi.typeName(n);
         throw new Sk.builtin.TypeError("can't multiply sequence by non-int of type '" + ntypename + "'");
     }
     return f.call(seq, n);
@@ -458,7 +457,7 @@ Sk.abstr.sequenceGetSlice = function(seq, i1, i2)
         return seq.mp$subscript(new Sk.builtin.slice(i1, i2));
     }
 
-    var seqtypename = Sk.abstr.typeName(seq);
+    var seqtypename = Sk.ffi.typeName(seq);
     throw new Sk.builtin.TypeError("'" + seqtypename + "' object is unsliceable");
 };
 
@@ -472,7 +471,7 @@ Sk.abstr.sequenceDelSlice = function(seq, i1, i2)
         return;
     }
 
-    var seqtypename = Sk.abstr.typeName(seq);
+    var seqtypename = Sk.ffi.typeName(seq);
     throw new Sk.builtin.TypeError("'" + seqtypename + "' doesn't support slice deletion");
 };
 
@@ -490,7 +489,7 @@ Sk.abstr.sequenceSetSlice = function(seq, i1, i2, x)
     }
     else
     {
-        var seqtypename = Sk.abstr.typeName(seq);
+        var seqtypename = Sk.ffi.typeName(seq);
         throw new Sk.builtin.TypeError("'" + seqtypename + "' object doesn't support slice assignment");
     }
 };
@@ -519,7 +518,7 @@ Sk.abstr.objectDelItem = function(o, key)
         {
             var keyValue = Sk.misceval.asIndex(key);
             if (keyValue === undefined) {
-                var keytypename = Sk.abstr.typeName(key);
+                var keytypename = Sk.ffi.typeName(key);
                 throw new Sk.builtin.TypeError("sequence index must be integer, not '" + keytypename + "'");
             }
             Sk.abstr.sequenceDelItem(o, keyValue);
@@ -528,7 +527,7 @@ Sk.abstr.objectDelItem = function(o, key)
         // if o is a slice do something else...
     }
 
-    var otypename = Sk.abstr.typeName(o);
+    var otypename = Sk.ffi.typeName(o);
     throw new Sk.builtin.TypeError("'" + otypename + "' object does not support item deletion");
 };
 goog.exportSymbol("Sk.abstr.objectDelItem", Sk.abstr.objectDelItem);
@@ -551,7 +550,7 @@ Sk.abstr.objectGetItem = function(o, key)
     }
   }
 
-  var otypename = Sk.abstr.typeName(o);
+  var otypename = Sk.ffi.typeName(o);
   throw new Sk.builtin.TypeError("'" + otypename + "' does not support indexing");
 };
 goog.exportSymbol("Sk.abstr.objectGetItem", Sk.abstr.objectGetItem);
@@ -568,7 +567,7 @@ Sk.abstr.objectSetItem = function(o, key, v)
             return o.tp$setitem(key, v);
     }
 
-    var otypename = Sk.abstr.typeName(o);
+    var otypename = Sk.ffi.typeName(o);
     throw new Sk.builtin.TypeError("'" + otypename + "' does not support item assignment");
 };
 goog.exportSymbol("Sk.abstr.objectSetItem", Sk.abstr.objectSetItem);
@@ -577,7 +576,7 @@ goog.exportSymbol("Sk.abstr.objectSetItem", Sk.abstr.objectSetItem);
 
 Sk.abstr.gattr = function(obj, nameJS)
 {
-    var objname = Sk.abstr.typeName(obj);
+    var objname = Sk.ffi.typeName(obj);
 
     if (obj === null) {
         throw new Sk.builtin.AttributeError("'" + objname + "' object has no attribute '" + nameJS + "'");
@@ -601,7 +600,7 @@ goog.exportSymbol("Sk.abstr.gattr", Sk.abstr.gattr);
 
 Sk.abstr.sattr = function(obj, nameJS, data)
 {
-    var objname = Sk.abstr.typeName(obj);
+    var objname = Sk.ffi.typeName(obj);
 
     if (obj === null) {
         throw new Sk.builtin.AttributeError("'" + objname + "' object has no attribute '" + nameJS + "'");
@@ -622,7 +621,7 @@ Sk.abstr.iter = function(obj)
         return obj.tp$iter();
     }
     else {
-        throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(obj) + "' object is not iterable");
+        throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(obj) + "' object is not iterable");
     }
 };
 goog.exportSymbol("Sk.abstr.iter", Sk.abstr.iter);

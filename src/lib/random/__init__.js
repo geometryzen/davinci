@@ -215,7 +215,7 @@ var $builtinmodule = function(name) {
 
   mod.random = new Sk.builtin.func(function() {
     Sk.builtin.pyCheckArgs("random", arguments, 0, 0);
-    return new Sk.builtin.nmber(myGenerator.genrand_res53(), Sk.builtin.nmber.float$);
+    return Sk.ffi.numberToPy(myGenerator.genrand_res53());
   });
 
   var toInt = function(num) {
@@ -248,7 +248,7 @@ var $builtinmodule = function(name) {
     if ((step == 1) && (width > 0)) {
       // Random in [start, stop), must use toInt on product for correct results with negative ranges
       ret = start + toInt(myGenerator.genrand_res53() * width);
-      return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
+      return Sk.ffi.numberToIntPy(ret);
     };
 
     if (step == 1) {
@@ -273,7 +273,7 @@ var $builtinmodule = function(name) {
 
     // Random in range(start, stop, step)
     ret = start + (step * toInt(myGenerator.genrand_res53() * n));
-    return new Sk.builtin.nmber(ret, Sk.builtin.nmber.int$);
+    return Sk.ffi.numberToIntPy(ret);
   };
 
   mod.randint = new Sk.builtin.func(function(a, b) {
