@@ -451,11 +451,14 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     if (t === Sk.ffi.JsType.OBJECT) {
         if (Object.prototype.toString.call(valueJs) === "[object Array]")
         {
+            return new Sk.ffi.ObjectPy(/** @type {Object} */ (valueJs));
+            /*
             var valuesPy = [];
             for (var i = 0; i < valueJs.length; ++i) {
                 valuesPy.push(Sk.ffi.remapToPy(valueJs[i]));
             }
             return Sk.ffi.listPy(valuesPy);
+            */
         }
         else if (typeof className === Sk.ffi.JsType.STRING)
         {
@@ -467,6 +470,10 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
         }
         else
         {
+            // When presented with a vanilla JavaScript object,
+            // we can no longer treat it as a dictionary.
+            return new Sk.ffi.ObjectPy(/** @type {Object} */ (valueJs));
+            /*
             var kvsPy = [];
             for (var k in valueJs)
             {
@@ -474,6 +481,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
                 kvsPy.push(Sk.ffi.remapToPy(valueJs[k]));
             }
             return new Sk.builtin.dict(kvsPy);
+            */
         }
     }
     else if (t === Sk.ffi.JsType.STRING)
@@ -550,6 +558,9 @@ goog.exportSymbol("Sk.ffi.isInstance", Sk.ffi.isInstance);
 
 Sk.ffi.isDefined = function(valuePy) {return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED;};
 goog.exportSymbol("Sk.ffi.isDefined", Sk.ffi.isDefined);
+
+Sk.ffi.isObject = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.OBJECT;};
+goog.exportSymbol("Sk.ffi.isObject", Sk.ffi.isObject);
 
 Sk.ffi.isDict = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT;};
 goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);
@@ -747,17 +758,18 @@ goog.exportSymbol("Sk.ffi.checkRhsOperandType", Sk.ffi.checkRhsOperandType);
  * @enum {number}
  */
 Sk.ffi.PyType = {
-    'DICT':       1,
-    'LIST':       2,
-    'TUPLE':      3,
-    'BOOL':       4,
-    'FLOAT':      5,
-    'INT':        6,
-    'LONG':       7,
-    'STR':        8,
-    'NONE':       9,
-    'FUNCTION':  10,
-    'INSTANCE':  11,
+    'OBJECT':     1, // A (wrapper around a) JavaScript Object.
+    'DICT':       2,
+    'LIST':       3,
+    'TUPLE':      4,
+    'BOOL':       5,
+    'FLOAT':      6,
+    'INT':        7,
+    'LONG':       8,
+    'STR':        9,
+    'NONE':      10,
+    'FUNCTION':  11,
+    'INSTANCE':  12,
     'UNDEFINED': -1,
     'FUNREF':    -2
 };
@@ -783,6 +795,7 @@ Sk.ffi.typeString = function(kind, name)
     function typePy(kind) {
         switch(kind)
         {
+            case Sk.ffi.PyType.OBJECT:      {return typeBrackets('object');}
             case Sk.ffi.PyType.DICT:        {return typeBrackets('dict');}
             case Sk.ffi.PyType.LIST:        {return typeBrackets('list');}
             case Sk.ffi.PyType.TUPLE:       {return typeBrackets('tuple');}
@@ -813,6 +826,7 @@ Sk.ffi.typeString = function(kind, name)
     else if (typeof kind === Sk.ffi.JsType.NUMBER) {
         switch(kind)
         {
+            case Sk.ffi.PyType.OBJECT:
             case Sk.ffi.PyType.DICT:
             case Sk.ffi.PyType.LIST:
             case Sk.ffi.PyType.TUPLE:
@@ -856,6 +870,15 @@ Sk.ffi.getType = function(valuePy)
     if (typeof valuePy === Sk.ffi.JsType.UNDEFINED)
     {
         return Sk.ffi.PyType.UNDEFINED;
+    }
+    else if (valuePy instanceof Sk.ffi.ObjectPy)
+    {
+        return Sk.ffi.PyType.OBJECT;
+    }
+    else if (valuePy instanceof Sk.builtin.object)
+    {
+        throw new Error("Ooch - object");
+//      return Sk.ffi.PyType.DICT;
     }
     else if (valuePy instanceof Sk.builtin.dict)
     {
@@ -902,6 +925,7 @@ Sk.ffi.getType = function(valuePy)
     }
     else
     {
+        // FIXME: This is bad, we can easily get lost.
         var x = typeof valuePy.v;
         if (x !== Sk.ffi.JsType.UNDEFINED)
         {
@@ -1031,6 +1055,10 @@ Sk.ffi.remapToJs = function(valuePy, shallow)
     switch(Sk.ffi.getType(valuePy))
     {
         case Sk.ffi.PyType.STR:
+        {
+            return valuePy.v;
+        }
+        case Sk.ffi.PyType.OBJECT:
         {
             return valuePy.v;
         }
@@ -1369,3 +1397,267 @@ goog.exportSymbol("Sk.ffi.unwrapo", Sk.ffi.unwrapo);
  */
 Sk.ffi.unwrapn = function(obj) { return Sk.ffi.remapToJs(obj); };
 goog.exportSymbol("Sk.ffi.unwrapn", Sk.ffi.unwrapn);
+
+/**
+ * @constructor
+ * @param {Object} objectJs The JavaScript object.
+ */
+Sk.ffi.ObjectPy = function(objectJs)
+{
+    this.v = objectJs;
+}
+
+/**
+ * @param {string} name The name of the attribute.
+ */
+Sk.ffi.ObjectPy.prototype.tp$getattr = function(name)
+{
+  goog.asserts.assertString(name);
+  goog.asserts.assert(this.ob$type !== undefined, "object has no ob$type!");
+  var selfJs = this.v;
+  var propJs = this.v[name];
+  switch(typeof propJs)
+  {
+    case 'function':
+    {
+//    return new Sk.builtin.func(propJs);
+      return new Sk.ffi.CallablePy(this.v, name);
+      /*
+      return Sk.ffi.callableToPy(mod, name, function(methodPy) {
+        Sk.ffi.checkFunctionArgs(name, arguments, 1);
+        var argumentsPy = Array.prototype.slice.call(arguments, 1);
+        var argumentsJs = [];
+        for (var i = 0; i < argumentsPy.length; ++i)
+        {
+          argumentsJs.push(Sk.ffi.remapToJs(argumentsPy[i]));
+        }
+        // debugger;
+        if (isConstructorFunction(name)) {
+          // Do I have to simulate the 'new' keyword? Maybe not!
+          var valueJs = new propJs(argumentsJs);
+          return Sk.ffi.callsim(mod[JS_WRAP_CLASS], Sk.ffi.referenceToPy(valueJs, name));
+        }
+        else {
+          var valueJs = propJs.apply(selfJs, argumentsJs);
+          return remapToPy(valueJs, className);
+        }
+      });
+      */
+    }
+    case 'number':
+    {
+      return Sk.ffi.numberToFloatPy(propJs);
+    }
+    case 'object':
+    {
+      // It may be that JavaScript clients have added methods to the prototype.
+      // e.g. d3 added append to an array.
+      return new Sk.ffi.ObjectPy(propJs);
+      /*
+      if (Object.prototype.toString.apply(propJs) === '[object Array]')
+      {
+        var valuesPy = [];
+        for (var i = 0; i < propJs.length; i++)
+        {
+          // FIXME: Is the remapToPy correct?
+          valuesPy.push(Sk.ffi.remapToPy(propJs[i]));
+        }
+        return Sk.ffi.listPy(valuesPy);
+      }
+      else
+      {
+        return new Sk.ffi.ObjectPy(propJs);
+      }
+      */
+    }
+    case 'boolean':
+    {
+      return Sk.ffi.booleanToPy(propJs);
+    }
+    case 'undefined':
+    {
+      switch(name)
+      {
+        case 'append':
+        {
+          return new Sk.builtin.func(function(itemPy)
+          {
+            Sk.builtin.pyCheckArgs("append", arguments, 1, 1);
+            selfJs.push(Sk.ffi.remapToJs(itemPy));
+            return Sk.ffi.none.None;
+          });
+        }
+        default:
+        {
+          return Sk.ffi.none.None;
+        }
+      }
+    }
+    default:
+    {
+      goog.asserts.assertString(propJs);
+      return Sk.ffi.stringToPy(propJs);
+    }
+  }
+};
+
+/**
+ * @param {string} name The name of the attribute.
+ */
+Sk.ffi.ObjectPy.prototype.tp$setattr = function(name, valuePy)
+{
+    goog.asserts.assert(typeof name === "string");
+    this.v[name] = Sk.ffi.remapToJs(valuePy);
+};
+
+/**
+ *
+ */
+Sk.ffi.ObjectPy.prototype.mp$subscript = function(index)
+{
+  if (!Array.isArray(this.v))
+  {
+    throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object does not support indexing.");
+  }
+  if (Sk.misceval.isIndex(index))
+  {
+    var i = Sk.misceval.asIndex(index);
+    if (i !== undefined) 
+    {
+      if (i < 0)
+      {
+          i = this.v.length + i;
+      } 
+      if (i < 0 || i >= this.v.length)
+      {
+        throw new Sk.builtin.IndexError("list index out of range");
+      }
+      return this.v[i]
+    }
+    else
+    {
+      // Fall through
+    }
+  }
+  else if (index instanceof Sk.builtin.slice)
+  {
+    var ret = [];
+    index.sssiter$(this, function(i, wrt) {ret.push(wrt.v[i]);});
+    return new Sk.builtin.list(ret);
+  }
+  throw new Sk.builtin.TypeError("list indices must be integers, not " + Sk.abstr.typeName(index));
+};
+
+Sk.ffi.ObjectPy.prototype.tp$iter = function()
+{
+    var ret =
+    {
+        tp$iter: function() { return ret; },
+        $obj: this,
+        $index: 0,
+        tp$iternext: function()
+        {
+            // todo; StopIteration
+            if (ret.$index >= ret.$obj.v.length) return undefined;
+            return Sk.ffi.remapToPy(ret.$obj.v[ret.$index++]);
+        }
+    };
+    return ret;
+};
+
+
+/**
+ * We will masquerade as a Python object created using object().
+ */
+Sk.ffi.ObjectPy.prototype.tp$name = "ObjectPy";
+Sk.ffi.ObjectPy.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('ObjectPy', Sk.ffi.ObjectPy);
+
+Sk.ffi.ObjectPy.prototype.tp$str = function()
+{
+    return Sk.ffi.stringToPy("" + this.v);
+};
+
+Sk.ffi.ObjectPy.prototype.tp$repr = function()
+{
+    return Sk.ffi.stringToPy("" + this.v);
+};
+
+Sk.ffi.ObjectPy.prototype.nb$add = function(otherPy)
+{
+    return Sk.ffi.remapToPy(this.v.add(Sk.ffi.remapToJs(otherPy)));
+}
+
+Sk.ffi.ObjectPy.prototype.nb$subtract = function(otherPy)
+{
+    return Sk.ffi.remapToPy(this.v.sub(Sk.ffi.remapToJs(otherPy)));
+}
+
+Sk.ffi.ObjectPy.prototype.nb$multiply = function(otherPy)
+{
+    return Sk.ffi.remapToPy(this.v.mul(Sk.ffi.remapToJs(otherPy)));
+}
+
+Sk.ffi.ObjectPy.prototype.nb$divide = function(otherPy)
+{
+    return Sk.ffi.remapToPy(this.v.div(Sk.ffi.remapToJs(otherPy)));
+}
+
+goog.exportSymbol("Sk.ffi.ObjectPy", Sk.ffi.ObjectPy);
+
+/**
+ * FIXME: Do I really need a new class here. What about using ObjectPy?
+ * A callable property, the arguments are not known until the call is made.
+ * @constructor
+ * @param {Object} objectJs The JavaScript object.
+ * @param {string} name The name of the function to call.
+ */
+Sk.ffi.CallablePy = function(objectJs, name)
+{
+  this.v = objectJs;
+  this.name = name;
+}
+
+/**
+ * @param {Array.<Object>} args A JavaScript array containing Py objects!
+ */
+Sk.ffi.CallablePy.prototype.tp$call = function(args, kw)
+{
+  var objectJs = this.v;
+  var name = this.name;
+  var propJs = objectJs[name];
+  var argsJs = args.map(function(xPy) {return Sk.ffi.remapToJs(xPy);});
+  /**
+   * If it's a constructor function then we must call it using the new keyword.
+   * The only clue we have got is the naming convention.
+   */
+  function isConstructorFunction(name)
+  {
+    // Hacks for JSXGraph.
+    if (name === "Value" || name === "X" || name === "Y")
+    {
+      return false;
+    }
+    if (name[0] === name[0].toUpperCase())
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  if (isConstructorFunction(name))
+  {
+    var that = Object.create(propJs.prototype);
+    // Invoke the constructor function, binding this to the new object.
+    var other = propJs.apply(that, argsJs);
+    // If the return value isn't an object, substitute the new object.
+    var valueJs = (typeof other === 'object' && other) || that;
+    return Sk.ffi.remapToPy(valueJs);
+  }
+  else
+  {
+    return Sk.ffi.remapToPy(propJs.apply(objectJs, argsJs));
+  }
+}

@@ -1902,18 +1902,26 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy));
+    return Sk.ffi.gattr(Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy)), PROP_W);
   });
   $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy) {
     return Sk.ffh.sqrt(Sk.ffh.quadrance(selfPy));
   });
   $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffh.mod(selfPy, selfPy);
+    var s = Sk.ffi.remapToJs(selfPy);
+    var w   = s.w;
+    var x   = s.x;
+    var y   = s.y;
+    var z   = s.z;
+    var xy  = s.xy;
+    var yz  = s.yz;
+    var zx  = s.zx;
+    var xyz = s.xyz;
+    return coordsJsToE3Py(w * w + x * x + y * y + z * z + xy * xy + yz * yz + zx * zx + xyz * xyz, 0, 0, 0, 0, 0, 0, 0);
   });
   $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
     var self = Sk.ffi.remapToJs(selfPy);
-    // TODO: generalize.
     return coordsJsToE3Py(Math.sqrt(self.w), 0, 0, 0, 0, 0, 0, 0);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {

@@ -55,7 +55,7 @@ function removeElementsByTagName(tagName) {
 mod[WORKBENCH_2D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, canvasPy) {
     Sk.ffi.checkMethodArgs(WORKBENCH_2D, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_CANVAS, "Element", Sk.ffi.isInstance(canvasPy), canvasPy);
+    Sk.ffi.checkArgType(PROP_CANVAS, [Sk.ffi.PyType.OBJECT], Sk.ffi.isObject(canvasPy) || Sk.ffi.isInstance(canvasPy), canvasPy);
     var canvas = Sk.ffi.remapToJs(canvasPy);
     function onWindowResize(event) {
       var width  = window.innerWidth;

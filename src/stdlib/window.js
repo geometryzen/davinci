@@ -112,6 +112,44 @@ Sk.builtin.buildWindowClass = function(mod) {
     }
   }
 
+  function remapToPy(valueJs, name)
+  {
+    switch(typeof valueJs) {
+      case 'number': {
+        return Sk.ffi.numberToFloatPy(valueJs);
+      }
+      case 'boolean': {
+        return Sk.ffi.booleanToPy(valueJs);
+      }
+      case 'string': {
+        return Sk.ffi.stringToPy(valueJs);
+      }
+      case 'undefined': {
+        return Sk.ffi.none.None;
+      }
+      case 'object': {
+        if (Object.prototype.toString.apply(valueJs) === '[object Array]')
+        {
+          return Sk.ffi.callsim(mod[JS_WRAP_CLASS], Sk.ffi.referenceToPy(valueJs, JS_WRAP_CLASS));
+          /*
+          var valuesPy = [];
+          for (var i = 0; i < valueJs.length; i++) {
+            valuesPy.push(remapToPy(valueJs[i], name));
+          }
+          return Sk.ffi.listPy(valuesPy);
+          */
+        }
+        else
+        {
+          return Sk.ffi.callsim(mod[JS_WRAP_CLASS], Sk.ffi.referenceToPy(valueJs, JS_WRAP_CLASS));
+        }
+      }
+      default: {
+        throw Sk.ffi.err.attribute(typeof valueJs).isNotGetableOnType(name);
+      }
+    }
+  }
+
   function defaultGetAttribute(mod, selfJs, name, className) {
     var propJs = selfJs[name];
     switch(typeof propJs) {
@@ -124,7 +162,10 @@ Sk.builtin.buildWindowClass = function(mod) {
           {
             argumentsJs.push(Sk.ffi.remapToJs(argumentsPy[i]));
           }
+          // debugger;
           if (isConstructorFunction(name)) {
+            // Do I have to simulate the 'new' keyword? Maybe not!
+            // var valueJs = new propJs(argumentsJs);
             // Create a new object that inherits from the constructor's prototype.
             var that = Object.create(propJs.prototype);
             // Invoke the constructor function, binding this to the new object.
@@ -135,26 +176,7 @@ Sk.builtin.buildWindowClass = function(mod) {
           }
           else {
             var valueJs = propJs.apply(selfJs, argumentsJs);
-            switch(typeof valueJs) {
-              case 'number': {
-                return Sk.ffi.numberToFloatPy(valueJs);
-              }
-              case 'boolean': {
-                return Sk.ffi.booleanToPy(valueJs);
-              }
-              case 'string': {
-                return Sk.ffi.stringToPy(valueJs);
-              }
-              case 'undefined': {
-                return Sk.ffi.none.None;
-              }
-              case 'object': {
-                return Sk.ffi.callsim(mod[JS_WRAP_CLASS], Sk.ffi.referenceToPy(valueJs, JS_WRAP_CLASS));
-              }
-              default: {
-                throw Sk.ffi.err.attribute(typeof valueJs).isNotGetableOnType(name);
-              }
-            }
+            return remapToPy(valueJs, className);
           }
         });
       }

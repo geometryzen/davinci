@@ -37,8 +37,8 @@ Sk.abstr.binop_type_error = function(lhsPy, rhsPy, name)
 Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
   if (obj === null) {
     return undefined;
-  };
-  switch (name) {
+};
+switch (name) {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
     case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__sub__'];
     case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__mul__'];
@@ -51,14 +51,14 @@ Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
     case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__and__'];
     case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__xor__'];
     case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__or__'];
-  }
+}
 };
 
 Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
   if (obj === null) {
     return undefined;
-  };
-  switch (name) {
+};
+switch (name) {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
     case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__rsub__'];
     case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__rmul__'];
@@ -71,17 +71,17 @@ Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
     case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__rand__'];
     case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__rxor__'];
     case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__ror__'];
-  }
+}
 };
 
 /**
  * In-place operations (+=, -=, *=, /=, //=, %=, **=, <<=, >>=, &=, ^=, |=)
  */
-Sk.abstr.iboNameToSlotFunc_ = function(obj, name) {
+ Sk.abstr.iboNameToSlotFunc_ = function(obj, name) {
   if (obj === null) {
     return undefined;
-  };
-  switch (name) {
+};
+switch (name) {
     case "Add":      return obj.nb$inplace_add          ? obj.nb$inplace_add          : obj['__iadd__'];
     case "Sub":      return obj.nb$inplace_subtract     ? obj.nb$inplace_subtract     : obj['__isub__'];
     case "Mult":     return obj.nb$inplace_multiply     ? obj.nb$inplace_multiply     : obj['__imul__'];
@@ -94,7 +94,7 @@ Sk.abstr.iboNameToSlotFunc_ = function(obj, name) {
     case "BitAnd":   return obj.nb$inplace_and;
     case "BitOr":    return obj.nb$inplace_or;
     case "BitXor":   return obj.nb$inplace_xor          ? obj.nb$inplace_xor          : obj['__ixor__'];
-  }
+}
 };
 
 Sk.abstr.binary_op_ = function(v, w, opname)
@@ -133,24 +133,24 @@ Sk.abstr.binary_iop_ = function(v, w, opname)
     var vop = Sk.abstr.iboNameToSlotFunc_(v, opname);
     if (vop !== undefined)
     {
-    if (vop.call) {
+        if (vop.call) {
             ret = vop.call(v, w);
     } else {  // assume that vop is an __xxx__ type method
         ret = Sk.misceval.callsim(vop,v,w); //  added to be like not-in-place... is this okay?
-        }
-        if (ret !== undefined) return ret;
     }
-    var wop = Sk.abstr.iboNameToSlotFunc_(w, opname);
-    if (wop !== undefined)
-    {
+    if (ret !== undefined) return ret;
+}
+var wop = Sk.abstr.iboNameToSlotFunc_(w, opname);
+if (wop !== undefined)
+{
     if (wop.call) {
-            ret = wop.call(w, v);
+        ret = wop.call(w, v);
     } else { // assume that wop is an __xxx__ type method
         ret = Sk.misceval.callsim(wop,w,v); //  added to be like not-in-place... is this okay?
-        }
-        if (ret !== undefined) return ret;
     }
-    Sk.abstr.binop_type_error(v, w, opname);
+    if (ret !== undefined) return ret;
+}
+Sk.abstr.binop_type_error(v, w, opname);
 };
 
 //
@@ -170,7 +170,7 @@ Sk.abstr.numOpAndPromote = function(a, b, opfn)
         && Math.floor(ans) === ans) {                                               // RNL
             return [Sk.builtin.lng.fromInt$(a), Sk.builtin.lng.fromInt$(b)];        // RNL
         } else                                                                      // RNL
-            return ans;
+        return ans;
     }
     else if (a === undefined || b === undefined) {
         throw new Sk.builtin.NameError('Undefined variable in expression')
@@ -183,14 +183,14 @@ Sk.abstr.numOpAndPromote = function(a, b, opfn)
 //              return [tmp, b];
 //          } else
 //              return [a, b.v];
-        return [a, b];
-    } else if (a.constructor === Sk.builtin.nmber) {
-        return [a, b];
-    } else if (typeof a === "number") {
-        var tmp = new Sk.builtin.nmber(a, undefined);
-        return [tmp, b];
-    } else
-        return undefined;
+return [a, b];
+} else if (a.constructor === Sk.builtin.nmber) {
+    return [a, b];
+} else if (typeof a === "number") {
+    var tmp = new Sk.builtin.nmber(a, undefined);
+    return [tmp, b];
+} else
+return undefined;
 };
 
 Sk.abstr.boNumPromote_ = {
@@ -237,24 +237,24 @@ Sk.abstr.boNumPromote_ = {
         return m;
     },
     "LShift": function(a, b) { 
-    if (b < 0) {
-        throw new Sk.builtin.ValueError("negative shift count");
-    }
-    var m = a << b;
-    if (m > a) {
-        return m; 
-    }
-    else {
-        // Fail, this will get recomputed with longs
-        return a * Math.pow(2, b);
-    }
-    },
-    "RShift": function(a, b) { 
         if (b < 0) {
             throw new Sk.builtin.ValueError("negative shift count");
         }
-        var m = a >> b;
-        if ((a > 0) && (m < 0)) {
+        var m = a << b;
+        if (m > a) {
+            return m; 
+        }
+        else {
+        // Fail, this will get recomputed with longs
+        return a * Math.pow(2, b);
+    }
+},
+"RShift": function(a, b) { 
+    if (b < 0) {
+        throw new Sk.builtin.ValueError("negative shift count");
+    }
+    var m = a >> b;
+    if ((a > 0) && (m < 0)) {
             // fix incorrect sign extension
             m = m & (Math.pow(2, 32-b) - 1);
         }
@@ -323,11 +323,11 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
 /**
  * Unary arithmetic operations (-, +, abs(), and ~)
  */
-Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
+ Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
   if (obj === null) {
     return undefined;
-  };
-  switch (name) {
+};
+switch (name) {
     case "USub": {
         return obj.nu$negative          ? obj.nu$negative        : obj['__neg__'];
     }
@@ -340,7 +340,7 @@ Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
     default: {
         throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
     }
-  }
+}
 };
 
 Sk.abstr.numberUnaryOp = function(valuePy, op)
@@ -535,19 +535,24 @@ goog.exportSymbol("Sk.abstr.objectDelItem", Sk.abstr.objectDelItem);
 
 Sk.abstr.objectGetItem = function(o, key)
 {
-    if (o !== null) 
+  if (o !== null) 
+  {
+    if (o.mp$subscript)
     {
-        if (o.mp$subscript)
-            return o.mp$subscript(key);
-        else if (Sk.misceval.isIndex(key) && o.sq$item)
-            return Sk.abstr.sequenceGetItem(o, Sk.misceval.asIndex(key));
-        else if (o.tp$getitem) {
-            return o.tp$getitem(key);
-        }
+      return o.mp$subscript(key);
     }
+    else if (Sk.misceval.isIndex(key) && o.sq$item)
+    {
+      return Sk.abstr.sequenceGetItem(o, Sk.misceval.asIndex(key));
+    }
+    else if (o.tp$getitem)
+    {
+      return o.tp$getitem(key);
+    }
+  }
 
-    var otypename = Sk.abstr.typeName(o);
-    throw new Sk.builtin.TypeError("'" + otypename + "' does not support indexing");
+  var otypename = Sk.abstr.typeName(o);
+  throw new Sk.builtin.TypeError("'" + otypename + "' does not support indexing");
 };
 goog.exportSymbol("Sk.abstr.objectGetItem", Sk.abstr.objectGetItem);
 
@@ -559,8 +564,8 @@ Sk.abstr.objectSetItem = function(o, key, v)
             return o.mp$ass_subscript(key, v);
         else if (Sk.misceval.isIndex(key) && o.sq$ass_item)
             return Sk.abstr.sequenceSetItem(o, Sk.misceval.asIndex(key), v);
-    else if (o.tp$setitem)
-        return o.tp$setitem(key, v);
+        else if (o.tp$setitem)
+            return o.tp$setitem(key, v);
     }
 
     var otypename = Sk.abstr.typeName(o);

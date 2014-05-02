@@ -162,16 +162,36 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
       var other = factory(Sk.ffi.remapToJs(otherPy), 1);
       return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(other.sub(self), RATIONAL));
     });
-    $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
-      var a = Sk.ffi.remapToJs(selfPy);
-      var b = Sk.ffi.remapToJs(otherPy);
-      if (Sk.ffi.isNum(otherPy)) {
-        Sk.ffi.checkRhsOperandType(OP_MUL, RATIONAL_OR_INT, Sk.ffi.isInt(otherPy), otherPy);
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.numberToIntPy(a.numer * b), Sk.ffi.numberToIntPy(a.denom));
-      }
-      else {
-        Sk.ffi.checkRhsOperandType(OP_MUL, RATIONAL_OR_INT, isRational(otherPy), otherPy);
-        return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(a.mul(b), RATIONAL));
+    $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+    {
+      switch(Sk.ffi.getType(otherPy))
+      {
+        case Sk.ffi.PyType.INSTANCE:
+        {
+          switch(Sk.ffi.typeName(otherPy))
+          {
+            case RATIONAL:
+            {
+              var a = Sk.ffi.remapToJs(selfPy);
+              var b = Sk.ffi.remapToJs(otherPy);
+              return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.referenceToPy(a.mul(b), RATIONAL));
+            }
+            default:
+            {
+              return undefined;
+            }
+          }
+        }
+        case Sk.ffi.PyType.INT:
+        {
+          var a = Sk.ffi.remapToJs(selfPy);
+          var b = Sk.ffi.remapToJs(otherPy);
+          return Sk.ffi.callsim(mod[RATIONAL], Sk.ffi.numberToIntPy(a.numer * b), Sk.ffi.numberToIntPy(a.denom));
+        }
+        default:
+        {
+          return undefined;
+        }
       }
     });
     $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {

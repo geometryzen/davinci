@@ -18,8 +18,8 @@ Sk.builtin.str = function(x)
     else if ((x === null) || (x instanceof Sk.builtin.none)) ret = "None";
     else if (x instanceof Sk.builtin.bool)
     {
-	if (x.v) ret = "True";
-	else ret = "False";
+        if (x.v) ret = "True";
+        else ret = "False";
     }
     else if (typeof x === "number")
     {
@@ -57,7 +57,7 @@ Sk.builtin.str.$emptystr = new Sk.builtin.str('');
 
 Sk.builtin.str.prototype.mp$subscript = function(index)
 {
-	index = Sk.builtin.asnum$(index);
+    index = Sk.builtin.asnum$(index);
     if (typeof index === "number" && Math.floor(index) === index /* not a float*/ )
     {
         if (index < 0) index = this.v.length + index;
@@ -95,7 +95,7 @@ Sk.builtin.str.prototype.nb$add = Sk.builtin.str.prototype.sq$concat;
 Sk.builtin.str.prototype.nb$inplace_add = Sk.builtin.str.prototype.sq$concat;
 Sk.builtin.str.prototype.sq$repeat = function(n)
 {
-	n = Sk.builtin.asnum$(n);
+    n = Sk.builtin.asnum$(n);
     var ret = "";
     for (var i = 0; i < n; ++i)
         ret += this.v;
@@ -106,8 +106,8 @@ Sk.builtin.str.prototype.nb$inplace_multiply = Sk.builtin.str.prototype.sq$repea
 Sk.builtin.str.prototype.sq$item = function() { goog.asserts.fail(); };
 Sk.builtin.str.prototype.sq$slice = function(i1, i2)
 {
-	i1 = Sk.builtin.asnum$(i1);
-	i2 = Sk.builtin.asnum$(i2);
+    i1 = Sk.builtin.asnum$(i1);
+    i2 = Sk.builtin.asnum$(i2);
     if (i1 < 0) i1 = 0;
     return new Sk.builtin.str(this.v.substr(i1, i2 - i1));
 };
@@ -232,7 +232,7 @@ Sk.builtin.str.prototype.tp$repr = function()
 Sk.builtin.str.re_escape_ = function(s)
 {
     var ret = [];
-	var re = /^[A-Za-z0-9]+$/;
+    var re = /^[A-Za-z0-9]+$/;
     for (var i = 0; i < s.length; ++i)
     {
         var c = s.charAt(i);
@@ -319,8 +319,8 @@ Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howma
     if (on === null) {
         str = str.trimLeft();
     } else {
-	// Escape special characters in "on" so we can use a regexp
-	var s = on.v.replace(/([.*+?=|\\\/()\[\]\{\}^$])/g, "\\$1");
+    // Escape special characters in "on" so we can use a regexp
+    var s = on.v.replace(/([.*+?=|\\\/()\[\]\{\}^$])/g, "\\$1");
         regex = new RegExp(s, "g");
     }
 
@@ -355,15 +355,15 @@ Sk.builtin.str.prototype['strip'] = new Sk.builtin.func(function(self, chars)
 {
     Sk.builtin.pyCheckArgs("strip", arguments, 1, 2);
     if ((chars !== undefined) && !Sk.builtin.checkString(chars)) {
-	throw new Sk.builtin.TypeError("strip arg must be None or str");
+    throw new Sk.builtin.TypeError("strip arg must be None or str");
     }
     var pattern;
     if (chars === undefined) {
-	pattern =  /^\s+|\s+$/g;
+    pattern =  /^\s+|\s+$/g;
     }
     else {
-	var regex = Sk.builtin.str.re_escape_(chars.v);
-	pattern = new RegExp("^["+regex+"]+|["+regex+"]+$","g");
+    var regex = Sk.builtin.str.re_escape_(chars.v);
+    pattern = new RegExp("^["+regex+"]+|["+regex+"]+$","g");
     }
     return new Sk.builtin.str(self.v.replace(pattern, ''));
 });
@@ -372,15 +372,15 @@ Sk.builtin.str.prototype['lstrip'] = new Sk.builtin.func(function(self, chars)
 {
     Sk.builtin.pyCheckArgs("lstrip", arguments, 1, 2);
     if ((chars !== undefined) && !Sk.builtin.checkString(chars)) {
-	throw new Sk.builtin.TypeError("lstrip arg must be None or str");
+    throw new Sk.builtin.TypeError("lstrip arg must be None or str");
     }
     var pattern;
     if (chars === undefined) {
-	pattern =  /^\s+/g;
+    pattern =  /^\s+/g;
     }
     else {
-	var regex = Sk.builtin.str.re_escape_(chars.v);
-	pattern = new RegExp("^["+regex+"]+","g");
+    var regex = Sk.builtin.str.re_escape_(chars.v);
+    pattern = new RegExp("^["+regex+"]+","g");
     }
     return new Sk.builtin.str(self.v.replace(pattern, ''));
 });
@@ -389,15 +389,15 @@ Sk.builtin.str.prototype['rstrip'] = new Sk.builtin.func(function(self, chars)
 {
     Sk.builtin.pyCheckArgs("rstrip", arguments, 1, 2);
     if ((chars !== undefined) && !Sk.builtin.checkString(chars)) {
-	throw new Sk.builtin.TypeError("rstrip arg must be None or str");
+    throw new Sk.builtin.TypeError("rstrip arg must be None or str");
     }
     var pattern;
     if (chars === undefined) {
-	pattern =  /\s+$/g;
+    pattern =  /\s+$/g;
     }
     else {
-	var regex = Sk.builtin.str.re_escape_(chars.v);
-	pattern = new RegExp("["+regex+"]+$","g");
+    var regex = Sk.builtin.str.re_escape_(chars.v);
+    pattern = new RegExp("["+regex+"]+$","g");
     }
     return new Sk.builtin.str(self.v.replace(pattern, ''));
 });
@@ -439,27 +439,27 @@ Sk.builtin.str.prototype['rpartition'] = new Sk.builtin.func(function(self, sep)
 Sk.builtin.str.prototype['count'] = new Sk.builtin.func(function(self, pat, start, end) {
     Sk.builtin.pyCheckArgs("count", arguments, 2, 4);
     if (!Sk.builtin.checkString(pat)) {
-	throw new Sk.builtin.TypeError("expected a character buffer object");
+    throw new Sk.builtin.TypeError("expected a character buffer object");
     }
     if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
     if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)
-	start = 0;
+    start = 0;
     else {
-	start = Sk.builtin.asnum$(start);
-	start = start >= 0 ? start : self.v.length + start;
+    start = Sk.builtin.asnum$(start);
+    start = start >= 0 ? start : self.v.length + start;
     }
 
     if (end === undefined)
-	end = self.v.length;
+    end = self.v.length;
     else {
-	end = Sk.builtin.asnum$(end);
-	end = end >= 0 ? end : self.v.length + end;
+    end = Sk.builtin.asnum$(end);
+    end = end >= 0 ? end : self.v.length + end;
     }
 
     var m = new RegExp(pat.v,'g');
@@ -476,20 +476,20 @@ Sk.builtin.str.prototype['count'] = new Sk.builtin.func(function(self, pat, star
 Sk.builtin.str.prototype['ljust'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("ljust", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
-	throw new Sk.builtin.TypeError("integer argument exepcted, got "
-				       + Sk.abstr.typeName(len));
+    throw new Sk.builtin.TypeError("integer argument exepcted, got "
+                       + Sk.abstr.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-				     || fillchar.v.length !== 1)) {
-	throw new Sk.builtin.TypeError("must be char, not "
-				       + Sk.abstr.typeName(fillchar))
+                     || fillchar.v.length !== 1)) {
+    throw new Sk.builtin.TypeError("must be char, not "
+                       + Sk.abstr.typeName(fillchar))
     }
     if (fillchar === undefined) {
-	fillchar = " ";
+    fillchar = " ";
     } else {
-	fillchar = fillchar.v;
+    fillchar = fillchar.v;
     }
-	len = Sk.builtin.asnum$(len);
+    len = Sk.builtin.asnum$(len);
     if (self.v.length >= len) {
         return self;
     } else {
@@ -501,20 +501,20 @@ Sk.builtin.str.prototype['ljust'] = new Sk.builtin.func(function(self, len, fill
 Sk.builtin.str.prototype['rjust'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("rjust", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
-	throw new Sk.builtin.TypeError("integer argument exepcted, got "
-				       + Sk.abstr.typeName(len));
+    throw new Sk.builtin.TypeError("integer argument exepcted, got "
+                       + Sk.abstr.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-				     || fillchar.v.length !== 1)) {
-	throw new Sk.builtin.TypeError("must be char, not "
-				       + Sk.abstr.typeName(fillchar))
+                     || fillchar.v.length !== 1)) {
+    throw new Sk.builtin.TypeError("must be char, not "
+                       + Sk.abstr.typeName(fillchar))
     }
     if (fillchar === undefined) {
-	fillchar = " ";
+    fillchar = " ";
     } else {
-	fillchar = fillchar.v;
+    fillchar = fillchar.v;
     }
-	len = Sk.builtin.asnum$(len);
+    len = Sk.builtin.asnum$(len);
     if (self.v.length >= len) {
         return self;
     } else {
@@ -527,20 +527,20 @@ Sk.builtin.str.prototype['rjust'] = new Sk.builtin.func(function(self, len, fill
 Sk.builtin.str.prototype['center'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("center", arguments, 2, 3);
     if (!Sk.builtin.checkInt(len)) {
-	throw new Sk.builtin.TypeError("integer argument exepcted, got "
-				       + Sk.abstr.typeName(len));
+    throw new Sk.builtin.TypeError("integer argument exepcted, got "
+                       + Sk.abstr.typeName(len));
     }
     if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-				     || fillchar.v.length !== 1)) {
-	throw new Sk.builtin.TypeError("must be char, not "
-				       + Sk.abstr.typeName(fillchar))
+                     || fillchar.v.length !== 1)) {
+    throw new Sk.builtin.TypeError("must be char, not "
+                       + Sk.abstr.typeName(fillchar))
     }
     if (fillchar === undefined) {
-	fillchar = " ";
+    fillchar = " ";
     } else {
-	fillchar = fillchar.v;
+    fillchar = fillchar.v;
     }
-	len = Sk.builtin.asnum$(len);
+    len = Sk.builtin.asnum$(len);
     if (self.v.length >= len) {
         return self;
     } else {
@@ -557,27 +557,27 @@ Sk.builtin.str.prototype['center'] = new Sk.builtin.func(function(self, len, fil
 Sk.builtin.str.prototype['find'] = new Sk.builtin.func(function(self, tgt, start, end) {
     Sk.builtin.pyCheckArgs("find", arguments, 2, 4);
     if (!Sk.builtin.checkString(tgt)) {
-	throw new Sk.builtin.TypeError("expected a character buffer object");
+    throw new Sk.builtin.TypeError("expected a character buffer object");
     }
     if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
     if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)
-	start = 0;
+    start = 0;
     else {
-	start = Sk.builtin.asnum$(start);
-	start = start >= 0 ? start : self.v.length + start;
+    start = Sk.builtin.asnum$(start);
+    start = start >= 0 ? start : self.v.length + start;
     }
 
     if (end === undefined)
-	end = self.v.length;
+    end = self.v.length;
     else {
-	end = Sk.builtin.asnum$(end);
-	end = end >= 0 ? end : self.v.length + end;
+    end = Sk.builtin.asnum$(end);
+    end = end >= 0 ? end : self.v.length + end;
     }
 
     var idx = self.v.indexOf(tgt.v, start);
@@ -598,27 +598,27 @@ Sk.builtin.str.prototype['index'] = new Sk.builtin.func(function(self, tgt, star
 Sk.builtin.str.prototype['rfind'] = new Sk.builtin.func(function(self, tgt, start, end) {
     Sk.builtin.pyCheckArgs("rfind", arguments, 2, 4);
     if (!Sk.builtin.checkString(tgt)) {
-	throw new Sk.builtin.TypeError("expected a character buffer object");
+    throw new Sk.builtin.TypeError("expected a character buffer object");
     }
     if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
     if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-	throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)
-	start = 0;
+    start = 0;
     else {
-	start = Sk.builtin.asnum$(start);
-	start = start >= 0 ? start : self.v.length + start;
+    start = Sk.builtin.asnum$(start);
+    start = start >= 0 ? start : self.v.length + start;
     }
 
     if (end === undefined)
-	end = self.v.length;
+    end = self.v.length;
     else {
-	end = Sk.builtin.asnum$(end);
-	end = end >= 0 ? end : self.v.length + end;
+    end = Sk.builtin.asnum$(end);
+    end = end >= 0 ? end : self.v.length + end;
     }
 
     var idx = self.v.lastIndexOf(tgt.v, end);
@@ -656,23 +656,23 @@ Sk.builtin.str.prototype['replace'] = new Sk.builtin.func(function(self, oldS, n
     Sk.builtin.pyCheckType("oldS", "string", Sk.builtin.checkString(oldS));
     Sk.builtin.pyCheckType("newS", "string", Sk.builtin.checkString(newS));
     if ((count !== undefined) && !Sk.builtin.checkInt(count)) {
-	throw new Sk.builtin.TypeError("integer argument expected, got " +
-				       Sk.abstr.typeName(count));
+    throw new Sk.builtin.TypeError("integer argument expected, got " +
+                       Sk.abstr.typeName(count));
     }
     count = Sk.builtin.asnum$(count);
     var patt = new RegExp(Sk.builtin.str.re_escape_(oldS.v), "g");
 
     if ((count === undefined) || (count < 0)) {
-	return new Sk.builtin.str(self.v.replace(patt, newS.v));
+    return new Sk.builtin.str(self.v.replace(patt, newS.v));
     }
 
     var c = 0;
     function replacer(match) {
-	c++;
-	if (c <= count) {
-	    return newS.v;
-	}
-	return match;
+    c++;
+    if (c <= count) {
+        return newS.v;
+    }
+    return match;
     }
     return new Sk.builtin.str(self.v.replace(patt, replacer));
 });
@@ -718,8 +718,8 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
     var index = 0;
     var replFunc = function(substring, mappingKey, conversionFlags, fieldWidth, precision, precbody, conversionType)
     {
-		fieldWidth = Sk.builtin.asnum$(fieldWidth);
-		precision  = Sk.builtin.asnum$(precision);
+        fieldWidth = Sk.builtin.asnum$(fieldWidth);
+        precision  = Sk.builtin.asnum$(precision);
 
         var i;
         if (mappingKey === undefined || mappingKey === "" ) i = index++; // ff passes '' not undef for some reason
@@ -747,7 +747,7 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
 
         var formatNumber = function(n, base)
         {
-			base = Sk.builtin.asnum$(base);
+            base = Sk.builtin.asnum$(base);
             var j;
             var r;
             var neg = false;
@@ -764,14 +764,14 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
             else if (n instanceof Sk.builtin.nmber)
             {
                 r = n.str$(base, false);
-				if (r.length > 2 && r.substr(-2) === ".0")
-					r = r.substr(0, r.length - 2);
+                if (r.length > 2 && r.substr(-2) === ".0")
+                    r = r.substr(0, r.length - 2);
                 neg = n.nb$isnegative();
             }
             else if (n instanceof Sk.builtin.lng)
             {
                 r = n.str$(base, false);
-                neg = n.nb$isnegative();	//	neg = n.size$ < 0;	RNL long.js change
+                neg = n.nb$isnegative();    //  neg = n.size$ < 0;  RNL long.js change
             }
 
             goog.asserts.assert(r !== undefined, "unhandled number format");
@@ -858,21 +858,21 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
             case 'E':
             case 'g':
             case 'G':
-				var convValue = Sk.builtin.asnum$(value);
-				if (typeof convValue === "string")
-					convValue = Number(convValue);
-				if (convValue === Infinity)
-					return "inf";
-				if (convValue === -Infinity)
-					return "-inf";
-				if (isNaN(convValue))
-					return "nan";
+                var convValue = Sk.builtin.asnum$(value);
+                if (typeof convValue === "string")
+                    convValue = Number(convValue);
+                if (convValue === Infinity)
+                    return "inf";
+                if (convValue === -Infinity)
+                    return "-inf";
+                if (isNaN(convValue))
+                    return "nan";
                 var convName = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(conversionType.toLowerCase())];
-				if (precision === undefined || precision === "")
-					if (conversionType === 'e' || conversionType === 'E')
-						precision = 6;
-					else if (conversionType === 'f' || conversionType === 'F')
-						precision = 7;
+                if (precision === undefined || precision === "")
+                    if (conversionType === 'e' || conversionType === 'E')
+                        precision = 6;
+                    else if (conversionType === 'f' || conversionType === 'F')
+                        precision = 7;
                 var result = (convValue)[convName](precision);
                 if ('EFG'.indexOf(conversionType) !== -1) result = result.toUpperCase();
                 // todo; signs etc.

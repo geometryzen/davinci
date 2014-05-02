@@ -2334,15 +2334,18 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
 }, CANVAS_RENDERER, []);
 
-mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
+mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc)
+{
   var PROP_AUTO_CLEAR   = "autoClear";
   var PROP_CLEAR_COLOR  = "clearColor";
   var PROP_GAMMA_INPUT  = "gammaInput";
   var PROP_GAMMA_OUTPUT = "gammaOutput";
   var PROP_SORT_OBJECTS = "sortObjects";
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy) {
-    if (Sk.ffi.checkMethodArgs(WEBGL_RENDERER, arguments, 0, 1) > 0) {
-      Sk.ffi.checkArgType("parameters", Sk.ffi.PyType.DICT, Sk.ffi.isDict(parametersPy), parametersPy);
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, parametersPy)
+  {
+    if (Sk.ffi.checkMethodArgs(WEBGL_RENDERER, arguments, 0, 1) > 0)
+    {
+      Sk.ffi.checkArgType("parameters", [Sk.ffi.PyType.OBJECT, Sk.ffi.PyType.DICT], Sk.ffi.isObject(parametersPy) || Sk.ffi.isDict(parametersPy), parametersPy);
     }
     var parameters = Sk.ffi.remapToJs(parametersPy);
     Sk.ffi.referenceToPy(new THREE[WEBGL_RENDERER](parameters), WEBGL_RENDERER, undefined, selfPy);

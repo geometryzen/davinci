@@ -100,7 +100,7 @@ Sk.builtin.dict.prototype.key$pop = function(bucket, key)
             return item;
         }
     }
-    return undefined;    
+    return undefined;
 }
 
 // Perform dictionary lookup, either return value or undefined if key not in dictionary

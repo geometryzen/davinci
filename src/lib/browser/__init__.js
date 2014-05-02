@@ -13,9 +13,10 @@ var $builtinmodule = function(name) {
 
   Sk.builtin.defineNode(mod);
 
-  mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod), Sk.ffi.referenceToPy(window, WINDOW_CLASS));
-
-  mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod), Sk.ffi.referenceToPy(window.document, DOCUMENT_CLASS));
+  mod['window']   = new Sk.ffi.ObjectPy(window);
+  mod['document'] = new Sk.ffi.ObjectPy(window.document);
+  // mod['window'] = Sk.ffi.callsim(Sk.builtin.buildWindowClass(mod), Sk.ffi.referenceToPy(window, WINDOW_CLASS));
+  // mod['document'] = Sk.ffi.callsim(Sk.builtin.buildDocumentClass(mod), Sk.ffi.referenceToPy(window.document, DOCUMENT_CLASS));
 
   mod[WINDOW_ANIMATION_RUNNER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     $loc.__init__ = Sk.ffi.functionPy(function(selfPy, tickPy, terminatePy, setUpPy, tearDownPy, windowPy) {
@@ -26,7 +27,7 @@ var $builtinmodule = function(name) {
       Sk.ffi.checkArgType("setUp",     Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(setUpPy));
       Sk.ffi.checkArgType("tearDown",  Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tearDownPy));
       if (Sk.ffi.isDefined(windowPy)) {
-        Sk.ffi.checkArgType("window", Sk.ffi.PyType.INSTANCE, Sk.ffi.isInstance(windowPy), windowPy);
+        Sk.ffi.checkArgType("window", [Sk.ffi.PyType.OBJECT,Sk.ffi.PyType.INSTANCE], Sk.ffi.isObject(windowPy) || Sk.ffi.isInstance(windowPy, WINDOW_CLASS), windowPy);
       }
       var onDocumentKeyDown = function(event) {
         if (event.keyCode == 27) {

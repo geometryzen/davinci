@@ -16,7 +16,7 @@ var $builtinmodule = function(name)
 
     mod[FUNCTION_STRINGIFY] = Sk.ffi.functionPy(function(valuePy, replacerPy, spacePy) {
         Sk.ffi.checkFunctionArgs(FUNCTION_STRINGIFY, arguments, 1, 3);
-        Sk.ffi.checkArgType("value", Sk.ffi.PyType.DICT, Sk.ffi.isDict(valuePy));
+        Sk.ffi.checkArgType("value", [Sk.ffi.PyType.OBJECT, Sk.ffi.PyType.DICT], Sk.ffi.isDict(valuePy));
         Sk.ffi.checkArgType("replacer", [Sk.ffi.PyType.FUNCTION, Sk.ffi.PyType.NONE, Sk.ffi.PyType.UNDEFINED], Sk.ffi.isUndefined(replacerPy) || Sk.ffi.isNone(replacerPy) || Sk.ffi.isFunction(replacerPy));
         Sk.ffi.checkArgType("space", [Sk.ffi.PyType.INT, Sk.ffi.PyType.UNDEFINED], Sk.ffi.isUndefined(spacePy) || Sk.ffi.isInt(spacePy));
         var value = Sk.ffi.remapToJs(valuePy);

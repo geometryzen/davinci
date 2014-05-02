@@ -291,6 +291,14 @@ var isQuantityPy     = function(valuePy)
   {
     return true;
   }
+  else if (Sk.ffi.isInstance(valuePy, 'Rational'))
+  {
+    return true;
+  }
+  else if (Sk.ffi.isInstance(valuePy, 'Fraction'))
+  {
+    return true;
+  }
   else
   {
     return false;

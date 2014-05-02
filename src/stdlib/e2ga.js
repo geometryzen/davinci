@@ -849,7 +849,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
     var mv = Sk.ffi.remapToJs(selfPy);
-    return coordsJsToE2Py(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y + mv.xy * mv.xy), 0, 0, 0);
+    return Sk.ffi.numberToFloatPy(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y + mv.xy * mv.xy));
   });
   $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy) {
     var mv = Sk.ffi.remapToJs(selfPy);

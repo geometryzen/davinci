@@ -505,12 +505,14 @@ function completeMesh(geometryPy, parameters) {
   }
 }
 
-mod[WORLD] = Sk.ffi.functionPy(function() {
+mod[WORLD] = Sk.ffi.functionPy(function()
+{
   Sk.ffi.checkFunctionArgs(WORLD, arguments, 0, 0);
   var scenePy = Sk.ffi.callsim(mod[SCENE]);
   var scene = Sk.ffi.remapToJs(scenePy);
 
-  function addPointLight(x, y, z) {
+  function addPointLight(x, y, z)
+  {
     var pointLight = new THREE[POINT_LIGHT](0xFFFFFF);
     pointLight.position.set(x, y, z);
     scene.add(pointLight);
@@ -576,22 +578,28 @@ function createCartesianLines(majorSteps, minorsPerMajorMark, majorScale, e, o) 
   return grid;
 }
 
-mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scenePy, rendererPy) {
+mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
+{
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, scenePy, rendererPy)
+  {
     var scene;
     var renderer;
     Sk.ffi.checkMethodArgs(CARTESIAN_SPACE, arguments, 0, 2);
-    if (Sk.ffi.isDefined(scenePy)) {
+    if (Sk.ffi.isDefined(scenePy))
+    {
       Sk.ffi.checkArgType(PROP_SCENE, SCENE, Sk.ffi.isInstance(scenePy, SCENE), scenePy);
     }
-    else {
+    else
+    {
       scenePy = Sk.ffi.callsim(mod[WORLD]);
     }
     scene = Sk.ffi.remapToJs(scenePy);
-    if (Sk.ffi.isDefined(rendererPy)) {
+    if (Sk.ffi.isDefined(rendererPy))
+    {
       Sk.ffi.checkArgType(PROP_RENDERER, [CANVAS_RENDERER, WEBGL_RENDERER], Sk.ffi.isInstance(rendererPy, WEBGL_RENDERER) || Sk.ffi.isInstance(rendererPy, CANVAS_RENDERER), rendererPy);
     }
-    else {
+    else
+    {
       rendererPy = Sk.ffi.callsim(mod[WEBGL_RENDERER], Sk.ffi.remapToPy({"antialias": true}));
     }
     renderer = Sk.ffi.remapToJs(rendererPy);

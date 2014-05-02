@@ -137,7 +137,9 @@ Sk.builtin.type = function(name, bases, dict)
         {
             var getf = this.tp$getattr("__getitem__");
             if (getf !== undefined)
-            return Sk.misceval.apply(getf, undefined, undefined, undefined, [key]);
+            {
+                return Sk.misceval.apply(getf, undefined, undefined, undefined, [key]);
+            }
             throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(this) + "' object does not support indexing");
         }
         klass.prototype.tp$setitem = function(key, value)

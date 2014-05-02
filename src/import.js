@@ -45,24 +45,25 @@ Sk.doOneTimeInitialization = function()
 };
 
 /**
- * currently only pull once from Sk.syspath. User might want to change
- * from js or from py.
+ * Currently only pull once from Sk.syspath. User might want to change from js or from py.
  */
 Sk.importSetUpPath = function()
 {
     if (!Sk.realsyspath)
     {
-        var paths = [
+        var paths =
+        [
             new Sk.builtin.str("src/builtin"),
             new Sk.builtin.str("src/lib"),
             new Sk.builtin.str(".")
         ];
         for (var i = 0; i < Sk.syspath.length; ++i)
+        {
             paths.push(new Sk.builtin.str(Sk.syspath[i]));
+        }
         Sk.realsyspath = new Sk.builtin.list(paths);
 
         Sk.doOneTimeInitialization();
-
     }
 };
 
@@ -92,14 +93,17 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
     var parentModName;
 
     // if leaf is already in sys.modules, early out
-    try {
+    try
+    {
         var prev = Sk.sysmodules.mp$subscript(modname);
         // if we're a dotted module, return the top level, otherwise ourselves
         if (modNameSplit.length > 1)
             return Sk.sysmodules.mp$subscript(modNameSplit[0]);
         else
             return prev;        
-    } catch (x) {
+    }
+    catch (x)
+    {
         // not in sys.modules, continue
     }
 
@@ -145,10 +149,11 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 
     module.$js = co.code; // todo; only in DEBUG?
     var finalcode = co.code;
-	if (Sk.dateSet == null || !Sk.dateSet) {
-		finalcode = 'Sk.execStart = new Date();\n' + co.code;
-		Sk.dateSet = true;
-	}
+    if (Sk.dateSet == null || !Sk.dateSet)
+    {
+        finalcode = 'Sk.execStart = new Date();\n' + co.code;
+        Sk.dateSet = true;
+    }
 
     {
         if (dumpJS)
@@ -210,29 +215,36 @@ Sk.importModule = function(name, dumpJS)
 
 Sk.importMain = function(name, dumpJS)
 {
-	Sk.dateSet = false;
-	Sk.filesLoaded = false
-	//	Added to reset imports
-	Sk.sysmodules = new Sk.builtin.dict([]);
-	Sk.realsyspath = undefined;
+    Sk.dateSet = false;
+    Sk.filesLoaded = false
+    //  Added to reset imports
+    Sk.sysmodules = new Sk.builtin.dict([]);
+    Sk.realsyspath = undefined;
 
     Sk.resetCompiler();
 
     return Sk.importModuleInternal_(name, dumpJS, "__main__");
 };
+goog.exportSymbol("Sk.importMain", Sk.importMain);
 
+/**
+ * @param {string} name The name of module to import.
+ * @param {boolean} dumpJS Whether to output (to Sk.debugout) the generated JavaScript code.
+ * @param {string} body Use as the body of the text for the module.
+ */
 Sk.importMainWithBody = function(name, dumpJS, body)
 {
-	Sk.dateSet = false;
-	Sk.filesLoaded = false
-	//	Added to reset imports
-	Sk.sysmodules = new Sk.builtin.dict([]);
-	Sk.realsyspath = undefined;
+    Sk.dateSet = false;
+    Sk.filesLoaded = false
+    //  Added to reset imports
+    Sk.sysmodules = new Sk.builtin.dict([]);
+    Sk.realsyspath = undefined;
     
     Sk.resetCompiler();
 
     return Sk.importModuleInternal_(name, dumpJS, "__main__", body);
 };
+goog.exportSymbol("Sk.importMainWithBody", Sk.importMainWithBody);
 
 Sk.builtin.__import__ = function(name, globals, locals, fromlist)
 {
@@ -245,15 +257,14 @@ Sk.builtin.__import__ = function(name, globals, locals, fromlist)
     goog.asserts.assert(ret);
     return ret;
 };
+goog.exportSymbol("Sk.builtin.__import__", Sk.builtin.__import__);
 
-Sk.importStar = function(module,loc) {
+Sk.importStar = function(module,loc)
+{
     var props = Object['getOwnPropertyNames'](module['$d'])
-    for(var i in props) {
+    for(var i in props)
+    {
         loc[props[i]] = module['$d'][props[i]];
     }
 }
-
-goog.exportSymbol("Sk.importMain", Sk.importMain);
-goog.exportSymbol("Sk.importMainWithBody", Sk.importMainWithBody);
-goog.exportSymbol("Sk.builtin.__import__", Sk.builtin.__import__);
 goog.exportSymbol("Sk.importStar", Sk.importStar);
