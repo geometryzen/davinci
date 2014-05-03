@@ -85,7 +85,7 @@ Sk.builtin.generator.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('genera
 
 Sk.builtin.generator.prototype.tp$repr = function()
 {
-    return new Sk.builtin.str("<generator object " + this.func_code['co_name'].v + ">");
+    return Sk.ffi.stringToPy("<generator object " + Sk.ffi.remapToJs(this.func_code['co_name']) + ">");
 };
 
 Sk.builtin.generator.prototype['send'] = new Sk.builtin.func(function(self, value)

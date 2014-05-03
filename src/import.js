@@ -35,10 +35,9 @@ Sk.importSearchPathForName = function(name, ext, failok)
 
 Sk.doOneTimeInitialization = function()
 {
-    // can't fill these out when making the type because tuple/dict aren't
-    // defined yet.
-    Sk.builtin.type.basesStr_ = new Sk.builtin.str("__bases__");
-    Sk.builtin.type.mroStr_ = new Sk.builtin.str("__mro__");
+    // can't fill these out when making the type because tuple/dict aren't defined yet.
+    Sk.builtin.type.basesStr_ = Sk.ffi.stringToPy("__bases__");
+    Sk.builtin.type.mroStr_ = Sk.ffi.stringToPy("__mro__");
     Sk.builtin.object['$d'] = new Sk.builtin.dict([]);
     Sk.builtin.object['$d'].mp$ass_subscript(Sk.builtin.type.basesStr_, new Sk.builtin.tuple([]));
     Sk.builtin.object['$d'].mp$ass_subscript(Sk.builtin.type.mroStr_, new Sk.builtin.tuple([Sk.builtin.object]));
@@ -53,13 +52,13 @@ Sk.importSetUpPath = function()
     {
         var paths =
         [
-            new Sk.builtin.str("src/builtin"),
-            new Sk.builtin.str("src/lib"),
-            new Sk.builtin.str(".")
+            Sk.ffi.stringToPy("src/builtin"),
+            Sk.ffi.stringToPy("src/lib"),
+            Sk.ffi.stringToPy(".")
         ];
         for (var i = 0; i < Sk.syspath.length; ++i)
         {
-            paths.push(new Sk.builtin.str(Sk.syspath[i]));
+            paths.push(Sk.ffi.stringToPy(Sk.syspath[i]));
         }
         Sk.realsyspath = new Sk.builtin.list(paths);
 
@@ -176,7 +175,7 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
         }
     }
 
-    var namestr = "new Sk.builtin.str('" + modname + "')";
+    var namestr = "Sk.ffi.stringToPy('" + modname + "')";
     finalcode += "\n" + co.funcname + "(" + namestr + ");";
 
     var modlocs = goog.global['eval'](finalcode);
@@ -185,7 +184,7 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
     // it), but also set it after we're done so that builtins don't have to
     // remember to do it.
     if (!modlocs['__name__'])
-        modlocs['__name__'] = new Sk.builtin.str(modname);
+        modlocs['__name__'] = Sk.ffi.stringToPy(modname);
 
     module['$d'] = modlocs;
 

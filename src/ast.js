@@ -35,7 +35,7 @@ function REQ(n, type) { goog.asserts.assert(n.type === type, "node wasn't expect
 function strobj(s)
 {
     goog.asserts.assert(typeof s === "string", "expecting string, got " + (typeof s));
-    return new Sk.builtin.str(s);
+    return Sk.ffi.stringToPy(s);
 }
 
 /** @return {number} */
@@ -1531,7 +1531,7 @@ function parsestr(c, s)
 function parsestrplus(c, n)
 {
     REQ(CHILD(n, 0), TOK.T_STRING);
-    var ret = new Sk.builtin.str("");
+    var ret = Sk.ffi.stringToPy("");
     for (var i = 0; i < NCH(n); ++i)
     {
         try {
@@ -2036,8 +2036,8 @@ Sk.astDump = function(node)
             var ret;
             if (node === true) ret = "True";
             else if (node === false) ret = "False";
-            else if (node instanceof Sk.builtin.lng) ret = node.tp$str().v;
-            else if (node instanceof Sk.builtin.str) ret = node.tp$repr().v;
+            else if (Sk.ffi.isLong(node)) ret = Sk.ffi.remapToJs(node.tp$str());
+            else if (Sk.ffi.isStr(node)) ret = Sk.ffi.remapToJs(node.tp$repr());
             else ret = "" + node;
             return indent + ret;
         }

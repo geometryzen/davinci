@@ -1402,11 +1402,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(BACKWARD)
+              return Sk.ffi.stringToPy(BACKWARD)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(BACKWARD)
+              return Sk.ffi.stringToPy(BACKWARD)
             })
 
           }, BACKWARD, []));
@@ -1424,11 +1424,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(BEGIN_FILL)
+              return Sk.ffi.stringToPy(BEGIN_FILL)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(BEGIN_FILL)
+              return Sk.ffi.stringToPy(BEGIN_FILL)
             })
 
           }, BEGIN_FILL, []));
@@ -1458,11 +1458,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(COLOR)
+              return Sk.ffi.stringToPy(COLOR)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(COLOR)
+              return Sk.ffi.stringToPy(COLOR)
             })
 
           }, COLOR, []));
@@ -1486,11 +1486,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(END_FILL)
+              return Sk.ffi.stringToPy(END_FILL)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(END_FILL)
+              return Sk.ffi.stringToPy(END_FILL)
             })
 
           }, END_FILL, []));
@@ -1518,11 +1518,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(FILL_COLOR)
+              return Sk.ffi.stringToPy(FILL_COLOR)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(FILL_COLOR)
+              return Sk.ffi.stringToPy(FILL_COLOR)
             })
 
           }, FILL_COLOR, []));
@@ -1541,11 +1541,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(FORWARD)
+              return Sk.ffi.stringToPy(FORWARD)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(FORWARD)
+              return Sk.ffi.stringToPy(FORWARD)
             })
 
           }, FORWARD, []));
@@ -1565,11 +1565,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(GOTO)
+              return Sk.ffi.stringToPy(GOTO)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(GOTO)
+              return Sk.ffi.stringToPy(GOTO)
             })
 
           }, GOTO, []));
@@ -1588,11 +1588,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(LEFT)
+              return Sk.ffi.stringToPy(LEFT)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(LEFT)
+              return Sk.ffi.stringToPy(LEFT)
             })
 
           }, LEFT, []));
@@ -1644,11 +1644,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(POSITION)
+              return Sk.ffi.stringToPy(POSITION)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(POSITION)
+              return Sk.ffi.stringToPy(POSITION)
             })
 
           }, POSITION, []));
@@ -1667,11 +1667,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(RIGHT)
+              return Sk.ffi.stringToPy(RIGHT)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(RIGHT)
+              return Sk.ffi.stringToPy(RIGHT)
             })
 
           }, RIGHT, []));
@@ -1689,11 +1689,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(SHAPE)
+              return Sk.ffi.stringToPy(SHAPE)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(SHAPE)
+              return Sk.ffi.stringToPy(SHAPE)
             })
 
           }, SHAPE, []));
@@ -1711,11 +1711,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return new Sk.builtin.str(STAMP)
+              return Sk.ffi.stringToPy(STAMP)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return new Sk.builtin.str(STAMP)
+              return Sk.ffi.stringToPy(STAMP)
             })
 
           }, STAMP, []));

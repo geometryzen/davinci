@@ -38,12 +38,14 @@ Sk.builtin.object.prototype.GenericGetAttr = function(name)
     if (this['$d'])
     {
         var res;
-        if  (this['$d'].mp$lookup) {
-            res = this['$d'].mp$lookup(new Sk.builtin.str(name));
+        if  (this['$d'].mp$lookup)
+        {
+            res = this['$d'].mp$lookup(Sk.ffi.stringToPy(name));
         }
-        else if (this['$d'].mp$subscript) {
+        else if (this['$d'].mp$subscript)
+        {
             try {
-                res = this['$d'].mp$subscript(new Sk.builtin.str(name));
+                res = this['$d'].mp$subscript(Sk.ffi.stringToPy(name));
             } catch (x) {
                 res = undefined;
             }
@@ -74,9 +76,13 @@ Sk.builtin.object.prototype.GenericSetAttr = function(name, value)
     goog.asserts.assert(typeof name === "string");
     // todo; lots o' stuff
     if (this['$d'].mp$ass_subscript)
-        this['$d'].mp$ass_subscript(new Sk.builtin.str(name), value);
+    {
+        this['$d'].mp$ass_subscript(Sk.ffi.stringToPy(name), value);
+    }
     else if (typeof this['$d'] === "object")
+    {
         this['$d'][name] = value;
+    }
 };
 goog.exportSymbol("Sk.builtin.object.prototype.GenericSetAttr", Sk.builtin.object.prototype.GenericSetAttr);
 

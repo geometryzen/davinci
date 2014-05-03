@@ -44,7 +44,7 @@ Sk.builtin.method.prototype.tp$call = function(args, kw)
 
 Sk.builtin.method.prototype.tp$repr = function()
 {
-    var name = (this.im_func.func_code && this.im_func.func_code['co_name'] && this.im_func.func_code['co_name'].v) || '<native JS>';
-    return new Sk.builtin.str("<bound method " + this.im_self.ob$type.tp$name + "." + name
-            + " of " + this.im_self.tp$repr().v + ">");
+    var name = (this.im_func.func_code && this.im_func.func_code['co_name'] && Sk.ffi.remapToJs(this.im_func.func_code['co_name'])) || '<native JS>';
+    return Sk.ffi.stringToPy("<bound method " + this.im_self.ob$type.tp$name + "." + name
+            + " of " + Sk.ffi.remapToJs(this.im_self.tp$repr()) + ">");
 };

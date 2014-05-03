@@ -76,7 +76,7 @@ Sk.builtin.type = function(name, bases, dict)
             var mod = dict.__module__;
             var cname = "";
             if (mod) cname = mod.v + ".";
-            return new Sk.builtin.str("<" + cname + name + " object>");
+            return Sk.ffi.stringToPy("<" + cname + name + " object>");
         };
         klass.prototype.tp$str = function()
         {
@@ -181,7 +181,7 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
 	var ctype = "class";
 	if (!mod && !t.sk$klass)
 	    ctype = "type";
-        return new Sk.builtin.str("<" + ctype + " '" + cname + t.tp$name + "'>");
+        return Sk.ffi.stringToPy("<" + ctype + " '" + cname + t.tp$name + "'>");
     };
     t.tp$str = undefined;
     t.tp$getattr = Sk.builtin.type.prototype.tp$getattr;
@@ -193,7 +193,7 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
 
 Sk.builtin.type.ob$type = Sk.builtin.type;
 Sk.builtin.type.tp$name = "type";
-Sk.builtin.type.tp$repr = function() { return new Sk.builtin.str("<type 'type'>"); };
+Sk.builtin.type.tp$repr = function() { return Sk.ffi.stringToPy("<type 'type'>"); };
 
 //Sk.builtin.type.prototype.tp$descr_get = function() { print("in type descr_get"); };
 
@@ -215,7 +215,7 @@ Sk.builtin.type.prototype.tp$getattr = function(name)
 
     if (this['$d'])
     {
-        var res = this['$d'].mp$lookup(new Sk.builtin.str(name));
+        var res = this['$d'].mp$lookup(Sk.ffi.stringToPy(name));
         if (res !== undefined)
         {
             return res;
@@ -245,7 +245,7 @@ Sk.builtin.type.prototype.tp$setattr = function(name, value)
 Sk.builtin.type.typeLookup = function(type, name)
 {
     var mro = type.tp$mro;
-    var pyname = new Sk.builtin.str(name);
+    var pyname = Sk.ffi.stringToPy(name);
     var base;
     var res;
     var i;

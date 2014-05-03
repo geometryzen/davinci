@@ -139,8 +139,8 @@ OUTERWHILE:
         {
             // no transition
             var errline = context[0][0];
-            throw new Sk.builtin.ParseError("bad input", this.filename, errline, context);	//	RNL
-//          throw new Sk.builtin.ParseError("bad input on line " + errline.toString());		RNL
+            throw new Sk.builtin.ParseError("bad input", this.filename, errline, context);  //  RNL
+//          throw new Sk.builtin.ParseError("bad input on line " + errline.toString());     RNL
         }
     }
 };
@@ -309,9 +309,10 @@ function makeParser(filename, style)
         //print("tok:"+ret);
         if (ret)
         {
-            if (ret !== "done") {
+            if (ret !== "done")
+            {
                 throw new Sk.builtin.ParseError("incomplete input", this.filename);
-			}
+            }
             return p.rootnode;
         }
         return false;
@@ -334,7 +335,6 @@ Sk.parse = function parse(filename, input)
 
 Sk.parseTreeDump = function parseTreeDump(n, indent)
 {
-    //return JSON.stringify(n, null, 2);
     indent = indent || "";
     var ret = "";
     ret += indent;
@@ -348,7 +348,7 @@ Sk.parseTreeDump = function parseTreeDump(n, indent)
     }
     else
     {
-        ret += Sk.Tokenizer.tokenNames[n.type] + ": " + new Sk.builtin.str(n.value).tp$repr().v + "\n";
+        ret += Sk.Tokenizer.tokenNames[n.type] + ": " + Sk.ffi.remapToJs(Sk.ffi.stringToPy(n.value).tp$repr()) + "\n";
     }
     return ret;
 };

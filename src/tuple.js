@@ -36,7 +36,7 @@ Sk.builtin.tuple = function(L)
 Sk.builtin.tuple.prototype.tp$name = "tuple";
 Sk.builtin.tuple.prototype.tp$str = function()
 {
-    if (this.v.length === 0) return new Sk.builtin.str("()");
+    if (this.v.length === 0) return Sk.ffi.stringToPy("()");
     var bits = [];
     for (var i = 0; i < this.v.length; ++i)
     {
@@ -44,11 +44,11 @@ Sk.builtin.tuple.prototype.tp$str = function()
     }
     var ret = bits.join(', ');
     if (this.v.length === 1) ret += ",";
-    return new Sk.builtin.str("(" + ret + ")");
+    return Sk.ffi.stringToPy("(" + ret + ")");
 };
 Sk.builtin.tuple.prototype.tp$repr = function()
 {
-    if (this.v.length === 0) return new Sk.builtin.str("()");
+    if (this.v.length === 0) return Sk.ffi.stringToPy("()");
     var bits = [];
     for (var i = 0; i < this.v.length; ++i)
     {
@@ -56,7 +56,7 @@ Sk.builtin.tuple.prototype.tp$repr = function()
     }
     var ret = bits.join(', ');
     if (this.v.length === 1) ret += ",";
-    return new Sk.builtin.str("(" + ret + ")");
+    return Sk.ffi.stringToPy("(" + ret + ")");
 };
 
 Sk.builtin.tuple.prototype.mp$subscript = function(index)

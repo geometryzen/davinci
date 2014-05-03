@@ -19,21 +19,25 @@ Sk.builtin.bool.false$ = Object.create(Sk.builtin.bool.prototype, {v: {value: fa
 
 Sk.builtin.bool.prototype.tp$str = function()
 {
-    if (this.v) {
-        return new Sk.builtin.str("True");
+    if (Sk.ffi.remapToJs(this))
+    {
+        return Sk.ffi.stringToPy("True");
     }
-    else {
-        return new Sk.builtin.str("False");
+    else
+    {
+        return Sk.ffi.stringToPy("False");
     }
 };
 
 Sk.builtin.bool.prototype.tp$repr = function()
 {
-    if (this.v) {
-        return new Sk.builtin.str("True");
+    if (Sk.ffi.remapToJs(this))
+    {
+        return Sk.ffi.stringToPy("True");
     }
-    else {
-        return new Sk.builtin.str("False");
+    else
+    {
+        return Sk.ffi.stringToPy("False");
     }
 };
 

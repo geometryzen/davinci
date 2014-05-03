@@ -37,7 +37,7 @@ Sk.builtin.slice.prototype.tp$str = function()
     var a = Sk.builtin.repr(this.start).v;
     var b = Sk.builtin.repr(this.stop).v;
     var c = Sk.builtin.repr(this.step).v;
-    return new Sk.builtin.str("slice(" + a + ", " + b + ", " + c + ")");
+    return Sk.ffi.stringToPy("slice(" + a + ", " + b + ", " + c + ")");
 };
 
 Sk.builtin.slice.prototype.indices = function(length)

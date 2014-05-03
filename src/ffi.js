@@ -313,6 +313,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
     {
         if (valueJs.length > 0)
         {
+            // This is legitimate use of the class.
             return new Sk.builtin.str(valueJs);
         }
         else

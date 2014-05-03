@@ -956,12 +956,12 @@ Sk.builtin.nmber.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAt
 
 Sk.builtin.nmber.prototype.tp$repr = function()
 {
-    return new Sk.builtin.str(this.str$(10, true));
+    return Sk.ffi.stringToPy(this.str$(10, true));
 };
 
 Sk.builtin.nmber.prototype.tp$str = function()
 {
-    return new Sk.builtin.str(this.str$(10, true));
+    return Sk.ffi.stringToPy(this.str$(10, true));
 };
 
 Sk.builtin.nmber.prototype.str$ = function(base, sign)

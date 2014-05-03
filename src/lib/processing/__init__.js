@@ -21,11 +21,11 @@ var $builtinmodule = function(name)
     mod.RGB = Sk.builtin.assk$(1, Sk.builtin.nmber.int$);
     mod.HSB = Sk.builtin.assk$(3, Sk.builtin.nmber.int$);
     mod.CMYK = Sk.builtin.assk$(5, Sk.builtin.nmber.int$);
-    mod.MITER = new Sk.builtin.str('miter');
-    mod.BEVEL = new Sk.builtin.str('bevel');
-    mod.ROUND = new Sk.builtin.str('round');
-    mod.SQUARE = new Sk.builtin.str('butt');
-    mod.PROJECT = new Sk.builtin.str('square');
+    mod.MITER = Sk.ffi.stringToPy('miter');
+    mod.BEVEL = Sk.ffi.stringToPy('bevel');
+    mod.ROUND = Sk.ffi.stringToPy('round');
+    mod.SQUARE = Sk.ffi.stringToPy('butt');
+    mod.PROJECT = Sk.ffi.stringToPy('square');
 
 // 2D - Primitives
     mod.line = new Sk.builtin.func(function(x1, y1, x2, y2) {
@@ -328,7 +328,7 @@ var $builtinmodule = function(name)
         $loc.__getattr__ = new Sk.builtin.func(function(self,key) {
             if (key == 'key') {
                 console.log(mod.processing.key)
-                return new Sk.builtin.str(mod.processing.key.toString())
+                return Sk.ffi.stringToPy(mod.processing.key.toString())
             }
             else if (key == 'keyCode') 
                 return mod.processing.keyCode

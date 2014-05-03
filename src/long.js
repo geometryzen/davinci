@@ -12,29 +12,47 @@ Sk.builtin.lng = function(x, base)  /* long is a reserved word */
     if (!(this instanceof Sk.builtin.lng)) return new Sk.builtin.lng(x, base);
 
     if (x === undefined)
-  this.biginteger = new Sk.builtin.biginteger(0);
+    {
+      this.biginteger = new Sk.builtin.biginteger(0);
+    }
     else if (x instanceof Sk.builtin.lng)
-  this.biginteger = x.biginteger.clone();
+    {
+      this.biginteger = x.biginteger.clone();
+    }
     else if (x instanceof Sk.builtin.biginteger)
-  this.biginteger = x;
+    {
+      this.biginteger = x;
+    }
     else if (x instanceof String)
-  return Sk.longFromStr(x, base);
+    {
+      // FIXME: Why do we get a JavaScript string?
+      return Sk.longFromStr(x, base);
+    }
     else if (x instanceof Sk.builtin.str)
-  return Sk.longFromStr(x.v, base);
-    else {
-  if ((x !== undefined) && (!Sk.builtin.checkString(x)
-            && !Sk.builtin.checkNumber(x)))
-  {
-      if (x === true)
-    x = 1;
-      else if (x === false)
-    x = 0;
-      else
-    throw new Sk.builtin.TypeError("long() argument must be a string or a number, not '" + Sk.ffi.typeName(x) + "'");
-  }
+    {
+      return Sk.longFromStr(Sk.ffi.remapToJs(x), base);
+    }
+    else
+    {
+      if ((x !== undefined) && (!Sk.builtin.checkString(x) && !Sk.builtin.checkNumber(x)))
+      {
+          // Not sure what the intention is here!
+          if (x === true)
+          {
+            x = 1;
+          }
+          else if (x === false)
+          {
+            x = 0;
+          }
+          else
+          {
+            throw new Sk.builtin.TypeError("long() argument must be a string or a number, not '" + Sk.ffi.typeName(x) + "'");
+          }
+      }
 
-  x = Sk.builtin.asnum$nofloat(x);
-  this.biginteger = new Sk.builtin.biginteger(x);
+      x = Sk.builtin.asnum$nofloat(x);
+      this.biginteger = new Sk.builtin.biginteger(x);
     }
 
     return this;
@@ -81,10 +99,10 @@ Sk.builtin.lng.prototype.cantBeInt = function() {
 //    Sk.builtin.lng.dividemode$ = m;
 //  }
 //  if (Sk.builtin.lng.dividemode$ == Sk.builtin.lng.FLOAT_DIVIDE$)
-//    return new Sk.builtin.str('float');
+//    return Sk.ffi.stringToPy('float');
 //  if (Sk.builtin.lng.dividemode$ == Sk.builtin.lng.VARIABLE_DIVIDE$)
-//    return new Sk.builtin.str('variable');
-//  return new Sk.builtin.str('long'); 
+//    return Sk.ffi.stringToPy('variable');
+//  return Sk.ffi.stringToPy('long'); 
 //};
 
 Sk.builtin.lng.fromInt$ = function(ival) 
@@ -342,13 +360,12 @@ Sk.builtin.lng.prototype.nb$inplace_remainder = Sk.builtin.lng.prototype.nb$rema
  */
 Sk.builtin.lng.prototype.nb$power = function(n, mod)
 {
-    if (mod !== undefined)
-    {
-  n = new Sk.builtin.biginteger(Sk.builtin.asnum$(n));
-  mod = new Sk.builtin.biginteger(Sk.builtin.asnum$(mod));
-
-  return new Sk.builtin.lng(this.biginteger.modPowInt(n, mod));
-    }
+  if (mod !== undefined)
+  {
+    n = new Sk.builtin.biginteger(Sk.builtin.asnum$(n));
+    mod = new Sk.builtin.biginteger(Sk.builtin.asnum$(mod));
+    return new Sk.builtin.lng(this.biginteger.modPowInt(n, mod));
+  }
   if (typeof n === "number")
   {
     if (n < 0)
@@ -586,12 +603,12 @@ Sk.builtin.lng.prototype.__ge__ = function(me, other) {
 
 Sk.builtin.lng.prototype.tp$repr = function()
 {
-    return new Sk.builtin.str(this.str$(10, true) + "L");
+    return Sk.ffi.stringToPy(this.str$(10, true) + "L");
 };
 
 Sk.builtin.lng.prototype.tp$str = function()
 {
-    return new Sk.builtin.str(this.str$(10, true));
+    return Sk.ffi.stringToPy(this.str$(10, true));
 };
 
 /**

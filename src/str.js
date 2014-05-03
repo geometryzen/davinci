@@ -53,6 +53,9 @@ Sk.builtin.str = function(x)
 };
 goog.exportSymbol("Sk.builtin.str", Sk.builtin.str);
 
+/**
+ * We can't call the ffi here because it may not be defined yet.
+ */
 Sk.builtin.str.$emptystr = new Sk.builtin.str('');
 
 Sk.builtin.str.prototype.mp$subscript = function(index)
@@ -62,19 +65,26 @@ Sk.builtin.str.prototype.mp$subscript = function(index)
     {
         if (index < 0) index = this.v.length + index;
         if (index < 0 || index >= this.v.length) throw new Sk.builtin.IndexError("string index out of range");
-        return new Sk.builtin.str(this.v.charAt(index));
+        return Sk.ffi.stringToPy(this.v.charAt(index));
     }
     else if (index instanceof Sk.builtin.slice)
     {
         var ret = '';
-        index.sssiter$(this, function(i, wrt) {
-                if (i >= 0 && i < wrt.v.length)
-                    ret += wrt.v.charAt(i);
-                });
-        return new Sk.builtin.str(ret);
+        index.sssiter$(this, 
+            function(i, wrt)
+            {
+                if (i >= 0 && i < Sk.ffi.remapToJs(wrt).length)
+                {
+                    ret += Sk.ffi.remapToJs(wrt).charAt(i);
+                }
+            }
+        );
+        return Sk.ffi.stringToPy(ret);
     }
     else
+    {
         throw new Sk.builtin.TypeError("string indices must be numbers, not " + typeof index);
+    }
 };
 
 Sk.builtin.str.prototype.sq$length = function()
@@ -86,10 +96,9 @@ Sk.builtin.str.prototype.sq$concat = function(other)
     if (!other || !Sk.builtin.checkString(other))
     {
         var otypename = Sk.ffi.typeName(other);
-        throw new Sk.builtin.TypeError("cannot concatenate 'str' and '"
-                            + otypename + "' objects");
+        throw new Sk.builtin.TypeError("cannot concatenate 'str' and '" + otypename + "' objects");
     }
-    return new Sk.builtin.str(this.v + other.v); 
+    return Sk.ffi.stringToPy(Sk.ffi.remapToJs(this) + Sk.ffi.remapToJs(other)); 
 };
 Sk.builtin.str.prototype.nb$add = Sk.builtin.str.prototype.sq$concat;
 Sk.builtin.str.prototype.nb$inplace_add = Sk.builtin.str.prototype.sq$concat;
@@ -98,8 +107,10 @@ Sk.builtin.str.prototype.sq$repeat = function(n)
     n = Sk.builtin.asnum$(n);
     var ret = "";
     for (var i = 0; i < n; ++i)
-        ret += this.v;
-    return new Sk.builtin.str(ret);
+    {
+        ret += Sk.ffi.remapToJs(this);
+    }
+    return Sk.ffi.stringToPy(ret);
 };
 Sk.builtin.str.prototype.nb$multiply = Sk.builtin.str.prototype.sq$repeat;
 Sk.builtin.str.prototype.nb$inplace_multiply = Sk.builtin.str.prototype.sq$repeat;
@@ -109,16 +120,21 @@ Sk.builtin.str.prototype.sq$slice = function(i1, i2)
     i1 = Sk.builtin.asnum$(i1);
     i2 = Sk.builtin.asnum$(i2);
     if (i1 < 0) i1 = 0;
-    return new Sk.builtin.str(this.v.substr(i1, i2 - i1));
+    return Sk.ffi.stringToPy(Sk.ffi.remapToJs(this).substr(i1, i2 - i1));
 };
 
-Sk.builtin.str.prototype.sq$contains = function(ob) {
-    if ( ob.v === undefined || ob.v.constructor != String) {
+Sk.builtin.str.prototype.sq$contains = function(ob)
+{
+    if (Sk.ffi.remapToJs(ob) === undefined || Sk.ffi.remapToJs(ob).constructor != String)
+    {
         throw new Sk.builtin.TypeError("TypeError: 'In <string> requires string as left operand");
     }
-    if (this.v.indexOf(ob.v) != -1) {
+    if (this.v.indexOf(Sk.ffi.remapToJs(ob)) != -1)
+    {
         return true;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -135,8 +151,11 @@ Sk.builtin.str.prototype.tp$iter = function()
         tp$iternext: function()
         {
             // todo; StopIteration
-            if (ret.$index >= ret.$obj.v.length) return undefined;
-           return new Sk.builtin.str(ret.$obj.v.substr(ret.$index++, 1));
+            if (ret.$index >= ret.$obj.v.length)
+            {
+                return undefined;
+            }
+            return Sk.ffi.stringToPy(ret.$obj.v.substr(ret.$index++, 1));
         }
     };
     return ret;
@@ -144,7 +163,7 @@ Sk.builtin.str.prototype.tp$iter = function()
 
 Sk.builtin.str.prototype.tp$richcompare = function(other, op)
 {
-    if (!(other instanceof Sk.builtin.str)) return undefined;
+    if (!Sk.ffi.isStr(other)) return undefined;
 
     if (this === other)
     {
@@ -225,7 +244,7 @@ Sk.builtin.str.prototype.tp$repr = function()
             ret += c;
     }
     ret += quote;
-    return new Sk.builtin.str(ret);
+    return Sk.ffi.stringToPy(ret);
 };
 
 
@@ -255,13 +274,13 @@ Sk.builtin.str.re_escape_ = function(s)
 Sk.builtin.str.prototype['lower'] = new Sk.builtin.func(function(self)
 {
     Sk.builtin.pyCheckArgs("lower", arguments, 1, 1);
-    return new Sk.builtin.str(self.v.toLowerCase());
+    return Sk.ffi.stringToPy(self.v.toLowerCase());
 });
 
 Sk.builtin.str.prototype['upper'] = new Sk.builtin.func(function(self)
 {
     Sk.builtin.pyCheckArgs("upper", arguments, 1, 1);
-    return new Sk.builtin.str(self.v.toUpperCase());
+    return Sk.ffi.stringToPy(self.v.toUpperCase());
 });
 
 Sk.builtin.str.prototype['capitalize'] = new Sk.builtin.func(function(self)
@@ -271,8 +290,9 @@ Sk.builtin.str.prototype['capitalize'] = new Sk.builtin.func(function(self)
     var cap;
     var i;
 
-    if (orig.length === 0) {
-        return new Sk.builtin.str("");
+    if (orig.length === 0)
+    {
+        return Sk.ffi.stringToPy("");
     };
 
     cap = orig.charAt(0).toUpperCase();
@@ -281,7 +301,7 @@ Sk.builtin.str.prototype['capitalize'] = new Sk.builtin.func(function(self)
         cap += orig.charAt(i).toLowerCase();
     };
         
-    return new Sk.builtin.str(cap);
+    return Sk.ffi.stringToPy(cap);
 });
 
 Sk.builtin.str.prototype['join'] = new Sk.builtin.func(function(self, seq)
@@ -294,7 +314,7 @@ Sk.builtin.str.prototype['join'] = new Sk.builtin.func(function(self, seq)
         if (i.constructor !== Sk.builtin.str) throw "TypeError: sequence item " + arrOfStrs.length + ": expected string, " + typeof i + " found";
         arrOfStrs.push(i.v);
     }
-    return new Sk.builtin.str(arrOfStrs.join(self.v));
+    return Sk.ffi.stringToPy(arrOfStrs.join(self.v));
 });
 
 Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howmany)
@@ -336,7 +356,7 @@ Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howma
             // empty match
             break;
         }
-        result.push(new Sk.builtin.str(str.substring(index, match.index)));
+        result.push(Sk.ffi.stringToPy(str.substring(index, match.index)));
         index = regex.lastIndex;
         splits += 1;
         if (howmany && (splits >= howmany)) {
@@ -345,7 +365,7 @@ Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howma
     }
     str = str.substring(index);
     if (on !== null || (str.length > 0)) {
-        result.push(new Sk.builtin.str(str));
+        result.push(Sk.ffi.stringToPy(str));
     }
 
     return new Sk.builtin.list(result);
@@ -365,7 +385,7 @@ Sk.builtin.str.prototype['strip'] = new Sk.builtin.func(function(self, chars)
     var regex = Sk.builtin.str.re_escape_(chars.v);
     pattern = new RegExp("^["+regex+"]+|["+regex+"]+$","g");
     }
-    return new Sk.builtin.str(self.v.replace(pattern, ''));
+    return Sk.ffi.stringToPy(self.v.replace(pattern, ''));
 });
 
 Sk.builtin.str.prototype['lstrip'] = new Sk.builtin.func(function(self, chars)
@@ -382,7 +402,7 @@ Sk.builtin.str.prototype['lstrip'] = new Sk.builtin.func(function(self, chars)
     var regex = Sk.builtin.str.re_escape_(chars.v);
     pattern = new RegExp("^["+regex+"]+","g");
     }
-    return new Sk.builtin.str(self.v.replace(pattern, ''));
+    return Sk.ffi.stringToPy(self.v.replace(pattern, ''));
 });
 
 Sk.builtin.str.prototype['rstrip'] = new Sk.builtin.func(function(self, chars)
@@ -399,41 +419,42 @@ Sk.builtin.str.prototype['rstrip'] = new Sk.builtin.func(function(self, chars)
     var regex = Sk.builtin.str.re_escape_(chars.v);
     pattern = new RegExp("["+regex+"]+$","g");
     }
-    return new Sk.builtin.str(self.v.replace(pattern, ''));
+    return Sk.ffi.stringToPy(self.v.replace(pattern, ''));
 });
 
-Sk.builtin.str.prototype['partition'] = new Sk.builtin.func(function(self, sep)
+Sk.builtin.str.prototype['partition'] = new Sk.builtin.func(function(self, sepPy)
 {
     Sk.builtin.pyCheckArgs("partition", arguments, 2, 2);
-    Sk.builtin.pyCheckType("sep", "string", Sk.builtin.checkString(sep));
-    var sepStr = new Sk.builtin.str(sep);
-    var pos = self.v.indexOf(sepStr.v);
+    Sk.builtin.pyCheckType("sep", "string", Sk.builtin.checkString(sepPy));
+    var sep = Sk.ffi.remapToJs(sepPy);
+    var pos = self.v.indexOf(sep);
     if (pos < 0)
     {
         return new Sk.builtin.tuple([self, Sk.builtin.str.$emptystr, Sk.builtin.str.$emptystr]);
     }
 
     return new Sk.builtin.tuple([
-        new Sk.builtin.str(self.v.substring(0, pos)),
-        sepStr,
-        new Sk.builtin.str(self.v.substring(pos + sepStr.v.length))]);
+        Sk.ffi.stringToPy(self.v.substring(0, pos)),
+        sepPy,
+        Sk.ffi.stringToPy(self.v.substring(pos + sep.length))]);
 });
 
-Sk.builtin.str.prototype['rpartition'] = new Sk.builtin.func(function(self, sep)
+Sk.builtin.str.prototype['rpartition'] = new Sk.builtin.func(function(self, sepPy)
 {
     Sk.builtin.pyCheckArgs("rpartition", arguments, 2, 2);
-    Sk.builtin.pyCheckType("sep", "string", Sk.builtin.checkString(sep));
-    var sepStr = new Sk.builtin.str(sep);
-    var pos = self.v.lastIndexOf(sepStr.v);
+//  Sk.builtin.pyCheckType("sep", "string", Sk.builtin.checkString(sepPy));
+    Sk.ffi.checkArgType("sep", Sk.ffi.PyType.STR, Sk.ffi.isStr(sepPy), sepPy);
+    var sep = Sk.ffi.remapToJs(sepPy);
+    var pos = self.v.lastIndexOf(sep);
     if (pos < 0)
     {
         return new Sk.builtin.tuple([Sk.builtin.str.$emptystr, Sk.builtin.str.$emptystr, self]);
     }
 
     return new Sk.builtin.tuple([
-        new Sk.builtin.str(self.v.substring(0, pos)),
-        sepStr,
-        new Sk.builtin.str(self.v.substring(pos + sepStr.v.length))]);
+        Sk.ffi.stringToPy(self.v.substring(0, pos)),
+        sepPy,
+        Sk.ffi.stringToPy(self.v.substring(pos + sep.length))]);
 });
 
 Sk.builtin.str.prototype['count'] = new Sk.builtin.func(function(self, pat, start, end) {
@@ -475,95 +496,114 @@ Sk.builtin.str.prototype['count'] = new Sk.builtin.func(function(self, pat, star
 
 Sk.builtin.str.prototype['ljust'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("ljust", arguments, 2, 3);
-    if (!Sk.builtin.checkInt(len)) {
-    throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.ffi.typeName(len));
+    if (!Sk.builtin.checkInt(len))
+    {
+        throw new Sk.builtin.TypeError("integer argument expected, got " + Sk.ffi.typeName(len));
     }
-    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-                     || fillchar.v.length !== 1)) {
-    throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.ffi.typeName(fillchar))
+    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar) || Sk.ffi.remapToJs(fillchar).length !== 1))
+    {
+        throw new Sk.builtin.TypeError("must be char, not " + Sk.ffi.typeName(fillchar))
     }
-    if (fillchar === undefined) {
-    fillchar = " ";
-    } else {
-    fillchar = fillchar.v;
+    if (fillchar === undefined)
+    {
+        fillchar = " ";
+    }
+    else
+    {
+        fillchar = Sk.ffi.remapToJs(fillchar);
     }
     len = Sk.builtin.asnum$(len);
-    if (self.v.length >= len) {
+    if (self.v.length >= len)
+    {
         return self;
-    } else {
+    }
+    else
+    {
         var newstr = Array.prototype.join.call({length:Math.floor(len-self.v.length)+1},fillchar);
-        return new Sk.builtin.str(self.v+newstr);
+        return Sk.ffi.stringToPy(self.v+newstr);
     }
 });
 
 Sk.builtin.str.prototype['rjust'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("rjust", arguments, 2, 3);
-    if (!Sk.builtin.checkInt(len)) {
-    throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.ffi.typeName(len));
+    if (!Sk.builtin.checkInt(len))
+    {
+        throw new Sk.builtin.TypeError("integer argument exepcted, got " + Sk.ffi.typeName(len));
     }
-    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-                     || fillchar.v.length !== 1)) {
-    throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.ffi.typeName(fillchar))
+    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar) || Sk.ffi.remapToJs(fillchar).length !== 1))
+    {
+        throw new Sk.builtin.TypeError("must be char, not " + Sk.ffi.typeName(fillchar));
     }
-    if (fillchar === undefined) {
-    fillchar = " ";
-    } else {
-    fillchar = fillchar.v;
+    if (fillchar === undefined)
+    {
+        fillchar = " ";
+    }
+    else
+    {
+        fillchar = Sk.ffi.remapToJs(fillchar);
     }
     len = Sk.builtin.asnum$(len);
-    if (self.v.length >= len) {
+    if (self.v.length >= len)
+    {
         return self;
-    } else {
+    }
+    else
+    {
         var newstr = Array.prototype.join.call({length:Math.floor(len-self.v.length)+1},fillchar);
-        return new Sk.builtin.str(newstr+self.v);
+        return Sk.ffi.stringToPy(newstr+self.v);
     }
 
 });
 
 Sk.builtin.str.prototype['center'] = new Sk.builtin.func(function(self, len, fillchar) {
     Sk.builtin.pyCheckArgs("center", arguments, 2, 3);
-    if (!Sk.builtin.checkInt(len)) {
-    throw new Sk.builtin.TypeError("integer argument exepcted, got "
-                       + Sk.ffi.typeName(len));
+    if (!Sk.builtin.checkInt(len))
+    {
+        throw new Sk.builtin.TypeError("integer argument exepcted, got " + Sk.ffi.typeName(len));
     }
-    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar)
-                     || fillchar.v.length !== 1)) {
-    throw new Sk.builtin.TypeError("must be char, not "
-                       + Sk.ffi.typeName(fillchar))
+    if ((fillchar !== undefined) && (!Sk.builtin.checkString(fillchar) || Sk.ffi.remapToJs(fillchar).length !== 1))
+    {
+        throw new Sk.builtin.TypeError("must be char, not " + Sk.ffi.typeName(fillchar));
     }
-    if (fillchar === undefined) {
-    fillchar = " ";
-    } else {
-    fillchar = fillchar.v;
+    if (fillchar === undefined)
+    {
+        fillchar = " ";
+    }
+    else
+    {
+        fillchar = Sk.ffi.remapToJs(fillchar);
     }
     len = Sk.builtin.asnum$(len);
-    if (self.v.length >= len) {
+    if (self.v.length >= len)
+    {
         return self;
-    } else {
+    }
+    else
+    {
         var newstr1 = Array.prototype.join.call({length:Math.floor((len-self.v.length)/2)+1},fillchar);
         var newstr = newstr1+self.v+newstr1;
-        if (newstr.length < len ) {
+        if (newstr.length < len )
+        {
             newstr = newstr + fillchar
         }
-        return new Sk.builtin.str(newstr);
+        return Sk.ffi.stringToPy(newstr);
     }
 
 });
 
 Sk.builtin.str.prototype['find'] = new Sk.builtin.func(function(self, tgt, start, end) {
     Sk.builtin.pyCheckArgs("find", arguments, 2, 4);
-    if (!Sk.builtin.checkString(tgt)) {
-    throw new Sk.builtin.TypeError("expected a character buffer object");
+    if (!Sk.builtin.checkString(tgt))
+    {
+        throw new Sk.builtin.TypeError("expected a character buffer object");
     }
-    if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((start !== undefined) && !Sk.builtin.checkInt(start))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
-    if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((end !== undefined) && !Sk.builtin.checkInt(end))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)
@@ -667,35 +707,40 @@ Sk.builtin.str.prototype['replace'] = new Sk.builtin.func(function(self, oldS, n
     Sk.builtin.pyCheckArgs("replace", arguments, 3, 4);
     Sk.builtin.pyCheckType("oldS", "string", Sk.builtin.checkString(oldS));
     Sk.builtin.pyCheckType("newS", "string", Sk.builtin.checkString(newS));
-    if ((count !== undefined) && !Sk.builtin.checkInt(count)) {
-    throw new Sk.builtin.TypeError("integer argument expected, got " +
-                       Sk.ffi.typeName(count));
+    if ((count !== undefined) && !Sk.builtin.checkInt(count))
+    {
+        throw new Sk.builtin.TypeError("integer argument expected, got " + Sk.ffi.typeName(count));
     }
     count = Sk.builtin.asnum$(count);
     var patt = new RegExp(Sk.builtin.str.re_escape_(oldS.v), "g");
 
-    if ((count === undefined) || (count < 0)) {
-    return new Sk.builtin.str(self.v.replace(patt, newS.v));
+    if ((count === undefined) || (count < 0))
+    {
+        return Sk.ffi.stringToPy(self.v.replace(patt, newS.v));
     }
 
     var c = 0;
     function replacer(match) {
     c++;
-    if (c <= count) {
+    if (c <= count)
+    {
         return newS.v;
     }
     return match;
     }
-    return new Sk.builtin.str(self.v.replace(patt, replacer));
+    return Sk.ffi.stringToPy(self.v.replace(patt, replacer));
 });
 
-Sk.builtin.str.prototype['isdigit'] = new Sk.builtin.func(function(self) {
+Sk.builtin.str.prototype['isdigit'] = new Sk.builtin.func(function(self)
+{
     Sk.builtin.pyCheckArgs("isdigit", arguments, 1, 1);
     if (self.v.length === 0) { return Sk.builtin.bool(false); }
     var i;
-    for (i=0; i<self.v.length; i++) {
+    for (i=0; i<self.v.length; i++)
+    {
         var ch = self.v.charAt(i);
-        if (ch < '0' || ch > '9') {
+        if (ch < '0' || ch > '9')
+        {
             return Sk.builtin.bool(false);
         };
     };
@@ -847,7 +892,7 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
         {
             var mk = mappingKey.substring(1, mappingKey.length - 1);
             //print("mk",mk);
-            value = rhs.mp$subscript(new Sk.builtin.str(mk));
+            value = rhs.mp$subscript(Sk.ffi.stringToPy(mk));
         }
         else throw new Sk.builtin.AttributeError(rhs.tp$name + " instance has no attribute 'mp$subscript'");
         var r;
@@ -913,8 +958,8 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
 
             case 'r':
                 r = Sk.builtin.repr(value);
-                if (precision) return r.v.substr(0, precision);
-                return r.v;
+                if (precision) return Sk.ffi.remapToJs(r).substr(0, precision);
+                return Sk.ffi.remapToJs(r);
             case 's':
                 //print("value",value);
                 //print("replace:");
@@ -925,14 +970,16 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
                 //print("  fieldWidth", fieldWidth);
                 //print("  precision", precision);
                 //print("  conversionType", conversionType);
+
+                // TODO: This must be a coercion. YES
                 r = new Sk.builtin.str(value);
-                if (precision) return r.v.substr(0, precision);
-                return r.v;
+                if (precision) return Sk.ffi.remapToJs(r).substr(0, precision);
+                return Sk.ffi.remapToJs(r);
             case '%':
                 return '%';
         }
     };
     
     var ret = this.v.replace(regex, replFunc);
-    return new Sk.builtin.str(ret);
+    return Sk.ffi.stringToPy(ret);
 };

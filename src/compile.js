@@ -977,7 +977,7 @@ Compiler.prototype.ctryexcept = function(s)
             var handlertype = this.vexpr(handler.type);
             var next = (i == n-1) ? unhandled : handlers[i+1];
 
-            // var isinstance = this.nameop(new Sk.builtin.str("isinstance"), Load));
+            // var isinstance = this.nameop(Sk.ffi.stringToPy("isinstance"), Load));
             // var check = this._gr('call', "Sk.misceval.callsim(", isinstance, ", $err, ", handlertype, ")");
 
             // this check is not right, should use isinstance, but exception objects
@@ -1410,18 +1410,20 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
 Compiler.prototype.cfunction = function(s)
 {
     goog.asserts.assert(s instanceof FunctionDef);
-    var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, function(scopename)
-            {
-                this.vseqstmt(s.body);
-                out("return Sk.builtin.none.none$;"); // if we fall off the bottom, we want the ret to be None
-            });
+    var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, 
+        function(scopename)
+        {
+            this.vseqstmt(s.body);
+            out("return Sk.ffi.none.None;"); // if we fall off the bottom, we want the ret to be None
+        }
+    );
     this.nameop(s.name, Store, funcorgen);
 };
 
 Compiler.prototype.clambda = function(e)
 {
     goog.asserts.assert(e instanceof Lambda);
-    var func = this.buildcodeobj(e, new Sk.builtin.str("<lambda>"), null, e.args, function(scopename)
+    var func = this.buildcodeobj(e, Sk.ffi.stringToPy("<lambda>"), null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
                 out("return ", val, ";");
@@ -1509,7 +1511,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
 
 Compiler.prototype.cgenexp = function(e)
 {
-    var gen = this.buildcodeobj(e, new Sk.builtin.str("<genexpr>"), null, null, function(scopename)
+    var gen = this.buildcodeobj(e, Sk.ffi.stringToPy("<genexpr>"), null, null, function(scopename)
             {
                 this.cgenexpgen(e.generators, 0, e.elt);
             });
@@ -1684,13 +1686,17 @@ Compiler.prototype.isCell = function(name)
 Compiler.prototype.nameop = function(name, ctx, dataToStore)
 {
     if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "__debug__")
+    {
         throw new Sk.builtin.SyntaxError("can not assign to __debug__");
+    }
     if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "None")
+    {
         throw new Sk.builtin.SyntaxError("can not assign to None");
+    }
 
-    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.builtin.none.none$";
-    if (Sk.ffi.remapToJs(name) === "True")  return "Sk.builtin.bool.true$";
-    if (Sk.ffi.remapToJs(name) === "False") return "Sk.builtin.bool.false$";
+    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.ffi.none.None";
+    if (Sk.ffi.remapToJs(name) === "True")  return "Sk.ffi.bool.True";
+    if (Sk.ffi.remapToJs(name) === "False") return "Sk.ffi.bool.False";
 
     var mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, name));
     // Have to do this before looking it up in the scope
@@ -1881,8 +1887,7 @@ Compiler.prototype.cprint = function(s)
     // todo; dest disabled
     for (var i = 0; i < n; ++i)
     {
-        // TODO: What is the Sk.builtins.str?
-        out('Sk.misceval.print_(', /*dest, ',',*/ "new Sk.builtins['str'](", this.vexpr(s.values[i]), ').v);');
+        out('Sk.misceval.print_(', /*dest, ',',*/ "Sk.ffi.remapToJs(new Sk.builtins['str'](", this.vexpr(s.values[i]), ')));');
     }
     if (s.nl)
     {
@@ -1898,7 +1903,7 @@ Compiler.prototype.cmod = function(mod)
      * @const
      * @type {string}
      */
-    var modf = this.enterScope(new Sk.builtin.str("<module>"), mod, 0);
+    var modf = this.enterScope(Sk.ffi.stringToPy("<module>"), mod, 0);
 
     var entryBlock = this.newBlock('module entry');
     this.u.prefixCode = "var " + modf + "=(function($modname){";

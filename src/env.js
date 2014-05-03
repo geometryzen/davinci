@@ -138,14 +138,16 @@ goog.exportSymbol("Sk.physics", Sk.physics);
 
 /**
  * The flyweight mode.
- * Flyweight mode means that we are going to avoid wrapping JavaScript types.
- * This has the potential for better interoperability with JavaScript and better
- * performance at the possible expense of Python conformance.
- * The generated code is synched with the runtime through this flag.
  * @type {boolean}
  */
 Sk.flyweight = false;
 goog.exportSymbol("Sk.flyweight", Sk.flyweight);
+/**
+ * The flyweight mode for strings (in development).
+ * @type {boolean}
+ */
+Sk.flyString = true;
+goog.exportSymbol("Sk.flyString", Sk.flyString);
 
 Sk.python3 = false;
 goog.exportSymbol("Sk.python3", Sk.python3);

@@ -60,20 +60,21 @@ goog.exportSymbol("Sk.builtin.checkIterable", Sk.builtin.checkIterable);
 
 Sk.builtin.checkNumber = function (arg) {
     return (arg !== null && (typeof arg === "number"
-			     || arg instanceof Sk.builtin.nmber
-			     || arg instanceof Sk.builtin.lng));
+                 || arg instanceof Sk.builtin.nmber
+                 || arg instanceof Sk.builtin.lng));
 };
 goog.exportSymbol("Sk.builtin.checkNumber", Sk.builtin.checkNumber);
 
 Sk.builtin.checkInt = function (arg) {
     return (arg !== null) && ((typeof arg === "number" && arg === (arg|0))
-			      || (arg instanceof Sk.builtin.nmber
-				  && arg.skType === Sk.builtin.nmber.int$)
-			      || arg instanceof Sk.builtin.lng);
+                  || (arg instanceof Sk.builtin.nmber
+                  && arg.skType === Sk.builtin.nmber.int$)
+                  || arg instanceof Sk.builtin.lng);
 };
 goog.exportSymbol("Sk.builtin.checkInt", Sk.builtin.checkInt);
 
-Sk.builtin.checkString = function (arg) {
+Sk.builtin.checkString = function (arg)
+{
     return (arg !== null && arg.__class__ == Sk.builtin.str);
 };
 goog.exportSymbol("Sk.builtin.checkString", Sk.builtin.checkString);
@@ -179,12 +180,12 @@ Sk.builtin.func.prototype.tp$call = function(args, kw)
             else if (expectskw)
             {
                 // build kwargs dict
-                kwargsarr.push(new Sk.builtin.str(kw[i]));
+                kwargsarr.push(Sk.ffi.stringToPy(kw[i]));
                 kwargsarr.push(kw[i + 1]);
             }
             else
             {
-                name = (this.func_code && this.func_code['co_name'] && this.func_code['co_name'].v) || '<native JS>';
+                name = (this.func_code && this.func_code['co_name'] && Sk.ffi.remapToJs(this.func_code['co_name'])) || '<native JS>';
                 throw new Sk.builtin.TypeError(name + "() got an unexpected keyword argument '" + kw[i] + "'");
             }
         }
@@ -212,6 +213,6 @@ Sk.builtin.func.prototype.ob$type = Sk.builtin.type.makeTypeObj('function', new 
 
 Sk.builtin.func.prototype.tp$repr = function()
 {
-    var name = (this.func_code && this.func_code['co_name'] && this.func_code['co_name'].v) || '<native JS>';
-    return new Sk.builtin.str("<function " + name + ">");
+    var name = (this.func_code && this.func_code['co_name'] && Sk.ffi.remapToJs(this.func_code['co_name'])) || '<native JS>';
+    return Sk.ffi.stringToPy("<function " + name + ">");
 };

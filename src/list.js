@@ -124,7 +124,7 @@ Sk.builtin.list.prototype.tp$repr = function()
     {
         ret.push(Sk.misceval.objectRepr(i).v);
     }
-    return new Sk.builtin.str("[" + ret.join(", ") + "]");
+    return Sk.ffi.stringToPy("[" + ret.join(", ") + "]");
 };
 Sk.builtin.list.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 Sk.builtin.list.prototype.tp$hash = Sk.builtin.object.prototype.HashNotImplemented;

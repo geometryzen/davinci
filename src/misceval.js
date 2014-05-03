@@ -366,28 +366,28 @@ Sk.misceval.objectRepr = function(v)
 {
     goog.asserts.assert(v !== undefined, "trying to repr undefined");
     if ((v === null) || (v instanceof Sk.builtin.none))
-        return new Sk.builtin.str("None"); // todo; these should be consts
+        return Sk.ffi.stringToPy("None"); // todo; these should be consts
     else if (v === true)
-        return new Sk.builtin.str("True");
+        return Sk.ffi.stringToPy("True");
     else if (v === false)
-        return new Sk.builtin.str("False");
+        return Sk.ffi.stringToPy("False");
     else if (typeof v === "number")
-        return new Sk.builtin.str("" + v);
+        return Sk.ffi.stringToPy("" + v);
     else if (!v.tp$repr) {
         if (v.tp$name) {
-            return new Sk.builtin.str("<" + v.tp$name + " object>");
+            return Sk.ffi.stringToPy("<" + v.tp$name + " object>");
         } else {
-            return new Sk.builtin.str("<unknown>");
+            return Sk.ffi.stringToPy("<unknown>");
         };
     }
     else if (v.constructor === Sk.builtin.nmber)
     {
         if (v.v === Infinity)
-            return new Sk.builtin.str('inf');
+            return Sk.ffi.stringToPy('inf');
         else if (v.v === -Infinity)
-            return new Sk.builtin.str('-inf');
+            return Sk.ffi.stringToPy('-inf');
         else
-            return new Sk.builtin.str("" + v.v);
+            return Sk.ffi.stringToPy("" + v.v);
     }
     else
         return v.tp$repr();
@@ -431,7 +431,7 @@ Sk.misceval.print_ = function(x)   // this was function print(x)   not sure why.
         if (x !== "\n") Sk.output(' ');
         Sk.misceval.softspace_ = false;
     }
-    var s = new Sk.builtin.str(x);
+    var s = Sk.ffi.stringToPy(x);
     Sk.output(s.v);
     var isspace = function(c)
     {

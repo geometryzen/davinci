@@ -333,20 +333,22 @@ SymbolTable.prototype.visitArguments = function(a, lineno)
 
 SymbolTable.prototype.newTmpname = function(lineno)
 {
-    this.addDef(new Sk.builtin.str("_[" + (++this.tmpname) + "]"), DEF_LOCAL, lineno);
+    this.addDef(Sk.ffi.stringToPy("_[" + (++this.tmpname) + "]"), DEF_LOCAL, lineno);
 }
 
-SymbolTable.prototype.addDef = function(name, flag, lineno)
+/**
+ * @param {Sk.builtin.str} namePy
+ */
+SymbolTable.prototype.addDef = function(namePy, flag, lineno)
 {
-    //print("addDef:", name.v, flag);
-    var mangled = mangleName(this.curClass, new Sk.builtin.str(name)).v;
+    var mangled = Sk.ffi.remapToJs(mangleName(this.curClass, namePy));
     mangled = fixReservedNames(mangled);
     var val = this.cur.symFlags[mangled];
     if (val !== undefined)
     {
         if ((flag & DEF_PARAM) && (val & DEF_PARAM))
         {
-            throw new Sk.builtin.SyntaxError("duplicate argument '" + name.v + "' in function definition", this.filename, lineno);
+            throw new Sk.builtin.SyntaxError("duplicate argument '" + Sk.ffi.remapToJs(namePy) + "' in function definition", this.filename, lineno);
         }
         val |= flag;
     }
@@ -497,7 +499,7 @@ SymbolTable.prototype.visitStmt = function(s)
             var nameslen = s.names.length;
             for (var i = 0; i < nameslen; ++i)
             {
-                var name = mangleName(this.curClass, s.names[i]).v;
+                var name = Sk.ffi.remapToJs(mangleName(this.curClass, s.names[i]));
                 name = fixReservedNames(name);
                 var cur = this.cur.symFlags[name];
                 if (cur & (DEF_LOCAL | USE))
@@ -508,7 +510,7 @@ SymbolTable.prototype.visitStmt = function(s)
                     else
                         throw new Sk.builtin.SyntaxError("name '" + name + "' is used prior to global declaration", this.filename, s.lineno);
                 }
-                this.addDef(new Sk.builtin.str(name), DEF_GLOBAL, s.lineno);
+                this.addDef(Sk.ffi.stringToPy(name), DEF_GLOBAL, s.lineno);
             }
             break;
         case Expr:
@@ -552,7 +554,7 @@ SymbolTable.prototype.visitExpr = function(e)
             this.visitExpr(e.operand);
             break;
         case Lambda:
-            this.addDef(new Sk.builtin.str("lambda"), DEF_LOCAL, e.lineno);
+            this.addDef(Sk.ffi.stringToPy("lambda"), DEF_LOCAL, e.lineno);
             if (e.args.defaults)
                 this.SEQExpr(e.args.defaults);
             this.enterBlock("lambda", FunctionBlock, e, e.lineno);
@@ -646,7 +648,7 @@ SymbolTable.prototype.visitAlias = function(names, lineno)
         if (dot !== -1)
             storename = name.substr(0, dot);
         if (name !== "*")
-            this.addDef(new Sk.builtin.str(storename), DEF_IMPORT, lineno);
+            this.addDef(Sk.ffi.stringToPy(storename), DEF_IMPORT, lineno);
         else
         {
             if (this.cur.blockType !== ModuleBlock)
@@ -662,7 +664,7 @@ SymbolTable.prototype.visitGenexp = function(e)
     this.visitExpr(outermost.iter);
     this.enterBlock("genexpr", FunctionBlock, e, e.lineno);
     this.cur.generator = true;
-    this.addDef(new Sk.builtin.str(".0"), DEF_PARAM, e.lineno);
+    this.addDef(Sk.ffi.stringToPy(".0"), DEF_PARAM, e.lineno);
     this.visitExpr(outermost.target);
     this.SEQExpr(outermost.ifs);
     this.visitComprehension(e.generators, 1);
@@ -870,11 +872,12 @@ Sk.symboltable = function(ast, filename)
 Sk.dumpSymtab = function(st)
 {
     var pyBoolStr = function(b) { return b ? "True" : "False"; }
-    var pyList = function(l) {
+    var pyList = function(l)
+    {
         var ret = [];
         for (var i = 0; i < l.length; ++i)
         {
-            ret.push(new Sk.builtin.str(l[i]).tp$repr().v);
+            ret.push(Sk.ffi.remapToJs(Sk.ffi.stringToPy(l[i]).tp$repr()));
         }
         return '[' + ret.join(', ') + ']';
     };

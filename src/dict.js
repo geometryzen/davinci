@@ -135,6 +135,7 @@ Sk.builtin.dict.prototype.mp$subscript = function(key)
     else
     {
         // Not found in dictionary
+        // TODO: This must be a coercion.
         var s = new Sk.builtin.str(key);
         throw new Sk.builtin.KeyError(s.v);
     }
@@ -189,9 +190,9 @@ Sk.builtin.dict.prototype.mp$del_subscript = function(key)
         };
     }
 
-    // Not found in dictionary     
+    // Not found in dictionary
     s = new Sk.builtin.str(key);
-    throw new Sk.builtin.KeyError(s.v);    
+    throw new Sk.builtin.KeyError(s.v);
 }
 
 Sk.builtin.dict.prototype.tp$iter = function()
@@ -252,7 +253,7 @@ Sk.builtin.dict.prototype.tp$repr = function()
         }
         ret.push(Sk.misceval.objectRepr(k).v + ": " + Sk.misceval.objectRepr(v).v);
     }
-    return new Sk.builtin.str("{" + ret.join(", ") + "}");
+    return Sk.ffi.stringToPy("{" + ret.join(", ") + "}");
 };
 
 Sk.builtin.dict.prototype.mp$length = function() { return this.size; };
