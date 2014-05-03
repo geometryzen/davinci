@@ -108,18 +108,41 @@ Sk.ffh.pow = function(lhsPy, rhsPy) {
 };
 goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
 
-Sk.ffh.equal = function(lhsPy, rhsPy)
+Sk.ffh.eq = function(lhsPy, rhsPy)
 {
-    if (lhsPy[SPECIAL_METHOD_EQ])
-    {
-        return Sk.ffi.callsim(lhsPy[SPECIAL_METHOD_EQ], lhsPy, rhsPy);
-    }
-    else
-    {
-        throw Sk.ffi.notImplementedError("equal(" + Sk.ffh.repr(lhsPy) + ", " + Sk.ffh.repr(rhsPy) + ")");
-    }
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Eq"));
 };
-goog.exportSymbol("Sk.ffh.equal", Sk.ffh.equal);
+goog.exportSymbol("Sk.ffh.eq", Sk.ffh.eq);
+
+Sk.ffh.lt = function(lhsPy, rhsPy)
+{
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Lt"));
+};
+goog.exportSymbol("Sk.ffh.lt", Sk.ffh.lt);
+
+Sk.ffh.le = function(lhsPy, rhsPy)
+{
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "LtE"));
+};
+goog.exportSymbol("Sk.ffh.le", Sk.ffh.le);
+
+Sk.ffh.gt = function(lhsPy, rhsPy)
+{
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Gt"));
+};
+goog.exportSymbol("Sk.ffh.gt", Sk.ffh.gt);
+
+Sk.ffh.ge = function(lhsPy, rhsPy)
+{
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "GtE"));
+};
+goog.exportSymbol("Sk.ffh.ge", Sk.ffh.ge);
+
+Sk.ffh.ne = function(lhsPy, rhsPy)
+{
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "NotEq"));
+};
+goog.exportSymbol("Sk.ffh.ne", Sk.ffh.ne);
 
 Sk.ffh.cliffordConjugate = function(valuePy) {
   return Sk.ffh.unaryExec("", SPECIAL_METHOD_CLIFFORD_CONJUGATE, valuePy, "nb$cliffordConjugate");

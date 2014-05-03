@@ -15,7 +15,7 @@ Sk.builtin.lng = function(x, base)  /* long is a reserved word */
     {
       this.biginteger = new Sk.builtin.biginteger(0);
     }
-    else if (x instanceof Sk.builtin.lng)
+    else if (Sk.ffi.isLong(x))
     {
       this.biginteger = x.biginteger.clone();
     }
@@ -23,14 +23,13 @@ Sk.builtin.lng = function(x, base)  /* long is a reserved word */
     {
       this.biginteger = x;
     }
-    else if (x instanceof String)
+    else if (typeof x === 'string')
     {
-      // FIXME: Why do we get a JavaScript string?
-      return Sk.longFromStr(x, base);
+      return Sk.ffi.longFromString(x, base);
     }
-    else if (x instanceof Sk.builtin.str)
+    else if (Sk.ffi.isStr(x))
     {
-      return Sk.longFromStr(Sk.ffi.remapToJs(x), base);
+      return Sk.ffi.longFromString(Sk.ffi.remapToJs(x), base);
     }
     else
     {
@@ -74,17 +73,15 @@ Sk.builtin.lng.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('long', Sk.bu
 //  Threshold to determine when types should be converted to long
 Sk.builtin.lng.threshold$ = Math.pow(2, 53);
 
-Sk.builtin.lng.MAX_INT$ = new Sk.builtin.lng(Sk.builtin.lng.threshold$);
-Sk.builtin.lng.MIN_INT$ = new Sk.builtin.lng(-Sk.builtin.lng.threshold$);
-
 //Sk.builtin.lng.LONG_DIVIDE$ = 0;
 //Sk.builtin.lng.FLOAT_DIVIDE$ = -1;
 //Sk.builtin.lng.VARIABLE_DIVIDE$ = -2;
 //// Positive values reserved for scaled, fixed precision big number implementations where mode = number of digits to the right of the decimal
 //Sk.builtin.lng.dividemode$ = Sk.builtin.lng.LONG_DIVIDE$;
 
-Sk.builtin.lng.prototype.cantBeInt = function() {
-  return (this.longCompare(Sk.builtin.lng.MAX_INT$) > 0) || (this.longCompare(Sk.builtin.lng.MIN_INT$) < 0);
+Sk.builtin.lng.prototype.cantBeInt = function()
+{
+  return (this.longCompare(Sk.ffi.MAX_INT) > 0) || (this.longCompare(Sk.ffi.MIN_INT) < 0);
 }
 
 //Sk.builtin.lng.longDivideMode = function(m) 
@@ -110,26 +107,6 @@ Sk.builtin.lng.fromInt$ = function(ival)
   return new Sk.builtin.lng(ival);
 };
 
-// js string (not Sk.builtin.str) -> long. used to create longs in transformer, respects
-// 0x, 0o, 0b, etc.
-Sk.longFromStr = function(s, base)
-{
-    // l/L are valid digits with base >= 22
-    // goog.asserts.assert(s.charAt(s.length - 1) !== "L" && s.charAt(s.length - 1) !== 'l', "L suffix should be removed before here");
-
-    var parser = function (s, base) {
-        if (base == 10)
-            return new Sk.builtin.biginteger(s);
-        else
-            return new Sk.builtin.biginteger(s, base);
-    };
-
-    var biginteger = Sk.str2number(s, base, parser, function(x){return x.negate();}, "long");
-
-    return new Sk.builtin.lng(biginteger);
-};
-goog.exportSymbol("Sk.longFromStr", Sk.longFromStr);
-
 Sk.builtin.lng.prototype.toInt$ = function()
 {
     return this.biginteger.intValue();
@@ -146,12 +123,11 @@ Sk.builtin.lng.prototype.nb$add = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$add(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$add(other);
     }
     else
     {
-      //  Promote an int to long
-      other = new Sk.builtin.lng(other.v);
+      other = Sk.ffi.promoteIntToLong(other);
     }
   }
 
@@ -176,20 +152,21 @@ Sk.builtin.lng.prototype.nb$subtract = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$subtract(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$subtract(other);
     }
     else
     {
-      //  Promote an int to long
-      other = new Sk.builtin.lng(other.v);
+      other = Sk.ffi.promoteIntToLong(other);
     }
   }
 
-  if (other instanceof Sk.builtin.lng) {
+  if (other instanceof Sk.builtin.lng)
+  {
     return new Sk.builtin.lng(this.biginteger.subtract(other.biginteger));
   }
 
-  if (other instanceof Sk.builtin.biginteger) {
+  if (other instanceof Sk.builtin.biginteger)
+  {
     return new Sk.builtin.lng(this.biginteger.subtract(other));
   }
 
@@ -204,12 +181,11 @@ Sk.builtin.lng.prototype.nb$multiply = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$multiply(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$multiply(other);
     }
     else
     {
-      //  Promote an int to long
-      other = new Sk.builtin.lng(other.v);
+      other = Sk.ffi.promoteIntToLong(other);
     }
   }
 
@@ -234,12 +210,11 @@ Sk.builtin.lng.prototype.nb$divide = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$divide(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$divide(other);
     }
     else
     {
-      //  Promote an int to long
-      other = new Sk.builtin.lng(other.v);
+      other = Sk.ffi.promoteIntToLong(other);
     }
   }
 
@@ -298,7 +273,7 @@ Sk.builtin.lng.prototype.nb$floor_divide = function(other)
 {
   if (Sk.ffi.isFloat(other))
   {
-    return Sk.ffi.numberToPy(this.str$(10, true)).nb$floor_divide(other);
+    return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$floor_divide(other);
   }
   else
   {
@@ -326,24 +301,27 @@ Sk.builtin.lng.prototype.nb$remainder = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$remainder(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$remainder(other);
     }
     else
     {
-      //  Promote an int to long
-      other = new Sk.builtin.lng(other.v);
+      other = Sk.ffi.promoteIntToLong(other);
     }
   }
 
-  if (! (other instanceof Sk.builtin.lng) ) {
+  if (! (other instanceof Sk.builtin.lng) )
+  {
     other = new Sk.builtin.lng(other);
   }
 
   var tmp = new Sk.builtin.lng(this.biginteger.remainder(other.biginteger));
-  if (this.nb$isnegative()) {
+  if (this.nb$isnegative())
+  {
     if (other.nb$ispositive() && tmp.nb$nonzero())
       tmp = tmp.nb$add(other).nb$remainder(other);
-  } else {
+  }
+  else
+  {
     if (other.nb$isnegative() && tmp.nb$nonzero())
       tmp = tmp.nb$add(other);
   }
@@ -377,7 +355,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
       return new Sk.builtin.lng(this.biginteger.pow(new Sk.builtin.biginteger(n)));
   }
 
-  if (n instanceof Sk.builtin.nmber)
+  if (n instanceof Sk.builtin.NumberPy)
   {
     if (Sk.ffi.isFloat(n) || n.v < 0)
     {
@@ -385,8 +363,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
     }
     else
     {
-      //  Promote an int to long
-      n = new Sk.builtin.lng(n.v);
+      n = Sk.ffi.promoteIntToLong(n);
     }
   }
 
@@ -539,10 +516,12 @@ Sk.builtin.lng.prototype.nb$ispositive = function()
 Sk.builtin.lng.prototype.longCompare = function(other)
 {
   if (typeof other === "boolean")
+  {
     if (other)
       other = 1;
     else
       other = 0;
+  }
 
   var tmp;
 
@@ -551,7 +530,7 @@ Sk.builtin.lng.prototype.longCompare = function(other)
     other = new Sk.builtin.lng(other);
   }
 
-  if (other instanceof Sk.builtin.nmber)
+  if (other instanceof Sk.builtin.NumberPy)
   {
     if (Sk.ffi.isInt(other) || other.v % 1 == 0)
     {
@@ -560,7 +539,7 @@ Sk.builtin.lng.prototype.longCompare = function(other)
     }
     else
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).numberCompare(other);
+      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).numberCompare(other);
     }
   }
   else if (Sk.ffi.isLong(other))
@@ -612,19 +591,19 @@ Sk.builtin.lng.prototype.tp$str = function()
 };
 
 /**
+ * @param {number} radix
+ * @param {boolean} sign Determines whether the sign is preserved.
  * @return {string}
  */
-Sk.builtin.lng.prototype.str$ = function(base, sign)
+Sk.builtin.lng.prototype.str$ = function(radix, sign)
 {
+  goog.asserts.assertNumber(radix);
+  goog.asserts.assertBoolean(sign);
+
+  if (radix === undefined) radix = 10;
   if (sign === undefined) sign = true;
 
   var work = sign ? this.biginteger : this.biginteger.abs();
 
-  if (base === undefined || base === 10)
-  {
-    return work.toString();
-  }
-
-  //  Another base... convert...
-  return work.toString(base);
+  return work.toString(radix);
 };

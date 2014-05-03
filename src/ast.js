@@ -1556,7 +1556,8 @@ function parsenumber(c, s, lineno)
     // Handle longs
     if (end === 'l' || end === 'L')
     {
-        return Sk.longFromStr(s.substr(0, s.length - 1), 0);
+        // TODO: Does radix zero make sense?
+        return Sk.ffi.longFromString(s.substr(0, s.length - 1), 0);
     }
     
     // todo; we don't currently distinguish between int and float so
@@ -1593,30 +1594,34 @@ function parsenumber(c, s, lineno)
         } else {
             // Octal
             tmp = tmp.substring(1);
-            if ((tmp.charAt(0) === 'o') || (tmp.charAt(0) === 'O')) {
+            if ((tmp.charAt(0) === 'o') || (tmp.charAt(0) === 'O'))
+            {
                 tmp = tmp.substring(1);
             }
-            val = parseInt(tmp, 8);            
+            val = parseInt(tmp, 8);
         }
     }
-    else {
+    else
+    {
         // Decimal
         val = parseInt(tmp, 10);
     }
 
     // Convert to long
-    if (val > Sk.builtin.lng.threshold$
-        && Math.floor(val) === val
-        && (s.indexOf('e') === -1 && s.indexOf('E') === -1))
+    if (val > Sk.builtin.lng.threshold$ && Math.floor(val) === val && (s.indexOf('e') === -1 && s.indexOf('E') === -1))
     {
-        return Sk.longFromStr(s, 0);
+        // TODO: Does radix zero make sense?
+        return Sk.ffi.longFromString(s, 0);
     }
 
     // Small enough, return parsed number
-    if (neg) {
-        return new Sk.builtin.nmber(-val, Sk.builtin.int$);
-    } else {
-        return new Sk.builtin.nmber(val, Sk.builtin.int$);
+    if (neg)
+    {
+        return Sk.ffi.numberToIntPy(-val);
+    }
+    else
+    {
+        return Sk.ffi.numberToIntPy(val);
     }
 }
 

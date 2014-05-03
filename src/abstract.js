@@ -162,29 +162,14 @@ Sk.abstr.numOpAndPromote = function(a, b, opfn)
 
     if (a.constructor === Sk.builtin.lng)
     {
-        /*
-        if (b.constructor == Sk.builtin.nmber)
-        {
-            if (Sk.ffi.isFloat(b))
-            {
-                var tmp = Sk.ffi.numberToPy(a.tp$str());
-                return [tmp, b];
-            }
-            else
-            {
-                return [a, b.v];
-            }
-        }
-        */
         return [a, b];
     }
-    else if (a.constructor === Sk.builtin.nmber) {
+    else if (a.constructor === Sk.builtin.NumberPy) {
         return [a, b];
     }
     else if (typeof a === "number")
     {
-        var tmp = new Sk.builtin.nmber(a, undefined);
-        return [tmp, b];
+        return [Sk.builtin.numberPy(a, undefined), b];
     }
     else
     {
@@ -271,7 +256,7 @@ Sk.abstr.numberBinOp = function(v, w, op)
         {
             return tmp;
         }
-        else if (tmp !== undefined &&  tmp.constructor === Sk.builtin.nmber)
+        else if (tmp !== undefined &&  tmp.constructor === Sk.builtin.NumberPy)
         {
             return tmp;
         }
@@ -300,7 +285,7 @@ Sk.abstr.numberInplaceBinOp = function(v, w, op)
         {
             return tmp;
         }
-        else if (tmp !== undefined &&  tmp.constructor === Sk.builtin.nmber)
+        else if (tmp !== undefined &&  tmp.constructor === Sk.builtin.NumberPy)
         {
             return tmp;
         }
@@ -348,12 +333,12 @@ Sk.abstr.numberUnaryOp = function(valuePy, op)
     {
         return Sk.misceval.isTrue(valuePy) ? Sk.builtin.bool.false$ : Sk.builtin.bool.true$;
     }
-    else if (valuePy instanceof Sk.builtin.nmber || valuePy instanceof Sk.builtin.bool)
+    else if (valuePy instanceof Sk.builtin.NumberPy || valuePy instanceof Sk.builtin.bool)
     {
-        var value = Sk.builtin.asnum$(valuePy);
-        if (op === "USub")   return new Sk.builtin.nmber(-value, value.skType);
-        if (op === "Invert") return new Sk.builtin.nmber(~value, value.skType);
-        if (op === "UAdd")   return new Sk.builtin.nmber(value, value.skType);
+        var value = Sk.ffi.remapToJs(valuePy);
+        if (op === "USub")   return Sk.builtin.numberPy(-value, value.skType);
+        if (op === "Invert") return Sk.builtin.numberPy(~value, value.skType);
+        if (op === "UAdd")   return Sk.builtin.numberPy(value, value.skType);
     }
     else
     {
@@ -388,7 +373,7 @@ goog.exportSymbol("Sk.abstr.numberUnaryOp", Sk.abstr.numberUnaryOp);
 
 Sk.abstr.fixSeqIndex_ = function(seq, i)
 {
-    i = Sk.builtin.asnum$(i);
+    i = Sk.ffi.remapToJs(i);
     if (i < 0 && seq.sq$length)
         i += seq.sq$length();
     return i;
@@ -434,7 +419,7 @@ Sk.abstr.sequenceDelItem = function(seq, i)
 
 Sk.abstr.sequenceRepeat = function(f, seq, n)
 {
-    n = Sk.builtin.asnum$(n);
+    n = Sk.ffi.remapToJs(n);
     var count = Sk.misceval.asIndex(n);
     if (count === undefined)
     {

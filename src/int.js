@@ -11,6 +11,8 @@
 // messages
 Sk.str2number = function(s, base, parser, negater, fname)
 {
+    goog.asserts.assertString(s, "s must be a string");
+
     var origs = s;
     var neg = false;
 
@@ -129,26 +131,26 @@ Sk.builtin.int_ = function(x, base)
             return new Sk.builtin.lng(x, base);
 
         }
-
-        return new Sk.builtin.nmber(val, Sk.builtin.nmber.int$);
+        return Sk.builtin.numberPy(val, Sk.builtin.NumberPy.int$);
     }
 
-    if (base !== undefined) {
-    throw new Sk.builtin.TypeError("int() can't convert non-string with explicit base");
+    if (base !== undefined)
+    {
+        throw new Sk.builtin.TypeError("int() can't convert non-string with explicit base");
     }
 
     if (x instanceof Sk.builtin.lng)
     {
-    if (x.cantBeInt())
-        return new Sk.builtin.lng(x);
-    else
-        return new Sk.builtin.nmber(x.toInt$(), Sk.builtin.nmber.int$);
+        if (x.cantBeInt())
+            return new Sk.builtin.lng(x);
+        else
+            return Sk.ffi.numberToIntPy(x.toInt$());
     }
 
     // sneaky way to do truncate, floor doesn't work < 0, round doesn't work on the .5> side
     // bitwise ops convert to 32bit int in the "C-truncate-way" we want.
     x = Sk.builtin.asnum$(x);
-    return new Sk.builtin.nmber(x | 0, Sk.builtin.nmber.int$);
+    return Sk.ffi.numberToIntPy(x | 0);
 };
 
 Sk.builtin.int_.prototype.tp$name = "int";

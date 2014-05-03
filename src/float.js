@@ -30,7 +30,7 @@ Sk.builtin.float_ = function(x)
     }
 
     // Floats are just numbers
-    if (typeof x === "number" || x instanceof Sk.builtin.nmber || x instanceof Sk.builtin.lng)
+    if (typeof x === "number" || x instanceof Sk.builtin.NumberPy || x instanceof Sk.builtin.lng)
     {
         x = Sk.builtin.asnum$(x);
         return Sk.ffi.numberToPy(x);

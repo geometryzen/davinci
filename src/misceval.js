@@ -18,7 +18,7 @@ Sk.misceval.asIndex = function(o)
     if (o === true) return 1;
     if (o === false) return 0;
     if (typeof o === "number") return o;
-	if (o.constructor === Sk.builtin.nmber) return o.v;
+	if (o.constructor === Sk.builtin.NumberPy) return o.v;
 	if (o.constructor === Sk.builtin.lng) return o.tp$index();
     goog.asserts.fail("todo;");
 };
@@ -223,7 +223,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
 
     // handle identity and membership comparisons
     if (op === 'Is') {
-	if (v instanceof Sk.builtin.nmber && w instanceof Sk.builtin.nmber)
+	if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
 	{
 	    return (v.numberCompare(w) === 0) && (v.skType === w.skType);
 	}
@@ -236,7 +236,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
     }
 
     if (op === 'IsNot') {
-	if (v instanceof Sk.builtin.nmber && w instanceof Sk.builtin.nmber)
+	if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
 	{
 	    return (v.numberCompare(w) !== 0) || (v.skType !== w.skType);
 	}
@@ -380,7 +380,7 @@ Sk.misceval.objectRepr = function(v)
             return Sk.ffi.stringToPy("<unknown>");
         };
     }
-    else if (v.constructor === Sk.builtin.nmber)
+    else if (v.constructor === Sk.builtin.NumberPy)
     {
         if (v.v === Infinity)
             return Sk.ffi.stringToPy('inf');
@@ -416,7 +416,7 @@ Sk.misceval.isTrue = function(x)
     if (x.constructor === Sk.builtin.bool) return x.v;
     if (typeof x === "number") return x !== 0;
     if (x instanceof Sk.builtin.lng) return x.nb$nonzero();
-    if (x.constructor === Sk.builtin.nmber) return x.v !== 0;
+    if (x.constructor === Sk.builtin.NumberPy) return x.v !== 0;
     if (x.mp$length) return x.mp$length() !== 0;
     if (x.sq$length) return x.sq$length() !== 0;
     return true;

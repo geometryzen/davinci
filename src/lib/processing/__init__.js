@@ -14,13 +14,13 @@ var $builtinmodule = function(name)
     mod.processing = null
     mod.p = null
 
-    mod.CENTER = Sk.builtin.assk$(3, Sk.builtin.nmber.int$);
-    mod.RADIUS = Sk.builtin.assk$(2, Sk.builtin.nmber.int$);
-    mod.CORNERS = Sk.builtin.assk$(1, Sk.builtin.nmber.int$);
-    mod.CORNER = Sk.builtin.assk$(0, Sk.builtin.nmber.int$);
-    mod.RGB = Sk.builtin.assk$(1, Sk.builtin.nmber.int$);
-    mod.HSB = Sk.builtin.assk$(3, Sk.builtin.nmber.int$);
-    mod.CMYK = Sk.builtin.assk$(5, Sk.builtin.nmber.int$);
+    mod.CENTER = Sk.ffi.numberToIntPy(3);
+    mod.RADIUS = Sk.ffi.numberToIntPy(2);
+    mod.CORNERS = Sk.ffi.numberToIntPy(1);
+    mod.CORNER = Sk.ffi.numberToIntPy(0);
+    mod.RGB = Sk.ffi.numberToIntPy(1);
+    mod.HSB = Sk.ffi.numberToIntPy(3);
+    mod.CMYK = Sk.ffi.numberToIntPy(5);
     mod.MITER = Sk.ffi.stringToPy('miter');
     mod.BEVEL = Sk.ffi.stringToPy('bevel');
     mod.ROUND = Sk.ffi.stringToPy('round');
@@ -158,12 +158,12 @@ var $builtinmodule = function(name)
 
 
     mod.mouseX = new Sk.builtin.func(function() {
-        return Sk.builtin.assk$(mod.processing.mouseX, Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(mod.processing.mouseX);
         
     });
 
     mod.mouseY = new Sk.builtin.func(function() {
-        return Sk.builtin.assk$(mod.processing.mouseY, Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(mod.processing.mouseY);
         
     });
 
@@ -416,15 +416,15 @@ var $builtinmodule = function(name)
     mod.color = Sk.misceval.buildClass(mod,colorClass,'color', [])
 
     mod.red = new Sk.builtin.func(function(clr) {
-        return Sk.builtin.assk$(mod.processing.red(clr.v), Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(mod.processing.red(clr.v));
     });
     
     mod.green = new Sk.builtin.func(function(clr) {
-        return Sk.builtin.assk$(mod.processing.green(clr.v), Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(mod.processing.green(clr.v));
     });
 
     mod.blue = new Sk.builtin.func(function(clr) {
-        return Sk.builtin.assk$(mod.processing.blue(clr.v), Sk.builtin.nmber.int$);
+        return Sk.ffi.numberToIntPy(mod.processing.blue(clr.v));
     });
 
     // Image class and functions
@@ -433,8 +433,8 @@ var $builtinmodule = function(name)
         /* images are loaded async.. so its best to preload them */
         $loc.__init__ = new Sk.builtin.func(function(self,im) {
             self.v = im
-            self.width = Sk.builtin.assk$(im.width, Sk.builtin.nmber.int$);
-            self.height = Sk.builtin.assk$(im.height, Sk.builtin.nmber.int$);
+            self.width = Sk.ffi.numberToIntPy(im.width);
+            self.height = Sk.ffi.numberToIntPy(im.height);
         })
 
         $loc.__getattr__ = new Sk.builtin.func(function(self,key) {
@@ -461,9 +461,9 @@ var $builtinmodule = function(name)
     mod.get = new Sk.builtin.func(function(x,y) {
         var clr = mod.processing.get(x.v,y.v)
         return Sk.misceval.callsim(mod.color,
-            Sk.builtin.assk$(mod.processing.red(clr), Sk.builtin.nmber.int$),
-            Sk.builtin.assk$(mod.processing.green(clr), Sk.builtin.nmber.int$),
-            Sk.builtin.assk$(mod.processing.blue(clr), Sk.builtin.nmber.int$));
+            Sk.ffi.numberToIntPy(mod.processing.red(clr)),
+            Sk.ffi.numberToIntPy(mod.processing.green(clr)),
+            Sk.ffi.numberToIntPy(mod.processing.blue(clr)));
     });
 
     mod.set = new Sk.builtin.func(function(x, y, color) {

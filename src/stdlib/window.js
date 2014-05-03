@@ -162,7 +162,6 @@ Sk.builtin.buildWindowClass = function(mod) {
           {
             argumentsJs.push(Sk.ffi.remapToJs(argumentsPy[i]));
           }
-          // debugger;
           if (isConstructorFunction(name)) {
             // Do I have to simulate the 'new' keyword? Maybe not!
             // var valueJs = new propJs(argumentsJs);

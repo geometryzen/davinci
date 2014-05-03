@@ -98,9 +98,9 @@ Sk.ffi.type = function(valuePy)
             return Sk.builtin.float_.prototype.ob$type;
         }
     }
-    if (valuePy.constructor === Sk.builtin.nmber)
+    if (valuePy.constructor === Sk.builtin.NumberPy)
     {
-        if (valuePy.skType === Sk.builtin.nmber.int$)
+        if (valuePy.skType === Sk.builtin.NumberPy.int$)
         {
             return Sk.builtin.int_.prototype.ob$type;
         }
@@ -181,11 +181,15 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
 goog.exportSymbol("Sk.ffi.booleanToPy", Sk.ffi.booleanToPy);
 
 /**
- * @param {number|string} valueJs
+ * Converts a JavaScript number to the runtime representation for a Python float.
+ *
+ * This function is the entry point for converting the generated script literals.
+ *
+ * @param {number} valueJs
  */
 Sk.ffi.numberToPy = function(valueJs)
 {
-  goog.asserts.assert(typeof valueJs === Sk.ffi.JsType.NUMBER || typeof valueJs === Sk.ffi.JsType.STRING);
+  goog.asserts.assertNumber(valueJs);
   if (Sk.flyweight)
   {
     return valueJs;
@@ -193,7 +197,7 @@ Sk.ffi.numberToPy = function(valueJs)
   else
   {
     // This is the one place where we can legitimately construct a float.
-    return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.float$);
+    return new Sk.builtin.NumberPy(valueJs, Sk.builtin.NumberPy.float$);
   }
 };
 goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
@@ -261,7 +265,8 @@ Sk.ffi.numberToIntPy = function(valueJs, defaultJs)
     var t = typeof valueJs;
     if (t === Sk.ffi.JsType.NUMBER)
     {
-        return new Sk.builtin.nmber(valueJs, Sk.builtin.nmber.int$);
+        // This provides the canonical implementation for int.
+        return new Sk.builtin.NumberPy(valueJs, Sk.builtin.NumberPy.int$);
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
@@ -607,10 +612,13 @@ goog.exportSymbol("Sk.ffi.isInt", Sk.ffi.isInt);
 
 /**
  * @nosideeffects
- * @param {Object} valuePy
+ * @param {*} valuePy
  * @return {boolean}
  */
-Sk.ffi.isLong = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LONG;};
+Sk.ffi.isLong = function(valuePy)
+{
+    return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.LONG;
+};
 goog.exportSymbol("Sk.ffi.isLong", Sk.ffi.isLong);
 
 /**
@@ -629,7 +637,7 @@ goog.exportSymbol("Sk.ffi.isNone", Sk.ffi.isNone);
 
 Sk.ffi.isNum = function(valuePy)
 {
-    if (valuePy instanceof Sk.builtin.nmber)
+    if (valuePy instanceof Sk.builtin.NumberPy)
     {
         return true;
     }
@@ -933,10 +941,10 @@ Sk.ffi.getType = function(valuePy)
     {
         return Sk.ffi.PyType.TUPLE;
     }
-    else if (valuePy instanceof Sk.builtin.nmber)
+    else if (valuePy instanceof Sk.builtin.NumberPy)
     {
         // This is the legitimate test for a float in non-flyweight mode.
-        if (valuePy.skType === Sk.builtin.nmber.float$)
+        if (valuePy.skType === Sk.builtin.NumberPy.float$)
         {
             if (Sk.flyweight)
             {
@@ -947,13 +955,13 @@ Sk.ffi.getType = function(valuePy)
                 return Sk.ffi.PyType.FLOAT;
             }
         }
-        else if (valuePy.skType === Sk.builtin.nmber.int$)
+        else if (valuePy.skType === Sk.builtin.NumberPy.int$)
         {
             return Sk.ffi.PyType.INT;
         }
         else
         {
-            throw Sk.ffi.assertionError("typeofPy(" + valuePy + ") (Sk.builtin.nmber) skType=" + valuePy.skType);
+            throw Sk.ffi.assertionError("typeofPy(" + valuePy + ") (Sk.builtin.NumberPy) skType=" + valuePy.skType);
         }
     }
     else if (valuePy instanceof Sk.builtin.lng)
@@ -1020,7 +1028,7 @@ Sk.ffi.typeName = function(valuePy)
             return 'float';
         }
     }
-    if (valuePy instanceof Sk.builtin.nmber)
+    if (valuePy instanceof Sk.builtin.NumberPy)
     {
         return valuePy.skType;
     }
@@ -1041,7 +1049,7 @@ Sk.ffi.typeName = function(valuePy)
         case Sk.ffi.PyType.INT:
         case Sk.ffi.PyType.STR:
         {
-            if (valuePy instanceof Sk.builtin.nmber)
+            if (valuePy instanceof Sk.builtin.NumberPy)
             {
                 return valuePy.skType;
             }
@@ -1104,7 +1112,7 @@ goog.exportSymbol("Sk.ffi.booleanToJs", Sk.ffi.booleanToJs);
  */
 Sk.ffi.numberToJs = function(valuePy, message)
 {
-    if (valuePy instanceof Sk.builtin.nmber)
+    if (valuePy instanceof Sk.builtin.NumberPy)
     {
         return Sk.builtin.asnum$(valuePy);
     }
@@ -1127,7 +1135,7 @@ goog.exportSymbol("Sk.ffi.numberToJs", Sk.ffi.numberToJs);
  *
  * valueJs = Sk.ffi.remapToJs(valuePy);
  *
- * @param {Object} valuePy The Python value to be mapped.
+ * @param {*} valuePy The Python value to be mapped.
  * @param {boolean=} shallow
  */
 Sk.ffi.remapToJs = function(valuePy, shallow)
@@ -1528,7 +1536,6 @@ Sk.ffi.ObjectPy.prototype.tp$getattr = function(name)
         {
           argumentsJs.push(Sk.ffi.remapToJs(argumentsPy[i]));
         }
-        // debugger;
         if (isConstructorFunction(name)) {
           // Do I have to simulate the 'new' keyword? Maybe not!
           var valueJs = new propJs(argumentsJs);
@@ -1758,3 +1765,52 @@ Sk.ffi.CallablePy.prototype.tp$call = function(args, kw)
     return Sk.ffi.remapToPy(propJs.apply(objectJs, argsJs));
   }
 }
+
+/**
+ * @param {Sk.builtin.NumberPy} intPy
+ * @return {Sk.builtin.lng}
+ */
+Sk.ffi.promoteIntToLong = function(intPy)
+{
+    goog.asserts.assert(Sk.ffi.isInt(intPy));
+    // TODO: Optimize. We know that the argument is the internal int representation.
+    var valueJs = Sk.ffi.remapToJs(intPy);
+    goog.asserts.assertNumber(valueJs);
+    return new Sk.builtin.lng(valueJs)
+};
+goog.exportSymbol("Sk.ffi.promoteIntToLong", Sk.ffi.promoteIntToLong);
+
+/**
+ * Used to create longs in transformer, respects 0x, 0o, 0b, etc.
+ * @param {string} s
+ * @param {number} radix
+ * @return {Sk.builtin.biginteger|Sk.builtin.lng}
+ */
+Sk.ffi.longFromString = function(s, radix)
+{
+    goog.asserts.assertString(s, "s must be a string");
+//  goog.asserts.assertNumber(radix, "radix must be a number");
+
+    // l/L are valid digits with radix >= 22
+    // goog.asserts.assert(s.charAt(s.length - 1) !== "L" && s.charAt(s.length - 1) !== 'l', "L suffix should be removed before here");
+
+    var parser = function (s, radix)
+    {
+        if (radix == 10)
+            return new Sk.builtin.biginteger(s);
+        else
+            return new Sk.builtin.biginteger(s, radix);
+    };
+
+    var biginteger = Sk.str2number(s, radix, parser, function(x){return x.negate();}, "long");
+
+    return new Sk.builtin.lng(biginteger);
+};
+goog.exportSymbol("Sk.ffi.longFromString", Sk.ffi.longFromString);
+
+// TODO: These loaded here to prevent circularity issues.
+// Can we use Google Closure to help here? 
+Sk.ffi.MAX_INT = new Sk.builtin.lng(+Sk.builtin.lng.threshold$);
+Sk.ffi.MIN_INT = new Sk.builtin.lng(-Sk.builtin.lng.threshold$);
+goog.exportSymbol("Sk.ffi.MIN_INT", Sk.ffi.MIN_INT);
+goog.exportSymbol("Sk.ffi.MAX_INT", Sk.ffi.MAX_INT);

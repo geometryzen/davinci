@@ -1,9 +1,9 @@
-describe "Sk.builtin", ->
+describe "Sk.builtin.bool", ->
 
   beforeEach () ->
     Sk.currLineNo = 12345
 
-  describe "bool", -> 
+  describe "construction", -> 
     it "(true).v should be true", -> expect(Sk.builtin.bool(true).v).toBe true
     it "(false).v should be false", -> expect(Sk.builtin.bool(false).v).toBe false
 

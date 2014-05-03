@@ -531,19 +531,25 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             this.annotateSource(e);
             return result;
         case Num:
+        {
             if (typeof e.n === "number")
             {
                 return e.n;
             }
-            else if (Sk.ffi.isFloat(e.n) || Sk.ffi.isInt(e.n))
+            else if (Sk.ffi.isFloat(e.n))
             {
-                return "new Sk.builtin.nmber(" + Sk.ffi.remapToJs(e.n) + ",'" + e.n.skType + "')";
+                return "Sk.ffi.numberToPy(" + Sk.ffi.remapToJs(e.n) + ")";
+            }
+            else if (Sk.ffi.isInt(e.n))
+            {
+                return "Sk.ffi.numberToIntPy(" + Sk.ffi.remapToJs(e.n) + ")";
             }
             else if (Sk.ffi.isLong(e.n))
             {
-                return "Sk.longFromStr('" + Sk.ffi.remapToJs(e.n.tp$str()) + "')";
+                return "Sk.ffi.longFromString('" + Sk.ffi.remapToJs(e.n.tp$str()) + "')";
             }
             goog.asserts.fail("unhandled Num type");
+        }
         case Str:
         {
             return this._gr('str', "Sk.ffi.stringToPy(", Sk.ffi.remapToJs(e.s.tp$repr()), ")");

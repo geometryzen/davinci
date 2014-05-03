@@ -1509,7 +1509,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__len__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.numberToFloatPy(8);
+    return Sk.ffi.numberToIntPy(8);
   });
   $loc.__pos__ = Sk.ffi.functionPy(function(selfPy) {
     return selfPy;

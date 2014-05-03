@@ -5,7 +5,7 @@
   "src_files" : [
     "generated/js/app.js",
     "generated/js/spec.js",
-    "dist/davinci.min.js",
+    "dist/davinci.js",
     "dist/davinci-stdlib.js",
     "vendor/threejs/build/three.min.js"
   ]

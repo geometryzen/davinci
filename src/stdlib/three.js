@@ -2165,7 +2165,7 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     Sk.ffi.referenceToPy(new THREE[CANVAS_RENDERER](parameters), CANVAS_RENDERER, undefined, selfPy);
   });
   $loc.setSize = Sk.ffi.functionPy(function(self, width, height) {
-    self.v.setSize(Sk.builtin.asnum$(width), Sk.builtin.asnum$(height));
+    self.v.setSize(Sk.ffi.remapToJs(width), Sk.ffi.remapToJs(height));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
     var METHOD_RENDER = "render";
@@ -2307,8 +2307,8 @@ mod[CANVAS_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       case "size": {
-        var width  = Sk.builtin.asnum$(value[0]);
-        var height = Sk.builtin.asnum$(value[1]);
+        var width  = Sk.ffi.remapToJs(value[0]);
+        var height = Sk.ffi.remapToJs(value[1]);
         renderer.setSize(width, height);
       }
       break;
@@ -2351,7 +2351,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     Sk.ffi.referenceToPy(new THREE[WEBGL_RENDERER](parameters), WEBGL_RENDERER, undefined, selfPy);
   });
   $loc.setSize = Sk.ffi.functionPy(function(self, width, height) {
-    self.v.setSize(Sk.builtin.asnum$(width), Sk.builtin.asnum$(height));
+    self.v.setSize(Sk.ffi.remapToJs(width), Sk.ffi.remapToJs(height));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(self, name) {
     var METHOD_RENDER = "render";
@@ -2473,8 +2473,8 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc)
       }
       break;
       case "size": {
-        var width  = Sk.builtin.asnum$(value[0]);
-        var height = Sk.builtin.asnum$(value[1]);
+        var width  = Sk.ffi.remapToJs(value[0]);
+        var height = Sk.ffi.remapToJs(value[1]);
         renderer.setSize(width, height);
       }
       break;

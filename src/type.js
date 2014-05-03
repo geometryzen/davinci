@@ -89,9 +89,14 @@ Sk.builtin.type = function(name, bases, dict)
         {
             var lenf = this.tp$getattr("__len__");
             if (lenf !== undefined)
+            {
                 return Sk.misceval.apply(lenf, undefined, undefined, undefined, []);
-            var tname = Sk.ffi.typeName(this);
-            throw new Sk.builtin.AttributeError(tname + " instance has no attribute '__len__'");
+            }
+            else
+            {
+                var tname = Sk.ffi.typeName(this);
+                throw new Sk.builtin.AttributeError(tname + " instance has no attribute '__len__'");
+            }
         };
         klass.prototype.tp$call = function(args, kw)
         {

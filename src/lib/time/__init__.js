@@ -9,8 +9,9 @@ var $builtinmodule = function(name)
 {
     var mod = {};
 
-    mod.time = new Sk.builtin.func(function() {
-	  return Sk.builtin.assk$(new Date().getTime() / 1000, undefined);
+    mod.time = new Sk.builtin.func(function()
+    {
+      return Sk.ffi.numberToPy(new Date().getTime() / 1000);
     });
 
     return mod;
