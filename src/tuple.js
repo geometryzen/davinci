@@ -24,7 +24,7 @@ Sk.builtin.tuple = function(L)
                 this.v.push(i);
         }
         else
-            throw new Sk.builtin.ValueError("expecting Array or iterable");        
+            throw new Sk.builtin.ValueError("expecting Array or iterable");
     }
 
     this.__class__ = Sk.builtin.tuple;
@@ -148,6 +148,10 @@ Sk.builtin.tuple.prototype['__iter__'] = new Sk.builtin.func(function(self)
 
 Sk.builtin.tuple.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 
+/**
+ * @param {*} w
+ * @param {Sk.misceval.compareOp} op
+ */
 Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
 {
     //print("  tup rc", JSON.stringify(this.v), JSON.stringify(w), op);
@@ -156,8 +160,8 @@ Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
     if (!w.__class__ || w.__class__ != Sk.builtin.tuple)
     {
         // shortcuts for eq/not
-        if (op === 'Eq') return false;
-        if (op === 'NotEq') return true;
+        if (op === Sk.misceval.compareOp.Eq) return false;
+        if (op === Sk.misceval.compareOp.NotEq) return true;
 
         // todo; other types should have an arbitrary order
         return false;
@@ -171,7 +175,7 @@ Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
     var i;
     for (i = 0; i < vl && i < wl; ++i)
     {
-        var k = Sk.misceval.richCompareBool(v[i], w[i], 'Eq');
+        var k = Sk.misceval.richCompareBool(v[i], w[i], Sk.misceval.compareOp.Eq);
         if (!k) break;
     }
 
@@ -180,12 +184,12 @@ Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
         // no more items to compare, compare sizes
         switch (op)
         {
-            case 'Lt': return vl < wl;
+            case Sk.misceval.compareOp.Lt: return vl < wl;
             case 'LtE': return vl <= wl;
-            case 'Eq': return vl === wl;
-            case 'NotEq': return vl !== wl;
-            case 'Gt': return vl > wl;
-            case 'GtE': return vl >= wl;
+            case Sk.misceval.compareOp.Eq: return vl === wl;
+            case Sk.misceval.compareOp.NotEq: return vl !== wl;
+            case Sk.misceval.compareOp.Gt: return vl > wl;
+            case Sk.misceval.compareOp.GtE: return vl >= wl;
             default: goog.asserts.fail();
         }
     }
@@ -193,8 +197,8 @@ Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
     // we have an item that's different
 
     // shortcuts for eq/not
-    if (op === 'Eq') return false;
-    if (op === 'NotEq') return true;
+    if (op === Sk.misceval.compareOp.Eq) return false;
+    if (op === Sk.misceval.compareOp.NotEq) return true;
 
     // or, compare the differing element using the proper operator
     //print("  tup rcb end", i, v[i] instanceof Sk.builtin.str, JSON.stringify(v[i]), w[i] instanceof Sk.builtin.str, JSON.stringify(w[i]), op);
@@ -218,8 +222,10 @@ Sk.builtin.tuple.prototype['index'] = new Sk.builtin.func(function(self, item)
     var obj = self.v;
     for (var i = 0; i < len; ++i)
     {
-        if (Sk.misceval.richCompareBool(obj[i], item, "Eq"))
+        if (Sk.misceval.richCompareBool(obj[i], item, Sk.misceval.compareOp.Eq))
+        {
             return i;
+        }
     }
     throw new Sk.builtin.ValueError("tuple.index(x): x not in tuple");
 });
@@ -231,7 +237,7 @@ Sk.builtin.tuple.prototype['count'] = new Sk.builtin.func(function(self, item)
     var count = 0;
     for (var i = 0; i < len; ++i)
     {
-        if (Sk.misceval.richCompareBool(obj[i], item, "Eq"))
+        if (Sk.misceval.richCompareBool(obj[i], item, Sk.misceval.compareOp.Eq))
         {
             count += 1;
         }

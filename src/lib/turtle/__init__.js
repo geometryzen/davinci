@@ -89,7 +89,7 @@ if (! TurtleGraphics) {
             TurtleGraphics.canvasInit = true;
             TurtleGraphics.eventCount = 0;
             TurtleGraphics.renderClock = 0;
-            TurtleGraphics.renderTime = 0;  // RNL
+            TurtleGraphics.renderTime = 0;
         } else {
             this.context.restore();
             this.context.translate(this.canvas.width / 2, this.canvas.height / 2); // move 0,0 to center.
@@ -114,7 +114,7 @@ if (! TurtleGraphics) {
         if (! this.isAnimating()) {
             this.intervalId = setTimeout(render, this.delay);   //  setInterval(render, this.delay);
         }
-        if (!this.onCanvas(t))  //  Added by RNL in case startAnimating is called after it's already been added
+        if (!this.onCanvas(t))  //  in case startAnimating is called after it's already been added
             this.addToCanvas(t);
         Sk.isTurtleProgram = true;
     }
@@ -136,16 +136,18 @@ if (! TurtleGraphics) {
         render();
     }
 
-    TurtleCanvas.prototype.setSpeedDelay = function(s) {    // RNL
+    TurtleCanvas.prototype.setSpeedDelay = function(s)
+    {
         var df = 10 - (s % 11) + 1;
-        this.delay = df * this.timeFactor;  //  RNL was 10;
+        this.delay = df * this.timeFactor;
     }
 
     TurtleCanvas.prototype.setDelay = function(d) {
         this.delay = d;
     }
 
-    TurtleCanvas.prototype.getDelay = function(s) { // RNL
+    TurtleCanvas.prototype.getDelay = function(s)
+    {
         return this.delay;
     }
 
@@ -354,14 +356,14 @@ if (! TurtleGraphics) {
                             t.visible = true;
                         } else if (oper[0] == "TT") {
                             currentHead = oper[1];
-                        } else if (oper[0] == "CL") { // RNL clear
+                        } else if (oper[0] == "CL") { // clear
                             clear_canvas(t.canvasID);
                             t.clearPoint = i;   // Different from reset that calls clear because it leaves the turtles where they are
-                        } else if (oper[0] == "DL") { // RNL delay
+                        } else if (oper[0] == "DL") { // delay
                             var df = oper[1]
 //                          console.log("animated delay set " + df)
                             t.turtleCanvas.delay = df
-                        } else if (oper[0] == "SC") { // RNL speed change
+                        } else if (oper[0] == "SC") { // speed change
                             var s = oper[1]
                             if (s < 0)
                                 s = 0
@@ -377,7 +379,7 @@ if (! TurtleGraphics) {
                             if (oper[2]) {
                                 t.turtleCanvas.setSegmentLength(oper[2]);
                             }
-                        } else if (oper[0] == "NO") { // RNL no op                  
+                        } else if (oper[0] == "NO") { // no op
                         } else {
                             console.log("unknown op: " + oper[0]);
                         } // end of oper[0] test
@@ -487,7 +489,7 @@ if (! TurtleGraphics) {
             this.normal = [ ];
             this.go_home();
             this.aCount = 0;
-            this.clearPoint = 0;    // RNL for clear/clearScreen
+            this.clearPoint = 0;
         }
     }
     function turtleShapePoints() {
@@ -746,7 +748,8 @@ if (! TurtleGraphics) {
         }
     }
 
-    Turtle.prototype.delay = function(d) {  // RNL
+    Turtle.prototype.delay = function(d)
+    {
         if (d != null) {
             if (d < 0)
                 d = -d
@@ -1347,7 +1350,7 @@ if (! TurtleGraphics) {
     TurtleGraphics.canvasInit = false;
     TurtleGraphics.eventCount = 0;
     TurtleGraphics.renderClock = 0;
-    TurtleGraphics.renderTime  = 0; // RNL
+    TurtleGraphics.renderTime  = 0;
 
 })();
 
@@ -1710,8 +1713,6 @@ var $builtinmodule = function(name) {
             ury = Sk.builtin.asnum$(ury);
             self.theTurtle.setworldcoordinates(llx, lly, urx, ury);
         });
-
-        //  Added by RNL
 
         $loc.clear = new Sk.builtin.func(function(self) {
             self.theTurtle.clear()

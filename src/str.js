@@ -169,9 +169,9 @@ Sk.builtin.str.prototype.tp$richcompare = function(other, op)
     {
         switch (op)
         {
-            case 'Eq': case 'LtE': case 'GtE':
+            case Sk.misceval.compareOp.Eq: case 'LtE': case Sk.misceval.compareOp.GtE:
                 return true;
-            case 'NotEq': case 'Lt': case 'Gt':
+            case Sk.misceval.compareOp.NotEq: case Sk.misceval.compareOp.Lt: case Sk.misceval.compareOp.Gt:
                 return false;
         }
     }
@@ -202,12 +202,12 @@ Sk.builtin.str.prototype.tp$richcompare = function(other, op)
 
     switch (op)
     {
-        case 'Lt': return c < 0;
+        case Sk.misceval.compareOp.Lt: return c < 0;
         case 'LtE': return c <= 0;
-        case 'Eq': return c == 0;
-        case 'NotEq': return c != 0;
-        case 'Gt': return c > 0;
-        case 'GtE': return c >= 0;
+        case Sk.misceval.compareOp.Eq: return c == 0;
+        case Sk.misceval.compareOp.NotEq: return c != 0;
+        case Sk.misceval.compareOp.Gt: return c > 0;
+        case Sk.misceval.compareOp.GtE: return c >= 0;
         default:
             goog.asserts.fail();
     }
@@ -828,7 +828,7 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
             else if (Sk.ffi.isLong(n))
             {
                 r = n.str$(base, false);
-                neg = n.nb$isnegative();    //  neg = n.size$ < 0;  RNL long.js change
+                neg = n.nb$isnegative();
             }
 
             goog.asserts.assert(r !== undefined, "unhandled number format");

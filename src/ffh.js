@@ -64,83 +64,83 @@ Sk.ffh.getitem = function(objPy, index)
 goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
 Sk.ffh.add = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Add");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Add");
 };
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);
 
 Sk.ffh.subtract = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Sub");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Sub");
 };
 goog.exportSymbol("Sk.ffh.subtract", Sk.ffh.subtract);
 
 Sk.ffh.multiply = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Mult");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Mult");
 };
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
 Sk.ffh.divide = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Div");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Div");
 };
 goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
 
 Sk.ffh.mod = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Mod");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Mod");
 };
 goog.exportSymbol("Sk.ffh.mod", Sk.ffh.mod);
 
 Sk.ffh.xor = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "BitXor");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "BitXor");
 };
 goog.exportSymbol("Sk.ffh.xor", Sk.ffh.xor);
 
 Sk.ffh.lshift = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "LShift");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "LShift");
 };
 goog.exportSymbol("Sk.ffh.lshift", Sk.ffh.lshift);
 
 Sk.ffh.rshift = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "RShift");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "RShift");
 };
 goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
 
 Sk.ffh.pow = function(lhsPy, rhsPy) {
-  return Sk.abstr.binary_op_(lhsPy, rhsPy, "Pow");
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Pow");
 };
 goog.exportSymbol("Sk.ffh.rshift", Sk.ffh.rshift);
 
 Sk.ffh.eq = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Eq"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.Eq));
 };
 goog.exportSymbol("Sk.ffh.eq", Sk.ffh.eq);
 
 Sk.ffh.lt = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Lt"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.Lt));
 };
 goog.exportSymbol("Sk.ffh.lt", Sk.ffh.lt);
 
 Sk.ffh.le = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "LtE"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.LtE));
 };
 goog.exportSymbol("Sk.ffh.le", Sk.ffh.le);
 
 Sk.ffh.gt = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "Gt"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.Gt));
 };
 goog.exportSymbol("Sk.ffh.gt", Sk.ffh.gt);
 
 Sk.ffh.ge = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "GtE"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.GtE));
 };
 goog.exportSymbol("Sk.ffh.ge", Sk.ffh.ge);
 
 Sk.ffh.ne = function(lhsPy, rhsPy)
 {
-    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, "NotEq"));
+    return Sk.builtin.bool(Sk.misceval.richCompareBool(lhsPy, rhsPy, Sk.misceval.compareOp.NotEq));
 };
 goog.exportSymbol("Sk.ffh.ne", Sk.ffh.ne);
 
@@ -183,24 +183,41 @@ Sk.ffh.exp = function(valuePy)
 };
 goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);
 
-Sk.ffh.positive = function(valuePy) {
-  return Sk.abstr.numberUnaryOp(valuePy, "UAdd");
+Sk.ffh.positive = function(valuePy)
+{
+  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  {
+    return valuePy;
+  }
+  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.UAdd);
 };
 goog.exportSymbol("Sk.ffh.positive", Sk.ffh.positive);
 
-Sk.ffh.negative = function(valuePy) {
-  return Sk.abstr.numberUnaryOp(valuePy, "USub");
+Sk.ffh.negative = function(valuePy)
+{
+  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  {
+    var valueJs = Sk.ffi.remapToJs(valuePy);
+    return Sk.ffi.numberToPy(-valueJs);
+  }
+  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.USub);
 };
 goog.exportSymbol("Sk.ffh.negative", Sk.ffh.negative);
 
 Sk.ffh.invert = function(valuePy)
 {
+  // TODO: Make like others?
   return Sk.ffh.unaryExec("~", SPECIAL_METHOD_INVERT, valuePy, "nb$invert");
 };
 goog.exportSymbol("Sk.ffh.invert", Sk.ffh.invert);
 
 Sk.ffh.nonzero = function(valuePy)
 {
+  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  {
+    var valueJs = Sk.ffi.remapToJs(valuePy);
+    return Sk.ffi.booleanToPy(valueJs !== 0);
+  }
   return Sk.ffh.unaryExec("", SPECIAL_METHOD_NONZERO, valuePy, "nb$nonzero");
 };
 goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
@@ -229,7 +246,84 @@ Sk.ffh.sqrt = function(valuePy)
 };
 goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 
-Sk.ffh.str = function(valuePy) {
+/**
+ * @param {number} thisJs
+ * @param {number} radix
+ * @param {boolean} sign
+ * @return {string}
+ */
+Sk.ffh.numberToFloatString = function(thisJs, radix, sign)
+{
+  goog.asserts.assertNumber(radix);
+  goog.asserts.assertBoolean(sign);
+
+  if (isNaN(thisJs))
+  {
+    return "nan";
+  }
+
+  if (sign === undefined) sign = true;
+
+  if (thisJs == Infinity)
+    return 'inf';
+  if (thisJs == -Infinity && sign)
+    return '-inf';
+  if (thisJs == -Infinity && !sign)
+    return 'inf';
+
+  var work = sign ? thisJs : Math.abs(thisJs);
+
+  var tmp;
+  if (radix === undefined || radix === 10)
+  {
+    tmp = work.toPrecision(12);
+
+    // transform fractions with 4 or more leading zeroes into exponents
+    var idx = tmp.indexOf('.');
+    var pre = work.toString().slice(0,idx);
+    var post = work.toString().slice(idx);
+    if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
+    {
+      if (tmp.length < 12)
+          tmp = work.toExponential();
+      else
+          tmp = work.toExponential(11);
+    }
+
+    while (tmp.charAt(tmp.length-1) == "0" && tmp.indexOf('e') < 0)
+    {
+      tmp = tmp.substring(0,tmp.length-1)
+    }
+    if (tmp.charAt(tmp.length-1) == ".")
+    {
+      tmp = tmp + "0";
+    }
+    tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
+    // make exponent two digits instead of one (ie e+09 not e+9)
+    tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
+    // remove trailing zeroes before the exponent
+    tmp = tmp.replace(/0+(e.*)/,'$1');
+  }
+  else
+  {
+    tmp = work.toString(radix);
+  }
+
+  if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
+  {
+    tmp = tmp + '.0';
+  }
+  return tmp;
+}
+goog.exportSymbol("Sk.ffh.numberToFloatString", Sk.ffh.numberToFloatString);
+
+Sk.ffh.str = function(valuePy)
+{
+  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  {
+    return Sk.ffi.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+  }
+
   if (valuePy[SPECIAL_METHOD_STR])
   {
     return Sk.ffi.callsim(valuePy[SPECIAL_METHOD_STR], valuePy);
@@ -257,14 +351,33 @@ goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);
 
 Sk.ffh.repr = function(valuePy)
 {
-  return Sk.ffh.unaryExec("repr", SPECIAL_METHOD_REPR, valuePy, "tp$repr");
+  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  {
+    return Sk.ffi.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+  }
+
+  if (valuePy[SPECIAL_METHOD_REPR])
+  {
+    return Sk.ffi.callsim(valuePy[SPECIAL_METHOD_REPR], valuePy);
+  }
+  else if (valuePy["tp$repr"])
+  {
+    return valuePy["tp$repr"].call(valuePy);
+  }
+  else
+  {
+    throw Sk.ffi.notImplementedError("repr");
+  }
 };
 goog.exportSymbol("Sk.ffh.repr", Sk.ffh.repr);
+
 /**
  *
  */
-Sk.ffh.evaluate = function(exprPy, envPy) {
-  if (Sk.ffi.isFloat(exprPy) ||  Sk.ffi.isInt(exprPy) || Sk.ffi.isLong(exprPy)) {
+Sk.ffh.evaluate = function(exprPy, envPy)
+{
+  if (Sk.ffi.isFloat(exprPy) ||  Sk.ffi.isInt(exprPy) || Sk.ffi.isLong(exprPy))
+  {
     return exprPy;
   }
   else {

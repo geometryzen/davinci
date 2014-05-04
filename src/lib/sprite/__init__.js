@@ -366,13 +366,13 @@ if (! SpriteGraphics) {
               t.visible = true;
             } else if (oper[0] == "TT") {
               currentHead = oper[1];
-            } else if (oper[0] == "CL") { // RNL clear
+            } else if (oper[0] == "CL") { // clear
               clear_canvas(t.canvasID);
               t.clearPoint = i; // Different from reset that calls clear because it leaves the sprites where they are
-            } else if (oper[0] == "DL") { // RNL delay
+            } else if (oper[0] == "DL") { // delay
               var df = oper[1];
               t.spriteCanvas.delay = df
-            } else if (oper[0] == "SC") { // RNL speed change
+            } else if (oper[0] == "SC") { // speed change
               var s = oper[1]
               if (s < 0)
                 s = 0
@@ -389,7 +389,7 @@ if (! SpriteGraphics) {
                 t.spriteCanvas.setSegmentLength(oper[2]);
               }
             } else if (oper[0] == "NO") {
-              // RNL no op
+              // no op
             } else {
             } // end of oper[0] test
           } // end of if ts < render clock

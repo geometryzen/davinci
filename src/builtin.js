@@ -216,8 +216,10 @@ Sk.builtin.min = function min()
     var lowest = argArray[0];
     for (var i = 1; i < argArray.length; ++i)
     {
-        if (Sk.misceval.richCompareBool(argArray[i], lowest, 'Lt'))
+        if (Sk.misceval.richCompareBool(argArray[i], lowest, Sk.misceval.compareOp.Lt))
+        {
             lowest = argArray[i];
+        }
     }
     return lowest;
 };
@@ -230,8 +232,10 @@ Sk.builtin.max = function max()
     var highest = argArray[0];
     for (var i = 1; i < argArray.length; ++i)
     {
-        if (Sk.misceval.richCompareBool(argArray[i], highest, 'Gt'))
+        if (Sk.misceval.richCompareBool(argArray[i], highest, Sk.misceval.compareOp.Gt))
+        {
             highest = argArray[i];
+        }
     }
     return highest;
 };
@@ -325,9 +329,7 @@ Sk.builtin.sum = function sum(iter,start)
         }
         else
         {
-            throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '"
-                       + Sk.ffi.typeName(tot) + "' and '"
-                       + Sk.ffi.typeName(i)+"'");
+            throw new Sk.builtin.TypeError("unsupported operand type(s) for +: '" + Sk.ffi.typeName(tot) + "' and '" + Sk.ffi.typeName(i)+"'");
         }
     }
     return tot;
@@ -1018,7 +1020,7 @@ Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
             compare_func = { func_code: 
                 function(a,b)
                 {
-                    return Sk.misceval.richCompareBool(a[0], b[0], "Lt") ? Sk.ffi.numberToIntPy(-1) : Sk.ffi.numberToIntPy(0);
+                    return Sk.misceval.richCompareBool(a[0], b[0], Sk.misceval.compareOp.Lt) ? Sk.ffi.numberToIntPy(-1) : Sk.ffi.numberToIntPy(0);
                 }
             };
         }

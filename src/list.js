@@ -129,6 +129,10 @@ Sk.builtin.list.prototype.tp$repr = function()
 Sk.builtin.list.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 Sk.builtin.list.prototype.tp$hash = Sk.builtin.object.prototype.HashNotImplemented;
 
+/**
+ * @param {*} w
+ * @param {Sk.misceval.compareOp} op
+ */
 Sk.builtin.list.prototype.tp$richcompare = function(w, op)
 {
     // todo; can't figure out where cpy handles this silly case (test/run/t96.py)
@@ -143,8 +147,8 @@ Sk.builtin.list.prototype.tp$richcompare = function(w, op)
     if (!w.__class__ || w.__class__ != Sk.builtin.list)
     {
         // shortcuts for eq/not
-        if (op === 'Eq') return false;
-        if (op === 'NotEq') return true;
+        if (op === Sk.misceval.compareOp.Eq) return false;
+        if (op === Sk.misceval.compareOp.NotEq) return true;
 
         // todo; other types should have an arbitrary order
         return false;
@@ -158,7 +162,7 @@ Sk.builtin.list.prototype.tp$richcompare = function(w, op)
     var i;
     for (i = 0; i < vl && i < wl; ++i)
     {
-        var k = Sk.misceval.richCompareBool(v[i], w[i], 'Eq');
+        var k = Sk.misceval.richCompareBool(v[i], w[i], Sk.misceval.compareOp.Eq);
         if (!k) break;
     }
 
@@ -167,12 +171,12 @@ Sk.builtin.list.prototype.tp$richcompare = function(w, op)
         // no more items to compare, compare sizes
         switch (op)
         {
-            case 'Lt': return vl < wl;
+            case Sk.misceval.compareOp.Lt: return vl < wl;
             case 'LtE': return vl <= wl;
-            case 'Eq': return vl === wl;
-            case 'NotEq': return vl !== wl;
-            case 'Gt': return vl > wl;
-            case 'GtE': return vl >= wl;
+            case Sk.misceval.compareOp.Eq: return vl === wl;
+            case Sk.misceval.compareOp.NotEq: return vl !== wl;
+            case Sk.misceval.compareOp.Gt: return vl > wl;
+            case Sk.misceval.compareOp.GtE: return vl >= wl;
             default: goog.asserts.fail();
         }
     }
@@ -180,8 +184,8 @@ Sk.builtin.list.prototype.tp$richcompare = function(w, op)
     // we have an item that's different
 
     // shortcuts for eq/not
-    if (op === 'Eq') return false;
-    if (op === 'NotEq') return true;
+    if (op === Sk.misceval.compareOp.Eq) return false;
+    if (op === Sk.misceval.compareOp.NotEq) return true;
 
     // or, compare the differing element using the proper operator
     return Sk.misceval.richCompareBool(v[i], w[i], op);
@@ -348,14 +352,14 @@ Sk.builtin.list.prototype.list_sort_ = function(self, cmp, key, reverse) {
         {
             timsort.lt = function(a, b)
             {
-                return Sk.misceval.richCompareBool(cmp.func_code(a[0], b[0]), zero, "Lt");
+                return Sk.misceval.richCompareBool(cmp.func_code(a[0], b[0]), zero, Sk.misceval.compareOp.Lt);
             };
         }
         else
         {
             timsort.lt = function(a, b)
             {
-                return Sk.misceval.richCompareBool(a[0], b[0], "Lt");
+                return Sk.misceval.richCompareBool(a[0], b[0], Sk.misceval.compareOp.Lt);
             }
         }
         for (var i =0; i < timsort.listlength; i++)
@@ -367,18 +371,21 @@ Sk.builtin.list.prototype.list_sort_ = function(self, cmp, key, reverse) {
     }
     else if (has_cmp)
     {
-        timsort.lt = function(a, b){
-            return Sk.misceval.richCompareBool(cmp.func_code(a, b), zero, "Lt");
+        timsort.lt = function(a, b)
+        {
+            return Sk.misceval.richCompareBool(cmp.func_code(a, b), zero, Sk.misceval.compareOp.Lt);
         };
     }
 
-    if (reverse){
+    if (reverse)
+    {
         timsort.list.list_reverse_(timsort.list);
     }
 
     timsort.sort();
 
-    if (reverse){
+    if (reverse)
+    {
         timsort.list.list_reverse_(timsort.list);
     }
 
@@ -393,7 +400,8 @@ Sk.builtin.list.prototype.list_sort_ = function(self, cmp, key, reverse) {
 
     self.v = timsort.list.v;
 
-    if (mucked) {
+    if (mucked)
+    {
         throw new Sk.builtin.OperationError("list modified during sort");
     }
 }
@@ -505,7 +513,7 @@ Sk.builtin.list.prototype['index'] = new Sk.builtin.func(function(self, item)
     var obj = self.v;
     for (var i = 0; i < len; ++i)
     {
-        if (Sk.misceval.richCompareBool(obj[i], item, "Eq"))
+        if (Sk.misceval.richCompareBool(obj[i], item, Sk.misceval.compareOp.Eq))
         {
             return i;
         }
@@ -522,7 +530,7 @@ Sk.builtin.list.prototype['count'] = new Sk.builtin.func(function(self, item)
     var count = 0;
     for (var i = 0; i < len; ++i)
     {
-        if (Sk.misceval.richCompareBool(obj[i], item, "Eq"))
+        if (Sk.misceval.richCompareBool(obj[i], item, Sk.misceval.compareOp.Eq))
         {
             count += 1;
         }

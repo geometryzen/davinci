@@ -17,15 +17,19 @@ Sk.builtin.timSort = function(list, length){
     }
 };
 
-Sk.builtin.timSort.prototype.lt = function(a, b){
-	return Sk.misceval.richCompareBool(a, b, "Lt");
+Sk.builtin.timSort.prototype.lt = function(a, b)
+{
+    return Sk.misceval.richCompareBool(a, b, Sk.misceval.compareOp.Lt);
 };
 
-Sk.builtin.timSort.prototype.le = function(a, b){
+Sk.builtin.timSort.prototype.le = function(a, b)
+{
+    // TODO: This does not look right!
     return !this.lt(b, a)
 };
 
-Sk.builtin.timSort.prototype.setitem = function(item ,value){
+Sk.builtin.timSort.prototype.setitem = function(item ,value)
+{
     this.list.v[item] = value;
 };
 
@@ -50,7 +54,7 @@ Sk.builtin.timSort.prototype.binary_sort = function(a, sorted) {
         // The second is vacuously true at the start.
         while(l < r){
             var p = l + ((r - l) >> 1);
-			if (this.lt(pivot, a.getitem(p))){
+            if (this.lt(pivot, a.getitem(p))){
                 r = p;
             }
             else {
@@ -71,8 +75,8 @@ Sk.builtin.timSort.prototype.binary_sort = function(a, sorted) {
 };
 
 Sk.builtin.timSort.prototype.count_run = function(a){
-	/*
-	# Compute the length of the run in the slice "a".
+    /*
+    # Compute the length of the run in the slice "a".
     # "A run" is the longest ascending sequence, with
     #
     #     a[0] <= a[1] <= a[2] <= ...
@@ -88,136 +92,136 @@ Sk.builtin.timSort.prototype.count_run = function(a){
     # sequence without violating stability (strict > ensures there are no equal
     # elements to get out of order).
 */
-	var descending;
-	if (a.len <= 1) {
-		var n = a.len;
-		descending = false;
-	}
-	else {
-		var n = 2;
-		if (this.lt(a.getitem(a.base + 1), a.getitem(a.base))){
-			descending = true;
-			for (var p = a.base + 2; p < a.base + a.len; p++){
-				if (this.lt(a.getitem(p), a.getitem(p-1))){
-					n++;
-				}
-				else {
-					break;
-				}
-			}
-		}
-		else{
-			descending = false;
-			for (p = a.base + 2; p < a.base + a.len; p++){
-	        	if (this.lt(a.getitem(p), a.getitem(p-1)))
-				{
-			        break;
-			    }
-				else {
-					n++;
-				}
-			}
-		}
-	}
-	return {'run': new Sk.builtin.listSlice(a.list, a.base, n), 'descending': descending};
+    var descending;
+    if (a.len <= 1) {
+        var n = a.len;
+        descending = false;
+    }
+    else {
+        var n = 2;
+        if (this.lt(a.getitem(a.base + 1), a.getitem(a.base))){
+            descending = true;
+            for (var p = a.base + 2; p < a.base + a.len; p++){
+                if (this.lt(a.getitem(p), a.getitem(p-1))){
+                    n++;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        else{
+            descending = false;
+            for (p = a.base + 2; p < a.base + a.len; p++){
+                if (this.lt(a.getitem(p), a.getitem(p-1)))
+                {
+                    break;
+                }
+                else {
+                    n++;
+                }
+            }
+        }
+    }
+    return {'run': new Sk.builtin.listSlice(a.list, a.base, n), 'descending': descending};
 };
 
 Sk.builtin.timSort.prototype.sort = function (){
-	/*
-	# ____________________________________________________________
+    /*
+    # ____________________________________________________________
     # Entry point.
-	*/
+    */
 
-	var remaining = new Sk.builtin.listSlice(this.list, 0, this.listlength);
-	if (remaining.len < 2){
-		return;
-	}
+    var remaining = new Sk.builtin.listSlice(this.list, 0, this.listlength);
+    if (remaining.len < 2){
+        return;
+    }
 
     // March over the array once, left to right, finding natural runs,
     // and extending short natural runs to minrun elements.
     this.merge_init();
     var minrun = this.merge_compute_minrun(remaining.len);
-	while (remaining.len > 0){
-		// Identify next run.
-		var cr = this.count_run(remaining);
-		if (cr.descending){
-			cr.run.reverse();
-		}
-		// If short, extend to min(minrun, nremaining).
-		if (cr.run.len < minrun){
-			var sorted = cr.run.len;
+    while (remaining.len > 0){
+        // Identify next run.
+        var cr = this.count_run(remaining);
+        if (cr.descending){
+            cr.run.reverse();
+        }
+        // If short, extend to min(minrun, nremaining).
+        if (cr.run.len < minrun){
+            var sorted = cr.run.len;
             if (minrun < remaining.len){
                 cr.run.len = minrun;
             }
             else {
                 cr.run.len = remaining.len;
             }
-			this.binary_sort(cr.run, sorted)
-		}
-		// Advance remaining past this run.
+            this.binary_sort(cr.run, sorted)
+        }
+        // Advance remaining past this run.
         remaining.advance(cr.run.len);
-		// Push run onto pending-runs stack, and maybe merge.
+        // Push run onto pending-runs stack, and maybe merge.
         this.pending.push(cr.run);
         this.merge_collapse();
-  	}
-	goog.asserts.assert(remaining.base == this.listlength);
+    }
+    goog.asserts.assert(remaining.base == this.listlength);
 
-  	this.merge_force_collapse();
-  	goog.asserts.assert(this.pending.length == 1);
-	goog.asserts.assert(this.pending[0].base == 0);
-	goog.asserts.assert(this.pending[0].len == this.listlength);
+    this.merge_force_collapse();
+    goog.asserts.assert(this.pending.length == 1);
+    goog.asserts.assert(this.pending[0].base == 0);
+    goog.asserts.assert(this.pending[0].len == this.listlength);
 };
 
 /*
-	# Locate the proper position of key in a sorted vector; if the vector
-	# contains an element equal to key, return the position immediately to the
-	# left of the leftmost equal element -- or to the right of the rightmost
-	# equal element if the flag "rightmost" is set.
-	#
-	# "hint" is an index at which to begin the search, 0 <= hint < a.len.
-	# The closer hint is to the final result, the faster this runs.
-	#
-	# The return value is the index 0 <= k <= a.len such that
-	#
-	#     a[k-1] < key <= a[k]      (if rightmost is False)
-	#     a[k-1] <= key < a[k]      (if rightmost is True)
-	#
-	# as long as the indices are in bound.  IOW, key belongs at index k;
-	# or, IOW, the first k elements of a should precede key, and the last
-	# n-k should follow key.
+    # Locate the proper position of key in a sorted vector; if the vector
+    # contains an element equal to key, return the position immediately to the
+    # left of the leftmost equal element -- or to the right of the rightmost
+    # equal element if the flag "rightmost" is set.
+    #
+    # "hint" is an index at which to begin the search, 0 <= hint < a.len.
+    # The closer hint is to the final result, the faster this runs.
+    #
+    # The return value is the index 0 <= k <= a.len such that
+    #
+    #     a[k-1] < key <= a[k]      (if rightmost is False)
+    #     a[k-1] <= key < a[k]      (if rightmost is True)
+    #
+    # as long as the indices are in bound.  IOW, key belongs at index k;
+    # or, IOW, the first k elements of a should precede key, and the last
+    # n-k should follow key.
 */
 Sk.builtin.timSort.prototype.gallop = function(key, a, hint, rightmost){
     goog.asserts.assert(0 <= hint && hint < a.len);
-	var lower;
-	var self = this;
- 	if (rightmost) {
-		lower = function (a,b) { return self.le(a,b); } // search for the largest k for which a[k] <= key
-	}
-	else {
-		lower = function (a,b) { return self.lt(a,b); } // search for the largest k for which a[k] < key
-	}
-	var p = a.base + hint;
-	var lastofs = 0;
-	var ofs = 1;
+    var lower;
+    var self = this;
+    if (rightmost) {
+        lower = function (a,b) { return self.le(a,b); } // search for the largest k for which a[k] <= key
+    }
+    else {
+        lower = function (a,b) { return self.lt(a,b); } // search for the largest k for which a[k] < key
+    }
+    var p = a.base + hint;
+    var lastofs = 0;
+    var ofs = 1;
     var maxofs;
-	if (lower(a.getitem(p), key)) {
-		// a[hint] < key -- gallop right, until
-	    // a[hint + lastofs] < key <= a[hint + ofs]
+    if (lower(a.getitem(p), key)) {
+        // a[hint] < key -- gallop right, until
+        // a[hint + lastofs] < key <= a[hint + ofs]
 
-	    maxofs = a.len - hint // a[a.len-1] is highest
-	    while (ofs < maxofs){
-	    	if (lower(a.getitem(p + ofs), key)) {
-	        	lastofs = ofs
-	        	try {
-	            	ofs = (ofs << 1) + 1;
+        maxofs = a.len - hint // a[a.len-1] is highest
+        while (ofs < maxofs){
+            if (lower(a.getitem(p + ofs), key)) {
+                lastofs = ofs
+                try {
+                    ofs = (ofs << 1) + 1;
                 } catch (err){
-					ofs = maxofs
-				}
-			}
-	        else {
-	        	// key <= a[hint + ofs]
-	            break;
-			}
+                    ofs = maxofs
+                }
+            }
+            else {
+                // key <= a[hint + ofs]
+                break;
+            }
         }
         if (ofs > maxofs) {
             ofs = maxofs;
@@ -225,35 +229,35 @@ Sk.builtin.timSort.prototype.gallop = function(key, a, hint, rightmost){
         // Translate back to offsets relative to a.
         lastofs += hint;
         ofs += hint;
-	}
-	else {
-		// key <= a[hint] -- gallop left, until
+    }
+    else {
+        // key <= a[hint] -- gallop left, until
         // a[hint - ofs] < key <= a[hint - lastofs]
         maxofs = hint + 1   // a[0] is lowest
         while (ofs < maxofs) {
             if (lower(a.getitem(p - ofs), key)) {
                 break;
-			}
+            }
             else {
                 // key <= a[hint - ofs]
                 lastofs = ofs
                 try {
                     ofs = (ofs << 1) + 1;
                 } catch(err) {
-					ofs = maxofs;
-				}
-			}
-		}
+                    ofs = maxofs;
+                }
+            }
+        }
         if (ofs > maxofs){
             ofs = maxofs
-		}
+        }
         // Translate back to positive offsets relative to a.
         var hintminofs = hint-ofs;
-		var hintminlastofs = hint-lastofs;
+        var hintminlastofs = hint-lastofs;
         lastofs = hintminofs;
         ofs = hintminlastofs;
-	}
-	goog.asserts.assert( -1 <= lastofs < ofs <= a.len);
+    }
+    goog.asserts.assert( -1 <= lastofs < ofs <= a.len);
 
     // Now a[lastofs] < key <= a[ofs], so key belongs somewhere to the
     // right of lastofs but no farther right than ofs.  Do a binary
@@ -265,10 +269,10 @@ Sk.builtin.timSort.prototype.gallop = function(key, a, hint, rightmost){
         if (lower(a.getitem(a.base + m), key)){
             lastofs = m+1;   // a[m] < key
         }
-		else{
+        else{
             ofs = m;         // key <= a[m]
-		}
-	}
+        }
+    }
     goog.asserts.assert(lastofs == ofs);         // so a[ofs-1] < key <= a[ofs]
     return ofs;
 };
@@ -519,9 +523,9 @@ Sk.builtin.timSort.prototype.merge_hi= function(a, b) {
 // Merge the two runs at stack indices i and i+1.
 
 Sk.builtin.timSort.prototype.merge_at = function(i){
-	if (i < 0) {
-		i = this.pending.length + i;
-	}
+    if (i < 0) {
+        i = this.pending.length + i;
+    }
 
     var a = this.pending[i];
     var b = this.pending[i+1];
@@ -637,8 +641,8 @@ Sk.builtin.listSlice.prototype.copyitems = function (){
 
 Sk.builtin.listSlice.prototype.advance = function (n){
     this.base += n;
-	this.len -= n;
-	goog.asserts.assert(this.base <= this.list.sq$length());
+    this.len -= n;
+    goog.asserts.assert(this.base <= this.list.sq$length());
 };
 
 Sk.builtin.listSlice.prototype.getitem = function (item){

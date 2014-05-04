@@ -10,7 +10,7 @@ Sk.builtin.numberPy = function(x, skType)
   {
     if (x > Sk.builtin.NumberPy.threshold$ || x < -Sk.builtin.NumberPy.threshold$ || x % 1 != 0)
     {
-      return new Sk.builtin.NumberPy(x, Sk.builtin.NumberPy.float$);
+      return Sk.ffi.numberToPy(x);
     }
     else
     {

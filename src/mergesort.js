@@ -9,9 +9,9 @@
  * @param {Sk.builtin.func=} key
  * @param {boolean=} reverse
  */
-Sk.mergeSort = function(arr, cmp, key, reverse)	//	Replaced by quicksort
+Sk.mergeSort = function(arr, cmp, key, reverse) //  Replaced by quicksort
 {
-	Sk.quickSort(arr, cmp, key, reverse)
+  Sk.quickSort(arr, cmp, key, reverse)
 }
 
 Sk.quickSort = function(arr, cmp, key, reverse)
@@ -24,51 +24,51 @@ Sk.quickSort = function(arr, cmp, key, reverse)
     }
 
     var partition = function(arr, begin, end, pivot, reverse)
-	{
-		var tmp;
-		var piv=arr[pivot];
-		
-//		swap pivot, end-1
-		tmp=arr[pivot];
-		arr[pivot]=arr[end-1];
-		arr[end-1]=tmp;
+  {
+    var tmp;
+    var piv=arr[pivot];
+    
+//    swap pivot, end-1
+    tmp=arr[pivot];
+    arr[pivot]=arr[end-1];
+    arr[end-1]=tmp;
 
-		var store=begin;
-		var ix;
-		for(ix=begin; ix<end-1; ++ix) {
+    var store=begin;
+    var ix;
+    for(ix=begin; ix<end-1; ++ix) {
             if ( reverse ) {
-			  var cmpresult = Sk.misceval.callsim(cmp, piv, arr[ix]);
+        var cmpresult = Sk.misceval.callsim(cmp, piv, arr[ix]);
             } else {
-			  var cmpresult = Sk.misceval.callsim(cmp, arr[ix], piv);
+        var cmpresult = Sk.misceval.callsim(cmp, arr[ix], piv);
             }
             if( Sk.builtin.asnum$(cmpresult) < 0 ) {
-//				swap store, ix
-				tmp=arr[store];
-				arr[store]=arr[ix];
-				arr[ix]=tmp;
-				++store;
-			}
-		}
-		
-//		swap end-1, store
-		tmp=arr[end-1];
-		arr[end-1]=arr[store];
-		arr[store]=tmp;
-	
-		return store;
-	}
-	
-	var qsort = function(arr, begin, end, reverse)
-	{
-		if(end-1>begin) {
-			var pivot=begin+Math.floor(Math.random()*(end-begin));
-	
-			pivot=partition(arr, begin, end, pivot, reverse);
-	
-			qsort(arr, begin, pivot, reverse);
-			qsort(arr, pivot+1, end, reverse);
-		}
-	}
+//        swap store, ix
+        tmp=arr[store];
+        arr[store]=arr[ix];
+        arr[ix]=tmp;
+        ++store;
+      }
+    }
+    
+//    swap end-1, store
+    tmp=arr[end-1];
+    arr[end-1]=arr[store];
+    arr[store]=tmp;
+  
+    return store;
+  }
+  
+  var qsort = function(arr, begin, end, reverse)
+  {
+    if(end-1>begin) {
+      var pivot=begin+Math.floor(Math.random()*(end-begin));
+  
+      pivot=partition(arr, begin, end, pivot, reverse);
+  
+      qsort(arr, begin, pivot, reverse);
+      qsort(arr, pivot+1, end, reverse);
+    }
+  }
 
     qsort(arr, 0, arr.length, reverse);
     return null;
@@ -77,12 +77,12 @@ Sk.quickSort = function(arr, cmp, key, reverse)
 Sk.mergeSort.stdCmp = new Sk.builtin.func(function(k0, k1)
 {
     //print("CMP", JSON.stringify(k0), JSON.stringify(k1));
-    var res = Sk.misceval.richCompareBool(k0, k1, "Lt") ? -1 : 0;
+    var res = Sk.misceval.richCompareBool(k0, k1, Sk.misceval.compareOp.Lt) ? -1 : 0;
     //print("  ret:", res);
     return res;
 });
 
-//	A javascript mergesort from the web
+//  A javascript mergesort from the web
 
 //function merge_sort(arr) {  
 //    var l = arr.length, m = Math.floor(l/2);  
@@ -110,7 +110,7 @@ Sk.mergeSort.stdCmp = new Sk.builtin.func(function(k0, k1)
 //    return result;  
 //} 
 
-//	Old, original code (doesn't work)
+//  Old, original code (doesn't work)
 //Sk.mergeSort = function(arr, cmp, key, reverse)
 //{
 //    goog.asserts.assert(!key, "todo;");

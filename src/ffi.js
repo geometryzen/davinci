@@ -524,10 +524,13 @@ goog.exportSymbol("Sk.ffi.remapToPy", Sk.ffi.remapToPy);
 
 /**
  * @nosideeffects
- * @param {Object} valuePy
+ * @param {*} valuePy
  * @return {boolean}
  */
-Sk.ffi.isBool = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.BOOL;};
+Sk.ffi.isBool = function(valuePy)
+{
+    return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.BOOL;
+};
 goog.exportSymbol("Sk.ffi.isBool", Sk.ffi.isBool);
 
 /**
@@ -584,7 +587,7 @@ goog.exportSymbol("Sk.ffi.isTuple", Sk.ffi.isTuple);
 
 /**
  * @nosideeffects
- * @param {Object} valuePy
+ * @param {*} valuePy
  * @return {boolean}
  */
 Sk.ffi.isFloat = function(valuePy)
@@ -601,7 +604,7 @@ goog.exportSymbol("Sk.ffi.isFunctionRef", Sk.ffi.isFunctionRef);
 
 /**
  * @nosideeffects
- * @param {Object} valuePy
+ * @param {*} valuePy
  * @return {boolean}
  */
 Sk.ffi.isInt = function(valuePy)

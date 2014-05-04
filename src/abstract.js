@@ -22,7 +22,8 @@ Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
   if (obj === null) {
     return undefined;
 };
-switch (name) {
+switch (name)
+{
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
     case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__sub__'];
     case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__mul__'];
@@ -87,10 +88,12 @@ Sk.abstr.binary_op_ = function(v, w, opname)
     var vop = Sk.abstr.boNameToSlotFuncLhs_(v, opname);
     if (vop !== undefined)
     {   
-        if (vop.call) {
+        if (vop.call)
+        {
             ret = vop.call(v, w);
         }
-        else {
+        else
+        {
             // assume that vop is an __xxx__ type method
             ret = Sk.misceval.callsim(vop,v,w)
         }
@@ -99,10 +102,12 @@ Sk.abstr.binary_op_ = function(v, w, opname)
     var wop = Sk.abstr.boNameToSlotFuncRhs_(w, opname);
     if (wop !== undefined)
     {
-        if (wop.call) {
+        if (wop.call)
+        {
             ret = wop.call(w, v);
         }
-        else {
+        else
+        {
             // assume that wop is an __xxx__ type method
             ret = Sk.misceval.callsim(wop,w,v)
         }
@@ -119,22 +124,29 @@ Sk.abstr.binary_iop_ = function(v, w, opname)
     {
         if (vop.call) {
             ret = vop.call(v, w);
-    } else {  // assume that vop is an __xxx__ type method
-        ret = Sk.misceval.callsim(vop,v,w); //  added to be like not-in-place... is this okay?
+        }
+        else
+        {
+            // assume that vop is an __xxx__ type method
+            ret = Sk.misceval.callsim(vop,v,w);
+        }
+        if (ret !== undefined) return ret;
     }
-    if (ret !== undefined) return ret;
-}
-var wop = Sk.abstr.iboNameToSlotFunc_(w, opname);
-if (wop !== undefined)
-{
-    if (wop.call) {
-        ret = wop.call(w, v);
-    } else { // assume that wop is an __xxx__ type method
-        ret = Sk.misceval.callsim(wop,w,v); //  added to be like not-in-place... is this okay?
+    var wop = Sk.abstr.iboNameToSlotFunc_(w, opname);
+    if (wop !== undefined)
+    {
+        if (wop.call)
+        {
+            ret = wop.call(w, v);
+        }
+        else
+        {
+            // assume that wop is an __xxx__ type method
+            ret = Sk.misceval.callsim(wop,w,v);
+        }
+        if (ret !== undefined) return ret;
     }
-    if (ret !== undefined) return ret;
-}
-Sk.abstr.binop_type_error(v, w, opname);
+    Sk.abstr.binop_type_error(v, w, opname);
 };
 
 //
@@ -142,21 +154,25 @@ Sk.abstr.binop_type_error(v, w, opname);
 // result, or if either of the ops are already longs
 Sk.abstr.numOpAndPromote = function(a, b, opfn)
 {
-    if (a === null || b === null) {
+    if (a === null || b === null)
+    {
         return undefined;
     };
 
     if (typeof a === "number" && typeof b === "number")
     {
         var ans = opfn(a, b);
-        // todo; handle float   Removed RNL (bugs in lng, and it should be a question of precision, not magnitude -- this was just wrong)
-        if ( (ans > Sk.builtin.lng.threshold$ || ans < -Sk.builtin.lng.threshold$)  // RNL
-        && Math.floor(ans) === ans) {                                               // RNL
-            return [Sk.builtin.lng.fromInt$(a), Sk.builtin.lng.fromInt$(b)];        // RNL
-        } else                                                                      // RNL
-        return ans;
+        if ( (ans > Sk.builtin.lng.threshold$ || ans < -Sk.builtin.lng.threshold$) && Math.floor(ans) === ans)
+        {
+            return [Sk.builtin.lng.fromInt$(a), Sk.builtin.lng.fromInt$(b)];
+        }
+        else
+        {
+            return ans;
+        }
     }
-    else if (a === undefined || b === undefined) {
+    else if (a === undefined || b === undefined)
+    {
         throw new Sk.builtin.NameError('Undefined variable in expression')
     }
 
@@ -164,7 +180,8 @@ Sk.abstr.numOpAndPromote = function(a, b, opfn)
     {
         return [a, b];
     }
-    else if (a.constructor === Sk.builtin.NumberPy) {
+    else if (a.constructor === Sk.builtin.NumberPy)
+    {
         return [a, b];
     }
     else if (typeof a === "number")
@@ -246,8 +263,12 @@ Sk.abstr.boNumPromote_ = {
     }
 };
 
+/**
+ * This is the entry point for the compiler.
+ */
 Sk.abstr.numberBinOp = function(v, w, op)
 {
+    // Look for a shortcut function for JavaScipt number.
     var numPromoteFunc = Sk.abstr.boNumPromote_[op];
     if (numPromoteFunc !== undefined)
     {
@@ -270,7 +291,7 @@ Sk.abstr.numberBinOp = function(v, w, op)
             w = tmp[1];
         }
     }
-
+    // The fall back is to do the object-oriented operation.
     return Sk.abstr.binary_op_(v, w, op);
 };
 goog.exportSymbol("Sk.abstr.numberBinOp", Sk.abstr.numberBinOp);
@@ -306,39 +327,66 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
 
 /**
  * Unary arithmetic operations (-, +, abs(), and ~)
+ * @param {*} obj
+ * @param {Sk.abstr.unaryOp} name
  */
  Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
-  if (obj === null) {
+  if (obj === null)
+  {
     return undefined;
-};
-switch (name) {
-    case "USub": {
+  };
+  switch (name)
+  {
+    case "USub":
+    {
         return obj.nu$negative          ? obj.nu$negative        : obj['__neg__'];
     }
-    case "Invert": {
+    case "Invert":
+    {
         return obj.nb$invert            ? obj.nb$invert          : obj['__invert__'];
     }
-    case "UAdd": {
+    case "UAdd":
+    {
         return obj.nb$positive          ? obj.nb$positive        : obj['__pos__'];
     }
-    default: {
+    default:
+    {
         throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
     }
-}
+  }
 };
 
+/**
+ * @enum {string}
+ */
+Sk.abstr.unaryOp =
+{
+    Not:    'Not',
+    USub:   'USub',
+    Invert: 'Invert',
+    UAdd:   'UAdd'
+};
+
+/**
+ * This is the compiler entry point.
+ * @param {*} valuePy
+ * @param {Sk.abstr.unaryOp} op
+ */
 Sk.abstr.numberUnaryOp = function(valuePy, op)
 {
-    if (op === "Not")
+    if (op === Sk.abstr.unaryOp.Not)
     {
         return Sk.misceval.isTrue(valuePy) ? Sk.builtin.bool.false$ : Sk.builtin.bool.true$;
     }
-    else if (valuePy instanceof Sk.builtin.NumberPy || valuePy instanceof Sk.builtin.bool)
+    else if (Sk.ffi.isFloat(valuePy) || Sk.ffi.isInt(valuePy) || Sk.ffi.isBool(valuePy))
     {
+        /**
+         * @const
+         */
         var value = Sk.ffi.remapToJs(valuePy);
-        if (op === "USub")   return Sk.builtin.numberPy(-value, value.skType);
-        if (op === "Invert") return Sk.builtin.numberPy(~value, value.skType);
-        if (op === "UAdd")   return Sk.builtin.numberPy(value, value.skType);
+        if (op === Sk.abstr.unaryOp.USub)   return Sk.builtin.numberPy(-value, value.skType);
+        if (op === Sk.abstr.unaryOp.Invert) return Sk.builtin.numberPy(~value, value.skType);
+        if (op === Sk.abstr.unaryOp.UAdd)   return Sk.builtin.numberPy(value, value.skType);
     }
     else
     {
@@ -388,8 +436,10 @@ Sk.abstr.sequenceContains = function(seq, ob)
     
     for (var it = seq.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
     {
-        if (Sk.misceval.richCompareBool(i, ob, "Eq"))
+        if (Sk.misceval.richCompareBool(i, ob, Sk.misceval.compareOp.Eq))
+        {
             return true;
+        }
     }
     return false;
 };

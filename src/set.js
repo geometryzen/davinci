@@ -66,8 +66,8 @@ Sk.builtin.set.prototype.tp$richcompare = function(w, op)
     if (!w.__class__ || w.__class__ != Sk.builtin.set)
     {
         // shortcuts for eq/not
-        if (op === 'Eq') return false;
-        if (op === 'NotEq') return true;
+        if (op === Sk.misceval.compareOp.Eq) return false;
+        if (op === Sk.misceval.compareOp.NotEq) return true;
 
         // todo; other types should have an arbitrary order
         return false;
@@ -79,9 +79,9 @@ Sk.builtin.set.prototype.tp$richcompare = function(w, op)
     // easy short-cut
     if (wl !== vl)
     {
-        if (op === 'Eq')
+        if (op === Sk.misceval.compareOp.Eq)
             return false;
-        if (op === 'NotEq')
+        if (op === Sk.misceval.compareOp.NotEq)
             return true;
     }
 
@@ -92,14 +92,14 @@ Sk.builtin.set.prototype.tp$richcompare = function(w, op)
     // gather common info
     switch (op)
     {
-        case 'Lt':
+        case Sk.misceval.compareOp.Lt:
         case 'LtE':
-        case 'Eq':
-        case 'NotEq':
+        case Sk.misceval.compareOp.Eq:
+        case Sk.misceval.compareOp.NotEq:
             isSub = Sk.builtin.set.prototype['issubset'].func_code(this, w);
             break;
-        case 'Gt':
-        case 'GtE':
+        case Sk.misceval.compareOp.Gt:
+        case Sk.misceval.compareOp.GtE:
             isSuper = Sk.builtin.set.prototype['issuperset'].func_code(this, w);
             break;
         default:
@@ -108,16 +108,16 @@ Sk.builtin.set.prototype.tp$richcompare = function(w, op)
 
     switch (op)
     {
-        case 'Lt':
+        case Sk.misceval.compareOp.Lt:
             return vl < wl && isSub;
         case 'LtE':
-        case 'Eq':  // we already know that the lengths are equal
+        case Sk.misceval.compareOp.Eq:  // we already know that the lengths are equal
             return isSub;
-        case 'NotEq':
+        case Sk.misceval.compareOp.NotEq:
             return !isSub;
-        case 'Gt':
+        case Sk.misceval.compareOp.Gt:
             return vl > wl && isSuper;
-        case 'GtE':
+        case Sk.misceval.compareOp.GtE:
             return isSuper;
     }
 };

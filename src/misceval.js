@@ -3,7 +3,7 @@ Sk.misceval = {};
 Sk.misceval.isIndex = function(o)
 {
     if (o === null || o.constructor === Sk.builtin.lng || o.tp$index
-	|| o === true || o === false) {
+    || o === true || o === false) {
         return true;
     }
 
@@ -18,8 +18,8 @@ Sk.misceval.asIndex = function(o)
     if (o === true) return 1;
     if (o === false) return 0;
     if (typeof o === "number") return o;
-	if (o.constructor === Sk.builtin.NumberPy) return o.v;
-	if (o.constructor === Sk.builtin.lng) return o.tp$index();
+    if (o.constructor === Sk.builtin.NumberPy) return o.v;
+    if (o.constructor === Sk.builtin.lng) return o.tp$index();
     goog.asserts.fail("todo;");
 };
 
@@ -109,22 +109,43 @@ Sk.misceval.arrayFromArguments = function(args)
 goog.exportSymbol("Sk.misceval.arrayFromArguments", Sk.misceval.arrayFromArguments);
 
 /**
- * for reversed comparison: Gt -> Lt, etc.
+ * @enum {string}
  */
-Sk.misceval.swappedOp_ = {
-    'Eq': 'Eq',
-    'NotEq': 'NotEq',
-    'Lt': 'GtE',
-    'LtE': 'Gt',
-    'Gt': 'LtE',
-    'GtE': 'Lt',
-    'Is': 'IsNot',
-    'IsNot': 'Is',
-    'In_': 'NotIn',
-    'NotIn': 'In_'
+Sk.misceval.compareOp =
+{
+    Eq:    'Eq',
+    NotEq: 'NotEq',
+    Lt:    'Lt',
+    LtE:   'LtE',
+    Gt:    'Gt',
+    GtE:   'GtE',
+    Is:    'Is',
+    IsNot: 'IsNot',
+    In_:   'In_',
+    NotIn: 'NotIn'
 };
 
+/**
+ * for reversed comparison: Gt -> Lt, etc.
+ */
+Sk.misceval.swappedOp_ = {};
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.Eq]    = Sk.misceval.compareOp.Eq;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.NotEq] = Sk.misceval.compareOp.NotEq;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.Lt]    = Sk.misceval.compareOp.GtE;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.LtE]   = Sk.misceval.compareOp.Gt;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.Gt]    = Sk.misceval.compareOp.LtE;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.GtE]   = Sk.misceval.compareOp.Lt;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.Is]    = Sk.misceval.compareOp.IsNot;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.IsNot] = Sk.misceval.compareOp.Is;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.In_]   = Sk.misceval.compareOp.NotIn;
+Sk.misceval.swappedOp_[Sk.misceval.compareOp.NotIn] = Sk.misceval.compareOp.In_;
 
+/**
+ * @param {*} v
+ * @param {*} w
+ * @param {Sk.misceval.compareOp} op
+ * @return {boolean}
+ */
 Sk.misceval.richCompareBool = function(v, w, op)
 {
     // v and w must be Python objects. will return Javascript true or false for internal use only
@@ -133,14 +154,15 @@ Sk.misceval.richCompareBool = function(v, w, op)
     goog.asserts.assert((v !== null) && (v !== undefined), "passed undefined or null parameter to Sk.misceval.richCompareBool");
     goog.asserts.assert((w !== null) && (w !== undefined), "passed undefined or null parameter to Sk.misceval.richCompareBool");
 
+    // FIXME: Constructing objects is a bit heavyweight!
+    // It's also not very abstract unless centralized to Sk.ffi.*
     var v_type = new Sk.builtin.type(v);
     var w_type = new Sk.builtin.type(w);
 
     // Python has specific rules when comparing two different builtin types
     // currently, this code will execute even if the objects are not builtin types
     // but will fall through and not return anything in this section
-    if ((v_type !== w_type)
-        && (op === 'GtE' || op === 'Gt' || op === 'LtE' || op === 'Lt'))
+    if ((v_type !== w_type) && (op === Sk.misceval.compareOp.GtE || op === Sk.misceval.compareOp.Gt || op === 'LtE' || op === Sk.misceval.compareOp.Lt))
     {
         // note: sets are omitted here because they can only be compared to other sets
         var numeric_types = [Sk.builtin.float_.prototype.ob$type,
@@ -165,10 +187,10 @@ Sk.misceval.richCompareBool = function(v, w, op)
         {
             switch (op)
             {
-                case 'Lt':  return true;
+                case Sk.misceval.compareOp.Lt:  return true;
                 case 'LtE': return true;
-                case 'Gt':  return false;
-                case 'GtE': return false;
+                case Sk.misceval.compareOp.Gt:  return false;
+                case Sk.misceval.compareOp.GtE: return false;
             }
         }
 
@@ -176,10 +198,10 @@ Sk.misceval.richCompareBool = function(v, w, op)
         {
             switch (op)
             {
-                case 'Lt':  return false;
+                case Sk.misceval.compareOp.Lt:  return false;
                 case 'LtE': return false;
-                case 'Gt':  return true;
-                case 'GtE': return true;
+                case Sk.misceval.compareOp.Gt:  return true;
+                case Sk.misceval.compareOp.GtE: return true;
             }
         }
 
@@ -188,10 +210,10 @@ Sk.misceval.richCompareBool = function(v, w, op)
         {
             switch (op)
             {
-                case 'Lt':  return true;
+                case Sk.misceval.compareOp.Lt:  return true;
                 case 'LtE': return true;
-                case 'Gt':  return false;
-                case 'GtE': return false;
+                case Sk.misceval.compareOp.Gt:  return false;
+                case Sk.misceval.compareOp.GtE: return false;
             }
         }
 
@@ -199,10 +221,10 @@ Sk.misceval.richCompareBool = function(v, w, op)
         {
             switch (op)
             {
-                case 'Lt':  return false;
+                case Sk.misceval.compareOp.Lt:  return false;
                 case 'LtE': return false;
-                case 'Gt':  return true;
-                case 'GtE': return true;
+                case Sk.misceval.compareOp.Gt:  return true;
+                case Sk.misceval.compareOp.GtE: return true;
             }
         }
 
@@ -212,39 +234,39 @@ Sk.misceval.richCompareBool = function(v, w, op)
         {
             switch (op)
             {
-                case 'Lt':  return v_seq_type < w_seq_type;
+                case Sk.misceval.compareOp.Lt:  return v_seq_type < w_seq_type;
                 case 'LtE': return v_seq_type <= w_seq_type;
-                case 'Gt':  return v_seq_type > w_seq_type;
-                case 'GtE': return v_seq_type >= w_seq_type;
+                case Sk.misceval.compareOp.Gt:  return v_seq_type > w_seq_type;
+                case Sk.misceval.compareOp.GtE: return v_seq_type >= w_seq_type;
             }
         }
     }
 
 
     // handle identity and membership comparisons
-    if (op === 'Is') {
-	if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
-	{
-	    return (v.numberCompare(w) === 0) && (v.skType === w.skType);
-	}
-	else if (v instanceof Sk.builtin.lng && w instanceof Sk.builtin.lng)
-	{
-	    return v.longCompare(w) === 0;
-	}
-
+    if (op === Sk.misceval.compareOp.Is)
+    {
+        if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
+        {
+            return (v.numberCompare(w) === 0) && (v.skType === w.skType);
+        }
+        else if (v instanceof Sk.builtin.lng && w instanceof Sk.builtin.lng)
+        {
+            return v.longCompare(w) === 0;
+        }
         return v === w;
     }
 
-    if (op === 'IsNot') {
-	if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
-	{
-	    return (v.numberCompare(w) !== 0) || (v.skType !== w.skType);
-	}
-	else if (v instanceof Sk.builtin.lng && w instanceof Sk.builtin.lng)
-	{
-	    return v.longCompare(w) !== 0;
-	}
-
+    if (op === Sk.misceval.compareOp.IsNot)
+    {
+        if (v instanceof Sk.builtin.NumberPy && w instanceof Sk.builtin.NumberPy)
+        {
+            return (v.numberCompare(w) !== 0) || (v.skType !== w.skType);
+        }
+        else if (v instanceof Sk.builtin.lng && w instanceof Sk.builtin.lng)
+        {
+            return v.longCompare(w) !== 0;
+        }
         return v !== w;
     }
 
@@ -270,14 +292,13 @@ Sk.misceval.richCompareBool = function(v, w, op)
     // depending on the op, try left:op:right, and if not, then
     // right:reversed-top:left
 
-    var op2method = {
-        'Eq': '__eq__',
-        'NotEq': '__ne__',
-        'Gt': '__gt__',
-        'GtE': '__ge__',
-        'Lt': '__lt__',
-        'LtE': '__le__'
-    };
+    var op2method = {};
+    op2method[Sk.misceval.compareOp.Eq]    = '__eq__';
+    op2method[Sk.misceval.compareOp.NotEq] = '__ne__';
+    op2method[Sk.misceval.compareOp.Gt]    = '__gt__';
+    op2method[Sk.misceval.compareOp.GtE]   = '__ge__';
+    op2method[Sk.misceval.compareOp.Lt]    = '__lt__';
+    op2method[Sk.misceval.compareOp.LtE]   = '__le__';
 
     var method = op2method[op];
     var swapped_method = op2method[Sk.misceval.swappedOp_[op]];
@@ -294,62 +315,80 @@ Sk.misceval.richCompareBool = function(v, w, op)
     if (v['__cmp__'])
     {
         var ret = Sk.misceval.callsim(v['__cmp__'], v, w);
-	ret = Sk.builtin.asnum$(ret);
-        if (op === 'Eq') return ret === 0;
-        else if (op === 'NotEq') return ret !== 0;
-        else if (op === 'Lt') return ret < 0;
-        else if (op === 'Gt') return ret > 0;
+        ret = Sk.builtin.asnum$(ret);
+        if (op === Sk.misceval.compareOp.Eq) return ret === 0;
+        else if (op === Sk.misceval.compareOp.NotEq) return ret !== 0;
+        else if (op === Sk.misceval.compareOp.Lt) return ret < 0;
+        else if (op === Sk.misceval.compareOp.Gt) return ret > 0;
         else if (op === 'LtE') return ret <= 0;
-        else if (op === 'GtE') return ret >= 0;
+        else if (op === Sk.misceval.compareOp.GtE) return ret >= 0;
     }
 
     if (w['__cmp__'])
     {
         // note, flipped on return value and call
         var ret = Sk.misceval.callsim(w['__cmp__'], w, v);
-	ret = Sk.builtin.asnum$(ret);
-        if (op === 'Eq') return ret === 0;
-        else if (op === 'NotEq') return ret !== 0;
-        else if (op === 'Lt') return ret > 0;
-        else if (op === 'Gt') return ret < 0;
+        ret = Sk.builtin.asnum$(ret);
+        if (op === Sk.misceval.compareOp.Eq) return ret === 0;
+        else if (op === Sk.misceval.compareOp.NotEq) return ret !== 0;
+        else if (op === Sk.misceval.compareOp.Lt) return ret > 0;
+        else if (op === Sk.misceval.compareOp.Gt) return ret < 0;
         else if (op === 'LtE') return ret >= 0;
-        else if (op === 'GtE') return ret <= 0;
+        else if (op === Sk.misceval.compareOp.GtE) return ret <= 0;
     }
 
     // handle special cases for comparing None with None or Bool with Bool
     if (((v instanceof Sk.builtin.none) && (w instanceof Sk.builtin.none))
-	|| ((v instanceof Sk.builtin.bool) && (w instanceof Sk.builtin.bool)))
+    || ((v instanceof Sk.builtin.bool) && (w instanceof Sk.builtin.bool)))
     {
-	// Javascript happens to return the same values when comparing null
+    // Javascript happens to return the same values when comparing null
         // with null or true/false with true/false as Python does when
         // comparing None with None or True/False with True/False
-
-	if (op === 'Eq')
-	    return v.v === w.v;
-	if (op === 'NotEq')
-	    return v.v !== w.v;
-	if (op === 'Gt')
-	    return v.v > w.v;
-	if (op === 'GtE')
-	    return v.v >= w.v;
-	if (op === 'Lt')
-	    return v.v < w.v;
-	if (op === 'LtE')
-	    return v.v <= w.v;
+        if (op === Sk.misceval.compareOp.Eq)
+            return v.v === w.v;
+        if (op === Sk.misceval.compareOp.NotEq)
+            return v.v !== w.v;
+        if (op === Sk.misceval.compareOp.Gt)
+            return v.v > w.v;
+        if (op === Sk.misceval.compareOp.GtE)
+            return v.v >= w.v;
+        if (op === Sk.misceval.compareOp.Lt)
+            return v.v < w.v;
+        if (op === 'LtE')
+            return v.v <= w.v;
     }
-
 
     // handle equality comparisons for any remaining objects
-    if (op === 'Eq')
+    if (op === Sk.misceval.compareOp.Eq)
     {
         if ((v instanceof Sk.builtin.str) && (w instanceof Sk.builtin.str))
+        {
             return v.v === w.v;
+        }
         return v === w;
     }
-    if (op === 'NotEq')
+    if (op === Sk.misceval.compareOp.Lt)
+    {
+        return v < w;
+    }
+    if (op === 'LtE')
+    {
+        return v <= w;
+    }
+    if (op === Sk.misceval.compareOp.Gt)
+    {
+        return v > w;
+    }
+    if (op === Sk.misceval.compareOp.GtE)
+    {
+        return v >= w;
+    }
+    if (op === Sk.misceval.compareOp.NotEq)
     {
         if ((v instanceof Sk.builtin.str) && (w instanceof Sk.builtin.str))
+        {
             return v.v !== w.v;
+        }
         return v !== w;
     }
 
@@ -399,8 +438,8 @@ Sk.misceval.opAllowsEquality = function(op)
     switch (op)
     {
         case 'LtE':
-        case 'Eq':
-        case 'GtE':
+        case Sk.misceval.compareOp.Eq:
+        case Sk.misceval.compareOp.GtE:
             return true;
     }
     return false;
@@ -577,11 +616,11 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
         // builtin.js, for example) as they are javascript functions,
         // not Sk.builtin.func objects.
 
-	if (func.sk$klass)
-	{
-	    // klass wrapper around __init__ requires special handling
-	    return func.apply(null, [kwdict, varargseq, kws, args]);
-	}
+    if (func.sk$klass)
+    {
+        // klass wrapper around __init__ requires special handling
+        return func.apply(null, [kwdict, varargseq, kws, args]);
+    }
 
         if (varargseq)
         {
@@ -590,7 +629,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
                 args.push(i);
             }
         }
-	if (kwdict)
+    if (kwdict)
         {
             goog.asserts.fail("kwdict not implemented;");
         }

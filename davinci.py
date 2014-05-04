@@ -443,13 +443,14 @@ def dist(options):
     builtinfn = "{0}/{1}".format(DIST_DIR, OUTFILE_LIB)
 
     # Run tests on uncompressed.
-    if options.verbose:
-        print ". Running tests on uncompressed..."
+    if options.test:
+        if options.verbose:
+            print ". Running tests on uncompressed..."
 
-    ret = test()
-    if ret != 0:
-        print "Tests failed on uncompressed version."
-        sys.exit(1);
+        ret = test()
+        if ret != 0:
+            print "Tests failed on uncompressed version."
+            sys.exit(1);
 
     # compress
     uncompfiles = ' '.join(['--js ' + x for x in getFileList(FILE_TYPE_DIST)])
@@ -471,12 +472,13 @@ def dist(options):
         sys.exit(1)
 
     # Run tests on compressed.
-    if options.verbose:
-        print ". Running tests on compressed..."
-    ret = 0#os.system("{0} {1} {2}".format(jsengine, compfn, ' '.join(TestFiles)))
-    if ret != 0:
-        print "Tests failed on compressed version."
-        sys.exit(1)
+    if options.test:
+        if options.verbose:
+            print ". Running tests on compressed..."
+        ret = 0#os.system("{0} {1} {2}".format(jsengine, compfn, ' '.join(TestFiles)))
+        if ret != 0:
+            print "Tests failed on compressed version."
+            sys.exit(1)
 
     ret = os.system("cp {0} {1}/tmp.js".format(compfn, DIST_DIR))
     if ret != 0:
@@ -807,10 +809,11 @@ Commands:
 
 Options:
 
-    -q, --quiet        Only output important information
-    -s, --silent       Do not output anything, besides errors
-    -u, --uncompressed Makes uncompressed core distribution file for debugging
-    -v, --verbose      Make output more verbose [default]
+    -q, --quiet        Only output important information.
+    -s, --silent       Do not output anything, besides errors.
+    -t, --test         Run the conformance tests.
+    -u, --uncompressed Makes uncompressed core distribution file for debugging.
+    -v, --verbose      Make output more verbose [default].
     --version          Returns the version string in Bower configuration file.
 '''.format(program=program)
 
@@ -818,12 +821,17 @@ def main():
     parser = OptionParser(usageString("%prog"), version="%prog {0}".format(bowerProperty("version")))
     parser.add_option("-q", "--quiet",        action="store_false", dest="verbose")
     parser.add_option("-s", "--silent",       action="store_true",  dest="silent",       default=False)
+    parser.add_option("-t", "--test",
+        action="store_true",
+        dest="test",
+        default=True,
+        help="Run the conformance tests.")
     parser.add_option("-u", "--uncompressed", action="store_true",  dest="uncompressed", default=False)
     parser.add_option("-v", "--verbose",
         action="store_true",
         dest="verbose",
         default=True,
-        help="Make output more verbose [default]")
+        help="Make output more verbose [default].")
     (options, args) = parser.parse_args()
 
     # This is rather aggressive. Do we really want it?

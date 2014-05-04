@@ -74,7 +74,7 @@ Sk.builtin.dict.prototype.key$lookup = function(bucket, key)
     for (i=0; i<bucket.items.length; i++)
     {
         item = bucket.items[i];
-        eq = Sk.misceval.richCompareBool(item.lhs, key, 'Eq');
+        eq = Sk.misceval.richCompareBool(item.lhs, key, Sk.misceval.compareOp.Eq);
         if (eq)
         {
             return item;
@@ -92,7 +92,7 @@ Sk.builtin.dict.prototype.key$pop = function(bucket, key)
     for (i=0; i<bucket.items.length; i++)
     {
         item = bucket.items[i];
-        eq = Sk.misceval.richCompareBool(item.lhs, key, 'Eq');
+        eq = Sk.misceval.richCompareBool(item.lhs, key, Sk.misceval.compareOp.Eq);
         if (eq)
         {
             bucket.items.splice(i, 1);
@@ -261,6 +261,10 @@ Sk.builtin.dict.prototype.mp$length = function() { return this.size; };
 Sk.builtin.dict.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 Sk.builtin.dict.prototype.tp$hash = Sk.builtin.object.prototype.HashNotImplemented;
 
+/**
+ * @param {*} other
+ * @param {Sk.misceval.compareOp} op
+ */
 Sk.builtin.dict.prototype.tp$richcompare = function(other, op)
 {
     // if the comparison allows for equality then short-circuit it here
@@ -270,18 +274,20 @@ Sk.builtin.dict.prototype.tp$richcompare = function(other, op)
     // Only support Eq and NotEq comparisons
     switch (op)
     {
-        case 'Lt': return undefined;
-        case 'LtE': return undefined;
-        case 'Eq': break;
-        case 'NotEq': break;
-        case 'Gt': return undefined;
-        case 'GtE': return undefined;
+        case Sk.misceval.compareOp.Lt: return undefined;
+        case Sk.misceval.compareOp.LtE: return undefined;
+        case Sk.misceval.compareOp.Eq: break;
+        case Sk.misceval.compareOp.NotEq: break;
+        case Sk.misceval.compareOp.Gt: return undefined;
+        case Sk.misceval.compareOp.GtE: return undefined;
         default:
             goog.asserts.fail();
     }
 
-    if (!(other instanceof Sk.builtin.dict)) {
-        if (op === 'Eq') {
+    if (!(other instanceof Sk.builtin.dict))
+    {
+        if (op === Sk.misceval.compareOp.Eq)
+        {
             return false;
         } else {
             return true;
@@ -291,10 +297,14 @@ Sk.builtin.dict.prototype.tp$richcompare = function(other, op)
     var thisl = this.size;
     var otherl = other.size;
 
-    if (thisl !== otherl) {
-        if (op === 'Eq') {
+    if (thisl !== otherl)
+    {
+        if (op === Sk.misceval.compareOp.Eq)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             return true;
         }
     }
@@ -306,21 +316,27 @@ Sk.builtin.dict.prototype.tp$richcompare = function(other, op)
         var v = this.mp$subscript(k);
         var otherv = other.mp$subscript(k);
 
-        if (!Sk.misceval.richCompareBool(v, otherv, 'Eq'))
+        if (!Sk.misceval.richCompareBool(v, otherv, Sk.misceval.compareOp.Eq))
         {
-            if (op === 'Eq') {
+            if (op === Sk.misceval.compareOp.Eq)
+            {
                 return false;
-            } else {
+            }
+            else
+            {
                 return true;
-            }            
+            }
         }
     }
 
-    if (op === 'Eq') {
+    if (op === Sk.misceval.compareOp.Eq)
+    {
         return true;
-    } else {
+    }
+    else
+    {
         return false;
-    }                
+    }
 }
 
 Sk.builtin.dict.prototype['get'] = new Sk.builtin.func(function(self, k, d)

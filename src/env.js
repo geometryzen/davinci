@@ -144,6 +144,7 @@ Sk.flyweight = false;
 goog.exportSymbol("Sk.flyweight", Sk.flyweight);
 /**
  * The flyweight mode for strings (in development).
+ * This is not quite production-ready.
  * @type {boolean}
  */
 Sk.flyString = true;

@@ -139,8 +139,7 @@ OUTERWHILE:
         {
             // no transition
             var errline = context[0][0];
-            throw new Sk.builtin.ParseError("bad input", this.filename, errline, context);  //  RNL
-//          throw new Sk.builtin.ParseError("bad input on line " + errline.toString());     RNL
+            throw new Sk.builtin.ParseError("bad input", this.filename, errline, context);
         }
     }
 };
