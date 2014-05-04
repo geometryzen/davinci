@@ -385,3 +385,20 @@ Sk.ffh.evaluate = function(exprPy, envPy)
   }
 }
 goog.exportSymbol("Sk.ffh.evaluate", Sk.ffh.evaluate);
+
+/**
+ * @param {*} longPy
+ * @return {Sk.builtin.NumberPy|number}
+ */
+Sk.ffi.promoteLongToFloat = function(longPy)
+{
+    goog.asserts.assert(Sk.ffi.isLong(longPy));
+
+    var strPy = Sk.ffh.str(longPy);
+    var strJs = Sk.ffi.remapToJs(strPy);
+    goog.asserts.assertString(strJs);
+    var valueJs = parseFloat(strJs);
+    goog.asserts.assertNumber(valueJs);
+    return Sk.ffi.numberToPy(valueJs)
+};
+goog.exportSymbol("Sk.ffi.promoteLongToFloat", Sk.ffi.promoteLongToFloat);

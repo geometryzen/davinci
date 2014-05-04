@@ -125,7 +125,7 @@ Sk.builtin.buildWindowClass = function(mod) {
         return Sk.ffi.stringToPy(valueJs);
       }
       case 'undefined': {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
       }
       case 'object': {
         if (Object.prototype.toString.apply(valueJs) === '[object Array]')
@@ -202,7 +202,7 @@ Sk.builtin.buildWindowClass = function(mod) {
         return Sk.ffi.stringToPy(propJs);
       }
       case 'undefined': {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
       }
       default: {
         throw Sk.ffi.err.attribute(typeof propJs).isNotGetableOnType(className);

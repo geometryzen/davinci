@@ -812,7 +812,7 @@ Options:
     -q, --quiet        Only output important information.
     -s, --silent       Do not output anything, besides errors.
     -t, --test         Run the conformance tests.
-    -u, --uncompressed Makes uncompressed core distribution file for debugging.
+    -u, --uncompressed Makes uncompressed core distribution file for debugging [default].
     -v, --verbose      Make output more verbose [default].
     --version          Returns the version string in Bower configuration file.
 '''.format(program=program)
@@ -824,13 +824,16 @@ def main():
     parser.add_option("-t", "--test",
         action="store_true",
         dest="test",
-        default=True,
+        default=False,
         help="Run the conformance tests.")
-    parser.add_option("-u", "--uncompressed", action="store_true",  dest="uncompressed", default=False)
+    parser.add_option("-u", "--uncompressed",
+        action="store_true",
+        dest="uncompressed",
+        default=True)
     parser.add_option("-v", "--verbose",
         action="store_true",
         dest="verbose",
-        default=True,
+        default=False,
         help="Make output more verbose [default].")
     (options, args) = parser.parse_args()
 

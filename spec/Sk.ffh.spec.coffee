@@ -194,8 +194,18 @@ describe "Sk.ffh", ->
     it "(0) should be false", -> expect(Sk.ffi.remapToJs Sk.ffh.nonzero Sk.ffi.numberToFloatPy(0)).toBe false
 
 # describe "invert", -> it "(2) should be -2", -> expect(Sk.ffi.remapToJs Sk.ffh.invert Sk.ffi.numberToFloatPy(2)).toBe -2
-  describe "repr", -> it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.numberToFloatPy(2)).toBe '2.0'
-  describe "str", -> it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.numberToFloatPy(2)).toBe '2.0'
+  describe "repr", ->
+    it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.numberToFloatPy(2)).toBe '2.0'
+    it "should apply apostrophe marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy("Hello")).toBe "'Hello'"
+    it "should switch to quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.builtin.none.none$).toBe 'None'
+  describe "str", ->
+    it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.numberToFloatPy(2)).toBe '2.0'
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy("Hello")).toBe "'Hello'"
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.none.none$).toBe 'None'
 
 #  describe "equal", ->
 #    it "(1, 1) should be true", ->

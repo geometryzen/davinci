@@ -15,7 +15,7 @@ Sk.builtin.str = function(x)
     var ret;
     if (x === true) ret = "True";
     else if (x === false) ret = "False";
-    else if ((x === null) || (x instanceof Sk.builtin.none)) ret = "None";
+    else if ((x === null) || (x === Sk.builtin.none.none$)) ret = "None";
     else if (x instanceof Sk.builtin.bool)
     {
         if (x.v) ret = "True";
@@ -28,15 +28,20 @@ Sk.builtin.str = function(x)
         else if (ret === "-Infinity") ret = "-inf";
     }
     else if (typeof x === "string")
+    {
         ret = x;
+    }
     else if (x.tp$str !== undefined)
     {
         ret = x.tp$str();
         if (!(ret instanceof Sk.builtin.str)) throw new Sk.builtin.ValueError("__str__ didn't return a str");
         return ret;
     }
-    else 
+    else
+    {
+        // Fallback to the representation.
         return Sk.misceval.objectRepr(x);
+    }
 
     // interning required for strings in py
     if (Object.prototype.hasOwnProperty.call(interned, "1"+ret)) // note, have to use Object to avoid __proto__, etc. failing
@@ -123,13 +128,19 @@ Sk.builtin.str.prototype.sq$slice = function(i1, i2)
     return Sk.ffi.stringToPy(Sk.ffi.remapToJs(this).substr(i1, i2 - i1));
 };
 
-Sk.builtin.str.prototype.sq$contains = function(ob)
+/**
+ * Expects Python arguments but returns a JavaScript response.
+ *
+ * @param {*} objectPy
+ * @return {boolean}
+ */
+Sk.builtin.str.prototype.sq$contains = function(objectPy)
 {
-    if (Sk.ffi.remapToJs(ob) === undefined || Sk.ffi.remapToJs(ob).constructor != String)
+    if (Sk.ffi.remapToJs(objectPy) === undefined || Sk.ffi.remapToJs(objectPy).constructor != String)
     {
         throw new Sk.builtin.TypeError("TypeError: 'In <string> requires string as left operand");
     }
-    if (this.v.indexOf(Sk.ffi.remapToJs(ob)) != -1)
+    if (this.v.indexOf(Sk.ffi.remapToJs(objectPy)) != -1)
     {
         return true;
     }
@@ -247,6 +258,12 @@ Sk.builtin.str.prototype.tp$repr = function()
     return Sk.ffi.stringToPy(ret);
 };
 
+/*
+Sk.builtin.str.prototype.tp$str = function()
+{
+    return this;
+};
+*/
 
 Sk.builtin.str.re_escape_ = function(s)
 {
@@ -320,7 +337,7 @@ Sk.builtin.str.prototype['join'] = new Sk.builtin.func(function(self, seq)
 Sk.builtin.str.prototype['split'] = new Sk.builtin.func(function(self, on, howmany)
 {
     Sk.builtin.pyCheckArgs("split", arguments, 1, 3);
-    if ((on === undefined) || (on instanceof Sk.builtin.none)) {
+    if ((on === undefined) || (on === Sk.builtin.none.none$)) {
         on = null;
     }
     if ((on !== null) && !Sk.builtin.checkString(on)) { 
@@ -459,14 +476,17 @@ Sk.builtin.str.prototype['rpartition'] = new Sk.builtin.func(function(self, sepP
 
 Sk.builtin.str.prototype['count'] = new Sk.builtin.func(function(self, pat, start, end) {
     Sk.builtin.pyCheckArgs("count", arguments, 2, 4);
-    if (!Sk.builtin.checkString(pat)) {
-    throw new Sk.builtin.TypeError("expected a character buffer object");
+    if (!Sk.builtin.checkString(pat))
+    {
+        throw new Sk.builtin.TypeError("expected a character buffer object");
     }
-    if ((start !== undefined) && !Sk.builtin.checkInt(start)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((start !== undefined) && !Sk.builtin.checkInt(start))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
-    if ((end !== undefined) && !Sk.builtin.checkInt(end)) {
-    throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
+    if ((end !== undefined) && !Sk.builtin.checkInt(end))
+    {
+        throw new Sk.builtin.TypeError("slice indices must be integers or None or have an __index__ method");
     }
 
     if (start === undefined)

@@ -261,10 +261,12 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
     }
     else
     {
+      // Neither this nor other is a float.
+      // But other is {float|int} so other must be {int}.
+      // And self is {float|int}, being a NumberPy, so self must be {int} also.
       if (prodJs > Sk.builtin.NumberPy.threshold$ || prodJs < -Sk.builtin.NumberPy.threshold$)
       {
-        //  Promote to long
-        return new Sk.builtin.lng(selfJs).nb$multiply(otherJs);
+        return Sk.ffh.multiply(Sk.ffi.promoteIntToLong(this),Sk.ffi.promoteIntToLong(other));
       }
       else
       {
@@ -940,7 +942,7 @@ Sk.builtin.NumberPy.prototype.numberCompare = function(other)
       other = Sk.builtin.asnum$(other);
   }
 
-  if (other instanceof Sk.builtin.none)
+  if (other === Sk.builtin.none.none$)
   {
     other = 0;
   }
@@ -981,11 +983,11 @@ Sk.builtin.NumberPy.prototype.numberCompare = function(other)
 
 Sk.builtin.NumberPy.prototype.__eq__ = function(me, other)
 {
-  return (me.numberCompare(other) == 0) && !(other instanceof Sk.builtin.none);
+  return (me.numberCompare(other) == 0) && !(other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.NumberPy.prototype.__ne__ = function(me, other) {
-  return (me.numberCompare(other) != 0) || (other instanceof Sk.builtin.none);
+  return (me.numberCompare(other) != 0) || (other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.NumberPy.prototype.__lt__ = function(me, other) {

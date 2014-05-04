@@ -298,7 +298,7 @@ mod[ENVIRONMENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             return Sk.ffi.callsim(Sk.ffi.gattr(env[PROP_PARENT], METHOD_LOOKUP), namePy);
           }
           else {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
           }
         });
       }

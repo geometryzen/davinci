@@ -1420,7 +1420,7 @@ Compiler.prototype.cfunction = function(s)
         function(scopename)
         {
             this.vseqstmt(s.body);
-            out("return Sk.ffi.none.None;"); // if we fall off the bottom, we want the ret to be None
+            out("return Sk.builtin.none.none$;"); // if we fall off the bottom, we want the ret to be None
         }
     );
     this.nameop(s.name, Store, funcorgen);
@@ -1700,7 +1700,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
         throw new Sk.builtin.SyntaxError("can not assign to None");
     }
 
-    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.ffi.none.None";
+    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.builtin.none.none$";
     if (Sk.ffi.remapToJs(name) === "True")  return "Sk.ffi.bool.True";
     if (Sk.ffi.remapToJs(name) === "False") return "Sk.ffi.bool.False";
 

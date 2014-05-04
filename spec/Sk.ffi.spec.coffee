@@ -52,8 +52,8 @@ describe "Sk.ffi", ->
     it "typeName False => 'bool'", -> expect(Sk.ffi.typeName Sk.ffi.bool.False).toBe 'bool'
 
   describe "none", ->
-    it "getType None => PyType.NONE", -> expect(Sk.ffi.getType Sk.ffi.none.None).toBe Sk.ffi.PyType.NONE
-    it "remapToJs None => null", -> expect(Sk.ffi.remapToJs Sk.ffi.none.None).toBe null
+    it "getType None => PyType.NONE", -> expect(Sk.ffi.getType Sk.builtin.none.none$).toBe Sk.ffi.PyType.NONE
+    it "remapToJs None => null", -> expect(Sk.ffi.remapToJs Sk.builtin.none.none$).toBe null
 
   describe "booleanToPy", ->
     it "getType booleanToPy true => Sk.ffi.PyType.BOOL", -> expect(Sk.ffi.getType Sk.ffi.booleanToPy true).toBe Sk.ffi.PyType.BOOL
@@ -64,7 +64,7 @@ describe "Sk.ffi", ->
     it "typeName booleanToPy false => 'bool'", -> expect(Sk.ffi.typeName Sk.ffi.booleanToPy false).toBe 'bool'
     it "true => True", -> expect(Sk.ffi.booleanToPy true ).toBe Sk.ffi.bool.True
     it "false => False", -> expect(Sk.ffi.booleanToPy false).toBe Sk.ffi.bool.False
-    it "null => None", -> expect(Sk.ffi.booleanToPy null).toBe Sk.ffi.none.None
+    it "null => None", -> expect(Sk.ffi.booleanToPy null).toBe Sk.builtin.none.none$
     it "undefined => undefined", -> expect(Sk.ffi.booleanToPy undefined).toBeUndefined()
     it "getType booleanToPy undefined, true => getType booleanToPy true", -> expect(Sk.ffi.getType Sk.ffi.booleanToPy undefined, true).toBe Sk.ffi.getType Sk.ffi.booleanToPy true
     it "remapToPy booleanToJs undefined, true => remapToJs booleanToPy true", -> expect(Sk.ffi.remapToJs Sk.ffi.booleanToPy undefined, true).toBe Sk.ffi.remapToJs Sk.ffi.booleanToPy true
@@ -82,11 +82,11 @@ describe "Sk.ffi", ->
     it "getType numberToFloatPy number => PyType.FLOAT", -> expect(Sk.ffi.getType Sk.ffi.numberToFloatPy 6) .toBe Sk.ffi.PyType.FLOAT
     it "remapToJs numberToFloatPy number => number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 6).toBe 6
     it "typeName numberToFloatPy number => 'float'", -> expect(Sk.ffi.typeName Sk.ffi.numberToFloatPy 6).toBe 'float'
-    it "null => None", -> expect(Sk.ffi.numberToFloatPy null).toBe Sk.ffi.none.None
+    it "null => None", -> expect(Sk.ffi.numberToFloatPy null).toBe Sk.builtin.none.none$
     it "undefined => undefined", -> expect(Sk.ffi.numberToFloatPy undefined).toBeUndefined()
     it "getType numberToFloatPy undefined, number => getType numberToFloatPy number", -> expect(Sk.ffi.getType Sk.ffi.numberToFloatPy undefined, 23).toBe Sk.ffi.getType Sk.ffi.numberToFloatPy 23
     it "remapToJs numberToFloatPy undefined, number => remapToJs numberToFloatPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToFloatPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 23
-    it "undefined, null => None", -> expect(Sk.ffi.numberToFloatPy undefined, null).toBe Sk.ffi.none.None
+    it "undefined, null => None", -> expect(Sk.ffi.numberToFloatPy undefined, null).toBe Sk.builtin.none.none$
     it "string throws TypeError", ->
       foo = () -> Sk.ffi.numberToFloatPy("s")
       expect(foo).toThrow()
@@ -99,11 +99,11 @@ describe "Sk.ffi", ->
     it "getType numberToIntPy number => PyType.INT", -> expect(Sk.ffi.getType Sk.ffi.numberToIntPy 6) .toBe Sk.ffi.PyType.INT
     it "remapToJs numberToIntPy number => number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToIntPy 6).toBe 6
     it "typeName numberToIntPy number => 'int'", -> expect(Sk.ffi.typeName Sk.ffi.numberToIntPy 6).toBe 'int'
-    it "null => None", -> expect(Sk.ffi.numberToIntPy null).toBe Sk.ffi.none.None
+    it "null => None", -> expect(Sk.ffi.numberToIntPy null).toBe Sk.builtin.none.none$
     it "undefined => undefined", -> expect(Sk.ffi.numberToIntPy undefined).toBeUndefined()
     it "getType numberToIntPy undefined, number => getType numberToIntPy number", -> expect(Sk.ffi.getType Sk.ffi.numberToIntPy undefined, 23).toBe Sk.ffi.getType Sk.ffi.numberToIntPy 23
     it "remapToJs numberToIntPy undefined, number => remapToJs numberToIntPy number", -> expect(Sk.ffi.remapToJs Sk.ffi.numberToIntPy undefined, 23).toBe Sk.ffi.remapToJs Sk.ffi.numberToFloatPy 23
-    it "undefined, null => None", -> expect(Sk.ffi.numberToIntPy undefined, null).toBe Sk.ffi.none.None
+    it "undefined, null => None", -> expect(Sk.ffi.numberToIntPy undefined, null).toBe Sk.builtin.none.none$
     it "string throws TypeError", ->
       foo = () -> Sk.ffi.numberToFloatPy("s")
       expect(foo).toThrow()
@@ -116,10 +116,10 @@ describe "Sk.ffi", ->
     it "getType stringToPy 'Hello' => Sk.ffi.PyType.STRING", -> expect(Sk.ffi.getType Sk.ffi.stringToPy 'Hello').toBe Sk.ffi.PyType.STR
     it "remapToJs stringToPy 'Hello' => 'Hello'", -> expect(Sk.ffi.remapToJs Sk.ffi.stringToPy 'Hello').toBe 'Hello'
     it "typeName stringToPy 'Hello' => 'str'", -> expect(Sk.ffi.typeName Sk.ffi.stringToPy 'Hello').toBe 'str'
-    it "null => None", -> expect(Sk.ffi.stringToPy null).toBe Sk.ffi.none.None
+    it "null => None", -> expect(Sk.ffi.stringToPy null).toBe Sk.builtin.none.none$
     it "undefined => undefined", -> expect(Sk.ffi.stringToPy undefined).toBeUndefined()
     it "undefined, 'foo' => stringToPy 'foo'", -> expect(Sk.ffi.stringToPy undefined, 'foo').toBe Sk.ffi.stringToPy 'foo'
-    it "undefined, null => None", -> expect(Sk.ffi.stringToPy undefined, null).toBe Sk.ffi.none.None
+    it "undefined, null => None", -> expect(Sk.ffi.stringToPy undefined, null).toBe Sk.builtin.none.none$
     it "number throws TypeError", ->
       foo = () -> Sk.ffi.stringToPy(6)
       expect(foo).toThrow()
@@ -183,4 +183,4 @@ describe "Sk.ffi", ->
     it "isInstance remapToJs({}, 'Foo'), ['Fiz','Bar'] => false", -> expect(Sk.ffi.isInstance Sk.ffi.remapToPy({}, 'Foo'), ['Fiz','Bar']).toBe false
     it "isInstance True => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.True).toBe false
     it "isInstance False => false", -> expect(Sk.ffi.isInstance Sk.ffi.bool.False).toBe false
-    it "isInstance None => false", -> expect(Sk.ffi.isInstance Sk.ffi.none.None).toBe false
+    it "isInstance None => false", -> expect(Sk.ffi.isInstance Sk.builtin.none.none$).toBe false

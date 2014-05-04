@@ -63,7 +63,7 @@ Sk.builtin.range = function range(start, stop, step)
 Sk.builtin.asnum$ = function(a) {
     if (a === undefined) return a;
     if (a === null) return a;
-    if (a.constructor === Sk.builtin.none) return null;
+    if (a === Sk.builtin.none.none$) return null;
     if (a.constructor === Sk.builtin.bool) {
         if (a.v)
         return 1;
@@ -93,14 +93,21 @@ goog.exportSymbol("Sk.builtin.asnum$", Sk.builtin.asnum$);
 Sk.builtin.asnum$nofloat = function(a) {
     if (a === undefined) return a;
     if (a === null) return a;
-    if (a.constructor === Sk.builtin.none) return null;
+    if (a === Sk.builtin.none.none$) return null;
     if (a.constructor === Sk.builtin.bool) {
         if (a.v)
         return 1;
         return 0;
     }
     if (typeof a === "number") a = a.toString();
-    if (a.constructor === Sk.builtin.NumberPy) a = a.v.toString();
+    if (Sk.ffi.isFloat(a))
+    {
+        a = Sk.ffi.remapToJs(a).toString();
+    }
+    if (Sk.ffi.isInt(a))
+    {
+        a = Sk.ffi.remapToJs(a).toString();
+    }
     if (a.constructor === Sk.builtin.lng)   a = a.str$(10, true);
     if (a.constructor === Sk.builtin.biginteger) a = a.toString();
 
@@ -602,16 +609,19 @@ Sk.builtin.isinstance = function isinstance(obj, type)
         throw new Sk.builtin.TypeError("isinstance() arg 2 must be a class, type, or tuple of classes and types");
     }
 
-    if (type === Sk.builtin.int_.prototype.ob$type) {
-    return (obj.tp$name === 'number') && (obj.skType === Sk.builtin.NumberPy.int$);
+    if (type === Sk.builtin.int_.prototype.ob$type)
+    {
+        return (obj.tp$name === 'number') && (obj.skType === Sk.builtin.NumberPy.int$);
     }
 
-    if (type === Sk.builtin.float_.prototype.ob$type) {
+    if (type === Sk.builtin.float_.prototype.ob$type)
+    {
         return (obj.tp$name === 'number') && (Sk.ffi.isFloat(obj)); 
     }
 
-    if (type === Sk.builtin.none.prototype.ob$type) {
-        return (obj instanceof Sk.builtin.none);
+    if (type === Sk.builtin.none.none$.ob$type)
+    {
+        return (obj === Sk.builtin.none.none$);
     }
 
     // Normal case
@@ -667,9 +677,9 @@ Sk.builtin.hash = function hash(value)
         return 1;
     return 0;
     }
-    else if (value instanceof Sk.builtin.none)
+    else if (value === Sk.builtin.none.none$)
     {
-    return 0;
+        return 0;
     }
     else if (value instanceof Object)
     {
@@ -887,7 +897,7 @@ Sk.builtin.filter = function filter(fun, iterable)
     }
     
     //simulate default identity function
-    if (fun instanceof Sk.builtin.none)
+    if (fun === Sk.builtin.none.none$)
     {
         fun = { func_code: function (x) { return Sk.builtin.bool(x); } } 
     }
@@ -1014,9 +1024,9 @@ Sk.builtin.quit = function quit(msg)
 Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
     var compare_func;
     var list;
-    if (key !== undefined && !(key instanceof Sk.builtin.none))
+    if (key !== undefined && !(key === Sk.builtin.none.none$))
     {
-        if (cmp instanceof Sk.builtin.none) {
+        if (cmp === Sk.builtin.none.none$) {
             compare_func = { func_code: 
                 function(a,b)
                 {
@@ -1039,7 +1049,7 @@ Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
     }
     else
     {
-        if (!(cmp instanceof Sk.builtin.none) && cmp !== undefined)
+        if (!(cmp === Sk.builtin.none.none$) && cmp !== undefined)
         {
             compare_func = cmp;
         }
@@ -1058,7 +1068,7 @@ Sk.builtin.sorted = function sorted(iterable, cmp, key, reverse) {
         list.list_reverse_(list);
     }
     
-    if (key !== undefined && !(key instanceof Sk.builtin.none)) {
+    if (key !== undefined && !(key === Sk.builtin.none.none$)) {
         var iter = list.tp$iter();
         var next = iter.tp$iternext()
         var arr = [];

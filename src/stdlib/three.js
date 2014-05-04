@@ -5350,7 +5350,7 @@ mod[INTERSECTION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return Sk.ffi.callsim(mod[Sk.three.FACE_3], Sk.ffi.referenceToPy(intersection[PROP_FACE], Sk.three.FACE_3));
         }
         else {
-          return Sk.ffi.none.None;
+          return Sk.builtin.none.none$;
         }
       }
       case PROP_OBJECT: {

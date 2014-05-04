@@ -433,16 +433,22 @@ Sk.abstr.fixSeqIndex_ = function(seq, i)
     return i;
 };
 
-Sk.abstr.sequenceContains = function(seq, ob)
+/**
+ * Expects Python arguments but returns a JavaScript response.
+ *
+ * @param {*} objectPy
+ * @return {boolean}
+ */
+Sk.abstr.sequenceContains = function(seq, objectPy)
 {
-    if (seq.sq$contains) return seq.sq$contains(ob);
+    if (seq.sq$contains) return seq.sq$contains(objectPy);
 
     var seqtypename = Sk.ffi.typeName(seq);
     if (!seq.tp$iter) throw new Sk.builtin.TypeError("argument of type '" + seqtypename + "' is not iterable");
     
     for (var it = seq.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
     {
-        if (Sk.misceval.richCompareBool(i, ob, Sk.misceval.compareOp.Eq))
+        if (Sk.misceval.richCompareBool(i, objectPy, Sk.misceval.compareOp.Eq))
         {
             return true;
         }

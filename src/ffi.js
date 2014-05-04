@@ -122,19 +122,11 @@ Sk.ffi.bool = {True: Sk.builtin.bool.true$, False: Sk.builtin.bool.false$};
 goog.exportSymbol("Sk.ffi.bool", Sk.ffi.bool);
 
 /**
- * Singleton Python None value.
- *
- * @enum {!Object}
- */
-Sk.ffi.none = {None: Sk.builtin.none.none$};
-goog.exportSymbol("Sk.ffi.none", Sk.ffi.none);
-
-/**
  * Converts a JavaScript boolean or null to the internal Python bool representation.
  *
  * @param {?boolean=} valueJs
  * @param {boolean=} defaultJs
- * @return {Sk.ffi.bool|Sk.ffi.none|undefined}
+ * @return {Sk.ffi.bool|Sk.builtin.none|undefined}
  */
 Sk.ffi.booleanToPy = function(valueJs, defaultJs)
 {
@@ -145,7 +137,7 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -160,7 +152,7 @@ Sk.ffi.booleanToPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
         }
         else
         {
@@ -207,7 +199,7 @@ goog.exportSymbol("Sk.ffi.numberToPy", Sk.ffi.numberToPy);
  *
  * @param {?number=} valueJs
  * @param {number=} defaultJs
- * @return {Object|Sk.ffi.none|undefined}
+ * @return {Object|Sk.builtin.none|undefined}
  */
 Sk.ffi.numberToFloatPy = function(valueJs, defaultJs)
 {
@@ -218,7 +210,7 @@ Sk.ffi.numberToFloatPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -233,7 +225,7 @@ Sk.ffi.numberToFloatPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
         }
         else
         {
@@ -258,7 +250,7 @@ goog.exportSymbol("Sk.ffi.numberToFloatPy", Sk.ffi.numberToFloatPy);
  *
  * @param {?number} valueJs
  * @param {number=} defaultJs
- * @return {Object|Sk.ffi.none|undefined}
+ * @return {Object|Sk.builtin.none|undefined}
  */
 Sk.ffi.numberToIntPy = function(valueJs, defaultJs)
 {
@@ -270,7 +262,7 @@ Sk.ffi.numberToIntPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -285,7 +277,7 @@ Sk.ffi.numberToIntPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
         }
         else
         {
@@ -328,7 +320,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
     }
     else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
     {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
@@ -343,7 +335,7 @@ Sk.ffi.stringToPy = function(valueJs, defaultJs)
         }
         else if (d === Sk.ffi.JsType.OBJECT && defaultJs === null)
         {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
         }
         else
         {
@@ -414,6 +406,8 @@ goog.exportSymbol("Sk.ffi.referenceToPy", Sk.ffi.referenceToPy);
 
 /**
  * Constructs a Python function.
+ * 
+ * Implementations should expect Python arguments and return Python values.
  *
  * @param {Function} code The implementation of the function.
  */
@@ -477,7 +471,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
         }
         else if (t === Sk.ffi.JsType.OBJECT && valueJs === null)
         {
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
         }
         else
         {
@@ -513,7 +507,7 @@ Sk.ffi.remapToPy = function(valueJs, className, custom)
     }
     else if (t === Sk.ffi.JsType.UNDEFINED)
     {
-        return Sk.ffi.none.None;
+        return Sk.builtin.none.none$;
     }
     else
     {
@@ -979,7 +973,7 @@ Sk.ffi.getType = function(valuePy)
     {
         return Sk.ffi.PyType.BOOL;
     }
-    else if (valuePy === Sk.ffi.none.None)
+    else if (valuePy === Sk.builtin.none.none$)
     {
         return Sk.ffi.PyType.NONE;
     }
@@ -1591,12 +1585,12 @@ Sk.ffi.ObjectPy.prototype.tp$getattr = function(name)
           {
             Sk.builtin.pyCheckArgs("append", arguments, 1, 1);
             selfJs.push(Sk.ffi.remapToJs(itemPy));
-            return Sk.ffi.none.None;
+            return Sk.builtin.none.none$;
           });
         }
         default:
         {
-          return Sk.ffi.none.None;
+          return Sk.builtin.none.none$;
         }
       }
     }

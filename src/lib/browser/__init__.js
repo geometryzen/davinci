@@ -42,7 +42,7 @@ var $builtinmodule = function(name) {
         this.elapsed   = null;
         this.requestID = null;
         this.escKeyPressed = false;
-        this.exceptionPy = Sk.ffi.none.None;
+        this.exceptionPy = Sk.builtin.none.none$;
       };
       WindowAnimationRunner.prototype = {
         constructor: WindowAnimationRunner,

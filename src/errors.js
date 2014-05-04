@@ -186,8 +186,10 @@ Sk.builtin.IndexError.prototype.tp$name = "IndexError";
  * @extends Sk.builtin.Exception
  * @param {...*} args
  */
-Sk.builtin.KeyError = function(args) {
-    if (!(this instanceof Sk.builtin.KeyError)) {
+Sk.builtin.KeyError = function(args)
+{
+    if (!(this instanceof Sk.builtin.KeyError))
+    {
         var o = Object.create(Sk.builtin.KeyError.prototype);
         o.constructor.apply(o, arguments);
         return o;

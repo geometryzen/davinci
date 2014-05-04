@@ -434,7 +434,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return Sk.ffi.stringToPy(unitPy.custom[PROP_NAME]);
         }
         else {
-          return Sk.ffi.none.None;
+          return Sk.builtin.none.none$;
         }
       }
       case METHOD_COMPATIBLE: {

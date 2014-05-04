@@ -96,11 +96,27 @@ Sk.builtin.object.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetA
 Sk.builtin.object.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('object', Sk.builtin.object);
 
 /**
- * @constructor
+ * Singleton enumeration for Python None value.
+ *
+ * @enum {!Object}
  */
-Sk.builtin.none = function() {};
-Sk.builtin.none.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('NoneType', Sk.builtin.none);
-Sk.builtin.none.prototype.tp$name = "NoneType";
-Sk.builtin.none.none$ = Object.create(Sk.builtin.none.prototype, {v: {value: null, enumerable: true}});
-
+Sk.builtin.none = {none$:
+    (function(){
+        /**
+         * @constructor
+         */
+        var None = function() {};
+        None.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj('NoneType', None);
+        None.prototype.tp$name = "NoneType";
+        None.prototype.tp$repr = function()
+        {
+            return Sk.ffi.stringToPy("None");
+        }
+        None.prototype.tp$str = function()
+        {
+            return Sk.ffi.stringToPy("None");
+        }
+        return Object.create(None.prototype, {v: {value: null, enumerable: true}});
+    })()
+};
 goog.exportSymbol("Sk.builtin.none", Sk.builtin.none);

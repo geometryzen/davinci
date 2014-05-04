@@ -80,7 +80,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
       return Sk.ffi.callsim(mod[NODE], Sk.ffi.referenceToPy(node, NODE));
     }
     else {
-      return Sk.ffi.none.None;
+      return Sk.builtin.none.none$;
     }
   }
 

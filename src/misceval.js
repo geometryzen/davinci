@@ -184,7 +184,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
         // NoneTypes are considered less than any other type in Python
         // note: this only handles comparing NoneType with any non-NoneType.
         // Comparing NoneType with NoneType is handled further down.
-        if (v_type === Sk.builtin.none.prototype.ob$type)
+        if (v_type === Sk.builtin.none.none$.ob$type)
         {
             switch (op)
             {
@@ -195,7 +195,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
             }
         }
 
-        if (w_type === Sk.builtin.none.prototype.ob$type)
+        if (w_type === Sk.builtin.none.none$.ob$type)
         {
             switch (op)
             {
@@ -339,7 +339,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
     }
 
     // handle special cases for comparing None with None or Bool with Bool
-    if (((v instanceof Sk.builtin.none) && (w instanceof Sk.builtin.none))
+    if (((v === Sk.builtin.none.none$) && (w === Sk.builtin.none.none$))
     || ((v instanceof Sk.builtin.bool) && (w instanceof Sk.builtin.bool)))
     {
     // Javascript happens to return the same values when comparing null
@@ -405,7 +405,7 @@ goog.exportSymbol("Sk.misceval.richCompareBool", Sk.misceval.richCompareBool);
 Sk.misceval.objectRepr = function(v)
 {
     goog.asserts.assert(v !== undefined, "trying to repr undefined");
-    if ((v === null) || (v instanceof Sk.builtin.none))
+    if ((v === null) || (v === Sk.builtin.none.none$))
         return Sk.ffi.stringToPy("None"); // todo; these should be consts
     else if (v === true)
         return Sk.ffi.stringToPy("True");
@@ -452,7 +452,7 @@ Sk.misceval.isTrue = function(x)
     if (x === true) return true;
     if (x === false) return false;
     if (x === null) return false;
-    if (x.constructor === Sk.builtin.none) return false;
+    if (x === Sk.builtin.none.none$) return false;
     if (x.constructor === Sk.builtin.bool) return x.v;
     if (typeof x === "number") return x !== 0;
     if (x instanceof Sk.builtin.lng) return x.nb$nonzero();
@@ -600,7 +600,7 @@ goog.exportSymbol("Sk.misceval.callsim", Sk.misceval.callsim);
  */
 Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
 {
-    if (func === null || func instanceof Sk.builtin.none)
+    if (func === null || func === Sk.builtin.none.none$)
     {
         throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(func) + "' object is not callable");
     }

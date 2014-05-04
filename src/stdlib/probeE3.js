@@ -117,7 +117,7 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     probe[PROP_GRADE_1]  = grade1;
     probe[PROP_GRADE_2]  = grade2;
     probe[PROP_GRADE_3]  = grade3;
-    probe[PROP_QUANTITY] = Sk.ffi.none.None;
+    probe[PROP_QUANTITY] = Sk.builtin.none.none$;
     Sk.ffi.referenceToPy(probe, PROBE_E3, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {

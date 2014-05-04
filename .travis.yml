@@ -4,7 +4,7 @@ python:
 install:
 - pip install GitPython --use-mirrors
 script:
-- ./davinci.py dist -u
+- ./davinci.py dist -t -u -v
 after_script:
 - ./davinci-deploy.sh
 env:

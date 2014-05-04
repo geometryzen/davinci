@@ -181,7 +181,7 @@ Sk.builtin.lng.prototype.nb$multiply = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$multiply(other);
+      return Sk.ffh.multiply(Sk.ffh.promoteLongToFloat(this), other);
     }
     else
     {
@@ -557,11 +557,11 @@ Sk.builtin.lng.prototype.longCompare = function(other)
 }
 
 Sk.builtin.lng.prototype.__eq__ = function(me, other) {
-  return me.longCompare(other) == 0 && !(other instanceof Sk.builtin.none);
+  return me.longCompare(other) == 0 && !(other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.lng.prototype.__ne__ = function(me, other) {
-  return me.longCompare(other) != 0 || (other instanceof Sk.builtin.none);
+  return me.longCompare(other) != 0 || (other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.lng.prototype.__lt__ = function(me, other) {
