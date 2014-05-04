@@ -124,6 +124,7 @@ Sk.misceval.compareOp =
     In_:   'In_',
     NotIn: 'NotIn'
 };
+goog.exportSymbol("Sk.misceval.compareOp", Sk.misceval.compareOp);
 
 /**
  * for reversed comparison: Gt -> Lt, etc.

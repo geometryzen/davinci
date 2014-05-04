@@ -19,11 +19,12 @@ Sk.abstr.binop_type_error = function(lhsPy, rhsPy, name)
 };
 
 Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
-  if (obj === null) {
+  if (obj === null)
+  {
     return undefined;
-};
-switch (name)
-{
+  };
+  switch (name)
+  {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
     case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__sub__'];
     case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__mul__'];
@@ -36,14 +37,14 @@ switch (name)
     case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__and__'];
     case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__xor__'];
     case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__or__'];
-}
+  }
 };
 
 Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
   if (obj === null) {
     return undefined;
-};
-switch (name) {
+  };
+  switch (name) {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
     case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__rsub__'];
     case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__rmul__'];
@@ -56,17 +57,19 @@ switch (name) {
     case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__rand__'];
     case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__rxor__'];
     case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__ror__'];
-}
+  }
 };
 
 /**
  * In-place operations (+=, -=, *=, /=, //=, %=, **=, <<=, >>=, &=, ^=, |=)
  */
- Sk.abstr.iboNameToSlotFunc_ = function(obj, name) {
+ Sk.abstr.iboNameToSlotFunc_ = function(obj, name)
+ {
   if (obj === null) {
     return undefined;
-};
-switch (name) {
+  };
+  switch (name)
+  {
     case "Add":      return obj.nb$inplace_add          ? obj.nb$inplace_add          : obj['__iadd__'];
     case "Sub":      return obj.nb$inplace_subtract     ? obj.nb$inplace_subtract     : obj['__isub__'];
     case "Mult":     return obj.nb$inplace_multiply     ? obj.nb$inplace_multiply     : obj['__imul__'];
@@ -79,7 +82,7 @@ switch (name) {
     case "BitAnd":   return obj.nb$inplace_and;
     case "BitOr":    return obj.nb$inplace_or;
     case "BitXor":   return obj.nb$inplace_xor          ? obj.nb$inplace_xor          : obj['__ixor__'];
-}
+  }
 };
 
 Sk.abstr.binary_op_ = function(v, w, opname)
@@ -337,15 +340,15 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
   };
   switch (name)
   {
-    case "USub":
+    case Sk.abstr.unaryOp.USub:
     {
         return obj.nu$negative          ? obj.nu$negative        : obj['__neg__'];
     }
-    case "Invert":
+    case Sk.abstr.unaryOp.Invert:
     {
         return obj.nb$invert            ? obj.nb$invert          : obj['__invert__'];
     }
-    case "UAdd":
+    case Sk.abstr.unaryOp.UAdd:
     {
         return obj.nb$positive          ? obj.nb$positive        : obj['__pos__'];
     }
@@ -366,6 +369,7 @@ Sk.abstr.unaryOp =
     Invert: 'Invert',
     UAdd:   'UAdd'
 };
+goog.exportSymbol("Sk.abstr.unaryOp", Sk.abstr.unaryOp);
 
 /**
  * This is the compiler entry point.
@@ -374,6 +378,8 @@ Sk.abstr.unaryOp =
  */
 Sk.abstr.numberUnaryOp = function(valuePy, op)
 {
+    goog.asserts.assertString(op, "op must be a string");
+
     if (op === Sk.abstr.unaryOp.Not)
     {
         return Sk.misceval.isTrue(valuePy) ? Sk.builtin.bool.false$ : Sk.builtin.bool.true$;

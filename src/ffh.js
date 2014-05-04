@@ -185,22 +185,22 @@ goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);
 
 Sk.ffh.positive = function(valuePy)
 {
-  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  if (Sk.ffi.isFloat(valuePy))
   {
     return valuePy;
   }
-  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.UAdd);
+  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.unaryOp.UAdd);
 };
 goog.exportSymbol("Sk.ffh.positive", Sk.ffh.positive);
 
 Sk.ffh.negative = function(valuePy)
 {
-  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  if (Sk.ffi.isFloat(valuePy))
   {
     var valueJs = Sk.ffi.remapToJs(valuePy);
     return Sk.ffi.numberToPy(-valueJs);
   }
-  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.USub);
+  return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.unaryOp.USub);
 };
 goog.exportSymbol("Sk.ffh.negative", Sk.ffh.negative);
 
@@ -213,7 +213,7 @@ goog.exportSymbol("Sk.ffh.invert", Sk.ffh.invert);
 
 Sk.ffh.nonzero = function(valuePy)
 {
-  if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
+  if (Sk.ffi.isFloat(valuePy))
   {
     var valueJs = Sk.ffi.remapToJs(valuePy);
     return Sk.ffi.booleanToPy(valueJs !== 0);
