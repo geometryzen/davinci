@@ -1501,14 +1501,14 @@ var $builtinmodule = function(name) {
         //
         $loc.heading = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"heading()");
-            return Sk.ffi.numberToPy(self.theTurtle.get_heading());
+            return Sk.builtin.numberToPy(self.theTurtle.get_heading());
         });
 
         $loc.position = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"position()");
             var res = self.theTurtle.get_position();
-            var x = new Sk.builtin.tuple([Sk.ffi.numberToPy(res[0]),
-                                          Sk.ffi.numberToPy(res[1]) ]);
+            var x = new Sk.builtin.tuple([Sk.builtin.numberToPy(res[0]),
+                                          Sk.builtin.numberToPy(res[1]) ]);
             return x;
         });
 
@@ -1517,13 +1517,13 @@ var $builtinmodule = function(name) {
         $loc.xcor = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"xcor()");
             var res = self.theTurtle.getx();
-            return Sk.ffi.numberToPy(res);
+            return Sk.builtin.numberToPy(res);
         });
 
         $loc.ycor = new Sk.builtin.func(function(self) {
             checkArgs(1,arguments.length,"ycor()");
             var res = self.theTurtle.gety();
-            return Sk.ffi.numberToPy(res);
+            return Sk.builtin.numberToPy(res);
         });
 
         $loc.towards = new Sk.builtin.func(function(self, tx, ty) {
@@ -1534,7 +1534,7 @@ var $builtinmodule = function(name) {
             } else {
                 tx = [Sk.builtin.asnum$(tx.theTurtle.getx()),Sk.builtin.asnum$(tx.theTurtle.gety()),Sk.builtin.asnum$(0)]
             }
-            return Sk.ffi.numberToPy(self.theTurtle.towards(tx));
+            return Sk.builtin.numberToPy(self.theTurtle.towards(tx));
         });
 
         // tx can be either a number or a vector position.
@@ -1547,7 +1547,7 @@ var $builtinmodule = function(name) {
             } else {
                 tx = [tx.theTurtle.getx(), tx.theTurtle.gety(), 0];
             }
-            return Sk.ffi.numberToPy(self.theTurtle.distance(tx));
+            return Sk.builtin.numberToPy(self.theTurtle.distance(tx));
         });
 
         //

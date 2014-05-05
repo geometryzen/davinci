@@ -1942,23 +1942,23 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var grade3 = xyz !== 0;
     if (grade0 && !grade1 && !grade2 && !grade3) {
       var args = [w];
-      return Sk.ffi.stringToPy(Sk.e3ga.SCALAR_E3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(Sk.e3ga.SCALAR_E3 + "(" + args.join(", ") + ")");
     }
     else if (!grade0 && grade1 && !grade2 && !grade3) {
       var args = [x, y, z];
-      return Sk.ffi.stringToPy(Sk.e3ga.VECTOR_E3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(Sk.e3ga.VECTOR_E3 + "(" + args.join(", ") + ")");
     }
     else if (!grade0 && !grade1 && grade2 && !grade3) {
       var args = [xy, yz, zx];
-      return Sk.ffi.stringToPy(Sk.e3ga.BIVECTOR_E3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(Sk.e3ga.BIVECTOR_E3 + "(" + args.join(", ") + ")");
     }
     else if (!grade0 && !grade1 && !grade2 && grade3) {
       var args = [xyz];
-      return Sk.ffi.stringToPy(Sk.e3ga.PSEUDOSCALAR_E3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(Sk.e3ga.PSEUDOSCALAR_E3 + "(" + args.join(", ") + ")");
     }
     else {
       var args = [w, x, y, z, xy, yz, zx, xyz];
-      return Sk.ffi.stringToPy(Sk.e3ga.EUCLIDEAN_3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(Sk.e3ga.EUCLIDEAN_3 + "(" + args.join(", ") + ")");
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
@@ -1974,7 +1974,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var yz  = self.yz;
     var zx  = self.zx;
     var xyz = self.xyz;
-    return Sk.ffi.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_E1, UNIT_VECTOR_NAME_E2, UNIT_VECTOR_NAME_E3, UNIT_BIVECTOR_NAME_E12, UNIT_BIVECTOR_NAME_E23, UNIT_BIVECTOR_NAME_E31, PSEUDOSCALAR_NAME]));
+    return Sk.builtin.stringToPy(stringFromCoordinates([w, x, y, z, xy, yz, zx, xyz], [UNIT_SCALAR_NAME, UNIT_VECTOR_NAME_E1, UNIT_VECTOR_NAME_E2, UNIT_VECTOR_NAME_E3, UNIT_BIVECTOR_NAME_E12, UNIT_BIVECTOR_NAME_E23, UNIT_BIVECTOR_NAME_E31, PSEUDOSCALAR_NAME]));
   });
 }, Sk.e3ga.EUCLIDEAN_3, []);
 /*

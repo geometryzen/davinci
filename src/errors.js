@@ -20,7 +20,7 @@ Sk.builtin.Exception = function(args)
     {
         if (typeof args[i] === "string")
         {
-            args[i] = Sk.ffi.stringToPy(args[i]);
+            args[i] = Sk.builtin.stringToPy(args[i]);
         }
     }
     this.args = new Sk.builtin.tuple(args);
@@ -90,7 +90,7 @@ Sk.builtin.Exception.prototype.tp$str = function()
         ret += "^\n";
     }
 
-    return Sk.ffi.stringToPy(ret);
+    return Sk.builtin.stringToPy(ret);
 };
 
 Sk.builtin.Exception.prototype.toString = function()

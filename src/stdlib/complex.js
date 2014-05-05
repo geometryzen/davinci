@@ -410,11 +410,11 @@ mod[COMPLEX] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);
-    return Sk.ffi.stringToPy(stringFromCoordinates([z.x, z.y], ["1", "i"], ""));
+    return Sk.builtin.stringToPy(stringFromCoordinates([z.x, z.y], ["1", "i"], ""));
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(z) {
     z = Sk.ffi.remapToJs(z);
-    return Sk.ffi.stringToPy(COMPLEX + '(' + z.x + ', ' + z.y + ')');
+    return Sk.builtin.stringToPy(COMPLEX + '(' + z.x + ', ' + z.y + ')');
   });
   $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {
     a = Sk.ffi.remapToJs(a);

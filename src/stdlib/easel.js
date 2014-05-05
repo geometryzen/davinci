@@ -588,7 +588,7 @@ function shapeGetAttr(shapePy, name, className) {
       return Sk.ffi.callsim(mod[GRAPHICS], Sk.ffi.referenceToPy(shape[PROP_GRAPHICS], GRAPHICS));
     }
     case PROP_NAME: {
-      return Sk.ffi.stringToPy(shape[PROP_NAME]);
+      return Sk.builtin.stringToPy(shape[PROP_NAME]);
     }
     case PROP_X: {
       return Sk.ffi.numberToFloatPy(shape[PROP_X]);
@@ -655,7 +655,7 @@ function shapeSetAttr(shapePy, name, valuePy, className) {
     }
     break;
     case PROP_NAME: {
-      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(valuePy), valuePy);
+      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(valuePy), valuePy);
       shape[PROP_NAME] = value;
     }
     break;
@@ -790,8 +790,8 @@ mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
  */
 mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, textPy, fontPy, colorPy) {
-    Sk.ffi.checkArgType(PROP_TEXT, Sk.ffi.PyType.STR, Sk.ffi.isStr(textPy), textPy);
-    Sk.ffi.checkArgType(PROP_FONT, Sk.ffi.PyType.STR, Sk.ffi.isStr(fontPy), fontPy);
+    Sk.ffi.checkArgType(PROP_TEXT, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(textPy), textPy);
+    Sk.ffi.checkArgType(PROP_FONT, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(fontPy), fontPy);
     var text = Sk.ffi.remapToJs(textPy);
     var font = Sk.ffi.remapToJs(fontPy);
     var color = Sk.ffi.remapToJs(colorPy);
@@ -801,10 +801,10 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var text = Sk.ffi.remapToJs(textPy);
     switch(name) {
       case PROP_TEXT: {
-        return Sk.ffi.stringToPy(text[PROP_TEXT]);
+        return Sk.builtin.stringToPy(text[PROP_TEXT]);
       }
       case PROP_TEXT_ALIGN: {
-        return Sk.ffi.stringToPy(text[PROP_TEXT_ALIGN]);
+        return Sk.builtin.stringToPy(text[PROP_TEXT_ALIGN]);
       }
       case METHOD_GET_MEASURED_WIDTH: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -813,7 +813,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.v = text[METHOD_GET_MEASURED_WIDTH];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
-            return Sk.ffi.numberToPy(text[METHOD_GET_MEASURED_WIDTH]());
+            return Sk.builtin.numberToPy(text[METHOD_GET_MEASURED_WIDTH]());
           });
         }, METHOD_GET_MEASURED_WIDTH, []));
       }
@@ -824,7 +824,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             methodPy.v = text[METHOD_GET_MEASURED_HEIGHT];
           });
           $loc.__call__ = Sk.ffi.functionPy(function(methodPy, childPy) {
-            return Sk.ffi.numberToPy(text[METHOD_GET_MEASURED_HEIGHT]());
+            return Sk.builtin.numberToPy(text[METHOD_GET_MEASURED_HEIGHT]());
           });
         }, METHOD_GET_MEASURED_HEIGHT, []));
       }
@@ -842,7 +842,7 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       break;
       case PROP_TEXT: {
-        text[PROP_TEXT] = Sk.ffi.remapToJs(Sk.ffi.isStr(valuePy) ? valuePy : Sk.ffh.str(valuePy));
+        text[PROP_TEXT] = Sk.ffi.remapToJs(Sk.builtin.isStringPy(valuePy) ? valuePy : Sk.ffh.str(valuePy));
       }
       break;
       case PROP_TEXT_ALIGN: {
@@ -856,11 +856,11 @@ mod[TEXT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(TEXT + "(" + self.x + ", " + self.y + ")");
+    return Sk.builtin.stringToPy(TEXT + "(" + self.x + ", " + self.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("[" + self.x + ", " + self.y + "]");
+    return Sk.builtin.stringToPy("[" + self.x + ", " + self.y + "]");
   });
 }, TEXT, []);
 /**
@@ -998,16 +998,16 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var container = Sk.ffi.remapToJs(containerPy);
     switch(name) {
       case PROP_NAME: {
-        return Sk.ffi.stringToPy(container[PROP_NAME]);
+        return Sk.builtin.stringToPy(container[PROP_NAME]);
       }
       case PROP_X: {
-        return Sk.ffi.numberToPy(container[PROP_X]);
+        return Sk.builtin.numberToPy(container[PROP_X]);
       }
       case PROP_Y: {
-        return Sk.ffi.numberToPy(container[PROP_Y]);
+        return Sk.builtin.numberToPy(container[PROP_Y]);
       }
       case PROP_ROTATION: {
-        return Sk.ffi.numberToPy(container[PROP_ROTATION]);
+        return Sk.builtin.numberToPy(container[PROP_ROTATION]);
       }
       case METHOD_ADD_CHILD: {
         return Sk.ffi.callsim(Sk.ffi.buildClass(mod, function($gbl, $loc) {
@@ -1079,11 +1079,11 @@ mod[CONTAINER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(CONTAINER + "(" + self.x + ", " + self.y + ")");
+    return Sk.builtin.stringToPy(CONTAINER + "(" + self.x + ", " + self.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("[" + self.x + ", " + self.y + "]");
+    return Sk.builtin.stringToPy("[" + self.x + ", " + self.y + "]");
   });
 }, CONTAINER, []);
 /**
@@ -1169,11 +1169,11 @@ mod[POINT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(pointPy) {
     var point = Sk.ffi.remapToJs(pointPy);
-    return Sk.ffi.stringToPy(POINT + "(" + point.x + ", " + point.y + ")");
+    return Sk.builtin.stringToPy(POINT + "(" + point.x + ", " + point.y + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(pointPy) {
     var point = Sk.ffi.remapToJs(pointPy);
-    return Sk.ffi.stringToPy("[" + point.x + ", " + point.y + "]");
+    return Sk.builtin.stringToPy("[" + point.x + ", " + point.y + "]");
   });
 }, POINT, []);
 /**
@@ -1184,7 +1184,7 @@ mod[METHOD_GET_HSL] = Sk.ffi.functionPy(function(hue, saturation, lightness, alp
   saturation = Sk.ffi.remapToJs(saturation);
   lightness = Sk.ffi.remapToJs(lightness);
   alpha = Sk.ffi.remapToJs(alpha);
-  return Sk.ffi.stringToPy(createjs[GRAPHICS][METHOD_GET_HSL](hue, saturation, lightness, alpha));
+  return Sk.builtin.stringToPy(createjs[GRAPHICS][METHOD_GET_HSL](hue, saturation, lightness, alpha));
 });
 /**
  *

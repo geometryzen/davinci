@@ -1,46 +1,54 @@
-Sk.builtin.float_ = function(x)
+/**
+ * @param {*} xPy
+ * @return {Sk.builtin.NumberPy|number}
+ */
+Sk.builtin.float_ = function(xPy)
 {
-    if (x === undefined)
+    if (xPy === undefined)
     {
-        return Sk.ffi.numberToPy(0);
+        return Sk.builtin.numberToPy(0);
     }
 
-    if (x instanceof Sk.builtin.str)
+    if (Sk.builtin.isStringPy(xPy))
     {
-        var tmp;
+        /**
+         * @const
+         */
+        var stringJs = Sk.builtin.stringToJs(xPy);
 
-        if (x.v.match(/^-inf$/i)) {
-            tmp = -Infinity;
-        }
-        else if (x.v.match(/^[+]?inf$/i)) {
-            tmp = Infinity;
-        }
-        else if (x.v.match(/^[-+]?nan$/i)) {
-            tmp = NaN;
-        }
-        else if (!isNaN(x.v))
+        if (stringJs.match(/^-inf$/i))
         {
-            tmp = parseFloat(x.v);
+            return Sk.builtin.numberToPy(-Infinity);
+        }
+        else if (stringJs.match(/^[+]?inf$/i))
+        {
+            return Sk.builtin.numberToPy(Infinity);
+        }
+        else if (stringJs.match(/^[-+]?nan$/i)) {
+            return Sk.builtin.numberToPy(NaN);
+        }
+        else if (!isNaN(stringJs))
+        {
+            return Sk.builtin.numberToPy(parseFloat(stringJs));
         }
         else
         {
-            throw new Sk.builtin.ValueError("float: Argument: " + x.v + " is not number");
+            throw new Sk.builtin.ValueError("float: Argument: " + stringJs + " is not number");
         }
-        return Sk.ffi.numberToPy(tmp);
     }
 
     // Floats are just numbers
-    if (typeof x === "number" || x instanceof Sk.builtin.NumberPy || x instanceof Sk.builtin.lng)
+    if (typeof xPy === "number" || xPy instanceof Sk.builtin.NumberPy || xPy instanceof Sk.builtin.lng)
     {
-        x = Sk.builtin.asnum$(x);
-        return Sk.ffi.numberToPy(x);
+        xPy = Sk.builtin.asnum$(xPy);
+        return Sk.builtin.numberToPy(xPy);
     }
 
     // Convert booleans
-    if (x instanceof Sk.builtin.bool)
+    if (xPy instanceof Sk.builtin.bool)
     {
-        x = Sk.builtin.asnum$(x);
-        return Sk.ffi.numberToPy(x);
+        xPy = Sk.builtin.asnum$(xPy);
+        return Sk.builtin.numberToPy(xPy);
     }
 
     throw new Sk.builtin.TypeError("float() argument must be a string or a number");

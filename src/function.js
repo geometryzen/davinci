@@ -65,31 +65,46 @@ Sk.builtin.checkNumber = function (arg) {
 };
 goog.exportSymbol("Sk.builtin.checkNumber", Sk.builtin.checkNumber);
 
-Sk.builtin.checkInt = function (arg) {
+Sk.builtin.checkInt = function (arg)
+{
+    if (arg instanceof Sk.builtin.NumberPy)
+    {
+        return arg.skType === Sk.builtin.NumberPy.int$;
+    }
+    else if (arg instanceof Sk.builtin.lng)
+    {
+        return true;
+    }
+    else if (typeof arg === 'number')
+    {
+        // TODO: This should not be needed for Pythonic arguments.
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    /*
     return (arg !== null) && ((typeof arg === "number" && arg === (arg|0))
-                  || (arg instanceof Sk.builtin.NumberPy
-                  && arg.skType === Sk.builtin.NumberPy.int$)
+                  || (arg instanceof Sk.builtin.NumberPy && arg.skType === Sk.builtin.NumberPy.int$)
                   || arg instanceof Sk.builtin.lng);
+    */
 };
 goog.exportSymbol("Sk.builtin.checkInt", Sk.builtin.checkInt);
-
-Sk.builtin.checkString = function (arg)
-{
-    return (arg !== null && arg.__class__ == Sk.builtin.str);
-};
-goog.exportSymbol("Sk.builtin.checkString", Sk.builtin.checkString);
 
 Sk.builtin.checkClass = function (arg) {
     return (arg !== null && arg.sk$type);
 };
 goog.exportSymbol("Sk.builtin.checkClass", Sk.builtin.checkClass);
 
-Sk.builtin.checkBool = function (arg) {
+Sk.builtin.checkBool = function (arg)
+{
     return (arg instanceof Sk.builtin.bool);
 };
 goog.exportSymbol("Sk.builtin.checkBool", Sk.builtin.checkBool);
 
-Sk.builtin.checkFunction = function (arg) {
+Sk.builtin.checkFunction = function (arg)
+{
     return (arg !== null && arg.tp$call !== undefined);  
 };
 goog.exportSymbol("Sk.builtin.checkFunction", Sk.builtin.checkFunction);
@@ -180,7 +195,7 @@ Sk.builtin.func.prototype.tp$call = function(args, kw)
             else if (expectskw)
             {
                 // build kwargs dict
-                kwargsarr.push(Sk.ffi.stringToPy(kw[i]));
+                kwargsarr.push(Sk.builtin.stringToPy(kw[i]));
                 kwargsarr.push(kw[i + 1]);
             }
             else
@@ -214,5 +229,5 @@ Sk.builtin.func.prototype.ob$type = Sk.builtin.type.makeTypeObj('function', new 
 Sk.builtin.func.prototype.tp$repr = function()
 {
     var name = (this.func_code && this.func_code['co_name'] && Sk.ffi.remapToJs(this.func_code['co_name'])) || '<native JS>';
-    return Sk.ffi.stringToPy("<function " + name + ">");
+    return Sk.builtin.stringToPy("<function " + name + ">");
 };

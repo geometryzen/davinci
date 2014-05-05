@@ -27,13 +27,13 @@ Sk.builtin.lng = function(x, base)  /* long is a reserved word */
     {
       return Sk.ffi.longFromString(x, base);
     }
-    else if (Sk.ffi.isStr(x))
+    else if (Sk.builtin.isStringPy(x))
     {
-      return Sk.ffi.longFromString(Sk.ffi.remapToJs(x), base);
+      return Sk.ffi.longFromString(Sk.builtin.stringToJs(x), base);
     }
     else
     {
-      if ((x !== undefined) && (!Sk.builtin.checkString(x) && !Sk.builtin.checkNumber(x)))
+      if ((x !== undefined) && (!Sk.builtin.isStringPy(x) && !Sk.builtin.checkNumber(x)))
       {
           // Not sure what the intention is here!
           if (x === true)
@@ -84,24 +84,6 @@ Sk.builtin.lng.prototype.cantBeInt = function()
   return (this.longCompare(Sk.ffi.MAX_INT) > 0) || (this.longCompare(Sk.ffi.MIN_INT) < 0);
 }
 
-//Sk.builtin.lng.longDivideMode = function(m) 
-//{
-//  if (m) {
-//    if (m instanceof Sk.builtin.str) {
-//      if (m.v == 'float') m = Sk.builtin.lng.FLOAT_DIVIDE$;
-//      else if (m.v == 'long')  m = Sk.builtin.lng.LONG_DIVIDE$;
-//      else if (m.v == 'variable') m = Sk.builtin.lng.VARIABLE_DIVIDE$;
-//      else goog.asserts.assert(true, "Invalid long division mode.");
-//    }
-//    Sk.builtin.lng.dividemode$ = m;
-//  }
-//  if (Sk.builtin.lng.dividemode$ == Sk.builtin.lng.FLOAT_DIVIDE$)
-//    return Sk.ffi.stringToPy('float');
-//  if (Sk.builtin.lng.dividemode$ == Sk.builtin.lng.VARIABLE_DIVIDE$)
-//    return Sk.ffi.stringToPy('variable');
-//  return Sk.ffi.stringToPy('long'); 
-//};
-
 Sk.builtin.lng.fromInt$ = function(ival) 
 {
   return new Sk.builtin.lng(ival);
@@ -123,7 +105,7 @@ Sk.builtin.lng.prototype.nb$add = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$add(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$add(other);
     }
     else
     {
@@ -152,7 +134,7 @@ Sk.builtin.lng.prototype.nb$subtract = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$subtract(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$subtract(other);
     }
     else
     {
@@ -210,7 +192,7 @@ Sk.builtin.lng.prototype.nb$divide = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$divide(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$divide(other);
     }
     else
     {
@@ -273,7 +255,7 @@ Sk.builtin.lng.prototype.nb$floor_divide = function(other)
 {
   if (Sk.ffi.isFloat(other))
   {
-    return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$floor_divide(other);
+    return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$floor_divide(other);
   }
   else
   {
@@ -289,7 +271,7 @@ Sk.builtin.lng.prototype.nb$remainder = function(other)
   {
     if ((Sk.ffi.isFloat(other) || Sk.ffi.isInt(other)) && Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(0);
+      return Sk.builtin.numberToPy(0);
     }
     else
     {
@@ -301,7 +283,7 @@ Sk.builtin.lng.prototype.nb$remainder = function(other)
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).nb$remainder(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$remainder(other);
     }
     else
     {
@@ -348,7 +330,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
   {
     if (n < 0)
     {
-      var thisAsFloat = Sk.ffi.numberToPy(this.str$(10, true));
+      var thisAsFloat = Sk.builtin.numberToPy(this.str$(10, true));
       return thisAsFloat.nb$power(n);
     }
     else
@@ -359,7 +341,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
   {
     if (Sk.ffi.isFloat(n) || n.v < 0)
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$power(n);
+      return Sk.builtin.numberToPy(this.str$(10, true)).nb$power(n);
     }
     else
     {
@@ -371,7 +353,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
   {
     if (n.nb$isnegative())
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$power(n);
+      return Sk.builtin.numberToPy(this.str$(10, true)).nb$power(n);
     }
     else
     {
@@ -383,7 +365,7 @@ Sk.builtin.lng.prototype.nb$power = function(n, mod)
   {
     if (n.isnegative())
     {
-      return Sk.ffi.numberToPy(this.str$(10, true)).nb$power(n);
+      return Sk.builtin.numberToPy(this.str$(10, true)).nb$power(n);
     }
     else
     {
@@ -539,7 +521,7 @@ Sk.builtin.lng.prototype.longCompare = function(other)
     }
     else
     {
-      return Sk.ffi.numberToPy(parseFloat(this.str$(10, true))).numberCompare(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).numberCompare(other);
     }
   }
   else if (Sk.ffi.isLong(other))
@@ -582,12 +564,12 @@ Sk.builtin.lng.prototype.__ge__ = function(me, other) {
 
 Sk.builtin.lng.prototype.tp$repr = function()
 {
-    return Sk.ffi.stringToPy(this.str$(10, true) + "L");
+    return Sk.builtin.stringToPy(this.str$(10, true) + "L");
 };
 
 Sk.builtin.lng.prototype.tp$str = function()
 {
-    return Sk.ffi.stringToPy(this.str$(10, true));
+    return Sk.builtin.stringToPy(this.str$(10, true));
 };
 
 /**

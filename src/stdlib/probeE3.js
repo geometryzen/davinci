@@ -285,10 +285,10 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(PROBE_E3);
+    return Sk.builtin.stringToPy(PROBE_E3);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(PROBE_E3);
+    return Sk.builtin.stringToPy(PROBE_E3);
   })
 }, PROBE_E3, []);
 /**
@@ -308,7 +308,7 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case PROP_COLOR: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
           Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-          Sk.ffi.checkArgType(name, [NUMBER, Sk.ffi.PyType.STR, COLOR], Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
+          Sk.ffi.checkArgType(name, [NUMBER, Sk.ffi.PyType.STR, COLOR], Sk.ffi.isNum(colorPy)||Sk.builtin.isStringPy(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
           args[PROP_COLOR] = colorPy;
           return selfPy;
         });
@@ -359,10 +359,10 @@ mod[PROBE_BUILDER_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(PROBE_BUILDER_E3);
+    return Sk.builtin.stringToPy(PROBE_BUILDER_E3);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(PROBE_BUILDER_E3);
+    return Sk.builtin.stringToPy(PROBE_BUILDER_E3);
   })
 }, PROBE_BUILDER_E3, []);
 /**

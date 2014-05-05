@@ -132,12 +132,13 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_CREATE_ELEMENT: {
           return Sk.ffi.callableToPy(mod, METHOD_CREATE_ELEMENT, function(methodPy, tagNamePy, attributesPy) {
             Sk.ffi.checkMethodArgs(METHOD_CREATE_ELEMENT, arguments, 1, 2);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(tagNamePy), tagNamePy);
-            var element = documentJs.createElement(Sk.ffi.remapToJs(tagNamePy));
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(tagNamePy), tagNamePy);
+            var element = documentJs.createElement(Sk.builtin.stringToJs(tagNamePy));
             if (attributesPy instanceof Sk.builtin.dict) {
               for (var iter = attributesPy.tp$iter(), k = iter.tp$iternext(); k !== undefined; k = iter.tp$iternext()) {
                 var v = attributesPy.mp$subscript(k);
-                if (v === undefined) {
+                if (v === undefined)
+                {
                   v = null;
                 }
                 var kAsJs = Sk.ffi.remapToJs(k);
@@ -151,14 +152,14 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_GET_ELEMENT_BY_ID: {
           return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENT_BY_ID, function(methodPy, idPy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENT_BY_ID, arguments, 1, 1);
-            Sk.ffi.checkArgType(ARG_ID, Sk.ffi.PyType.STR, Sk.ffi.isStr(idPy), idPy);
+            Sk.ffi.checkArgType(ARG_ID, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(idPy), idPy);
             return nodeToPy(documentJs.getElementById(Sk.ffi.remapToJs(idPy)));
           });
         }
         case METHOD_GET_ELEMENTS_BY_TAG_NAME: {
           return Sk.ffi.callableToPy(mod, METHOD_GET_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
             Sk.ffi.checkMethodArgs(METHOD_GET_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(tagNamePy), tagNamePy);
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(tagNamePy), tagNamePy);
             var elements = documentJs.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
             var valuesPy = [];
             for (var i = elements.length - 1; i >= 0; i--) {
@@ -170,7 +171,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_REMOVE_ELEMENTS_BY_TAG_NAME: {
           return Sk.ffi.callableToPy(mod, METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, function(methodPy, tagNamePy) {
             Sk.ffi.checkMethodArgs(METHOD_REMOVE_ELEMENTS_BY_TAG_NAME, arguments, 1, 1);
-            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(tagNamePy), tagNamePy);
+            Sk.ffi.checkArgType(ARG_TAG_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(tagNamePy), tagNamePy);
             var elements = documentJs.getElementsByTagName(Sk.ffi.remapToJs(tagNamePy));
             var valuesPy = [];
             for (var i = elements.length - 1; i >= 0; i--) {
@@ -184,7 +185,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
         case METHOD_WRITE: {
           return Sk.ffi.callableToPy(mod, METHOD_WRITE, function(methodPy, expPy) {
             Sk.ffi.checkMethodArgs(METHOD_WRITE, arguments, 0, 1);
-            Sk.ffi.checkArgType("exp1", Sk.ffi.PyType.STR, Sk.ffi.isStr(expPy), expPy);
+            Sk.ffi.checkArgType("exp1", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(expPy), expPy);
             documentJs.write(Sk.ffi.remapToJs(expPy));
           });
         }
@@ -197,7 +198,7 @@ Sk.builtin.buildDocumentClass = function(mod) {
       var documentJs = Sk.ffi.remapToJs(selfPy);
       switch(name) {
         case PROP_TITLE: {
-          Sk.ffi.checkArgType(name, [Sk.ffi.PyType.STR], Sk.ffi.isStr(valuePy), valuePy);
+          Sk.ffi.checkArgType(name, [Sk.ffi.PyType.STR], Sk.builtin.isStringPy(valuePy), valuePy);
           documentJs[name] = Sk.ffi.remapToJs(valuePy);
         }
         break;
@@ -207,10 +208,10 @@ Sk.builtin.buildDocumentClass = function(mod) {
       }
     });
     $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      return Sk.ffi.stringToPy(DOCUMENT_CLASS)
+      return Sk.builtin.stringToPy(DOCUMENT_CLASS)
     })
     $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-      return Sk.ffi.stringToPy(DOCUMENT_CLASS)
+      return Sk.builtin.stringToPy(DOCUMENT_CLASS)
     })
   }, DOCUMENT_CLASS, []);
 

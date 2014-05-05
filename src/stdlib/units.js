@@ -381,13 +381,13 @@ mod[DIMENSIONS] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(dimensionsPy) {
     var dimensions = Sk.ffi.remapToJs(dimensionsPy);
-    return Sk.ffi.stringToPy("" + dimensions);
+    return Sk.builtin.stringToPy("" + dimensions);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(dimensionsPy) {
     var names = [PROP_M, PROP_L, PROP_T, PROP_Q, PROP_TEMPERATURE, PROP_AMOUNT, PROP_INTENSITY];
     var attrs = names.map(function(name) { return Sk.ffi.gattr(dimensionsPy, name); });
     var reprs = attrs.map(function(attr) { return Sk.ffi.remapToJs(Sk.ffi.callsim(attr["__repr__"], attr)); });
-    return Sk.ffi.stringToPy(DIMENSIONS + "(" + reprs.join(" , ")  + ")");
+    return Sk.builtin.stringToPy(DIMENSIONS + "(" + reprs.join(" , ")  + ")");
   });
 }, DIMENSIONS, []);
 
@@ -431,7 +431,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case PROP_NAME: {
         if (unitPy.custom[PROP_NAME]) {
-          return Sk.ffi.stringToPy(unitPy.custom[PROP_NAME]);
+          return Sk.builtin.stringToPy(unitPy.custom[PROP_NAME]);
         }
         else {
           return Sk.builtin.none.none$;
@@ -609,7 +609,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var unitJs = Sk.ffi.remapToJs(unitPy);
     var custom = Sk.ffi.customToJs(unitPy);
     if (custom.name) {
-      return Sk.ffi.stringToPy(custom.name);
+      return Sk.builtin.stringToPy(custom.name);
     }
     else
     {
@@ -664,15 +664,15 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         {
           if (unitJs.scale !== 1)
           {
-            return Sk.ffi.stringToPy(unitJs.scale + " * " + pattern[14]);
+            return Sk.builtin.stringToPy(unitJs.scale + " * " + pattern[14]);
           }
           else
           {
-            return Sk.ffi.stringToPy(pattern[14]);
+            return Sk.builtin.stringToPy(pattern[14]);
           }
         }
       }
-      return Sk.ffi.stringToPy("" + unitJs);
+      return Sk.builtin.stringToPy("" + unitJs);
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(unitPy) {
@@ -683,7 +683,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var scale = "" + unitJs.scale;
     var dimensions = reprs[0];
     var labels = "[" + unitJs.labels.map(function(label) {return "'" + label + "'";}).join(" , ") + "]";
-    return Sk.ffi.stringToPy(UNIT + "(" + [scale, dimensions, labels].join(" , ") + ")");
+    return Sk.builtin.stringToPy(UNIT + "(" + [scale, dimensions, labels].join(" , ") + ")");
   });
 }, UNIT, []);
 
@@ -979,13 +979,13 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     var self = Sk.ffi.remapToJs(selfPy);
     var qtyStr = Sk.ffi.remapToJs(Sk.ffh.str(self[QTY_PY]));
     var uomStr = Sk.ffi.remapToJs(Sk.ffh.str(self[UOM_PY]));
-    return Sk.ffi.stringToPy(("" + qtyStr + " " + uomStr).trim());
+    return Sk.builtin.stringToPy(("" + qtyStr + " " + uomStr).trim());
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var qtyRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[QTY_PY]));
     var uomRepr = Sk.ffi.remapToJs(Sk.ffh.repr(self[UOM_PY]));
-    return Sk.ffi.stringToPy(MEASURE + "(" + qtyRepr + ", " + uomRepr + ")");
+    return Sk.builtin.stringToPy(MEASURE + "(" + qtyRepr + ", " + uomRepr + ")");
   });
 }, MEASURE, []);
 
@@ -1019,10 +1019,10 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
   mod[VOLT]     = Sk.ffh.divide(mod[JOULE], mod[COULOMB]);
   mod[TESLA]    = makeUnitPy(new BLADE.Unit(1, new BLADE.Dimensions(1, 0, -1, -1, 0, 0, 0), SI_LABELS));
 
-  var radianPy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("radian"));
+  var radianPy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.builtin.stringToPy("radian"));
   mod[RADIAN]   = makeUnitPy(Sk.ffi.remapToJs(radianPy));
 
-  var degreePy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.ffi.stringToPy("degree"));
+  var degreePy  = Sk.ffi.callsim(mod[UNIT], onePy, Sk.ffi.referenceToPy(new BLADE.Dimensions(0, 0, 0, 0, 0, 0, 0), DIMENSIONS), Sk.ffi.remapToPy(SI_LABELS), Sk.builtin.stringToPy("degree"));
   mod[DEGREE]   = makeUnitPy(Sk.ffi.remapToJs(degreePy));
 })();
 

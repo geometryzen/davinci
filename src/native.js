@@ -30,13 +30,13 @@ Sk.nativejs = {
     },
     func: function (code)
     {
-        code['co_name'] = Sk.ffi.stringToPy(code.name);
+        code['co_name'] = Sk.builtin.stringToPy(code.name);
         code['co_varnames'] = Sk.nativejs.formalParameterList(code);
         return new Sk.builtin.func(code);
     },
     func_nokw: function (code)
     {
-        code['co_name'] = Sk.ffi.stringToPy(code.name);
+        code['co_name'] = Sk.builtin.stringToPy(code.name);
         code['co_varnames'] = Sk.nativejs.formalParameterList(code);
         code['no_kw'] = true;
         return new Sk.builtin.func(code);

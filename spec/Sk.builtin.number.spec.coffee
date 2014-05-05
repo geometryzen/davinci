@@ -11,8 +11,8 @@ describe "Sk.builtin.number", ->
     it "should return the original number", -> expect(Sk.ffi.remapToJs(Sk.builtin.numberPy(1.0))).toBe 1.0
     it "should return the int type", -> expect(Sk.ffi.getType(Sk.builtin.numberPy(1.0))).toBe Sk.ffi.PyType.INT
 
-  describe "constructed from 1.0 and float", -> 
-    it "should return the original number", -> expect(Sk.ffi.remapToJs(Sk.ffi.numberToPy(1.0))).toBe 1.0
+  describe "constructed from 1.0 and float", ->
+    it "should return the original number", -> expect(Sk.ffi.remapToJs(Sk.builtin.numberToPy(1.0))).toBe 1.0
     it "should return the int type", -> expect(Sk.ffi.getType(Sk.builtin.numberPy(1.0))).toBe Sk.ffi.PyType.INT
 
   describe "str", -> 

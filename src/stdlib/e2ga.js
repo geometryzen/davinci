@@ -866,15 +866,15 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(mv) {
     mv = Sk.ffi.remapToJs(mv);
-    return Sk.ffi.stringToPy(EUCLIDEAN_2 + "(" + [mv.w, mv.x, mv.y, mv.xy].map(function(x) {return String(x);}).join(", ") + ")");
+    return Sk.builtin.stringToPy(EUCLIDEAN_2 + "(" + [mv.w, mv.x, mv.y, mv.xy].map(function(x) {return String(x);}).join(", ") + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(mv) {
     mv = Sk.ffi.remapToJs(mv);
     if (mv.isNaN()) {
-      return Sk.ffi.stringToPy("NaN");
+      return Sk.builtin.stringToPy("NaN");
     }
     else {
-      return Sk.ffi.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [ONE_NAME, E1_NAME, E2_NAME, PSEUDOSCALAR_NAME], "*"));
+      return Sk.builtin.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [ONE_NAME, E1_NAME, E2_NAME, PSEUDOSCALAR_NAME], "*"));
     }
   });
   $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {

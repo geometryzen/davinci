@@ -53,10 +53,10 @@ var $builtinmodule = function(name)
 
     mod.split = Sk.nativejs.func(function split(pattern, string, maxsplit, flags) {
         Sk.builtin.pyCheckArgs("split", arguments, 2, 4);
-        if (!Sk.builtin.checkString(pattern)) {
+        if (!Sk.builtin.isStringPy(pattern)) {
             throw new Sk.builtin.TypeError("pattern must be a string");
         };
-        if (!Sk.builtin.checkString(string)) {
+        if (!Sk.builtin.isStringPy(string)) {
             throw new Sk.builtin.TypeError("string must be a string");
         };
         if (maxsplit === undefined) {
@@ -73,8 +73,8 @@ var $builtinmodule = function(name)
         };
 
     maxsplit = Sk.builtin.asnum$(maxsplit);
-        var pat = Sk.ffi.unwrapo(pattern);
-        var str = Sk.ffi.unwrapo(string);
+        var pat = Sk.builtin.stringToJs(pattern);
+        var str = Sk.builtin.stringToJs(string);
         
         // Convert pat from Python to Javascript regex syntax
         pat = convert(pat);
@@ -102,11 +102,11 @@ var $builtinmodule = function(name)
                 // empty match
                 break;
             };
-            result.push(Sk.ffi.stringToPy(str.substring(index, match.index)));
+            result.push(Sk.builtin.stringToPy(str.substring(index, match.index)));
             if (captured)
             {
                 // Add matching pattern, too
-                result.push(Sk.ffi.stringToPy(match[0]));
+                result.push(Sk.builtin.stringToPy(match[0]));
             };
             index = regex.lastIndex;
             splits += 1;
@@ -115,17 +115,17 @@ var $builtinmodule = function(name)
                 break;
             };
         };
-        result.push(Sk.ffi.stringToPy(str.substring(index)));
+        result.push(Sk.builtin.stringToPy(str.substring(index)));
 
         return new Sk.builtin.list(result);
     });
 
     mod.findall = Sk.nativejs.func(function findall(pattern, string, flags) {
         Sk.builtin.pyCheckArgs("findall", arguments, 2, 3);
-        if (!Sk.builtin.checkString(pattern)) {
+        if (!Sk.builtin.isStringPy(pattern)) {
             throw new Sk.builtin.TypeError("pattern must be a string");
         };
-        if (!Sk.builtin.checkString(string)) {
+        if (!Sk.builtin.isStringPy(string)) {
             throw new Sk.builtin.TypeError("string must be a string");
         };
         if (flags === undefined) {
@@ -135,8 +135,8 @@ var $builtinmodule = function(name)
             throw new Sk.builtin.TypeError("flags must be a number");
         };
 
-        var pat = Sk.ffi.unwrapo(pattern);
-        var str = Sk.ffi.unwrapo(string);
+        var pat = Sk.builtin.stringToJs(pattern);
+        var str = Sk.builtin.stringToJs(string);
         
         // Convert pat from Python to Javascript regex syntax
         pat = convert(pat);
@@ -162,18 +162,18 @@ var $builtinmodule = function(name)
             // print("match: " + JSON.stringify(match));
             if (match.length < 2)
             {
-                result.push(Sk.ffi.stringToPy(match[0]));
+                result.push(Sk.builtin.stringToPy(match[0]));
             }
             else if (match.length === 2)
             {
-                result.push(Sk.ffi.stringToPy(match[1]));
+                result.push(Sk.builtin.stringToPy(match[1]));
             }
             else
             {
                 var groups = [];
                 for (var i=1; i<match.length; i++)
                 {
-                    groups.push(new Sk.builtin.str(match[i]));  
+                    groups.push(new Sk.builtin.StringPy(match[i]));  
                 };
                 result.push(new Sk.builtin.tuple(groups));
             };
@@ -229,7 +229,7 @@ var $builtinmodule = function(name)
         if ( matches == null ) return retval;
         for (var i = 0; i < matches.length; ++i)
         {
-            var sitem = Sk.ffi.stringToPy(matches[i]);
+            var sitem = Sk.builtin.stringToPy(matches[i]);
             retval.v.push(sitem);
         }
         return retval;
@@ -237,20 +237,24 @@ var $builtinmodule = function(name)
 
     mod.search = new Sk.builtin.func(function(pattern, string, flags) {
     Sk.builtin.pyCheckArgs('search', arguments, 2, 3);
-        if (!Sk.builtin.checkString(pattern)) {
+        if (!Sk.builtin.isStringPy(pattern))
+        {
             throw new Sk.builtin.TypeError("pattern must be a string");
         };
-        if (!Sk.builtin.checkString(string)) {
+        if (!Sk.builtin.isStringPy(string))
+        {
             throw new Sk.builtin.TypeError("string must be a string");
         };
-    if (flags === undefined) {
+        if (flags === undefined)
+        {
             flags = 0;
         };
-        if (!Sk.builtin.checkNumber(flags)) {
+        if (!Sk.builtin.checkNumber(flags))
+        {
             throw new Sk.builtin.TypeError("flags must be a number");
         };
-        var res = "/"+pattern.v.replace(/\//g,"\\/")+"/";
-        lst = mod._findre(res,string);
+        var res = "/" + Sk.builtin.stringToJs(pattern).replace(/\//g,"\\/")+"/";
+        lst = mod._findre(res, string);
         if ( lst.v.length < 1 ) return Sk.builtin.none.none$;
         var mob = Sk.misceval.callsim(mod.MatchObject, lst, pattern, string);
         return mob;
@@ -258,19 +262,23 @@ var $builtinmodule = function(name)
 
     mod.match = new Sk.builtin.func(function(pattern, string, flags) {
     Sk.builtin.pyCheckArgs('match', arguments, 2, 3);
-        if (!Sk.builtin.checkString(pattern)) {
+        if (!Sk.builtin.isStringPy(pattern))
+        {
             throw new Sk.builtin.TypeError("pattern must be a string");
         };
-        if (!Sk.builtin.checkString(string)) {
+        if (!Sk.builtin.isStringPy(string))
+        {
             throw new Sk.builtin.TypeError("string must be a string");
         };
-    if (flags === undefined) {
+        if (flags === undefined)
+        {
             flags = 0;
         };
-        if (!Sk.builtin.checkNumber(flags)) {
+        if (!Sk.builtin.checkNumber(flags))
+        {
             throw new Sk.builtin.TypeError("flags must be a number");
         };
-        var res = "/^"+pattern.v.replace(/\//g,"\\/")+"/";
+        var res = "/^" + Sk.builtin.stringToJs(pattern).replace(/\//g,"\\/")+"/";
         lst = mod._findre(res,string);
         if ( lst.v.length < 1 ) return Sk.builtin.none.none$;
         var mob = Sk.misceval.callsim(mod.MatchObject, lst, pattern, string);

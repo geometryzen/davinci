@@ -246,11 +246,11 @@ Sk.builtin.defineFractions = function(mod, RATIONAL, factory) {
     });
     $loc.__repr__ = Sk.ffi.functionPy(function(rationalPy) {
       var rational = Sk.ffi.remapToJs(rationalPy);
-      return Sk.ffi.stringToPy(RATIONAL + "(" + rational.numer + "," + rational.denom + ")");
+      return Sk.builtin.stringToPy(RATIONAL + "(" + rational.numer + "," + rational.denom + ")");
     });
     $loc.__str__ = Sk.ffi.functionPy(function(rationalPy) {
       var rational = Sk.ffi.remapToJs(rationalPy);
-      return Sk.ffi.stringToPy("" + rational);
+      return Sk.builtin.stringToPy("" + rational);
     });
   }, RATIONAL, []);
 };

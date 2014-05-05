@@ -237,7 +237,7 @@ Sk.symbolic.treeGetAttr = function(className, selfPy, name) {
       return Sk.ffi.listPy(self[name]);
     }
     case PROP_UUID: {
-      return Sk.ffi.stringToPy(self[name]);
+      return Sk.builtin.stringToPy(self[name]);
     }
     default: {
       throw Sk.ffi.err.attribute(name).isNotGetableOnType(className);
@@ -273,7 +273,7 @@ mod[ENVIRONMENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     if (typeof bindingPy !== 'undefined' && !Sk.ffi.isNone(bindingPy)) {
       Sk.ffi.checkArgType(ARG_BINDING, BINDING, Sk.ffi.isInstance(bindingPy, BINDING), bindingPy);
       var namePy = Sk.ffi.gattr(bindingPy, PROP_NAME);
-      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+      Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
       var exprPy = Sk.ffi.gattr(bindingPy, PROP_EXPR);
       env[PROP_BINDINGS][Sk.ffi.remapToJs(namePy)] = exprPy;
     }
@@ -289,7 +289,7 @@ mod[ENVIRONMENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       case METHOD_LOOKUP: {
         return Sk.ffi.callableToPy(mod, METHOD_LOOKUP, function(methodPy, namePy) {
           Sk.ffi.checkMethodArgs(METHOD_LOOKUP, arguments, 1, 1);
-          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+          Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
           var name = Sk.ffi.remapToJs(namePy);
           if (typeof env[PROP_BINDINGS][name] !== 'undefined') {
             return env[PROP_BINDINGS][name];
@@ -309,11 +309,11 @@ mod[ENVIRONMENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(ENVIRONMENT + '(' + ')');
+    return Sk.builtin.stringToPy(ENVIRONMENT + '(' + ')');
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(ENVIRONMENT);
+    return Sk.builtin.stringToPy(ENVIRONMENT);
   });
 }, ENVIRONMENT, []);
 /**
@@ -322,7 +322,7 @@ mod[ENVIRONMENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[VARIABLE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, namePy) {
     Sk.ffi.checkMethodArgs(VARIABLE, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
     var node = {};
     node[PROP_NAME] = namePy;
     node[PROP_UUID] = THREE.Math.generateUUID();
@@ -373,7 +373,7 @@ mod[VARIABLE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(VARIABLE + '("' + Sk.ffi.remapToJs(self[PROP_NAME]) + '")');
+    return Sk.builtin.stringToPy(VARIABLE + '("' + Sk.ffi.remapToJs(self[PROP_NAME]) + '")');
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
@@ -452,11 +452,11 @@ mod[TREE_WALKER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(TREE_WALKER + '(' + ')');
+    return Sk.builtin.stringToPy(TREE_WALKER + '(' + ')');
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy(TREE_WALKER);
+    return Sk.builtin.stringToPy(TREE_WALKER);
   });
 }, TREE_WALKER, []);
 /**
@@ -465,7 +465,7 @@ mod[TREE_WALKER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[BINDING] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, namePy, exprPy) {
     Sk.ffi.checkMethodArgs(BINDING, arguments, 2, 2);
-    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
     var binding = {};
     binding[PROP_NAME] = namePy;
     binding[PROP_EXPR] = exprPy;
@@ -488,12 +488,12 @@ mod[BINDING] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = ['"' + Sk.ffi.remapToJs(self[PROP_NAME]) + '"', Sk.ffi.remapToJs(Sk.ffh.repr(self[PROP_EXPR]))].join(", ");
-    return Sk.ffi.stringToPy(BINDING + '(' + args + ')');
+    return Sk.builtin.stringToPy(BINDING + '(' + args + ')');
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var s = [Sk.ffi.remapToJs(self[PROP_NAME]), Sk.ffi.remapToJs(Sk.ffh.str(self[PROP_EXPR]))].join(" => ");
-    return Sk.ffi.stringToPy(s);
+    return Sk.builtin.stringToPy(s);
   });
 }, BINDING, []);
 /**
@@ -525,7 +525,7 @@ mod[ADD] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_CLASS_NAME: {
-        return Sk.ffi.stringToPy(ADD);
+        return Sk.builtin.stringToPy(ADD);
       }
       case PROP_LHS:
       case PROP_RHS: {
@@ -548,12 +548,12 @@ mod[ADD] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(coord) {return Sk.ffi.remapToJs(Sk.ffh.repr(coord));}).join(", ");
-    return Sk.ffi.stringToPy(ADD + "(" + args + ")");
+    return Sk.builtin.stringToPy(ADD + "(" + args + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(arg) {return Sk.ffi.remapToJs(Sk.ffh.str(arg));}).join(" + ");
-    return Sk.ffi.stringToPy(LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(LPAREN + args + RPAREN);
   });
 }, ADD, []);
 /**
@@ -597,12 +597,12 @@ mod[SUBTRACT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(coord) {return Sk.ffi.remapToJs(Sk.ffh.repr(coord));}).join(COMMA + SPACE);
-    return Sk.ffi.stringToPy(SUBTRACT + "(" + args + ")");
+    return Sk.builtin.stringToPy(SUBTRACT + "(" + args + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(arg) {return Sk.ffi.remapToJs(Sk.ffh.str(arg));}).join(SPACE + OP_SYMBOL_SUBTRACT + SPACE);
-    return Sk.ffi.stringToPy(LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(LPAREN + args + RPAREN);
   });
 }, SUBTRACT, []);
 /**
@@ -630,7 +630,7 @@ mod[MULTIPLY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case PROP_CLASS_NAME: {
-        return Sk.ffi.stringToPy(MULTIPLY);
+        return Sk.builtin.stringToPy(MULTIPLY);
       }
       case PROP_LHS:
       case PROP_RHS: {
@@ -653,12 +653,12 @@ mod[MULTIPLY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(coord) {return Sk.ffi.remapToJs(Sk.ffh.repr(coord));}).join(", ");
-    return Sk.ffi.stringToPy(MULTIPLY + "(" + args + ")");
+    return Sk.builtin.stringToPy(MULTIPLY + "(" + args + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self[PROP_LHS], self[PROP_RHS]].map(function(arg) {return Sk.ffi.remapToJs(Sk.ffh.str(arg));}).join(" * ");
-    return Sk.ffi.stringToPy(LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(LPAREN + args + RPAREN);
   });
 }, MULTIPLY, []);
 /**
@@ -692,12 +692,12 @@ mod[POINT_E2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self.x, self.y].map(function(coord) {return Sk.ffi.remapToJs(Sk.ffh.repr(coord));}).join(", ");
-    return Sk.ffi.stringToPy(POINT_E2 + "(" + args + ")");
+    return Sk.builtin.stringToPy(POINT_E2 + "(" + args + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var args = [self.x, self.y].map(function(coord) {return Sk.ffi.remapToJs(Sk.ffh.str(coord));}).join(", ");
-    return Sk.ffi.stringToPy("[" + args + "]");
+    return Sk.builtin.stringToPy("[" + args + "]");
   });
 }, POINT_E2, []);
 /**
@@ -726,10 +726,10 @@ mod[COMMUTE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(COMMUTE);
+    return Sk.builtin.stringToPy(COMMUTE);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(COMMUTE);
+    return Sk.builtin.stringToPy(COMMUTE);
   });
 }, COMMUTE, []);
 /**
@@ -763,10 +763,10 @@ mod[DISTRIB_L] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(DISTRIB_L);
+    return Sk.builtin.stringToPy(DISTRIB_L);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(DISTRIB_L);
+    return Sk.builtin.stringToPy(DISTRIB_L);
   });
 }, DISTRIB_L, []);
 /**
@@ -798,10 +798,10 @@ mod[DISTRIB_R] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(DISTRIB_R);
+    return Sk.builtin.stringToPy(DISTRIB_R);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(DISTRIB_R);
+    return Sk.builtin.stringToPy(DISTRIB_R);
   });
 }, DISTRIB_R, []);
 /**
@@ -836,10 +836,10 @@ mod[FACTOR_L] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(FACTOR_L);
+    return Sk.builtin.stringToPy(FACTOR_L);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(FACTOR_L);
+    return Sk.builtin.stringToPy(FACTOR_L);
   });
 }, FACTOR_L, []);
 /**
@@ -874,10 +874,10 @@ mod[FACTOR_R] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(FACTOR_R);
+    return Sk.builtin.stringToPy(FACTOR_R);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(FACTOR_R);
+    return Sk.builtin.stringToPy(FACTOR_R);
   });
 }, FACTOR_R, []);
 /**
@@ -908,10 +908,10 @@ mod[ASSOC_L] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(ASSOC_L);
+    return Sk.builtin.stringToPy(ASSOC_L);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(ASSOC_L);
+    return Sk.builtin.stringToPy(ASSOC_L);
   });
 }, ASSOC_L, []);
 /**
@@ -942,10 +942,10 @@ mod[ASSOC_R] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(ASSOC_R);
+    return Sk.builtin.stringToPy(ASSOC_R);
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(ASSOC_R);
+    return Sk.builtin.stringToPy(ASSOC_R);
   });
 }, ASSOC_R, []);
 /**

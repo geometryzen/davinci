@@ -1402,11 +1402,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(BACKWARD)
+              return Sk.builtin.stringToPy(BACKWARD)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(BACKWARD)
+              return Sk.builtin.stringToPy(BACKWARD)
             })
 
           }, BACKWARD, []));
@@ -1424,11 +1424,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(BEGIN_FILL)
+              return Sk.builtin.stringToPy(BEGIN_FILL)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(BEGIN_FILL)
+              return Sk.builtin.stringToPy(BEGIN_FILL)
             })
 
           }, BEGIN_FILL, []));
@@ -1458,11 +1458,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(COLOR)
+              return Sk.builtin.stringToPy(COLOR)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(COLOR)
+              return Sk.builtin.stringToPy(COLOR)
             })
 
           }, COLOR, []));
@@ -1486,11 +1486,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(END_FILL)
+              return Sk.builtin.stringToPy(END_FILL)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(END_FILL)
+              return Sk.builtin.stringToPy(END_FILL)
             })
 
           }, END_FILL, []));
@@ -1518,11 +1518,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(FILL_COLOR)
+              return Sk.builtin.stringToPy(FILL_COLOR)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(FILL_COLOR)
+              return Sk.builtin.stringToPy(FILL_COLOR)
             })
 
           }, FILL_COLOR, []));
@@ -1541,11 +1541,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(FORWARD)
+              return Sk.builtin.stringToPy(FORWARD)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(FORWARD)
+              return Sk.builtin.stringToPy(FORWARD)
             })
 
           }, FORWARD, []));
@@ -1565,11 +1565,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(GOTO)
+              return Sk.builtin.stringToPy(GOTO)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(GOTO)
+              return Sk.builtin.stringToPy(GOTO)
             })
 
           }, GOTO, []));
@@ -1588,11 +1588,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(LEFT)
+              return Sk.builtin.stringToPy(LEFT)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(LEFT)
+              return Sk.builtin.stringToPy(LEFT)
             })
 
           }, LEFT, []));
@@ -1609,12 +1609,12 @@ var $builtinmodule = function(name) {
               switch(key) {
                 case "x": {
                   var position = target.get_position();
-                  return Sk.ffi.numberToPy(position[0]);
+                  return Sk.builtin.numberToPy(position[0]);
                 }
                 break;
                 case "y": {
                   var position = target.get_position();
-                  return Sk.ffi.numberToPy(position[1]);
+                  return Sk.builtin.numberToPy(position[1]);
                 }
                 break;
                 default: {
@@ -1644,11 +1644,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(POSITION)
+              return Sk.builtin.stringToPy(POSITION)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(POSITION)
+              return Sk.builtin.stringToPy(POSITION)
             })
 
           }, POSITION, []));
@@ -1667,11 +1667,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(RIGHT)
+              return Sk.builtin.stringToPy(RIGHT)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(RIGHT)
+              return Sk.builtin.stringToPy(RIGHT)
             })
 
           }, RIGHT, []));
@@ -1689,11 +1689,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(SHAPE)
+              return Sk.builtin.stringToPy(SHAPE)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(SHAPE)
+              return Sk.builtin.stringToPy(SHAPE)
             })
 
           }, SHAPE, []));
@@ -1711,11 +1711,11 @@ var $builtinmodule = function(name) {
             });
 
             $loc.__str__ = new Sk.builtin.func(function(self) {
-              return Sk.ffi.stringToPy(STAMP)
+              return Sk.builtin.stringToPy(STAMP)
             })
 
             $loc.__repr__ = new Sk.builtin.func(function(self, arg) {
-              return Sk.ffi.stringToPy(STAMP)
+              return Sk.builtin.stringToPy(STAMP)
             })
 
           }, STAMP, []));

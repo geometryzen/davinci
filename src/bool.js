@@ -21,11 +21,11 @@ Sk.builtin.bool.prototype.tp$str = function()
 {
     if (Sk.ffi.remapToJs(this))
     {
-        return Sk.ffi.stringToPy("True");
+        return Sk.builtin.stringToPy("True");
     }
     else
     {
-        return Sk.ffi.stringToPy("False");
+        return Sk.builtin.stringToPy("False");
     }
 };
 
@@ -33,11 +33,11 @@ Sk.builtin.bool.prototype.tp$repr = function()
 {
     if (Sk.ffi.remapToJs(this))
     {
-        return Sk.ffi.stringToPy("True");
+        return Sk.builtin.stringToPy("True");
     }
     else
     {
-        return Sk.ffi.stringToPy("False");
+        return Sk.builtin.stringToPy("False");
     }
 };
 

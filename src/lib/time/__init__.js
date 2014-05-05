@@ -11,7 +11,7 @@ var $builtinmodule = function(name)
 
     mod.time = new Sk.builtin.func(function()
     {
-      return Sk.ffi.numberToPy(new Date().getTime() / 1000);
+      return Sk.builtin.numberToPy(new Date().getTime() / 1000);
     });
 
     return mod;

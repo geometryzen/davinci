@@ -36,7 +36,7 @@ Sk.builtin.tuple = function(L)
 Sk.builtin.tuple.prototype.tp$name = "tuple";
 Sk.builtin.tuple.prototype.tp$str = function()
 {
-    if (this.v.length === 0) return Sk.ffi.stringToPy("()");
+    if (this.v.length === 0) return Sk.builtin.stringToPy("()");
     var bits = [];
     for (var i = 0; i < this.v.length; ++i)
     {
@@ -44,11 +44,11 @@ Sk.builtin.tuple.prototype.tp$str = function()
     }
     var ret = bits.join(', ');
     if (this.v.length === 1) ret += ",";
-    return Sk.ffi.stringToPy("(" + ret + ")");
+    return Sk.builtin.stringToPy("(" + ret + ")");
 };
 Sk.builtin.tuple.prototype.tp$repr = function()
 {
-    if (this.v.length === 0) return Sk.ffi.stringToPy("()");
+    if (this.v.length === 0) return Sk.builtin.stringToPy("()");
     var bits = [];
     for (var i = 0; i < this.v.length; ++i)
     {
@@ -56,7 +56,7 @@ Sk.builtin.tuple.prototype.tp$repr = function()
     }
     var ret = bits.join(', ');
     if (this.v.length === 1) ret += ",";
-    return Sk.ffi.stringToPy("(" + ret + ")");
+    return Sk.builtin.stringToPy("(" + ret + ")");
 };
 
 Sk.builtin.tuple.prototype.mp$subscript = function(index)
@@ -200,8 +200,6 @@ Sk.builtin.tuple.prototype.tp$richcompare = function(w, op)
     if (op === Sk.misceval.compareOp.Eq) return false;
     if (op === Sk.misceval.compareOp.NotEq) return true;
 
-    // or, compare the differing element using the proper operator
-    //print("  tup rcb end", i, v[i] instanceof Sk.builtin.str, JSON.stringify(v[i]), w[i] instanceof Sk.builtin.str, JSON.stringify(w[i]), op);
     return Sk.misceval.richCompareBool(v[i], w[i], op);
 };
 

@@ -180,9 +180,8 @@ goog.exportSymbol("Sk.mangleName", Sk.mangleName);
 
 function mangleName(priv, ident)
 {
-//  Sk.ffi.checkArgType("priv", Sk.ffi.PyType.STR, Sk.ffi.isStr(priv), priv);
-    Sk.ffi.checkArgType("ident", Sk.ffi.PyType.STR, Sk.ffi.isStr(ident), ident);
-    var name = Sk.ffi.remapToJs(ident);
+    Sk.ffi.checkArgType("ident", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(ident), ident);
+    var name = Sk.builtin.stringToJs(ident);
     var strpriv = null;
 
     if (priv === null || name === null || name.charAt(0) !== '_' || name.charAt(1) !== '_')
@@ -191,14 +190,15 @@ function mangleName(priv, ident)
     if (name.charAt(name.length - 1) === '_' && name.charAt(name.length - 2) === '_')
         return ident;
     // don't mangle classes that are all _ (obscure much?)
-    strpriv = Sk.ffi.remapToJs(priv);
+    Sk.ffi.checkArgType("priv", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(priv), priv);
+    strpriv = Sk.builtin.stringToJs(priv);
     strpriv.replace(/_/g, '');
     if (strpriv === '')
         return ident;
 
-    strpriv = Sk.ffi.remapToJs(priv);
+    strpriv = Sk.builtin.stringToJs(priv);
     strpriv.replace(/^_*/, '');
-    strpriv = Sk.ffi.stringToPy('_' + strpriv + name);
+    strpriv = Sk.builtin.stringToPy('_' + strpriv + name);
     return strpriv;
 }
 
@@ -538,7 +538,7 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             }
             else if (Sk.ffi.isFloat(e.n))
             {
-                return "Sk.ffi.numberToPy(" + Sk.ffi.remapToJs(e.n) + ")";
+                return "Sk.builtin.numberToPy(" + Sk.ffi.remapToJs(e.n) + ")";
             }
             else if (Sk.ffi.isInt(e.n))
             {
@@ -552,7 +552,7 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
         }
         case Str:
         {
-            return this._gr('str', "Sk.ffi.stringToPy(", Sk.ffi.remapToJs(e.s.tp$repr()), ")");
+            return this._gr('str', "Sk.builtin.stringToPy(", Sk.ffi.remapToJs(e.s.tp$repr()), ")");
         }
         case Attribute:
             var val;
@@ -560,7 +560,7 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
                 val = this.vexpr(e.value);
             var mangled = Sk.ffi.remapToJs(e.attr.tp$repr());
             mangled = mangled.substring(1, mangled.length-1);
-            mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, Sk.ffi.stringToPy(mangled)));
+            mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, Sk.builtin.stringToPy(mangled)));
             mangled = fixReservedWords(mangled);
             mangled = fixReservedNames(mangled);
             switch (e.ctx)
@@ -983,7 +983,7 @@ Compiler.prototype.ctryexcept = function(s)
             var handlertype = this.vexpr(handler.type);
             var next = (i == n-1) ? unhandled : handlers[i+1];
 
-            // var isinstance = this.nameop(Sk.ffi.stringToPy("isinstance"), Load));
+            // var isinstance = this.nameop(Sk.builtin.stringToPy("isinstance"), Load));
             // var check = this._gr('call', "Sk.misceval.callsim(", isinstance, ", $err, ", handlertype, ")");
 
             // this check is not right, should use isinstance, but exception objects
@@ -1083,7 +1083,7 @@ Compiler.prototype.cimport = function(s)
             var lastDot = tmp.v.indexOf('.');
             if (lastDot !== -1)
             {
-                tmp = Sk.ffi.stringToPy(Sk.ffi.remapToJs(tmp).substr(0, lastDot));
+                tmp = Sk.builtin.stringToPy(Sk.ffi.remapToJs(tmp).substr(0, lastDot));
             }
             this.nameop(tmp, Store, mod);
         }
@@ -1130,7 +1130,7 @@ Compiler.prototype.cfromimport = function(s)
  * - setup and modification for generators
  *
  * @param {Object} n ast node to build for
- * @param {Sk.builtin.str} coname name of code object to build
+ * @param {Sk.builtin.StringPy} coname name of code object to build
  * @param {Array} decorator_list ast of decorators if any
  * @param {arguments_} args arguments to function, if any
  * @param {Function} callback called after setup to do actual work of function
@@ -1429,7 +1429,7 @@ Compiler.prototype.cfunction = function(s)
 Compiler.prototype.clambda = function(e)
 {
     goog.asserts.assert(e instanceof Lambda);
-    var func = this.buildcodeobj(e, Sk.ffi.stringToPy("<lambda>"), null, e.args, function(scopename)
+    var func = this.buildcodeobj(e, Sk.builtin.stringToPy("<lambda>"), null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
                 out("return ", val, ";");
@@ -1517,7 +1517,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
 
 Compiler.prototype.cgenexp = function(e)
 {
-    var gen = this.buildcodeobj(e, Sk.ffi.stringToPy("<genexpr>"), null, null, function(scopename)
+    var gen = this.buildcodeobj(e, Sk.builtin.stringToPy("<genexpr>"), null, null, function(scopename)
             {
                 this.cgenexpgen(e.generators, 0, e.elt);
             });
@@ -1685,7 +1685,7 @@ Compiler.prototype.isCell = function(name)
 };
 
 /**
- * @param {Sk.builtin.str} name
+ * @param {Sk.builtin.StringPy} name
  * @param {Object} ctx
  * @param {string=} dataToStore
  */
@@ -1826,7 +1826,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
 };
 
 /**
- * @param {Sk.builtin.str} name
+ * @param {Sk.builtin.StringPy} name
  * @return {string} The generated name of the scope, usually $scopeN.
  */
 Compiler.prototype.enterScope = function(name, key, lineno)
@@ -1870,7 +1870,7 @@ Compiler.prototype.exitScope = function()
         mangled = mangled.substring(1, mangled.length-1);
         mangled = fixReservedWords(mangled);
         mangled = fixReservedNames(mangled);
-        out(prev.scopename, ".co_name=Sk.ffi.stringToPy('", mangled, "');");
+        out(prev.scopename, ".co_name=Sk.builtin.stringToPy('", mangled, "');");
     }
 };
 
@@ -1893,6 +1893,7 @@ Compiler.prototype.cprint = function(s)
     // todo; dest disabled
     for (var i = 0; i < n; ++i)
     {
+        // TODO: This is performing a dictionary lookup. We need to go through a gateway function.
         out('Sk.misceval.print_(', /*dest, ',',*/ "Sk.ffi.remapToJs(new Sk.builtins['str'](", this.vexpr(s.values[i]), ')));');
     }
     if (s.nl)
@@ -1909,7 +1910,7 @@ Compiler.prototype.cmod = function(mod)
      * @const
      * @type {string}
      */
-    var modf = this.enterScope(Sk.ffi.stringToPy("<module>"), mod, 0);
+    var modf = this.enterScope(Sk.builtin.stringToPy("<module>"), mod, 0);
 
     var entryBlock = this.newBlock('module entry');
     this.u.prefixCode = "var " + modf + "=(function($modname){";

@@ -23,11 +23,11 @@
               });
               $loc.__call__ = Sk.ffi.functionPy(function(mPy, methodPy, urlPy, asyncPy, userPy, passwordPy) {
                 Sk.ffi.checkMethodArgs(METHOD_OPEN, arguments, 2, 5);
-                Sk.ffi.checkArgType("method", [Sk.ffi.PyType.STR],  Sk.ffi.isStr(methodPy), methodPy);
-                Sk.ffi.checkArgType("url",    [Sk.ffi.PyType.STR],  Sk.ffi.isStr(urlPy),    urlPy);
+                Sk.ffi.checkArgType("method", [Sk.ffi.PyType.STR],  Sk.builtin.isStringPy(methodPy), methodPy);
+                Sk.ffi.checkArgType("url",    [Sk.ffi.PyType.STR],  Sk.builtin.isStringPy(urlPy),    urlPy);
                 Sk.ffi.checkArgType("async",  [Sk.ffi.PyType.BOOL], Sk.ffi.isBool(asyncPy), asyncPy);
-                var method = Sk.ffi.remapToJs(methodPy);
-                var url = Sk.ffi.remapToJs(urlPy);
+                var method = Sk.builtin.stringToJs(methodPy);
+                var url = Sk.builtin.stringToJs(urlPy);
                 var async = Sk.ffi.remapToJs(asyncPy);
                 requestJs.open(method, url, async);
               });
@@ -58,7 +58,7 @@
           }
           break;
           case PROP_RESPONSE_TYPE: {
-            Sk.ffi.checkArgType(name, [Sk.ffi.PyType.STR], Sk.ffi.isStr(valuePy), valuePy);
+            Sk.ffi.checkArgType(name, [Sk.ffi.PyType.STR], Sk.builtin.isStringPy(valuePy), valuePy);
             requestJs.responseType = Sk.ffi.remapToJs(valuePy);
           }
           break;
@@ -69,11 +69,11 @@
       });
       $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        return Sk.ffi.stringToPy(XML_HTTP_REQUEST);
+        return Sk.builtin.stringToPy(XML_HTTP_REQUEST);
       })
       $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        return Sk.ffi.stringToPy(XML_HTTP_REQUEST+'()');
+        return Sk.builtin.stringToPy(XML_HTTP_REQUEST+'()');
       })
     }, XML_HTTP_REQUEST, []);
   };

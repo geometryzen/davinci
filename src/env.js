@@ -153,6 +153,9 @@ goog.exportSymbol("Sk.flyString", Sk.flyString);
 Sk.python3 = false;
 goog.exportSymbol("Sk.python3", Sk.python3);
 
+/**
+ * @param {string} args
+ */
 Sk.inputfun = function(args)
 {
     return window.prompt(args);

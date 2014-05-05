@@ -29,7 +29,7 @@ var $builtinmodule = function(name)
 
     // ------------------------------------------------------------
     $loc.__str__ = new Sk.builtin.func(function(self) {
-      return Sk.ffi.stringToPy('<Response>');
+      return Sk.builtin.stringToPy('<Response>');
     });
 
 
@@ -39,7 +39,7 @@ var $builtinmodule = function(name)
 
       return Sk.builtin.makeGenerator(function() {
           if (this.$index >= this.$lines.length) return undefined;
-          return Sk.ffi.stringToPy(this.$lines[this.$index++]);
+          return Sk.builtin.stringToPy(this.$lines[this.$index++]);
         }, {
           $obj: self,
           $index: 0,
@@ -53,7 +53,7 @@ var $builtinmodule = function(name)
       if (self.closed) throw new Sk.builtin.ValueError("I/O operation on closed file");
       var len = self.data$.length;
       if (size === undefined) size = len;
-      var ret = Sk.ffi.stringToPy(self.data$.substr(self.pos$, size));
+      var ret = Sk.builtin.stringToPy(self.data$.substr(self.pos$, size));
       self.pos$ += size;
       if (self.pos$ >= len) self.pos$ = len;
       return ret;
@@ -67,7 +67,7 @@ var $builtinmodule = function(name)
         line = self.lineList[self.currentLine];
         self.currentLine++;
       }
-      return Sk.ffi.stringToPy(line);
+      return Sk.builtin.stringToPy(line);
     });
 
 
@@ -75,7 +75,7 @@ var $builtinmodule = function(name)
     $loc.readlines = new Sk.builtin.func(function(self, sizehint) {
       var arr = [];
       for(var i = self.currentLine; i < self.lineList.length; i++) {
-        arr.push(Sk.ffi.stringToPy(self.lineList[i]));
+        arr.push(Sk.builtin.stringToPy(self.lineList[i]));
       }
       return new Sk.builtin.list(arr);
     });

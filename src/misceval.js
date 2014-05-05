@@ -87,12 +87,11 @@ Sk.misceval.arrayFromArguments = function(args)
         // this is a Sk.builtin.list
         arg = Sk.builtin.dict.prototype['keys'].func_code(arg);
     }
-    else if ( arg instanceof Sk.builtin.str )
+    else if (Sk.builtin.isStringPy(arg))
     {
-        // this is a Sk.builtin.str
+        // TODO: Assuming here that we have a Sk.builtin.StringPy!
         var res = [];
-        for (var it = arg.tp$iter(), i = it.tp$iternext(); 
-             i !== undefined; i = it.tp$iternext())
+        for (var it = arg.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
         {
             res.push(i);
         }
@@ -173,7 +172,7 @@ Sk.misceval.richCompareBool = function(v, w, op)
         var sequence_types = [Sk.builtin.dict.prototype.ob$type,
                               Sk.builtin.enumerate.prototype.ob$type,
                               Sk.builtin.list.prototype.ob$type,
-                              Sk.builtin.str.prototype.ob$type,
+                              Sk.builtin.StringPy.prototype.ob$type,
                               Sk.builtin.tuple.prototype.ob$type];
 
         var v_num_type = numeric_types.indexOf(v_type);
@@ -362,9 +361,10 @@ Sk.misceval.richCompareBool = function(v, w, op)
     // handle equality comparisons for any remaining objects
     if (op === Sk.misceval.compareOp.Eq)
     {
-        if ((v instanceof Sk.builtin.str) && (w instanceof Sk.builtin.str))
+        // This could be a problem if we go from Sk.builtin.StringPy to JavaScript String.
+        if (Sk.builtin.isStringPy(v) && Sk.builtin.isStringPy(w))
         {
-            return v.v === w.v;
+            return Sk.builtin.stringToJs(v) === Sk.builtin.stringToJs(w);
         }
         return v === w;
     }
@@ -386,9 +386,9 @@ Sk.misceval.richCompareBool = function(v, w, op)
     }
     if (op === Sk.misceval.compareOp.NotEq)
     {
-        if ((v instanceof Sk.builtin.str) && (w instanceof Sk.builtin.str))
+        if (Sk.builtin.isStringPy(v) && Sk.builtin.isStringPy(w))
         {
-            return v.v !== w.v;
+            return Sk.builtin.stringToJs(v) !== Sk.builtin.stringToJs(w);
         }
         return v !== w;
     }
@@ -406,28 +406,28 @@ Sk.misceval.objectRepr = function(v)
 {
     goog.asserts.assert(v !== undefined, "trying to repr undefined");
     if ((v === null) || (v === Sk.builtin.none.none$))
-        return Sk.ffi.stringToPy("None"); // todo; these should be consts
+        return Sk.builtin.stringToPy("None"); // todo; these should be consts
     else if (v === true)
-        return Sk.ffi.stringToPy("True");
+        return Sk.builtin.stringToPy("True");
     else if (v === false)
-        return Sk.ffi.stringToPy("False");
+        return Sk.builtin.stringToPy("False");
     else if (typeof v === "number")
-        return Sk.ffi.stringToPy("" + v);
+        return Sk.builtin.stringToPy("" + v);
     else if (!v.tp$repr) {
         if (v.tp$name) {
-            return Sk.ffi.stringToPy("<" + v.tp$name + " object>");
+            return Sk.builtin.stringToPy("<" + v.tp$name + " object>");
         } else {
-            return Sk.ffi.stringToPy("<unknown>");
+            return Sk.builtin.stringToPy("<unknown>");
         };
     }
     else if (v.constructor === Sk.builtin.NumberPy)
     {
         if (v.v === Infinity)
-            return Sk.ffi.stringToPy('inf');
+            return Sk.builtin.stringToPy('inf');
         else if (v.v === -Infinity)
-            return Sk.ffi.stringToPy('-inf');
+            return Sk.builtin.stringToPy('-inf');
         else
-            return Sk.ffi.stringToPy("" + v.v);
+            return Sk.builtin.stringToPy("" + v.v);
     }
     else
         return v.tp$repr();
@@ -471,7 +471,7 @@ Sk.misceval.print_ = function(x)   // this was function print(x)   not sure why.
         if (x !== "\n") Sk.output(' ');
         Sk.misceval.softspace_ = false;
     }
-    var s = Sk.ffi.stringToPy(x);
+    var s = Sk.builtin.stringToPy(x);
     Sk.output(s.v);
     var isspace = function(c)
     {

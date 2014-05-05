@@ -40,12 +40,12 @@ Sk.builtin.object.prototype.GenericGetAttr = function(name)
         var res;
         if  (this['$d'].mp$lookup)
         {
-            res = this['$d'].mp$lookup(Sk.ffi.stringToPy(name));
+            res = this['$d'].mp$lookup(Sk.builtin.stringToPy(name));
         }
         else if (this['$d'].mp$subscript)
         {
             try {
-                res = this['$d'].mp$subscript(Sk.ffi.stringToPy(name));
+                res = this['$d'].mp$subscript(Sk.builtin.stringToPy(name));
             } catch (x) {
                 res = undefined;
             }
@@ -77,7 +77,7 @@ Sk.builtin.object.prototype.GenericSetAttr = function(name, value)
     // todo; lots o' stuff
     if (this['$d'].mp$ass_subscript)
     {
-        this['$d'].mp$ass_subscript(Sk.ffi.stringToPy(name), value);
+        this['$d'].mp$ass_subscript(Sk.builtin.stringToPy(name), value);
     }
     else if (typeof this['$d'] === "object")
     {
@@ -110,11 +110,11 @@ Sk.builtin.none = {none$:
         None.prototype.tp$name = "NoneType";
         None.prototype.tp$repr = function()
         {
-            return Sk.ffi.stringToPy("None");
+            return Sk.builtin.stringToPy("None");
         }
         None.prototype.tp$str = function()
         {
-            return Sk.ffi.stringToPy("None");
+            return Sk.builtin.stringToPy("None");
         }
         return Object.create(None.prototype, {v: {value: null, enumerable: true}});
     })()

@@ -10,7 +10,7 @@ Sk.builtin.numberPy = function(x, skType)
   {
     if (x > Sk.builtin.NumberPy.threshold$ || x < -Sk.builtin.NumberPy.threshold$ || x % 1 != 0)
     {
-      return Sk.ffi.numberToPy(x);
+      return Sk.builtin.numberToPy(x);
     }
     else
     {
@@ -29,6 +29,29 @@ Sk.builtin.numberPy = function(x, skType)
     }
   }
 }
+
+/**
+ * Converts a JavaScript number to the runtime representation for a Python float.
+ *
+ * This function is the entry point for converting the generated script literals.
+ *
+ * @param {number} valueJs
+ * @return {Sk.builtin.NumberPy|number}
+ */
+Sk.builtin.numberToPy = function(valueJs)
+{
+  goog.asserts.assertNumber(valueJs);
+  if (Sk.flyweight)
+  {
+    return valueJs;
+  }
+  else
+  {
+    // This is the one place where we can legitimately construct a float.
+    return new Sk.builtin.NumberPy(valueJs, Sk.builtin.NumberPy.float$);
+  }
+};
+goog.exportSymbol("Sk.builtin.numberToPy", Sk.builtin.numberToPy);
 
 /**
  * @constructor
@@ -64,24 +87,24 @@ Sk.builtin.NumberPy.fromInt$ = function(ival)
   return Sk.builtin.numberPy(ival, undefined);
 };
 
-// js string (not Sk.builtin.str) -> long. used to create longs in transformer, respects
+// js string (not Sk.builtin.StringPy) -> long. used to create longs in transformer, respects
 // 0x, 0o, 0b, etc.
 Sk.numberFromStr = function(s)
 {
   if (s == 'inf')
   {
-    return Sk.ffi.numberToPy(Infinity);
+    return Sk.builtin.numberToPy(Infinity);
   }
   if (s == '-inf')
   {
-    return Sk.ffi.numberToPy(-Infinity);
+    return Sk.builtin.numberToPy(-Infinity);
   }
 
   var res = Sk.builtin.numberPy(0, undefined);
 
   if (s.indexOf('.') !== -1 || s.indexOf('e') !== -1 || s.indexOf('E') !== -1)
   {
-    return Sk.ffi.numberToPy(parseFloat(s));
+    return Sk.builtin.numberToPy(parseFloat(s));
   }
 
   // ugly gunk to placate an overly-nanny closure-compiler:
@@ -120,7 +143,7 @@ Sk.builtin.NumberPy.prototype.nb$add = function(other)
 {
   if (typeof other === "number")
   {
-    other = Sk.ffi.numberToPy(other);
+    other = Sk.builtin.numberToPy(other);
   }
 
   var thisJs = Sk.ffi.remapToJs(this);
@@ -132,7 +155,7 @@ Sk.builtin.NumberPy.prototype.nb$add = function(other)
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
     {
       // Result type is a float.
-      return Sk.ffi.numberToPy(sumJs);
+      return Sk.builtin.numberToPy(sumJs);
     }
     else
     {
@@ -154,7 +177,7 @@ Sk.builtin.NumberPy.prototype.nb$add = function(other)
     if (Sk.ffi.isFloat(this))
     {
       // float + long --> float
-      return Sk.ffi.numberToPy(thisJs + parseFloat(other.str$(10, true)));
+      return Sk.builtin.numberToPy(thisJs + parseFloat(other.str$(10, true)));
     }
     else
     {
@@ -177,7 +200,7 @@ Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
 
   if (typeof other === "number")
   {
-    other = Sk.ffi.numberToPy(other);
+    other = Sk.builtin.numberToPy(other);
   }
 
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
@@ -195,7 +218,7 @@ Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
     var diff = selfJs - otherJs;
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(diff);
+      return Sk.builtin.numberToPy(diff);
     }
     else
     {
@@ -216,7 +239,7 @@ Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
     if (Sk.ffi.isFloat(this))
     {
       // float + long --> float
-      return Sk.ffi.numberToPy(selfJs - parseFloat(other.str$(10, true)));
+      return Sk.builtin.numberToPy(selfJs - parseFloat(other.str$(10, true)));
     }
     else
     {
@@ -238,7 +261,7 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
 
   if (typeof other === "number")
   {
-    other = Sk.ffi.numberToPy(other);
+    other = Sk.builtin.numberToPy(other);
   }
 
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
@@ -257,7 +280,7 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
 
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(prodJs);
+      return Sk.builtin.numberToPy(prodJs);
     }
     else
     {
@@ -280,7 +303,7 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
     if (Sk.ffi.isFloat(this))
     {
       // float + long --> float
-      return Sk.ffi.numberToPy(selfJs * parseFloat(other.str$(10, true)));
+      return Sk.builtin.numberToPy(selfJs * parseFloat(other.str$(10, true)));
     }
     else
     {
@@ -302,7 +325,7 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
 
   if (typeof other === "number")
   {
-    other = Sk.ffi.numberToPy(other);
+    other = Sk.builtin.numberToPy(other);
   }
 
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
@@ -322,30 +345,30 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
     {
       if (otherJs === Infinity || otherJs === -Infinity)
       {
-        return Sk.ffi.numberToPy(NaN);
+        return Sk.builtin.numberToPy(NaN);
       }
       else if (other.nb$isnegative())
       {
-        return Sk.ffi.numberToPy(-Infinity);
+        return Sk.builtin.numberToPy(-Infinity);
       }
       else
       {
-        return Sk.ffi.numberToPy(Infinity);
+        return Sk.builtin.numberToPy(Infinity);
       }
     }
     if (selfJs === -Infinity)
     {
       if (otherJs === Infinity || otherJs === -Infinity)
       {
-        return Sk.ffi.numberToPy(NaN);
+        return Sk.builtin.numberToPy(NaN);
       }
       else if (other.nb$isnegative())
       {
-        return Sk.ffi.numberToPy(Infinity);
+        return Sk.builtin.numberToPy(Infinity);
       }
       else
       {
-        return Sk.ffi.numberToPy(-Infinity);
+        return Sk.builtin.numberToPy(-Infinity);
       }
     }
 
@@ -357,7 +380,7 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
 
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other) || Sk.python3)
     {
-      return Sk.ffi.numberToPy(resultJs);
+      return Sk.builtin.numberToPy(resultJs);
     }
     else
     {
@@ -389,29 +412,29 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
     {
       if (other.nb$isnegative())
       {
-        return Sk.ffi.numberToPy(-Infinity);
+        return Sk.builtin.numberToPy(-Infinity);
       }
       else
       {
-        return Sk.ffi.numberToPy(Infinity);
+        return Sk.builtin.numberToPy(Infinity);
       }
     }
     if (selfJs === -Infinity)
     {
       if (other.nb$isnegative())
       {
-        return Sk.ffi.numberToPy(Infinity);
+        return Sk.builtin.numberToPy(Infinity);
       }
       else
       {
-        return Sk.ffi.numberToPy(-Infinity);
+        return Sk.builtin.numberToPy(-Infinity);
       }
     }
 
     if (Sk.ffi.isFloat(this))
     {
       // float / long --> float
-      return Sk.ffi.numberToPy(selfJs / parseFloat(other.str$(10, true)));
+      return Sk.builtin.numberToPy(selfJs / parseFloat(other.str$(10, true)));
     }
     else
     {
@@ -435,12 +458,12 @@ Sk.builtin.NumberPy.prototype.nb$floor_divide = function(other)
 
   if (typeof other === "number")
   {
-    other = Sk.ffi.numberToPy(other);
+    other = Sk.builtin.numberToPy(other);
   }
 
   if (selfJs === Infinity || selfJs === -Infinity)
   {
-    return Sk.ffi.numberToPy(NaN);
+    return Sk.builtin.numberToPy(NaN);
   }
 
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
@@ -460,22 +483,22 @@ Sk.builtin.NumberPy.prototype.nb$floor_divide = function(other)
     {
       if (this.nb$isnegative())
       {
-        return Sk.ffi.numberToPy(-1);
+        return Sk.builtin.numberToPy(-1);
       }
       else
       {
-        return Sk.ffi.numberToPy(0);
+        return Sk.builtin.numberToPy(0);
       }
     }
     if (otherJs === -Infinity)
     {
       if (this.nb$isnegative() || !this.nb$nonzero())
       {
-        return Sk.ffi.numberToPy(0);
+        return Sk.builtin.numberToPy(0);
       }
       else
       {
-        return Sk.ffi.numberToPy(-1);
+        return Sk.builtin.numberToPy(-1);
       }
     }
 
@@ -486,7 +509,7 @@ Sk.builtin.NumberPy.prototype.nb$floor_divide = function(other)
     var resultJs = Math.floor(selfJs / otherJs);
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(resultJs);
+      return Sk.builtin.numberToPy(resultJs);
     }
     else
     {
@@ -515,7 +538,7 @@ Sk.builtin.NumberPy.prototype.nb$floor_divide = function(other)
     if (Sk.ffi.isFloat(this))
     {
       // float / long --> float
-      return Sk.ffi.numberToPy(Math.floor(this.v / parseFloat(other.str$(10, true))));
+      return Sk.builtin.numberToPy(Math.floor(this.v / parseFloat(other.str$(10, true))));
     }
     else
     {
@@ -557,7 +580,7 @@ Sk.builtin.NumberPy.prototype.nb$remainder = function(other)
     {
       if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
       {
-        return Sk.ffi.numberToPy(0);
+        return Sk.builtin.numberToPy(0);
       }
       else
       {
@@ -569,15 +592,15 @@ Sk.builtin.NumberPy.prototype.nb$remainder = function(other)
     {
       if (selfJs === Infinity || selfJs === -Infinity)
       {
-        return Sk.ffi.numberToPy(NaN);
+        return Sk.builtin.numberToPy(NaN);
       }
       else if (this.nb$ispositive())
       {
-        return Sk.ffi.numberToPy(selfJs);
+        return Sk.builtin.numberToPy(selfJs);
       }
       else
       {
-        return Sk.ffi.numberToPy(Infinity);
+        return Sk.builtin.numberToPy(Infinity);
       }
     }
 
@@ -596,7 +619,7 @@ Sk.builtin.NumberPy.prototype.nb$remainder = function(other)
 
     if (Sk.ffi.isFloat(this) || Sk.ffi.isFloat(other))
     {
-      return Sk.ffi.numberToPy(tmp);
+      return Sk.builtin.numberToPy(tmp);
     }
     else
     {
@@ -625,7 +648,7 @@ Sk.builtin.NumberPy.prototype.nb$remainder = function(other)
       }
       else
       {
-        return Sk.ffi.numberToPy(0);
+        return Sk.builtin.numberToPy(0);
       }
     }
 
@@ -644,7 +667,7 @@ Sk.builtin.NumberPy.prototype.nb$remainder = function(other)
         if (op2 < 0 && tmp != 0)
           tmp = tmp + op2;
       }
-      return Sk.ffi.numberToPy(tmp);
+      return Sk.builtin.numberToPy(tmp);
     }
     else
     {  //  int - long --> long
@@ -695,7 +718,7 @@ Sk.builtin.NumberPy.prototype.nb$power = function(other)
       {
         throw new Sk.builtin.OverflowError("Numerical result out of range");
       }
-      return Sk.ffi.numberToPy(resultJs);
+      return Sk.builtin.numberToPy(resultJs);
     }
     else
     {
@@ -728,7 +751,7 @@ Sk.builtin.NumberPy.prototype.nb$power = function(other)
     if (Sk.ffi.isFloat(this) || other.nb$isnegative())
     {
       // float / long --> float
-      return Sk.ffi.numberToPy(Math.pow(selfJs, parseFloat(other.str$(10, true))));
+      return Sk.builtin.numberToPy(Math.pow(selfJs, parseFloat(other.str$(10, true))));
     }
     else
     {
@@ -1010,12 +1033,12 @@ Sk.builtin.NumberPy.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGe
 
 Sk.builtin.NumberPy.prototype.tp$repr = function()
 {
-    return Sk.ffi.stringToPy(this.str$(10, true));
+    return Sk.builtin.stringToPy(this.str$(10, true));
 };
 
 Sk.builtin.NumberPy.prototype.tp$str = function()
 {
-    return Sk.ffi.stringToPy(this.str$(10, true));
+    return Sk.builtin.stringToPy(this.str$(10, true));
 };
 
 /**

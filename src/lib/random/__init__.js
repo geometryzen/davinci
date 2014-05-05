@@ -215,22 +215,25 @@ var $builtinmodule = function(name) {
 
   mod.random = new Sk.builtin.func(function() {
     Sk.builtin.pyCheckArgs("random", arguments, 0, 0);
-    return Sk.ffi.numberToPy(myGenerator.genrand_res53());
+    return Sk.builtin.numberToPy(myGenerator.genrand_res53());
   });
 
   var toInt = function(num) {
     return num | 0;
   };
 
-  var randrange = function(start, stop, step) {
+  var randrange = function(start, stop, step)
+  {
     // Ported from CPython 2.7
     var width, n, ret;
 
-    if (!Sk.builtin.checkInt(start)) {
+    if (!Sk.builtin.checkInt(start))
+    {
       throw new Sk.builtin.ValueError("non-integer first argument for randrange()");
     };
 
-    if (stop === undefined) {
+    if (stop === undefined)
+    {
       // Random in [0, start)
       return toInt(myGenerator.genrand_res53() * start);
     };
@@ -239,23 +242,27 @@ var $builtinmodule = function(name) {
       throw new Sk.builtin.ValueError("non-integer stop for randrange()");
     };
 
-    if (step === undefined) {
+    if (step === undefined)
+    {
       step = 1;
     };
 
     width = stop - start;
 
-    if ((step == 1) && (width > 0)) {
+    if ((step == 1) && (width > 0))
+    {
       // Random in [start, stop), must use toInt on product for correct results with negative ranges
       ret = start + toInt(myGenerator.genrand_res53() * width);
       return Sk.ffi.numberToIntPy(ret);
     };
 
-    if (step == 1) {
+    if (step == 1)
+    {
       throw new Sk.builtin.ValueError("empty range for randrange() (" + start + ", " + stop + ", " + width + ")");
     };
 
-    if (!Sk.builtin.checkInt(step)) {
+    if (!Sk.builtin.checkInt(step))
+    {
       throw new Sk.builtin.ValueError("non-integer step for randrange()");
     };
 

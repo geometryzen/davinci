@@ -8,8 +8,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.add Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.add Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '2'
     it "1.0+1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.add Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.add Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '2.0'
+      expect(Sk.ffi.typeName Sk.ffh.add Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.add Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '2.0'
     it "1L+1L", ->
       expect(Sk.ffi.typeName Sk.ffh.add Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.add Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '2'
@@ -22,8 +22,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '0'
     it "1.0 - 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '0.0'
+      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '0.0'
     it "1L - 1L", ->
       expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '0'
@@ -36,8 +36,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
     it "1.0 * 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '1.0'
+      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
     it "1L * 1L", ->
       expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
@@ -50,8 +50,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
     it "1.0 / 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '1.0'
+      expect(Sk.ffi.typeName Sk.ffh.divide Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
     it "1L / 1L", ->
       expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
@@ -64,8 +64,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.pow Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.pow Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
     it "1.0 ** 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.pow Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.pow Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '1.0'
+      expect(Sk.ffi.typeName Sk.ffh.pow Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.pow Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
     it "1L ** 1L", ->
       expect(Sk.ffi.typeName Sk.ffh.pow Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.pow Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
@@ -75,8 +75,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.mod Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mod Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '0'
     it "1.0 % 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.mod Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mod Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe '0.0'
+      expect(Sk.ffi.typeName Sk.ffh.mod Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mod Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '0.0'
     it "1L % 1L", ->
       expect(Sk.ffi.typeName Sk.ffh.mod Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mod Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '0'
@@ -89,8 +89,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.eq Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.eq Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe true
     it "1.0 = 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.eq Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.eq Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe true
+       expect(Sk.ffi.typeName Sk.ffh.eq Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.eq Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe true
     it "1L = 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.eq Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.eq Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe true
@@ -103,8 +103,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.ne Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.ne Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe false
     it "1.0 = 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.ne Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.ne Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe false
+       expect(Sk.ffi.typeName Sk.ffh.ne Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.ne Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe false
     it "1L = 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.ne Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.ne Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe false
@@ -117,8 +117,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.lt Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.lt Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe false
     it "1.0 < 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.lt Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.lt Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe false
+       expect(Sk.ffi.typeName Sk.ffh.lt Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.lt Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe false
     it "1L < 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.lt Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.lt Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe false
@@ -131,8 +131,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.le Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.le Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe true
     it "1.0 = 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.le Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.le Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe true
+       expect(Sk.ffi.typeName Sk.ffh.le Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.le Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe true
     it "1L = 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.le Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.le Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe true
@@ -145,8 +145,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.gt Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.gt Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe false
     it "1.0 < 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.gt Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.gt Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe false
+       expect(Sk.ffi.typeName Sk.ffh.gt Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.gt Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe false
     it "1L < 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.gt Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.gt Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe false
@@ -159,8 +159,8 @@ describe "Sk.ffh", ->
       expect(Sk.ffi.typeName Sk.ffh.ge Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'bool'
       expect(Sk.ffi.remapToJs Sk.ffh.ge Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe true
     it "1.0 = 1.0", ->
-       expect(Sk.ffi.typeName Sk.ffh.ge Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe 'bool'
-       expect(Sk.ffi.remapToJs Sk.ffh.ge Sk.ffi.numberToPy(1), Sk.ffi.numberToPy(1)).toBe true
+       expect(Sk.ffi.typeName Sk.ffh.ge Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'bool'
+       expect(Sk.ffi.remapToJs Sk.ffh.ge Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe true
     it "1L = 1L", ->
        expect(Sk.ffi.typeName Sk.ffh.ge Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'bool'
        expect(Sk.ffi.remapToJs Sk.ffh.ge Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe true
@@ -196,15 +196,15 @@ describe "Sk.ffh", ->
 # describe "invert", -> it "(2) should be -2", -> expect(Sk.ffi.remapToJs Sk.ffh.invert Sk.ffi.numberToFloatPy(2)).toBe -2
   describe "repr", ->
     it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.numberToFloatPy(2)).toBe '2.0'
-    it "should apply apostrophe marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy("Hello")).toBe "'Hello'"
-    it "should switch to quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
-    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.ffi.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
+    it "should apply apostrophe marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.builtin.stringToPy("Hello")).toBe "'Hello'"
+    it "should switch to quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.builtin.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.builtin.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
     it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.repr Sk.builtin.none.none$).toBe 'None'
   describe "str", ->
     it "(2) should be '2.0'", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.numberToFloatPy(2)).toBe '2.0'
-    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy("Hello")).toBe "'Hello'"
-    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
-    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffi.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.stringToPy("Hello")).toBe "'Hello'"
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.stringToPy("He'llo")).toBe '"He' + "'" + 'llo"'
+    it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.stringToPy('He"llo')).toBe "'He" + '"' + "llo'"
     it "should not apply quotation marks", -> expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.none.none$).toBe 'None'
 
 #  describe "equal", ->

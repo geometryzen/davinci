@@ -122,7 +122,7 @@ Sk.builtin.buildWindowClass = function(mod) {
         return Sk.ffi.booleanToPy(valueJs);
       }
       case 'string': {
-        return Sk.ffi.stringToPy(valueJs);
+        return Sk.builtin.stringToPy(valueJs);
       }
       case 'undefined': {
         return Sk.builtin.none.none$;
@@ -199,7 +199,7 @@ Sk.builtin.buildWindowClass = function(mod) {
         return Sk.ffi.booleanToPy(propJs);
       }
       case 'string': {
-        return Sk.ffi.stringToPy(propJs);
+        return Sk.builtin.stringToPy(propJs);
       }
       case 'undefined': {
         return Sk.builtin.none.none$;
@@ -268,10 +268,10 @@ Sk.builtin.buildWindowClass = function(mod) {
     });
     $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var selfJs = Sk.ffi.remapToJs(selfPy);
-      return Sk.ffi.stringToPy(selfJs.toString());
+      return Sk.builtin.stringToPy(selfJs.toString());
     })
     $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-      return Sk.ffi.stringToPy(JS_WRAP_CLASS);
+      return Sk.builtin.stringToPy(JS_WRAP_CLASS);
     })
   }, JS_WRAP_CLASS, []);
 
@@ -360,26 +360,30 @@ Sk.builtin.buildWindowClass = function(mod) {
         case METHOD_OPEN: {
           return Sk.ffi.callableToPy(mod, METHOD_OPEN, function(methodPy, urlPy, namePy, specsPy, replacePy) {
             Sk.ffi.checkMethodArgs(METHOD_OPEN, arguments, 0, 4);
-            if (Sk.ffi.isDefined(urlPy)) {
-              Sk.ffi.checkArgType("URL", Sk.ffi.PyType.STR, Sk.ffi.isStr(urlPy), urlPy);
+            if (Sk.ffi.isDefined(urlPy))
+            {
+              Sk.ffi.checkArgType("URL", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(urlPy), urlPy);
             }
-            if (Sk.ffi.isDefined(namePy)) {
-              Sk.ffi.checkArgType("name", Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
+            if (Sk.ffi.isDefined(namePy))
+            {
+              Sk.ffi.checkArgType("name", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
             }
-            if (Sk.ffi.isDefined(specsPy)) {
-              Sk.ffi.checkArgType("specs", Sk.ffi.PyType.STR, Sk.ffi.isStr(specsPy), specsPy);
+            if (Sk.ffi.isDefined(specsPy))
+            {
+              Sk.ffi.checkArgType("specs", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(specsPy), specsPy);
             }
-            if (Sk.ffi.isDefined(replacePy)) {
+            if (Sk.ffi.isDefined(replacePy))
+            {
               Sk.ffi.checkArgType("replace", Sk.ffi.PyType.BOOL, Sk.ffi.isBool(replacePy), replacePy);
             }
-            var w = windowJs[METHOD_OPEN](Sk.ffi.remapToJs(urlPy), Sk.ffi.remapToJs(namePy), Sk.ffi.remapToJs(specsPy), Sk.ffi.remapToJs(replacePy));
+            var w = windowJs[METHOD_OPEN](Sk.builtin.stringToJs(urlPy), Sk.builtin.stringToJs(namePy), Sk.builtin.stringToJs(specsPy), Sk.ffi.remapToJs(replacePy));
             return Sk.ffi.callsim(mod[WINDOW_CLASS], Sk.ffi.referenceToPy(w, WINDOW_CLASS));
           });
         }
         case METHOD_PROMPT: {
           return Sk.ffi.callableToPy(mod, METHOD_PROMPT, function(methodPy, textPy, valuePy) {
             Sk.ffi.checkMethodArgs(METHOD_PROMPT, arguments, 0, 2);
-            return Sk.ffi.stringToPy(windowJs[METHOD_PROMPT](Sk.ffi.remapToJs(textPy), Sk.ffi.remapToJs(valuePy)));
+            return Sk.builtin.stringToPy(windowJs[METHOD_PROMPT](Sk.ffi.remapToJs(textPy), Sk.ffi.remapToJs(valuePy)));
           });
         }
         case METHOD_REQUEST_ANIMATION_FRAME: {
@@ -416,10 +420,10 @@ Sk.builtin.buildWindowClass = function(mod) {
       }
     });
     $loc.__str__ = Sk.ffi.functionPy(function(self) {
-      return Sk.ffi.stringToPy(WINDOW_CLASS)
+      return Sk.builtin.stringToPy(WINDOW_CLASS)
     })
     $loc.__repr__ = Sk.ffi.functionPy(function(self, arg) {
-      return Sk.ffi.stringToPy(WINDOW_CLASS)
+      return Sk.builtin.stringToPy(WINDOW_CLASS)
     })
   }, WINDOW_CLASS, []);
 

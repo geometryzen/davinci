@@ -347,7 +347,7 @@ Sk.parseTreeDump = function parseTreeDump(n, indent)
     }
     else
     {
-        ret += Sk.Tokenizer.tokenNames[n.type] + ": " + Sk.ffi.remapToJs(Sk.ffi.stringToPy(n.value).tp$repr()) + "\n";
+        ret += Sk.Tokenizer.tokenNames[n.type] + ": " + Sk.ffi.remapToJs(Sk.builtin.stringToPy(n.value).tp$repr()) + "\n";
     }
     return ret;
 };

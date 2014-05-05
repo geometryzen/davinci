@@ -390,11 +390,11 @@
 
       $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        return Sk.ffi.stringToPy(stringify(selfJs.buffer, selfJs.shape));
+        return Sk.builtin.stringToPy(stringify(selfJs.buffer, selfJs.shape));
       })
       $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
         var selfJs = Sk.ffi.remapToJs(selfPy);
-        return Sk.ffi.stringToPy("array(" + stringify(selfJs.buffer, selfJs.shape) + ")");
+        return Sk.builtin.stringToPy("array(" + stringify(selfJs.buffer, selfJs.shape) + ")");
       })
     }, CLASS_NDARRAY, []);
 

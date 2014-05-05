@@ -115,10 +115,10 @@ var $builtinmodule = function(name) {
       }
     });
     $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-      return Sk.ffi.stringToPy(WINDOW_ANIMATION_RUNNER);
+      return Sk.builtin.stringToPy(WINDOW_ANIMATION_RUNNER);
     });
     $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-      return Sk.ffi.stringToPy(WINDOW_ANIMATION_RUNNER + "(" + ")");
+      return Sk.builtin.stringToPy(WINDOW_ANIMATION_RUNNER + "(" + ")");
     });
   }, WINDOW_ANIMATION_RUNNER, []);
 

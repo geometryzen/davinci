@@ -36,8 +36,8 @@ Sk.importSearchPathForName = function(name, ext, failok)
 Sk.doOneTimeInitialization = function()
 {
     // can't fill these out when making the type because tuple/dict aren't defined yet.
-    Sk.builtin.type.basesStr_ = Sk.ffi.stringToPy("__bases__");
-    Sk.builtin.type.mroStr_ = Sk.ffi.stringToPy("__mro__");
+    Sk.builtin.type.basesStr_ = Sk.builtin.stringToPy("__bases__");
+    Sk.builtin.type.mroStr_ = Sk.builtin.stringToPy("__mro__");
     Sk.builtin.object['$d'] = new Sk.builtin.dict([]);
     Sk.builtin.object['$d'].mp$ass_subscript(Sk.builtin.type.basesStr_, new Sk.builtin.tuple([]));
     Sk.builtin.object['$d'].mp$ass_subscript(Sk.builtin.type.mroStr_, new Sk.builtin.tuple([Sk.builtin.object]));
@@ -52,13 +52,13 @@ Sk.importSetUpPath = function()
     {
         var paths =
         [
-            Sk.ffi.stringToPy("src/builtin"),
-            Sk.ffi.stringToPy("src/lib"),
-            Sk.ffi.stringToPy(".")
+            Sk.builtin.stringToPy("src/builtin"),
+            Sk.builtin.stringToPy("src/lib"),
+            Sk.builtin.stringToPy(".")
         ];
         for (var i = 0; i < Sk.syspath.length; ++i)
         {
-            paths.push(Sk.ffi.stringToPy(Sk.syspath[i]));
+            paths.push(Sk.builtin.stringToPy(Sk.syspath[i]));
         }
         Sk.realsyspath = new Sk.builtin.list(paths);
 
@@ -175,7 +175,7 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
         }
     }
 
-    var namestr = "Sk.ffi.stringToPy('" + modname + "')";
+    var namestr = "Sk.builtin.stringToPy('" + modname + "')";
     finalcode += "\n" + co.funcname + "(" + namestr + ");";
 
     var modlocs = goog.global['eval'](finalcode);
@@ -184,7 +184,7 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
     // it), but also set it after we're done so that builtins don't have to
     // remember to do it.
     if (!modlocs['__name__'])
-        modlocs['__name__'] = Sk.ffi.stringToPy(modname);
+        modlocs['__name__'] = Sk.builtin.stringToPy(modname);
 
     module['$d'] = modlocs;
 

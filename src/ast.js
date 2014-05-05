@@ -35,7 +35,7 @@ function REQ(n, type) { goog.asserts.assert(n.type === type, "node wasn't expect
 function strobj(s)
 {
     goog.asserts.assert(typeof s === "string", "expecting string, got " + (typeof s));
-    return Sk.ffi.stringToPy(s);
+    return Sk.builtin.stringToPy(s);
 }
 
 /** @return {number} */
@@ -1531,7 +1531,7 @@ function parsestr(c, s)
 function parsestrplus(c, n)
 {
     REQ(CHILD(n, 0), TOK.T_STRING);
-    var ret = Sk.ffi.stringToPy("");
+    var ret = Sk.builtin.stringToPy("");
     for (var i = 0; i < NCH(n); ++i)
     {
         try {
@@ -1564,7 +1564,7 @@ function parsenumber(c, s, lineno)
     // str is wrong for these.
     if (s.indexOf('.') !== -1)
     {
-        return Sk.ffi.numberToPy(parseFloat(s));
+        return Sk.builtin.numberToPy(parseFloat(s));
     }
 
     // Handle integers of various bases
@@ -1582,7 +1582,7 @@ function parsenumber(c, s, lineno)
         val = parseInt(tmp, 16);
     } else if ((s.indexOf('e') !== -1) || (s.indexOf('E') !== -1)) {
     // Float with exponent (needed to make sure e/E wasn't hex first)
-    return Sk.ffi.numberToPy(parseFloat(s));
+    return Sk.builtin.numberToPy(parseFloat(s));
     } else if (tmp.charAt(0) === '0' && (tmp.charAt(1) === 'b' || tmp.charAt(1) === 'B')) {
         // Binary
         tmp = tmp.substring(2);
@@ -2042,7 +2042,7 @@ Sk.astDump = function(node)
             if (node === true) ret = "True";
             else if (node === false) ret = "False";
             else if (Sk.ffi.isLong(node)) ret = Sk.ffi.remapToJs(node.tp$str());
-            else if (Sk.ffi.isStr(node)) ret = Sk.ffi.remapToJs(node.tp$repr());
+            else if (Sk.builtin.isStringPy(node)) ret = Sk.builtin.stringToJs(node.tp$repr());
             else ret = "" + node;
             return indent + ret;
         }

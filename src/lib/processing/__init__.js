@@ -21,11 +21,11 @@ var $builtinmodule = function(name)
     mod.RGB = Sk.ffi.numberToIntPy(1);
     mod.HSB = Sk.ffi.numberToIntPy(3);
     mod.CMYK = Sk.ffi.numberToIntPy(5);
-    mod.MITER = Sk.ffi.stringToPy('miter');
-    mod.BEVEL = Sk.ffi.stringToPy('bevel');
-    mod.ROUND = Sk.ffi.stringToPy('round');
-    mod.SQUARE = Sk.ffi.stringToPy('butt');
-    mod.PROJECT = Sk.ffi.stringToPy('square');
+    mod.MITER = Sk.builtin.stringToPy('miter');
+    mod.BEVEL = Sk.builtin.stringToPy('bevel');
+    mod.ROUND = Sk.builtin.stringToPy('round');
+    mod.SQUARE = Sk.builtin.stringToPy('butt');
+    mod.PROJECT = Sk.builtin.stringToPy('square');
 
 // 2D - Primitives
     mod.line = new Sk.builtin.func(function(x1, y1, x2, y2) {
@@ -328,12 +328,12 @@ var $builtinmodule = function(name)
         $loc.__getattr__ = new Sk.builtin.func(function(self,key) {
             if (key == 'key') {
                 console.log(mod.processing.key)
-                return Sk.ffi.stringToPy(mod.processing.key.toString())
+                return Sk.builtin.stringToPy(mod.processing.key.toString())
             }
             else if (key == 'keyCode') 
                 return mod.processing.keyCode
             else if (key == 'keyPressed')
-                return new Sk.builtin.str(mod.processing.keyPressed) // todo bool
+                return new Sk.builtin.StringPy(mod.processing.keyPressed) // todo bool
         });
 
 

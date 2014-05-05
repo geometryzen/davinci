@@ -155,16 +155,16 @@ mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           })
           $loc.__str__ = Sk.ffi.functionPy(function(targetPy) {
             var target = Sk.ffi.remapToJs(targetPy);
-            return Sk.ffi.stringToPy("" + target)
+            return Sk.builtin.stringToPy("" + target)
           })
           $loc.__repr__ = Sk.ffi.functionPy(function(targetPy) {
             var target = Sk.ffi.remapToJs(targetPy);
-            return Sk.ffi.stringToPy("" + target)
+            return Sk.builtin.stringToPy("" + target)
           })
         }, PROP_TARGET, []));
       }
       case PROP_TYPE: {
-        return Sk.ffi.stringToPy(event[PROP_TYPE]);
+        return Sk.builtin.stringToPy(event[PROP_TYPE]);
       }
       case METHOD_ADD_EVENT_LISTENER: {
         return Sk.builtin.addEventListener(mod, event);
@@ -178,10 +178,10 @@ mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             event[METHOD_PREVENT_DEFAULT]();
           });
           $loc.__str__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_PREVENT_DEFAULT)
+            return Sk.builtin.stringToPy(METHOD_PREVENT_DEFAULT)
           })
           $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_PREVENT_DEFAULT)
+            return Sk.builtin.stringToPy(METHOD_PREVENT_DEFAULT)
           })
         }, METHOD_PREVENT_DEFAULT, []));
       }
@@ -194,10 +194,10 @@ mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             event[METHOD_STOP_IMMEDIATE_PROPAGATION]();
           });
           $loc.__str__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_STOP_IMMEDIATE_PROPAGATION)
+            return Sk.builtin.stringToPy(METHOD_STOP_IMMEDIATE_PROPAGATION)
           })
           $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_STOP_IMMEDIATE_PROPAGATION)
+            return Sk.builtin.stringToPy(METHOD_STOP_IMMEDIATE_PROPAGATION)
           })
         }, METHOD_STOP_IMMEDIATE_PROPAGATION, []));
       }
@@ -210,10 +210,10 @@ mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
             event[METHOD_STOP_PROPAGATION]();
           });
           $loc.__str__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_STOP_PROPAGATION)
+            return Sk.builtin.stringToPy(METHOD_STOP_PROPAGATION)
           })
           $loc.__repr__ = Sk.ffi.functionPy(function(self) {
-            return Sk.ffi.stringToPy(METHOD_STOP_PROPAGATION)
+            return Sk.builtin.stringToPy(METHOD_STOP_PROPAGATION)
           })
         }, METHOD_STOP_PROPAGATION, []));
       }
@@ -225,11 +225,11 @@ mod[EVENT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(eventPy) {
     var event = Sk.ffi.remapToJs(eventPy);
-    return Sk.ffi.stringToPy("" + event)
+    return Sk.builtin.stringToPy("" + event)
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(eventPy) {
     var event = Sk.ffi.remapToJs(eventPy);
-    return Sk.ffi.stringToPy("" + event)
+    return Sk.builtin.stringToPy("" + event)
   })
 }, EVENT, []);
 };

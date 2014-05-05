@@ -333,11 +333,11 @@ SymbolTable.prototype.visitArguments = function(a, lineno)
 
 SymbolTable.prototype.newTmpname = function(lineno)
 {
-    this.addDef(Sk.ffi.stringToPy("_[" + (++this.tmpname) + "]"), DEF_LOCAL, lineno);
+    this.addDef(Sk.builtin.stringToPy("_[" + (++this.tmpname) + "]"), DEF_LOCAL, lineno);
 }
 
 /**
- * @param {Sk.builtin.str} namePy
+ * @param {Sk.builtin.StringPy} namePy
  */
 SymbolTable.prototype.addDef = function(namePy, flag, lineno)
 {
@@ -510,7 +510,7 @@ SymbolTable.prototype.visitStmt = function(s)
                     else
                         throw new Sk.builtin.SyntaxError("name '" + name + "' is used prior to global declaration", this.filename, s.lineno);
                 }
-                this.addDef(Sk.ffi.stringToPy(name), DEF_GLOBAL, s.lineno);
+                this.addDef(Sk.builtin.stringToPy(name), DEF_GLOBAL, s.lineno);
             }
             break;
         case Expr:
@@ -554,7 +554,7 @@ SymbolTable.prototype.visitExpr = function(e)
             this.visitExpr(e.operand);
             break;
         case Lambda:
-            this.addDef(Sk.ffi.stringToPy("lambda"), DEF_LOCAL, e.lineno);
+            this.addDef(Sk.builtin.stringToPy("lambda"), DEF_LOCAL, e.lineno);
             if (e.args.defaults)
                 this.SEQExpr(e.args.defaults);
             this.enterBlock("lambda", FunctionBlock, e, e.lineno);
@@ -648,7 +648,7 @@ SymbolTable.prototype.visitAlias = function(names, lineno)
         if (dot !== -1)
             storename = name.substr(0, dot);
         if (name !== "*")
-            this.addDef(Sk.ffi.stringToPy(storename), DEF_IMPORT, lineno);
+            this.addDef(Sk.builtin.stringToPy(storename), DEF_IMPORT, lineno);
         else
         {
             if (this.cur.blockType !== ModuleBlock)
@@ -664,7 +664,7 @@ SymbolTable.prototype.visitGenexp = function(e)
     this.visitExpr(outermost.iter);
     this.enterBlock("genexpr", FunctionBlock, e, e.lineno);
     this.cur.generator = true;
-    this.addDef(Sk.ffi.stringToPy(".0"), DEF_PARAM, e.lineno);
+    this.addDef(Sk.builtin.stringToPy(".0"), DEF_PARAM, e.lineno);
     this.visitExpr(outermost.target);
     this.SEQExpr(outermost.ifs);
     this.visitComprehension(e.generators, 1);
@@ -877,7 +877,7 @@ Sk.dumpSymtab = function(st)
         var ret = [];
         for (var i = 0; i < l.length; ++i)
         {
-            ret.push(Sk.ffi.remapToJs(Sk.ffi.stringToPy(l[i]).tp$repr()));
+            ret.push(Sk.ffi.remapToJs(Sk.builtin.stringToPy(l[i]).tp$repr()));
         }
         return '[' + ret.join(', ') + ']';
     };

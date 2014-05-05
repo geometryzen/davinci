@@ -1,7 +1,7 @@
 /**
  * @constructor
- * @param {Sk.builtin.str} name
- * @param {Sk.builtin.str} mode
+ * @param {Sk.builtin.StringPy} name
+ * @param {Sk.builtin.StringPy} mode
  * @param {Object} buffering
  */
 Sk.builtin.file = function(name, mode, buffering)
@@ -43,7 +43,7 @@ Sk.builtin.file.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAtt
 
 Sk.builtin.file.prototype.tp$repr = function()
 {
-    return Sk.ffi.stringToPy("<" + (this.closed ? "closed" : "open") + "file '" + this.name + "', mode '" + this.mode + "'>");
+    return Sk.builtin.stringToPy("<" + (this.closed ? "closed" : "open") + "file '" + this.name + "', mode '" + this.mode + "'>");
 };
 
 Sk.builtin.file.prototype.tp$iter = function()
@@ -59,7 +59,7 @@ Sk.builtin.file.prototype.tp$iter = function()
         tp$iternext: function()
         {
             if (ret.$index >= ret.$lines.length) return undefined;
-            return Sk.ffi.stringToPy(ret.$lines[ret.$index++]);
+            return Sk.builtin.stringToPy(ret.$lines[ret.$index++]);
         }
     };
     return ret;
@@ -82,7 +82,7 @@ Sk.builtin.file.prototype['read'] = new Sk.builtin.func(function(self, size)
     if (self.closed) throw new Sk.builtin.ValueError("I/O operation on closed file");
     var len = self.data$.length;
     if (size === undefined) size = len;
-    var ret = Sk.ffi.stringToPy(self.data$.substr(self.pos$, size));
+    var ret = Sk.builtin.stringToPy(self.data$.substr(self.pos$, size));
     self.pos$ += size;
     if (self.pos$ >= len) self.pos$ = len;
     return ret;
@@ -96,14 +96,14 @@ Sk.builtin.file.prototype['readline'] = new Sk.builtin.func(function(self, size)
         line = self.lineList[self.currentLine];
         self.currentLine++;
     }
-    return Sk.ffi.stringToPy(line);
+    return Sk.builtin.stringToPy(line);
 });
 
 Sk.builtin.file.prototype['readlines'] = new Sk.builtin.func(function(self, sizehint)
 {
     var arr = [];
     for(var i = self.currentLine; i < self.lineList.length; i++) {
-        arr.push(Sk.ffi.stringToPy(self.lineList[i]));
+        arr.push(Sk.builtin.stringToPy(self.lineList[i]));
     }
     return new Sk.builtin.list(arr);
 });

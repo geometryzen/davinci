@@ -491,11 +491,11 @@ mod[QUATERNION] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__repr__ = Sk.ffi.functionPy(function(quaternionPy) {
     var quaternion = Sk.ffi.remapToJs(quaternionPy);
     var args = [quaternion.x, quaternion.y, quaternion.z, quaternion.w];
-    return Sk.ffi.stringToPy(QUATERNION + "(" + args.join(", ") + ")");
+    return Sk.builtin.stringToPy(QUATERNION + "(" + args.join(", ") + ")");
   });
   $loc.__str__ = Sk.ffi.functionPy(function(quaternionPy) {
     var quaternion = Sk.ffi.remapToJs(quaternionPy);
-    return Sk.ffi.stringToPy(stringFromCoordinates([quaternion.w, quaternion.x, quaternion.y, quaternion.z], ["1", "i", "j", "k"]));
+    return Sk.builtin.stringToPy(stringFromCoordinates([quaternion.w, quaternion.x, quaternion.y, quaternion.z], ["1", "i", "j", "k"]));
   });
 }, QUATERNION, []);
 };

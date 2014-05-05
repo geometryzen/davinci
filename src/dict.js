@@ -276,7 +276,7 @@ Sk.builtin.dict.prototype.tp$repr = function()
         var valString = Sk.ffi.remapToJs(Sk.misceval.objectRepr((valPy !== undefined) ? valPy : Sk.builtin.none.none$));
         ret.push(keyString + ": " + valString);
     }
-    return Sk.ffi.stringToPy("{" + ret.join(", ") + "}");
+    return Sk.builtin.stringToPy("{" + ret.join(", ") + "}");
 };
 
 Sk.builtin.dict.prototype.mp$length = function() { return this.size; };

@@ -6,11 +6,11 @@ var $builtinmodule = function(name)
     var argv = Sk.getSysArgv();
     for (var i = 0; i < argv.length; ++i)
     {
-        args.push(Sk.ffi.stringToPy(argv[i]));
+        args.push(Sk.builtin.stringToPy(argv[i]));
     }
     sys.argv = new Sk.builtins['list'](args);
 
-    sys.copyright = Sk.ffi.stringToPy("Copyright 2009-2010 Scott Graham.\nAll Rights Reserved.\n");
+    sys.copyright = Sk.builtin.stringToPy("Copyright 2009-2010 Scott Graham.\nAll Rights Reserved.\n");
 
     sys.modules = Sk.sysmodules;
 

@@ -392,11 +392,11 @@ Sk.builtin.defineVector3 = function(mod, THREE) {
     $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
       var vector = Sk.ffi.remapToJs(selfPy);
       var args = [vector.x, vector.y, vector.z];
-      return Sk.ffi.stringToPy(VECTOR_3 + "(" + args.join(", ") + ")");
+      return Sk.builtin.stringToPy(VECTOR_3 + "(" + args.join(", ") + ")");
     });
     $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
       var vector = Sk.ffi.remapToJs(selfPy);
-      return Sk.ffi.stringToPy(stringFromCoordinates([vector.x, vector.y, vector.z], ["i", "j", "k"]));
+      return Sk.builtin.stringToPy(stringFromCoordinates([vector.x, vector.y, vector.z], ["i", "j", "k"]));
     });
   }, VECTOR_3, []);
 };

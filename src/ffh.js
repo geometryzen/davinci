@@ -198,7 +198,7 @@ Sk.ffh.negative = function(valuePy)
   if (Sk.ffi.isFloat(valuePy))
   {
     var valueJs = Sk.ffi.remapToJs(valuePy);
-    return Sk.ffi.numberToPy(-valueJs);
+    return Sk.builtin.numberToPy(-valueJs);
   }
   return Sk.abstr.numberUnaryOp(valuePy, Sk.abstr.unaryOp.USub);
 };
@@ -321,7 +321,7 @@ Sk.ffh.str = function(valuePy)
 {
   if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
   {
-    return Sk.ffi.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+    return Sk.builtin.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
   }
 
   if (valuePy[SPECIAL_METHOD_STR])
@@ -353,7 +353,7 @@ Sk.ffh.repr = function(valuePy)
 {
   if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
   {
-    return Sk.ffi.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+    return Sk.builtin.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
   }
 
   if (valuePy[SPECIAL_METHOD_REPR])
@@ -399,6 +399,6 @@ Sk.ffi.promoteLongToFloat = function(longPy)
     goog.asserts.assertString(strJs);
     var valueJs = parseFloat(strJs);
     goog.asserts.assertNumber(valueJs);
-    return Sk.ffi.numberToPy(valueJs)
+    return Sk.builtin.numberToPy(valueJs)
 };
 goog.exportSymbol("Sk.ffi.promoteLongToFloat", Sk.ffi.promoteLongToFloat);

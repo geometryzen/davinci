@@ -113,20 +113,20 @@ describe "Sk.ffi", ->
         expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.numberToFloatPy').mustHaveType("number or null or undefined").toString()
 
   describe "stringToPy", ->
-    it "getType stringToPy 'Hello' => Sk.ffi.PyType.STRING", -> expect(Sk.ffi.getType Sk.ffi.stringToPy 'Hello').toBe Sk.ffi.PyType.STR
-    it "remapToJs stringToPy 'Hello' => 'Hello'", -> expect(Sk.ffi.remapToJs Sk.ffi.stringToPy 'Hello').toBe 'Hello'
-    it "typeName stringToPy 'Hello' => 'str'", -> expect(Sk.ffi.typeName Sk.ffi.stringToPy 'Hello').toBe 'str'
-    it "null => None", -> expect(Sk.ffi.stringToPy null).toBe Sk.builtin.none.none$
-    it "undefined => undefined", -> expect(Sk.ffi.stringToPy undefined).toBeUndefined()
-    it "undefined, 'foo' => stringToPy 'foo'", -> expect(Sk.ffi.stringToPy undefined, 'foo').toBe Sk.ffi.stringToPy 'foo'
-    it "undefined, null => None", -> expect(Sk.ffi.stringToPy undefined, null).toBe Sk.builtin.none.none$
+    it "getType stringToPy 'Hello' => Sk.ffi.PyType.STRING", -> expect(Sk.ffi.getType Sk.builtin.stringToPy 'Hello').toBe Sk.ffi.PyType.STR
+    it "remapToJs stringToPy 'Hello' => 'Hello'", -> expect(Sk.ffi.remapToJs Sk.builtin.stringToPy 'Hello').toBe 'Hello'
+    it "typeName stringToPy 'Hello' => 'str'", -> expect(Sk.ffi.typeName Sk.builtin.stringToPy 'Hello').toBe 'str'
+    it "null => None", -> expect(Sk.builtin.stringToPy null).toBe Sk.builtin.none.none$
+    it "undefined => undefined", -> expect(Sk.builtin.stringToPy undefined).toBeUndefined()
+    it "undefined, 'foo' => stringToPy 'foo'", -> expect(Sk.builtin.stringToPy undefined, 'foo').toBe Sk.builtin.stringToPy 'foo'
+    it "undefined, null => None", -> expect(Sk.builtin.stringToPy undefined, null).toBe Sk.builtin.none.none$
     it "number throws TypeError", ->
-      foo = () -> Sk.ffi.stringToPy(6)
+      foo = () -> Sk.builtin.stringToPy(6)
       expect(foo).toThrow()
       try
         foo()
       catch e
-        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.ffi.stringToPy').mustHaveType("string or null or undefined").toString()
+        expect(e.toString()).toBe Sk.ffi.err.argument('valueJs').inFunction('Sk.builtin.stringToPy').mustHaveType("string or null or undefined").toString()
 
   describe "referenceToPy", ->
     obj = name:"xyz"

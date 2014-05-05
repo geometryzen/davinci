@@ -22,7 +22,8 @@ Sk.builtin.slice = function slice(start, stop, step)
     this.start = start;
     this.stop = stop;
     this.step = step;
-    
+
+    // FIXME: Abusing checkInt by making it work with number.
     if (((this.start !== null) && !Sk.builtin.checkInt(this.start))
         || ((this.stop !== null) && !Sk.builtin.checkInt(this.stop))
         || ((this.step !== null) && !Sk.builtin.checkInt(this.step))) {
@@ -37,7 +38,7 @@ Sk.builtin.slice.prototype.tp$str = function()
     var a = Sk.builtin.repr(this.start).v;
     var b = Sk.builtin.repr(this.stop).v;
     var c = Sk.builtin.repr(this.step).v;
-    return Sk.ffi.stringToPy("slice(" + a + ", " + b + ", " + c + ")");
+    return Sk.builtin.stringToPy("slice(" + a + ", " + b + ", " + c + ")");
 };
 
 Sk.builtin.slice.prototype.indices = function(length)

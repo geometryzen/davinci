@@ -62,7 +62,7 @@ Sk.builtins = {
 'method': Sk.builtin.method,
 'object': Sk.builtin.object,
 'slice': Sk.builtin.slice,
-'str': Sk.builtin.str,
+'str': Sk.builtin.StringPy,
 'set': Sk.builtin.set,
 'tuple': Sk.builtin.tuple,
 'type': Sk.builtin.type,

@@ -418,8 +418,8 @@ function methodName(targetPy) {
   var target = Sk.ffi.remapToJs(targetPy);
   return Sk.ffi.callableToPy(mod, PROP_NAME, function(methodPy, namePy) {
     Sk.ffi.checkMethodArgs(PROP_NAME, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.ffi.isStr(namePy), namePy);
-    target[PROP_NAME] = Sk.ffi.remapToJs(namePy);
+    Sk.ffi.checkArgType(PROP_NAME, Sk.ffi.PyType.STR, Sk.builtin.isStringPy(namePy), namePy);
+    target[PROP_NAME] = Sk.builtin.stringToJs(namePy);
     return targetPy;
   });
 }
@@ -660,10 +660,10 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     }
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(CARTESIAN_SPACE);
+    return Sk.builtin.stringToPy(CARTESIAN_SPACE);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(CARTESIAN_SPACE);
+    return Sk.builtin.stringToPy(CARTESIAN_SPACE);
   })
 }, CARTESIAN_SPACE, []);
 
@@ -686,7 +686,7 @@ function builderGetAttr(selfPy, name, className) {
     case PROP_COLOR: {
       return Sk.ffi.callableToPy(mod, name, function(methodPy, colorPy) {
         Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
-        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.ffi.isStr(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
+        Sk.ffi.checkArgType(name, NUMBER, Sk.ffi.isNum(colorPy)||Sk.builtin.isStringPy(colorPy)||Sk.ffi.isInstance(colorPy, COLOR), colorPy);
         self[name] = Sk.ffi.remapToJs(colorPy);
         return selfPy;
       });
@@ -862,10 +862,10 @@ mod[Sk.geometry.ARROW_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(Sk.geometry.ARROW_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(Sk.geometry.ARROW_BUILDER + "(" + ")");
   })
 }, Sk.geometry.ARROW_BUILDER, []);
 
@@ -947,10 +947,10 @@ mod[CONE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(CONE_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(CONE_BUILDER + "(" + ")");
   })
 }, CONE_BUILDER, []);
 
@@ -1043,10 +1043,10 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(CUBE_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(CUBE_BUILDER + "(" + ")");
   })
 }, CUBE_BUILDER, []);
 /**
@@ -1195,10 +1195,10 @@ mod[Sk.geometry.CYLINDER_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) 
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(Sk.geometry.CYLINDER_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(Sk.geometry.CYLINDER_BUILDER + "(" + ")");
   })
 }, Sk.geometry.CYLINDER_BUILDER, []);
 
@@ -1277,10 +1277,10 @@ mod[PLANE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(PLANE_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(PLANE_BUILDER + "(" + ")");
   })
 }, PLANE_BUILDER, []);
 
@@ -1347,10 +1347,10 @@ mod[SPHERE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(SPHERE_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(SPHERE_BUILDER + "(" + ")");
   })
 }, SPHERE_BUILDER, []);
 /**
@@ -1426,10 +1426,10 @@ mod[Sk.geometry.VOLUME_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(Sk.geometry.VOLUME_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(Sk.geometry.VOLUME_BUILDER + "(" + ")");
   })
 }, Sk.geometry.VOLUME_BUILDER, []);
 /**
@@ -1548,14 +1548,14 @@ mod[Sk.geometry.VOLUME] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     var names  = [];
     var args = names.map(function(name) {return [name, Sk.ffi.remapToJs(Sk.ffh.str(Sk.ffi.gattr(selfPy, name)))].join(EQUAL);});
-    return Sk.ffi.stringToPy(Sk.geometry.VOLUME + LPAREN + args.join(COMMA + SPACE) + RPAREN);
+    return Sk.builtin.stringToPy(Sk.geometry.VOLUME + LPAREN + args.join(COMMA + SPACE) + RPAREN);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
     var names  = [];
     var argsPy = names.map(function(name) {return Sk.ffi.gattr(selfPy, name);});
     var args = argsPy.map(function(valuePy) {return Sk.ffi.remapToJs(Sk.ffh.repr(valuePy));});
-    return Sk.ffi.stringToPy(Sk.geometry.VOLUME + LPAREN + args.join(COMMA + SPACE) + RPAREN);
+    return Sk.builtin.stringToPy(Sk.geometry.VOLUME + LPAREN + args.join(COMMA + SPACE) + RPAREN);
   });
 }, Sk.geometry.VOLUME, []);
 /**
@@ -1632,10 +1632,10 @@ mod[Sk.geometry.VORTEX_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__str__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
-    return Sk.ffi.stringToPy("" + self);
+    return Sk.builtin.stringToPy("" + self);
   })
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
-    return Sk.ffi.stringToPy(Sk.geometry.VORTEX_BUILDER + "(" + ")");
+    return Sk.builtin.stringToPy(Sk.geometry.VORTEX_BUILDER + "(" + ")");
   })
 }, Sk.geometry.VORTEX_BUILDER, []);
 

@@ -179,7 +179,7 @@ mod[Sk.matrix.MATRIX_2x1] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var args = [x[0], x[1]].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.str(xPy));
     }).join(COMMA + SPACE);
-    return Sk.ffi.stringToPy(LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(LPAREN + args + RPAREN);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var self = Sk.ffi.remapToJs(selfPy);
@@ -187,7 +187,7 @@ mod[Sk.matrix.MATRIX_2x1] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var args = [x[0], x[1]].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.repr(xPy));
     }).join(COMMA + SPACE);
-    return Sk.ffi.stringToPy(Sk.matrix.MATRIX_2x1 + LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(Sk.matrix.MATRIX_2x1 + LPAREN + args + RPAREN);
   });
 }, Sk.matrix.MATRIX_2x1, []);
 /**
@@ -287,13 +287,13 @@ mod[Sk.matrix.MATRIX_1x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var args = [Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(selfPy, 1)].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.str(xPy));
     }).join(SPACE);
-    return Sk.ffi.stringToPy(LSQB + args + RSQB);
+    return Sk.builtin.stringToPy(LSQB + args + RSQB);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var args = [Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(selfPy, 1)].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.repr(xPy));
     }).join(COMMA + SPACE);
-    return Sk.ffi.stringToPy(Sk.matrix.MATRIX_1x2 + LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(Sk.matrix.MATRIX_1x2 + LPAREN + args + RPAREN);
   });
 }, Sk.matrix.MATRIX_1x2, []);
 /**
@@ -442,13 +442,13 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var args = [Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(selfPy, 1)].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.str(xPy));
     }).join(SPACE);
-    return Sk.ffi.stringToPy(LSQB + args + RSQB);
+    return Sk.builtin.stringToPy(LSQB + args + RSQB);
   });
   $loc.__repr__ = Sk.ffi.functionPy(function(selfPy) {
     var args = [Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(selfPy, 1)].map(function(xPy) {
       return Sk.ffi.remapToJs(Sk.ffh.repr(xPy));
     }).join(COMMA + SPACE);
-    return Sk.ffi.stringToPy(Sk.matrix.MATRIX_2x2 + LPAREN + args + RPAREN);
+    return Sk.builtin.stringToPy(Sk.matrix.MATRIX_2x2 + LPAREN + args + RPAREN);
   });
 }, Sk.matrix.MATRIX_2x2, []);
 
