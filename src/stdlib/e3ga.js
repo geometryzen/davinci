@@ -1685,21 +1685,39 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           return selfPy;
         });
       }
-      case METHOD_CROSS: {
-        return Sk.ffi.callableToPy(mod, METHOD_CROSS, function(methodPy, otherPy) {
+      case METHOD_CROSS:
+      {
+        // This is a generalized cross product: A x B = -I * (A ^ B)
+        return Sk.ffi.callableToPy(mod, METHOD_CROSS, function(methodPy, otherPy)
+        {
           Sk.ffi.checkMethodArgs(METHOD_CROSS, arguments, 1, 1);
           Sk.ffi.checkArgType(ARG_OTHER, Sk.e3ga.EUCLIDEAN_3, Sk.ffi.isInstance(otherPy, Sk.e3ga.EUCLIDEAN_3), otherPy);
           var other  = Sk.ffi.remapToJs(otherPy);
-          var Ax = self.x;
-          var Ay = self.y;
-          var Az = self.z;
-          var Bx = other.x;
-          var By = other.y;
-          var Bz = other.z;
-          var Cx = Ay * Bz - Az * By;
-          var Cy = Az * Bx - Ax * Bz;
-          var Cz = Ax * By - Ay * Bx;
-          return coordsJsToE3Py(0, Cx, Cy, Cz, 0, 0, 0, 0);
+          var Aw   = self.w;
+          var Ax   = self.x;
+          var Ay   = self.y;
+          var Az   = self.z;
+          var Axy  = self.xy;
+          var Ayz  = self.yz;
+          var Azx  = self.zx;
+          var Axyz = self.xyz;
+          var Bw   = self.w;
+          var Bx   = other.x;
+          var By   = other.y;
+          var Bz   = other.z;
+          var Bxy  = other.xy;
+          var Byz  = other.yz;
+          var Bzx  = other.zx;
+          var Bxyz = other.xyz;
+          var Cw   = Aw * Bw + Ax * Byz + Ay * Bzx + Az * Bxy + Axy * Bz + Ayz * Bx + Azx * By;
+          var Cx   = Aw * Bx + Ax * Bw + Ay * Bz - Az * By;
+          var Cy   = Aw * By + Ay * Bw + Az * Bx - Ax * Bz;
+          var Cz   = Aw * Bz + Az * Bw + Ax * By - Ay * Bx;
+          var Cxy  = Aw * Bxy + Axy * Bw;
+          var Cyz  = Aw * Byz + Ayz * Bw;
+          var Czx  = Aw * Bzx + Azx * Bw;
+          var Cxyz = Aw * Bxyz + Axyz * Bw;
+          return coordsJsToE3Py(Cw, Cx, Cy, Cz, Cxy, Cyz, Czx, Cxyz);
         });
       }
       case METHOD_DISTANCE_TO: {

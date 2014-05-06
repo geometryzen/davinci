@@ -1,4 +1,6 @@
 /**
+ * undefined => zero
+ *
  * @param {*} xPy
  * @return {Sk.builtin.NumberPy|number}
  */
@@ -6,7 +8,7 @@ Sk.builtin.float_ = function(xPy)
 {
     if (xPy === undefined)
     {
-        return Sk.builtin.numberToPy(0);
+        return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(0));
     }
 
     if (Sk.builtin.isStringPy(xPy))
@@ -18,18 +20,18 @@ Sk.builtin.float_ = function(xPy)
 
         if (stringJs.match(/^-inf$/i))
         {
-            return Sk.builtin.numberToPy(-Infinity);
+            return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(-Infinity));
         }
         else if (stringJs.match(/^[+]?inf$/i))
         {
-            return Sk.builtin.numberToPy(Infinity);
+            return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(Infinity));
         }
         else if (stringJs.match(/^[-+]?nan$/i)) {
-            return Sk.builtin.numberToPy(NaN);
+            return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(NaN));
         }
         else if (!isNaN(stringJs))
         {
-            return Sk.builtin.numberToPy(parseFloat(stringJs));
+            return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(parseFloat(stringJs)));
         }
         else
         {
@@ -41,14 +43,14 @@ Sk.builtin.float_ = function(xPy)
     if (typeof xPy === "number" || xPy instanceof Sk.builtin.NumberPy || xPy instanceof Sk.builtin.lng)
     {
         xPy = Sk.builtin.asnum$(xPy);
-        return Sk.builtin.numberToPy(xPy);
+        return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(xPy));
     }
 
     // Convert booleans
     if (xPy instanceof Sk.builtin.bool)
     {
         xPy = Sk.builtin.asnum$(xPy);
-        return Sk.builtin.numberToPy(xPy);
+        return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(xPy));
     }
 
     throw new Sk.builtin.TypeError("float() argument must be a string or a number");

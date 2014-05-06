@@ -35,20 +35,27 @@ Sk.builtin.numberPy = function(x, skType)
  *
  * This function is the entry point for converting the generated script literals.
  *
- * @param {number} valueJs
- * @return {Sk.builtin.NumberPy|number}
+ * @param {number|undefined} valueJs
+ * @return {Sk.builtin.NumberPy|number|undefined}
  */
 Sk.builtin.numberToPy = function(valueJs)
 {
-  goog.asserts.assertNumber(valueJs);
-  if (Sk.flyweight)
+  if (typeof valueJs !== 'undefined')
   {
-    return valueJs;
+    goog.asserts.assertNumber(valueJs);
+    if (Sk.flyweight)
+    {
+      return valueJs;
+    }
+    else
+    {
+      // This is the one place where we can legitimately construct a float.
+      return new Sk.builtin.NumberPy(valueJs, Sk.builtin.NumberPy.float$);
+    }
   }
   else
   {
-    // This is the one place where we can legitimately construct a float.
-    return new Sk.builtin.NumberPy(valueJs, Sk.builtin.NumberPy.float$);
+    return undefined;
   }
 };
 goog.exportSymbol("Sk.builtin.numberToPy", Sk.builtin.numberToPy);

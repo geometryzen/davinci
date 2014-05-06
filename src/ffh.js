@@ -399,6 +399,6 @@ Sk.ffi.promoteLongToFloat = function(longPy)
     goog.asserts.assertString(strJs);
     var valueJs = parseFloat(strJs);
     goog.asserts.assertNumber(valueJs);
-    return Sk.builtin.numberToPy(valueJs)
+    return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(valueJs));
 };
 goog.exportSymbol("Sk.ffi.promoteLongToFloat", Sk.ffi.promoteLongToFloat);
