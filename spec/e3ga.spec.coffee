@@ -1070,7 +1070,7 @@ describe "e3ga", ->
       ctor = Sk.ffi.gattr(module, 'Euclidean3')
 
       scalarPy = Sk.ffi.callsim(ctor,
-        Sk.builtin.numberToPy(1),
+        Sk.builtin.numberToPy(Math.random()),
         Sk.builtin.numberToPy(0),
         Sk.builtin.numberToPy(0),
         Sk.builtin.numberToPy(0),
@@ -1110,7 +1110,7 @@ describe "e3ga", ->
       ctor = Sk.ffi.gattr(module, 'Euclidean3')
 
       scalarPy = Sk.ffi.callsim(ctor,
-        Sk.builtin.numberToPy(1),
+        Sk.builtin.numberToPy(Math.random()),
         Sk.builtin.numberToPy(0),
         Sk.builtin.numberToPy(0),
         Sk.builtin.numberToPy(0),
