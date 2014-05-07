@@ -709,6 +709,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
   {
     return Sk.ffi.gattr(measurePy, PROP_UOM);
   };
+  // FIXME: I think I'd prefer asking about Measure and Unit and delegate the quantity.
   var makeMeasureLhsBinary = function(op)
   {
     return function(selfPy, otherPy)
@@ -865,29 +866,32 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.subtract(self[QTY_PY], other[QTY_PY]), Sk.ffi.callsim(Sk.ffi.gattr(self[UOM_PY], METHOD_COMPATIBLE), other[UOM_PY]));
   });
 
+  // FIXME: Now that I look at these, I think I prefer the duplication and clarity of unrolling them.
   $loc.__mod__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.mod));
   $loc.__rmod__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.mod));
 
   $loc.__mul__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.multiply));
   $loc.__rmul__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.multiply));
 
-  $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+  $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
     var self = Sk.ffi.remapToJs(selfPy);
-    if (isMeasurePy(otherPy)) {
+    if (isMeasurePy(otherPy))
+    {
       var other = Sk.ffi.remapToJs(otherPy);
       return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], other[QTY_PY]), Sk.ffh.divide(self[UOM_PY], other[UOM_PY]));
     }
-    else if (Sk.ffi.isNum(otherPy)) {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], otherPy), self[UOM_PY]);
-    }
-    else if (isUnitPy(otherPy)) {
+    else if (isUnitPy(otherPy))
+    {
       return Sk.ffi.callsim(mod[MEASURE], self[QTY_PY], Sk.ffh.divide(self[UOM_PY], otherPy));
     }
-    else {
-      Sk.ffi.checkArgType(ARG_OTHER, [MEASURE, NUMBER, UNIT], false, otherPy);
+    else
+    {
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], otherPy), self[UOM_PY]);
     }
   });
-  $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+  $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
     var self = Sk.ffi.remapToJs(selfPy);
     // TODO: The quantity should probably satisfy field axioms? add, multiply, ...
     // Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
