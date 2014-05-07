@@ -135,6 +135,11 @@ var METHOD_CROSS      = "cross";
  * @const
  * @type {string}
  */
+var METHOD_DOT        = "dot";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_EXP        = "exp";
 /**
  * @const
@@ -821,6 +826,24 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
           else
           {
             var qtyPy = Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_CROSS), otherPy);
+            return Sk.ffi.callsim(mod[MEASURE], qtyPy, measure[UOM_PY]);
+          }
+        });
+      }
+      case METHOD_DOT:
+      {
+        return Sk.ffi.callableToPy(mod, METHOD_EXP, function(methodPy, otherPy)
+        {
+          Sk.ffi.checkMethodArgs(METHOD_DOT, arguments, 1, 1);
+          if (isMeasurePy(otherPy))
+          {
+            var other = Sk.ffi.remapToJs(otherPy);
+            var qtyPy = Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_DOT), other[QTY_PY]);
+            return Sk.ffi.callsim(mod[MEASURE], qtyPy, Sk.ffh.multiply(measure[UOM_PY], other[UOM_PY]));
+          }
+          else
+          {
+            var qtyPy = Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_DOT), otherPy);
             return Sk.ffi.callsim(mod[MEASURE], qtyPy, measure[UOM_PY]);
           }
         });

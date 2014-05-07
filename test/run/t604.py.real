@@ -1,6 +1,6 @@
-a => 3*e1+5*e2+7*e3
-b => 2*e1+4*e2+6*e3
-a cross b => 2*e1-4*e2+2*e3
+a => 3.0*e1+5.0*e2+7.0*e3
+b => 2.0*e1+4.0*e2+6.0*e3
+a cross b => 2.0*e1-4.0*e2+2.0*e3
 1) a cross b is orthogonal to both b and c.
 (a cross b).dot(a) => 0.0
 (a cross b).dot(b) => 0.0
@@ -19,7 +19,7 @@ repr(e3) => VectorE3(0, 0, 1)
 PseudoscalarE3(1) => I
 repr(PseudoscalarE3(1)) => PseudoscalarE3(1)
 e1 * e2 * e3 => I
-dual(b) => -6*e12-2*e23-4*e31
+dual(b) => -6.0*e12-2.0*e23-4.0*e31
 repr(dual(b)) => BivectorE3(-6, -2, -4)
-a << dual(b) => 2*e1-4*e2+2*e3
-a cross b    => 2*e1-4*e2+2*e3
+a << dual(b) => 2.0*e1-4.0*e2+2.0*e3
+a cross b    => 2.0*e1-4.0*e2+2.0*e3

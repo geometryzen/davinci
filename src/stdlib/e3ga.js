@@ -384,40 +384,58 @@ function coordsJsToE3Py(w, x, y, z, xy, yz, zx, xyz, mutable) {
   return Sk.ffi.callsim(mod[Sk.e3ga.EUCLIDEAN_3], wPy, xPy, yPy, zPy, xyPy, yzPy, zxPy, xyzPy, mutablePy);
 }
 
-function stringFromCoordinates(coordinates, labels) {
-  var append, i, sb, str, _i, _ref;
-  sb = [];
-  append = function(number, label) {
+function stringFromCoordinates(coordinates, labels)
+{
+  var append, i, _i, _ref;
+  /**
+   * @const
+   */
+  var sb = [];
+  append = function(number, label)
+  {
     var n;
-    if (number !== 0) {
-      if (number >= 0) {
-        if (sb.length > 0) {
+    if (number !== 0)
+    {
+      if (number >= 0)
+      {
+        if (sb.length > 0)
+        {
           sb.push("+");
         }
-      } else {
+      }
+      else
+      {
         sb.push("-");
       }
       n = Math.abs(number);
-      if (n === 1) {
+      if (n === 1)
+      {
         return sb.push(label);
-      } else {
-        sb.push(n.toString());
-        if (label !== "1") {
+      }
+      else
+      {
+        // We indicate that we want to retain the sign, even though we already have the absolute value.
+        sb.push(Sk.builtin.numberToFloatStringJs(n, 10, true));
+        if (label !== "1")
+        {
           sb.push("*");
           return sb.push(label);
         }
       }
     }
   };
-  for (i = _i = 0, _ref = coordinates.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+  for (i = _i = 0, _ref = coordinates.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i)
+  {
     append(coordinates[i], labels[i]);
   }
-  if (sb.length > 0) {
-    str = sb.join("");
-  } else {
-    str = "0";
+  if (sb.length > 0)
+  {
+    return sb.join("");
   }
-  return str;
+  else
+  {
+    return Sk.builtin.numberToFloatStringJs(0, 10, true);
+  }
 }
 
 function mulE3(a0, a1, a2, a3, a4, a5, a6, a7, b0, b1, b2, b3, b4, b5, b6, b7, index) {

@@ -1060,6 +1060,11 @@ Sk.builtin.NumberPy.prototype.str$ = function(radix, sign)
 
   var thisJs = Sk.ffi.remapToJs(this);
 
+  if (Sk.ffi.isFloat(this))
+  {
+    return Sk.builtin.numberToFloatStringJs(thisJs, radix, sign);
+  }
+
   if (isNaN(thisJs))
   {
     return "nan";
@@ -1123,11 +1128,83 @@ Sk.builtin.NumberPy.prototype.str$ = function(radix, sign)
   {
     return tmp;
   }
+  
   if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
   {
     tmp = tmp + '.0';
   }
   return tmp;
 };
+
+/**
+ * @param {number} numberJs
+ * @param {number} radix
+ * @param {boolean} sign If true, the sign will be retained, otherwise treat as the absolute value.
+ * @return {string}
+ */
+Sk.builtin.numberToFloatStringJs = function(numberJs, radix, sign)
+{
+  goog.asserts.assertNumber(radix);
+  goog.asserts.assertBoolean(sign);
+
+  if (isNaN(numberJs))
+  {
+    return "nan";
+  }
+
+  if (sign === undefined) sign = true;
+
+  if (numberJs == Infinity)
+    return 'inf';
+  if (numberJs == -Infinity && sign)
+    return '-inf';
+  if (numberJs == -Infinity && !sign)
+    return 'inf';
+
+  var work = sign ? numberJs : Math.abs(numberJs);
+
+  var tmp;
+  if (radix === undefined || radix === 10)
+  {
+    tmp = work.toPrecision(12);
+
+    // transform fractions with 4 or more leading zeroes into exponents
+    var idx = tmp.indexOf('.');
+    var pre = work.toString().slice(0,idx);
+    var post = work.toString().slice(idx);
+    if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
+    {
+      if (tmp.length < 12)
+          tmp = work.toExponential();
+      else
+          tmp = work.toExponential(11);
+    }
+
+    while (tmp.charAt(tmp.length-1) == "0" && tmp.indexOf('e') < 0)
+    {
+      tmp = tmp.substring(0,tmp.length-1)
+    }
+    if (tmp.charAt(tmp.length-1) == ".")
+    {
+      tmp = tmp + "0";
+    }
+    tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
+    // make exponent two digits instead of one (ie e+09 not e+9)
+    tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
+    // remove trailing zeroes before the exponent
+    tmp = tmp.replace(/0+(e.*)/,'$1');
+  }
+  else
+  {
+    tmp = work.toString(radix);
+  }
+
+  if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
+  {
+    tmp = tmp + '.0';
+  }
+  return tmp;
+}
+goog.exportSymbol("Sk.builtin.numberToFloatStringJs", Sk.builtin.numberToFloatStringJs);
 
 goog.exportSymbol("Sk.builtin.NumberPy", Sk.builtin.NumberPy);

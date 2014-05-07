@@ -57,6 +57,7 @@ FILE_TYPE_DIST = 'dist'
 FILE_TYPE_TEST = 'test'
 
 # Order is important!
+# TODO: With a module system, ordering would be managed.
 Files = [
         'support/closure-library/closure/goog/base.js',
         'support/closure-library/closure/goog/deps.js',

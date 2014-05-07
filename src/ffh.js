@@ -246,82 +246,11 @@ Sk.ffh.sqrt = function(valuePy)
 };
 goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 
-/**
- * @param {number} thisJs
- * @param {number} radix
- * @param {boolean} sign
- * @return {string}
- */
-Sk.ffh.numberToFloatString = function(thisJs, radix, sign)
-{
-  goog.asserts.assertNumber(radix);
-  goog.asserts.assertBoolean(sign);
-
-  if (isNaN(thisJs))
-  {
-    return "nan";
-  }
-
-  if (sign === undefined) sign = true;
-
-  if (thisJs == Infinity)
-    return 'inf';
-  if (thisJs == -Infinity && sign)
-    return '-inf';
-  if (thisJs == -Infinity && !sign)
-    return 'inf';
-
-  var work = sign ? thisJs : Math.abs(thisJs);
-
-  var tmp;
-  if (radix === undefined || radix === 10)
-  {
-    tmp = work.toPrecision(12);
-
-    // transform fractions with 4 or more leading zeroes into exponents
-    var idx = tmp.indexOf('.');
-    var pre = work.toString().slice(0,idx);
-    var post = work.toString().slice(idx);
-    if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
-    {
-      if (tmp.length < 12)
-          tmp = work.toExponential();
-      else
-          tmp = work.toExponential(11);
-    }
-
-    while (tmp.charAt(tmp.length-1) == "0" && tmp.indexOf('e') < 0)
-    {
-      tmp = tmp.substring(0,tmp.length-1)
-    }
-    if (tmp.charAt(tmp.length-1) == ".")
-    {
-      tmp = tmp + "0";
-    }
-    tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
-    // make exponent two digits instead of one (ie e+09 not e+9)
-    tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
-    // remove trailing zeroes before the exponent
-    tmp = tmp.replace(/0+(e.*)/,'$1');
-  }
-  else
-  {
-    tmp = work.toString(radix);
-  }
-
-  if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
-  {
-    tmp = tmp + '.0';
-  }
-  return tmp;
-}
-goog.exportSymbol("Sk.ffh.numberToFloatString", Sk.ffh.numberToFloatString);
-
 Sk.ffh.str = function(valuePy)
 {
   if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
   {
-    return Sk.builtin.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+    return Sk.builtin.stringToPy(Sk.builtin.numberToFloatStringJs(valuePy, 10, true));
   }
 
   if (valuePy[SPECIAL_METHOD_STR])
@@ -353,7 +282,7 @@ Sk.ffh.repr = function(valuePy)
 {
   if (Sk.flyweight && Sk.ffi.isFloat(valuePy))
   {
-    return Sk.builtin.stringToPy(Sk.ffh.numberToFloatString(valuePy, 10, true));
+    return Sk.builtin.stringToPy(Sk.builtin.numberToFloatStringJs(valuePy, 10, true));
   }
 
   if (valuePy[SPECIAL_METHOD_REPR])
