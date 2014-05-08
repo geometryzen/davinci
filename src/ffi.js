@@ -1654,12 +1654,69 @@ Sk.ffi.CallablePy.prototype.tp$call = function(args, kw)
 
   if (isConstructorFunction(name))
   {
-    var that = Object.create(propJs.prototype);
-    // Invoke the constructor function, binding this to the new object.
-    var other = propJs.apply(that, argsJs);
-    // If the return value isn't an object, substitute the new object.
-    var valueJs = (typeof other === 'object' && other) || that;
-    return Sk.ffi.remapToPy(valueJs);
+    var createObject = function()
+    {
+        var that = Object.create(propJs.prototype);
+        // Invoke the constructor function, binding this to the new object.
+        var other = propJs.apply(that, argsJs);
+        // If the return value isn't an object, substitute the new object.
+        var valueJs = (typeof other === 'object' && other) || that;
+        return Sk.ffi.remapToPy(valueJs);
+    }
+    try
+    {
+        switch(argsJs.length)
+        {
+            case 0:
+            {
+                var valueJs = new propJs();
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 1:
+            {
+                var valueJs = new propJs(argsJs[0]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 2:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 3:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1], argsJs[2]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 4:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1], argsJs[2], argsJs[3]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 5:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1], argsJs[2], argsJs[3], argsJs[4]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 6:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1], argsJs[2], argsJs[3], argsJs[4], argsJs[5]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            case 7:
+            {
+                var valueJs = new propJs(argsJs[0], argsJs[1], argsJs[2], argsJs[3], argsJs[4], argsJs[5], argsJs[6]);
+                return Sk.ffi.remapToPy(valueJs);
+            }
+            default:
+            {
+                return createObject();
+            }
+        }
+    }
+    catch(e)
+    {
+        return createObject();
+    }
   }
   else
   {
