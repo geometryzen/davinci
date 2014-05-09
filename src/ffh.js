@@ -3,9 +3,7 @@ Sk.ffh = Sk.ffh || {};
 var SPECIAL_METHOD_ADD     = '__add__';
 var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
 var SPECIAL_METHOD_CONJUGATE = '__conjugate__';
-var SPECIAL_METHOD_DIV     = '__div__';
 var SPECIAL_METHOD_EQ      = '__eq__';
-var SPECIAL_METHOD_COS     = '__cos__';
 var SPECIAL_METHOD_EXP     = '__exp__';
 var SPECIAL_METHOD_GETITEM = '__getitem__';
 var SPECIAL_METHOD_INVERT  = '__invert__';
@@ -17,11 +15,8 @@ var SPECIAL_METHOD_POS     = '__pos__';
 var SPECIAL_METHOD_REPR    = '__repr__';
 var SPECIAL_METHOD_RMUL    = '__rmul__';
 var SPECIAL_METHOD_RSHIFT  = '__rshift__';
-var SPECIAL_METHOD_SIN     = '__sin__';
-var SPECIAL_METHOD_SQRT    = '__sqrt__';
 var SPECIAL_METHOD_STR     = '__str__';
 var SPECIAL_METHOD_SUB     = '__sub__';
-var SPECIAL_METHOD_TAN     = '__tan__';
 var SPECIAL_METHOD_XOR     = '__xor__';
 
 /**
@@ -78,7 +73,8 @@ Sk.ffh.multiply = function(lhsPy, rhsPy) {
 };
 goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
 
-Sk.ffh.divide = function(lhsPy, rhsPy) {
+Sk.ffh.divide = function(lhsPy, rhsPy)
+{
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Div");
 };
 goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
@@ -161,25 +157,43 @@ goog.exportSymbol("Sk.ffh.conjugate", Sk.ffh.conjugate);
 
 Sk.ffh.cos = function(valuePy)
 {
-  return Sk.ffh.unaryExec("cos", SPECIAL_METHOD_COS, valuePy, "nb$cos");
+  return Sk.ffh.unaryExec("cos", '__cos__', valuePy, "u$cos");
 };
 goog.exportSymbol("Sk.ffh.cos", Sk.ffh.cos);
 
 Sk.ffh.sin = function(valuePy)
 {
-  return Sk.ffh.unaryExec("sin", SPECIAL_METHOD_SIN, valuePy, "nb$sin");
+  return Sk.ffh.unaryExec("sin", '__sin__', valuePy, "u$sin");
 };
 goog.exportSymbol("Sk.ffh.sin", Sk.ffh.sin);
 
 Sk.ffh.tan = function(valuePy)
 {
-  return Sk.ffh.unaryExec("tan", SPECIAL_METHOD_TAN, valuePy, "nb$tan");
+  return Sk.ffh.unaryExec("tan", '__tan__', valuePy, "u$tan");
 };
 goog.exportSymbol("Sk.ffh.tan", Sk.ffh.tan);
 
+Sk.ffh.acos = function(valuePy)
+{
+  return Sk.ffh.unaryExec("acos", '__acos__', valuePy, "u$acos");
+};
+goog.exportSymbol("Sk.ffh.acos", Sk.ffh.acos);
+
+Sk.ffh.asin = function(valuePy)
+{
+  return Sk.ffh.unaryExec("asin", '__asin__', valuePy, "u$asin");
+};
+goog.exportSymbol("Sk.ffh.asin", Sk.ffh.asin);
+
+Sk.ffh.atan = function(valuePy)
+{
+  return Sk.ffh.unaryExec("atan", '__atan__', valuePy, "u$atan");
+};
+goog.exportSymbol("Sk.ffh.atan", Sk.ffh.atan);
+
 Sk.ffh.exp = function(valuePy)
 {
-  return Sk.ffh.unaryExec("exp", SPECIAL_METHOD_EXP, valuePy, "nu$exponential");
+  return Sk.ffh.unaryExec("exp", SPECIAL_METHOD_EXP, valuePy, "u$exp");
 };
 goog.exportSymbol("Sk.ffh.exp", Sk.ffh.exp);
 
@@ -224,25 +238,25 @@ goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
 
 Sk.ffh.abs = function(valuePy)
 {
-  return Sk.ffh.unaryExec("abs", '__abs__', valuePy, "nu$abs");
+  return Sk.ffh.unaryExec("abs", '__abs__', valuePy, "u$abs");
 };
 goog.exportSymbol("Sk.ffh.abs", Sk.ffh.abs);
 
 Sk.ffh.magnitude = function(valuePy)
 {
-  return Sk.ffh.unaryExec("magnitude", '__magnitude__', valuePy, "nu$magnitude");
+  return Sk.ffh.unaryExec("magnitude", '__magnitude__', valuePy, "u$magnitude");
 };
 goog.exportSymbol("Sk.ffh.magnitude", Sk.ffh.magnitude);
 
 Sk.ffh.quadrance = function(valuePy)
 {
-  return Sk.ffh.unaryExec("quadrance", '__quadrance__', valuePy, "nu$quadrance");
+  return Sk.ffh.unaryExec("quadrance", '__quadrance__', valuePy, "u$quadrance");
 };
 goog.exportSymbol("Sk.ffh.quadrance", Sk.ffh.quadrance);
 
 Sk.ffh.sqrt = function(valuePy)
 {
-  return Sk.ffh.unaryExec("sqrt", SPECIAL_METHOD_SQRT, valuePy);
+  return Sk.ffh.unaryExec("sqrt", '__sqrt__', valuePy, "u$sqrt");
 };
 goog.exportSymbol("Sk.ffh.sqrt", Sk.ffh.sqrt);
 

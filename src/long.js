@@ -471,12 +471,12 @@ Sk.builtin.lng.prototype.nb$xor = function(other)
 
 Sk.builtin.lng.prototype.nb$inplace_xor = Sk.builtin.lng.prototype.nb$xor;
 
-Sk.builtin.lng.prototype.nu$negative = function()
+Sk.builtin.lng.prototype.u$negative = function()
 {
   return new Sk.builtin.lng(this.biginteger.negate());
 };
 
-Sk.builtin.lng.prototype.nb$positive = function() { return this.clone(); };
+Sk.builtin.lng.prototype.u$positive = function() { return this.clone(); };
 
 Sk.builtin.lng.prototype.nb$nonzero = function()
 {

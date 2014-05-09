@@ -116,6 +116,18 @@ Sk.builtin.none = {none$:
         {
             return Sk.builtin.stringToPy("None");
         }
+        None.prototype.u$acos = function()
+        {
+            return this;
+        }
+        None.prototype.u$asin = function()
+        {
+            return this;
+        }
+        None.prototype.u$atan = function()
+        {
+            return this;
+        }
         return Object.create(None.prototype, {v: {value: null, enumerable: true}});
     })()
 };

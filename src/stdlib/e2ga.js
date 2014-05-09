@@ -60,17 +60,7 @@ var METHOD_CLONE        = "clone";
  * @const
  * @type {string}
  */
-var METHOD_COS          = "cos";
-/**
- * @const
- * @type {string}
- */
 var METHOD_DOT          = "dot";
-/**
- * @const
- * @type {string}
- */
-var METHOD_SIN          = "sin";
 /**
  * @const
  * @type {string}
@@ -808,11 +798,11 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return selfPy;
     }
   });
-  $loc.nu$negative = function() {
+  $loc.u$negative = function() {
     var self = Sk.ffi.remapToJs(this);
     return coordsJsToE2Py(-self.w, -self.x, -self.y, -self.xy);
   };
-  $loc.nb$positive = function() {
+  $loc.u$positive = function() {
     return this;
   };
   $loc.nb$invert = function() {
@@ -839,8 +829,9 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var self = Sk.ffi.remapToJs(selfPy);
     return coordsJsToE2Py(self.w, -self.x, -self.y, -self.xy);
   });
-  $loc.__cos__ = Sk.ffi.functionPy(function(selfPy) {
-    Sk.ffi.checkMethodArgs(METHOD_COS, arguments, 0, 0);
+  $loc.__cos__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("cos", arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
     var x = mv.w;
     var y = mv.xy;
@@ -850,8 +841,9 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var sinhY = sinh(y);
     return coordsJsToE2Py(cosX * coshY, 0, 0, - sinX * sinhY);
   });
-  $loc.__sin__ = Sk.ffi.functionPy(function(selfPy) {
-    Sk.ffi.checkMethodArgs(METHOD_SIN, arguments, 0, 0);
+  $loc.__sin__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("sin", arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
     var x = mv.w;
     var y = mv.xy;
@@ -861,7 +853,31 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var sinhY = sinh(y);
     return coordsJsToE2Py(sinX * coshY, 0, 0, cosX * sinhY);
   });
-  $loc.__exp__ = Sk.ffi.functionPy(function(selfPy) {
+  $loc.__tan__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("tan", arguments, 0, 0);
+    return Sk.ffh.divide(Sk.ffh.sin(selfPy), Sk.ffh.cos(selfPy))
+  });
+  $loc.__acos__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("acos", arguments, 0, 0);
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE2Py(Math.acos(selfJs.w), 0, 0, 0);
+  });
+  $loc.__asin__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("asin", arguments, 0, 0);
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE2Py(Math.asin(selfJs.w), 0, 0, 0);
+  });
+  $loc.__atan__ = Sk.ffi.functionPy(function(selfPy)
+  {
+    Sk.ffi.checkMethodArgs("atan", arguments, 0, 0);
+    var selfJs = Sk.ffi.remapToJs(selfPy);
+    return coordsJsToE2Py(Math.atan(selfJs.w), 0, 0, 0);
+  });
+  $loc.__exp__ = Sk.ffi.functionPy(function(selfPy)
+  {
     Sk.ffi.checkMethodArgs(METHOD_EXP, arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
     var x = mv.w;
@@ -871,47 +887,58 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var s = Sk.math.sin(y);
     return coordsJsToE2Py(e * c, 0, 0, e * s);
   });
-  $loc.__abs__ = Sk.ffi.functionPy(function(selfPy) {
+  $loc.__abs__ = Sk.ffi.functionPy(function(selfPy)
+  {
     var mv = Sk.ffi.remapToJs(selfPy);
     return Sk.ffi.numberToFloatPy(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y + mv.xy * mv.xy));
   });
-  $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy) {
+  $loc.__magnitude__ = Sk.ffi.functionPy(function(selfPy)
+  {
     var mv = Sk.ffi.remapToJs(selfPy);
     return coordsJsToE2Py(Math.sqrt(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y + mv.xy * mv.xy), 0, 0, 0);
   });
-  $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy) {
+  $loc.__quadrance__ = Sk.ffi.functionPy(function(selfPy)
+  {
     var mv = Sk.ffi.remapToJs(selfPy);
     return coordsJsToE2Py(mv.w * mv.w + mv.x * mv.x + mv.y * mv.y + mv.xy * mv.xy, 0, 0, 0);
   });
-  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy) {
+  $loc.__sqrt__ = Sk.ffi.functionPy(function(selfPy)
+  {
     Sk.ffi.checkMethodArgs(METHOD_SQRT, arguments, 0, 0);
     var mv = Sk.ffi.remapToJs(selfPy);
     return coordsJsToE2Py(Math.sqrt(mv.w), 0, 0, 0);
   });
-  $loc.__repr__ = Sk.ffi.functionPy(function(mv) {
+  $loc.__repr__ = Sk.ffi.functionPy(function(mv)
+  {
     mv = Sk.ffi.remapToJs(mv);
     return Sk.builtin.stringToPy(EUCLIDEAN_2 + "(" + [mv.w, mv.x, mv.y, mv.xy].map(function(x) {return String(x);}).join(", ") + ")");
   });
-  $loc.__str__ = Sk.ffi.functionPy(function(mv) {
+  $loc.__str__ = Sk.ffi.functionPy(function(mv)
+  {
     mv = Sk.ffi.remapToJs(mv);
-    if (mv.isNaN()) {
+    if (mv.isNaN())
+    {
       return Sk.builtin.stringToPy("NaN");
     }
-    else {
+    else
+    {
       return Sk.builtin.stringToPy(stringFromCoordinates([mv.w, mv.x, mv.y, mv.xy], [ONE_NAME, E1_NAME, E2_NAME, PSEUDOSCALAR_NAME], "*"));
     }
   });
-  $loc.__eq__ = Sk.ffi.functionPy(function(a, b) {
+  $loc.__eq__ = Sk.ffi.functionPy(function(a, b)
+  {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
     return (a.w === b.w) && (a.x === b.x) && (a.y === b.y) && (a.xy === b.xy);
   });
-  $loc.__ne__ = Sk.ffi.functionPy(function(a, b) {
+  $loc.__ne__ = Sk.ffi.functionPy(function(a, b)
+  {
     a = Sk.ffi.remapToJs(a);
     b = Sk.ffi.remapToJs(b);
     return (a.w !== b.w) || (a.x !== b.x) || (a.y !== b.y) || (a.xy !== b.xy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(mvPy, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(mvPy, name)
+  {
     var mv = Sk.ffi.remapToJs(mvPy);
     switch(name) {
       case PROP_W: {

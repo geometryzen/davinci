@@ -342,7 +342,7 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
   {
     case Sk.abstr.unaryOp.USub:
     {
-        return obj.nu$negative          ? obj.nu$negative        : obj['__neg__'];
+        return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
     }
     case Sk.abstr.unaryOp.Invert:
     {
@@ -350,7 +350,7 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
     }
     case Sk.abstr.unaryOp.UAdd:
     {
-        return obj.nb$positive          ? obj.nb$positive        : obj['__pos__'];
+        return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
     }
     default:
     {

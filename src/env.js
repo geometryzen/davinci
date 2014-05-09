@@ -37,6 +37,9 @@ Sk.configure = function(options)
     Sk.sysargv = options["sysargv"] || Sk.sysargv;
     goog.asserts.assert(goog.isArrayLike(Sk.sysargv));
 
+    Sk.snapToAngle = options["snapToAngle"] || Sk.snapToAngle;
+    goog.asserts.assertBoolean(Sk.snapToAngle, "Sk.snapToAngle must be set to a JavaScript boolean value.");
+
     Sk.physics = options["physics"] || Sk.physics;
     goog.asserts.assertBoolean(Sk.physics, "Sk.physics must be set to a JavaScript boolean value.");
 
@@ -130,6 +133,14 @@ if (!Sk.inBrowser)
 }
 
 /**
+ * Determines whether trigonometric functions make approximations.
+ * For pedagogical purposes, this defaults to true.
+ * @type {boolean}
+ */
+Sk.snapToAngle = true;
+goog.exportSymbol("Sk.snapToAngle", Sk.snapToAngle);
+
+/**
  * The physics mode.
  * @type {boolean}
  */
@@ -145,6 +156,7 @@ goog.exportSymbol("Sk.flyweight", Sk.flyweight);
 /**
  * The flyweight mode for strings (in development).
  * This is not quite production-ready.
+ * Do not use this parameter; it will go away!
  * @type {boolean}
  */
 Sk.flyString = true;

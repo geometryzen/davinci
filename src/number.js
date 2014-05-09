@@ -911,49 +911,69 @@ Sk.builtin.NumberPy.prototype.nb$inplace_lshift = Sk.builtin.NumberPy.prototype.
 
 Sk.builtin.NumberPy.prototype.nb$inplace_rshift = Sk.builtin.NumberPy.prototype.nb$rshift;
 
-Sk.builtin.NumberPy.prototype.nu$negative = function()
+Sk.builtin.NumberPy.prototype.u$negative = function()
 {
     return Sk.builtin.numberPy(-this.v, this.skType);
 };
 
-Sk.builtin.NumberPy.prototype.nb$positive = function()
+Sk.builtin.NumberPy.prototype.u$positive = function()
 {
     return this;
 };
 
-Sk.builtin.NumberPy.prototype.nb$cos = function()
+Sk.builtin.NumberPy.prototype.u$cos = function()
 {
-    return Sk.builtin.numberPy(Math.cos(this.v), this.skType);
+    return Sk.builtin.numberToPy(Sk.math.cos(this.v));
 };
 
-Sk.builtin.NumberPy.prototype.nb$sin = function()
+Sk.builtin.NumberPy.prototype.u$sin = function()
 {
-    return Sk.builtin.numberPy(Math.sin(this.v), this.skType);
+    return Sk.builtin.numberToPy(Sk.math.sin(this.v));
 };
 
-Sk.builtin.NumberPy.prototype.nb$tan = function()
+Sk.builtin.NumberPy.prototype.u$tan = function()
 {
-    return Sk.builtin.numberPy(Math.tan(this.v), this.skType);
+    return Sk.builtin.numberToPy(Sk.math.tan(this.v));
 };
 
-Sk.builtin.NumberPy.prototype.nu$exponential = function()
+Sk.builtin.NumberPy.prototype.u$acos = function()
 {
-    return Sk.builtin.numberPy(Math.exp(this.v), this.skType);
+    return Sk.builtin.numberToPy(Math.acos(this.v));
 };
 
-Sk.builtin.NumberPy.prototype.nu$abs = function()
+Sk.builtin.NumberPy.prototype.u$asin = function()
+{
+    return Sk.builtin.numberToPy(Math.asin(this.v));
+};
+
+Sk.builtin.NumberPy.prototype.u$atan = function()
+{
+    return Sk.builtin.numberToPy(Math.atan(this.v));
+};
+
+Sk.builtin.NumberPy.prototype.u$exp = function()
+{
+    return Sk.builtin.numberToPy(Math.exp(this.v));
+};
+
+Sk.builtin.NumberPy.prototype.u$abs = function()
 {
     return Sk.builtin.numberPy(Math.abs(this.v), this.skType);
 };
 
-Sk.builtin.NumberPy.prototype.nu$magnitude = function()
+Sk.builtin.NumberPy.prototype.u$magnitude = function()
 {
     return Sk.builtin.numberPy(Math.abs(this.v), this.skType);
 };
 
-Sk.builtin.NumberPy.prototype.nu$quadrance = function()
+Sk.builtin.NumberPy.prototype.u$quadrance = function()
 {
     return Sk.builtin.numberPy(this.v * this.v, this.skType);
+};
+
+Sk.builtin.NumberPy.prototype.u$sqrt = function()
+{
+    return Sk.builtin.numberPy(Math.sqrt(this.v), this.skType);
 };
 
 Sk.builtin.NumberPy.prototype.nb$nonzero = function()
