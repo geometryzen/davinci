@@ -1592,17 +1592,17 @@ Sk.ffi.ObjectPy.prototype.nb$add = function(otherPy)
     return Sk.ffi.remapToPy(this.v.add(Sk.ffi.remapToJs(otherPy)));
 }
 
-Sk.ffi.ObjectPy.prototype.nb$subtract = function(otherPy)
+Sk.ffi.ObjectPy.prototype.nb$sub = function(otherPy)
 {
     return Sk.ffi.remapToPy(this.v.sub(Sk.ffi.remapToJs(otherPy)));
 }
 
-Sk.ffi.ObjectPy.prototype.nb$multiply = function(otherPy)
+Sk.ffi.ObjectPy.prototype.nb$mul = function(otherPy)
 {
     return Sk.ffi.remapToPy(this.v.mul(Sk.ffi.remapToJs(otherPy)));
 }
 
-Sk.ffi.ObjectPy.prototype.nb$divide = function(otherPy)
+Sk.ffi.ObjectPy.prototype.nb$div = function(otherPy)
 {
     return Sk.ffi.remapToPy(this.v.div(Sk.ffi.remapToJs(otherPy)));
 }

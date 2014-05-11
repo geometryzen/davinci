@@ -464,21 +464,27 @@ Sk.misceval.isTrue = function(x)
 goog.exportSymbol("Sk.misceval.isTrue", Sk.misceval.isTrue);
 
 Sk.misceval.softspace_ = false;
-Sk.misceval.print_ = function(x)   // this was function print(x)   not sure why...
+/**
+ * @param {string} x
+ */
+Sk.misceval.print_ = function(x)
 {
+    goog.asserts.assertString(x);
+
     if (Sk.misceval.softspace_)
     {
         if (x !== "\n") Sk.output(' ');
         Sk.misceval.softspace_ = false;
     }
-    var s = Sk.builtin.stringToPy(x);
-    Sk.output(s.v);
+    Sk.output(x);
     var isspace = function(c)
     {
         return c === '\n' || c === '\t' || c === '\r';
     };
-    if (s.v.length === 0 || !isspace(s.v[s.v.length - 1]) || s.v[s.v.length - 1] === ' ')
+    if (x.length === 0 || !isspace(x[x.length - 1]) || x[x.length - 1] === ' ')
+    {
         Sk.misceval.softspace_ = true;
+    }
 };
 goog.exportSymbol("Sk.misceval.print_", Sk.misceval.print_);
 

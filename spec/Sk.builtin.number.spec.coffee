@@ -20,6 +20,12 @@ describe "Sk.builtin.number", ->
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.numberPy 23).toBe "23"
     it "should have decimals for an float", ->
       expect(Sk.ffi.remapToJs Sk.ffh.str Sk.builtin.numberPy Math.PI).toBe "3.14159265359"
+    it "1 with ten zeros", ->
+      expect(Sk.builtin.numberToFloatStringJs(10000000000, 10, true)).toBe "10000000000.0"
+    it "1 with eleven zeros", ->
+      expect(Sk.builtin.numberToFloatStringJs(100000000000, 10, true)).toBe "1e+11"
+    it "1 with twelve zeros", ->
+      expect(Sk.builtin.numberToFloatStringJs(1000000000000, 10, true)).toBe "1e+12"
 
   describe "repr", -> 
     it "should have no decimals for an integer", ->

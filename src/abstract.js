@@ -26,9 +26,9 @@ Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
   switch (name)
   {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
-    case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__sub__'];
-    case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__mul__'];
-    case "Div":      return obj.nb$divide       ? obj.nb$divide :       obj['__div__'];
+    case "Sub":      return obj.nb$sub     ? obj.nb$sub :     obj['__sub__'];
+    case "Mult":     return obj.nb$mul     ? obj.nb$mul :     obj['__mul__'];
+    case "Div":      return obj.nb$div       ? obj.nb$div :       obj['__div__'];
     case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__floordiv__'];
     case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__mod__'];
     case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__pow__'];
@@ -46,9 +46,9 @@ Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
   };
   switch (name) {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
-    case "Sub":      return obj.nb$subtract     ? obj.nb$subtract :     obj['__rsub__'];
-    case "Mult":     return obj.nb$multiply     ? obj.nb$multiply :     obj['__rmul__'];
-    case "Div":      return obj.nb$divide       ? obj.nb$divide :       obj['__rdiv__'];
+    case "Sub":      return obj.nb$sub     ? obj.nb$sub :     obj['__rsub__'];
+    case "Mult":     return obj.nb$mul     ? obj.nb$mul :     obj['__rmul__'];
+    case "Div":      return obj.nb$div       ? obj.nb$div :       obj['__rdiv__'];
     case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__rfloordiv__'];
     case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__rmod__'];
     case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__rpow__'];

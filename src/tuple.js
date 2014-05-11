@@ -116,7 +116,7 @@ Sk.builtin.tuple.prototype.sq$repeat = function(n)
             ret.push(this.v[j]);
     return new Sk.builtin.tuple(ret);
 };
-Sk.builtin.tuple.prototype.nb$multiply = Sk.builtin.tuple.prototype.sq$repeat;
+Sk.builtin.tuple.prototype.nb$mul = Sk.builtin.tuple.prototype.sq$repeat;
 Sk.builtin.tuple.prototype.nb$inplace_multiply = Sk.builtin.tuple.prototype.sq$repeat;
 
 

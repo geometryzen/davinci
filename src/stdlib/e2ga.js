@@ -856,7 +856,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__tan__ = Sk.ffi.functionPy(function(selfPy)
   {
     Sk.ffi.checkMethodArgs("tan", arguments, 0, 0);
-    return Sk.ffh.divide(Sk.ffh.sin(selfPy), Sk.ffh.cos(selfPy))
+    return Sk.ffh.div(Sk.ffh.sin(selfPy), Sk.ffh.cos(selfPy))
   });
   $loc.__acos__ = Sk.ffi.functionPy(function(selfPy)
   {

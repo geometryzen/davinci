@@ -515,7 +515,7 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var signum = e[0];
         var a = lhs[e[1]];
         var b = rhs[e[2]];
-        var c = Sk.ffh.multiply(a , b);
+        var c = Sk.ffh.mul(a , b);
         if (signum > 0) {
           return c;
         }
@@ -970,11 +970,11 @@ mod[LORENTZIAN] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
       case METHOD_QUADRANCE: {
         return Sk.ffi.callableToPy(mod, name, function(methodPy) {
-          var quadrance = Sk.ffh.multiply(mv[0x0], mv[0x0]);
-          quadrance = Sk.ffh.add(quadrance, Sk.ffh.multiply(mv[0x1], mv[0x1]));
-          quadrance = Sk.ffh.add(quadrance, Sk.ffh.multiply(mv[0x2], mv[0x2]));
-          quadrance = Sk.ffh.add(quadrance, Sk.ffh.multiply(mv[0x4], mv[0x4]));
-          quadrance = Sk.ffh.subtract(quadrance, Sk.ffh.multiply(mv[0x8], mv[0x8]));
+          var quadrance = Sk.ffh.mul(mv[0x0], mv[0x0]);
+          quadrance = Sk.ffh.add(quadrance, Sk.ffh.mul(mv[0x1], mv[0x1]));
+          quadrance = Sk.ffh.add(quadrance, Sk.ffh.mul(mv[0x2], mv[0x2]));
+          quadrance = Sk.ffh.add(quadrance, Sk.ffh.mul(mv[0x4], mv[0x4]));
+          quadrance = Sk.ffh.sub(quadrance, Sk.ffh.mul(mv[0x8], mv[0x8]));
           return quadrance;
         });
       }

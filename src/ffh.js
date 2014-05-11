@@ -58,26 +58,29 @@ Sk.ffh.getitem = function(objPy, index)
 };
 goog.exportSymbol("Sk.ffh.getitem", Sk.ffh.getitem);
 
-Sk.ffh.add = function(lhsPy, rhsPy) {
+Sk.ffh.add = function(lhsPy, rhsPy)
+{
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Add");
 };
 goog.exportSymbol("Sk.ffh.add", Sk.ffh.add);
 
-Sk.ffh.subtract = function(lhsPy, rhsPy) {
+Sk.ffh.sub = function(lhsPy, rhsPy)
+{
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Sub");
 };
-goog.exportSymbol("Sk.ffh.subtract", Sk.ffh.subtract);
+goog.exportSymbol("Sk.ffh.sub", Sk.ffh.sub);
 
-Sk.ffh.multiply = function(lhsPy, rhsPy) {
+Sk.ffh.mul = function(lhsPy, rhsPy)
+{
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Mult");
 };
-goog.exportSymbol("Sk.ffh.multiply", Sk.ffh.multiply);
+goog.exportSymbol("Sk.ffh.mul", Sk.ffh.mul);
 
-Sk.ffh.divide = function(lhsPy, rhsPy)
+Sk.ffh.div = function(lhsPy, rhsPy)
 {
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Div");
 };
-goog.exportSymbol("Sk.ffh.divide", Sk.ffh.divide);
+goog.exportSymbol("Sk.ffh.div", Sk.ffh.div);
 
 Sk.ffh.mod = function(lhsPy, rhsPy) {
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "Mod");
@@ -145,11 +148,14 @@ Sk.ffh.cliffordConjugate = function(valuePy) {
 };
 goog.exportSymbol("Sk.ffh.cliffordConjugate", Sk.ffh.cliffordConjugate);
 
-Sk.ffh.conjugate = function(numberPy) {
-  if (Sk.ffi.isNum(numberPy)) {
+Sk.ffh.conjugate = function(numberPy)
+{
+  if (Sk.ffi.isNum(numberPy))
+  {
     return numberPy;
   }
-  else {
+  else
+  {
     return Sk.ffh.unaryExec("", SPECIAL_METHOD_CONJUGATE, numberPy);
   }
 };

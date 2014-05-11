@@ -536,7 +536,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     {
       var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
       var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
-      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.multiply(selfPy, uomPy));
+      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.mul(selfPy, uomPy));
     }
     else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
     {
@@ -560,7 +560,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     {
       var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
       var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
-      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.multiply(selfPy, uomPy));
+      return Sk.ffi.callsim(mod[MEASURE], quantityPy, Sk.ffh.mul(selfPy, uomPy));
     }
     else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
     {
@@ -584,7 +584,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     {
       var quantityPy = Sk.ffi.gattr(otherPy, PROP_QUANTITY);
       var uomPy      = Sk.ffi.gattr(otherPy, PROP_UOM);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(Sk.ffi.numberToFloatPy(1), quantityPy), Sk.ffh.divide(selfPy, uomPy));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.div(Sk.ffi.numberToFloatPy(1), quantityPy), Sk.ffh.div(selfPy, uomPy));
     }
     else if (Sk.ffi.isNum(otherPy) || isUnitPy(otherPy))
     {
@@ -739,7 +739,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
       if (isMeasurePy(otherPy))
       {
         var other = Sk.ffi.remapToJs(otherPy);
-        return Sk.ffi.callsim(mod[MEASURE], op(self[QTY_PY], other[QTY_PY]), Sk.ffh.multiply(self[UOM_PY], other[UOM_PY]));
+        return Sk.ffi.callsim(mod[MEASURE], op(self[QTY_PY], other[QTY_PY]), Sk.ffh.mul(self[UOM_PY], other[UOM_PY]));
       }
       else if (isQuantityPy(otherPy))
       {
@@ -801,7 +801,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
       else
       {
         var measure = {};
-        measure[QTY_PY] = Sk.ffh.multiply(qtyPy, scalePy);
+        measure[QTY_PY] = Sk.ffh.mul(qtyPy, scalePy);
         measure[UOM_PY] = Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(1), Sk.ffi.gattr(uomPy, PROP_DIMENSIONS), Sk.ffi.gattr(uomPy, PROP_LABELS), Sk.ffi.gattr(uomPy, PROP_NAME));
         Sk.ffi.referenceToPy(measure, MEASURE, undefined, selfPy);
       }
@@ -843,7 +843,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
           {
             var other = Sk.ffi.remapToJs(otherPy);
             var qtyPy = Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_CROSS), other[QTY_PY]);
-            return Sk.ffi.callsim(mod[MEASURE], qtyPy, Sk.ffh.multiply(measure[UOM_PY], other[UOM_PY]));
+            return Sk.ffi.callsim(mod[MEASURE], qtyPy, Sk.ffh.mul(measure[UOM_PY], other[UOM_PY]));
           }
           else
           {
@@ -861,7 +861,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
           {
             var other = Sk.ffi.remapToJs(otherPy);
             var qtyPy = Sk.ffi.callsim(Sk.ffi.gattr(measure[QTY_PY], METHOD_DOT), other[QTY_PY]);
-            return Sk.ffi.callsim(mod[MEASURE], qtyPy, Sk.ffh.multiply(measure[UOM_PY], other[UOM_PY]));
+            return Sk.ffi.callsim(mod[MEASURE], qtyPy, Sk.ffh.mul(measure[UOM_PY], other[UOM_PY]));
           }
           else
           {
@@ -884,15 +884,15 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     Sk.ffi.checkArgType(ARG_OTHER, MEASURE, isMeasurePy(otherPy), otherPy);
     var self = Sk.ffi.remapToJs(selfPy);
     var other = Sk.ffi.remapToJs(otherPy);
-    return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.subtract(self[QTY_PY], other[QTY_PY]), Sk.ffi.callsim(Sk.ffi.gattr(self[UOM_PY], METHOD_COMPATIBLE), other[UOM_PY]));
+    return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.sub(self[QTY_PY], other[QTY_PY]), Sk.ffi.callsim(Sk.ffi.gattr(self[UOM_PY], METHOD_COMPATIBLE), other[UOM_PY]));
   });
 
   // FIXME: Now that I look at these, I think I prefer the duplication and clarity of unrolling them.
   $loc.__mod__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.mod));
   $loc.__rmod__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.mod));
 
-  $loc.__mul__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.multiply));
-  $loc.__rmul__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.multiply));
+  $loc.__mul__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.mul));
+  $loc.__rmul__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.mul));
 
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
@@ -900,15 +900,15 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     if (isMeasurePy(otherPy))
     {
       var other = Sk.ffi.remapToJs(otherPy);
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], other[QTY_PY]), Sk.ffh.divide(self[UOM_PY], other[UOM_PY]));
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.div(self[QTY_PY], other[QTY_PY]), Sk.ffh.div(self[UOM_PY], other[UOM_PY]));
     }
     else if (isUnitPy(otherPy))
     {
-      return Sk.ffi.callsim(mod[MEASURE], self[QTY_PY], Sk.ffh.divide(self[UOM_PY], otherPy));
+      return Sk.ffi.callsim(mod[MEASURE], self[QTY_PY], Sk.ffh.div(self[UOM_PY], otherPy));
     }
     else
     {
-      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(self[QTY_PY], otherPy), self[UOM_PY]);
+      return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.div(self[QTY_PY], otherPy), self[UOM_PY]);
     }
   });
   $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy)
@@ -916,7 +916,7 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     var self = Sk.ffi.remapToJs(selfPy);
     // TODO: The quantity should probably satisfy field axioms? add, multiply, ...
     // Sk.ffi.checkArgType(ARG_OTHER, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
-    return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.divide(otherPy, self[QTY_PY]), Sk.ffh.divide(Sk.ffi.numberToFloatPy(1.0),self[UOM_PY]));
+    return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.div(otherPy, self[QTY_PY]), Sk.ffh.div(Sk.ffi.numberToFloatPy(1.0),self[UOM_PY]));
   });
 
   $loc.__xor__     = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.xor));
@@ -1084,15 +1084,15 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
 
   mod[COULOMB]  = makeUnitPy(BLADE.UNIT_COULOMB);
 
-  mod[GRAM]     = Sk.ffh.multiply(mod.milli, mod[KILOGRAM]);
-  mod[CM]       = Sk.ffh.multiply(mod.centi, mod[METER]);
+  mod[GRAM]     = Sk.ffh.mul(mod.milli, mod[KILOGRAM]);
+  mod[CM]       = Sk.ffh.mul(mod.centi, mod[METER]);
 
-  mod[NEWTON]   = Sk.ffh.divide(Sk.ffh.multiply(mod[KILOGRAM], mod[METER]), Sk.ffh.multiply(mod[SECOND], mod[SECOND]));
-  mod[JOULE]    = Sk.ffh.multiply(mod[NEWTON], mod[METER]);
-  mod[SWIRL]    = Sk.ffh.multiply(mod[JOULE], mod[SECOND]);
-  mod[WATT]     = Sk.ffh.divide(mod[JOULE], mod[SECOND]);
-  mod[VOLT]     = Sk.ffh.divide(mod[JOULE], mod[COULOMB]);
-  mod[TESLA]    = Sk.ffh.divide(mod[SWIRL], Sk.ffh.multiply(mod[COULOMB], Sk.ffh.multiply(mod[METER], mod[METER])));
+  mod[NEWTON]   = Sk.ffh.div(Sk.ffh.mul(mod[KILOGRAM], mod[METER]), Sk.ffh.mul(mod[SECOND], mod[SECOND]));
+  mod[JOULE]    = Sk.ffh.mul(mod[NEWTON], mod[METER]);
+  mod[SWIRL]    = Sk.ffh.mul(mod[JOULE], mod[SECOND]);
+  mod[WATT]     = Sk.ffh.div(mod[JOULE], mod[SECOND]);
+  mod[VOLT]     = Sk.ffh.div(mod[JOULE], mod[COULOMB]);
+  mod[TESLA]    = Sk.ffh.div(mod[SWIRL], Sk.ffh.mul(mod[COULOMB], Sk.ffh.mul(mod[METER], mod[METER])));
 
   mod[RADIAN]   = makeUnitPy(BLADE.UNIT_RADIAN);
   mod[TAU]      = makeUnitPy(BLADE.UNIT_TAU);

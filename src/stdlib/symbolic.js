@@ -586,7 +586,7 @@ mod[SUBTRACT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Sk.ffi.checkArgType(PROP_ENV, ENVIRONMENT, Sk.ffi.isInstance(envPy, ENVIRONMENT), envPy);
           var lhs = Sk.ffh.evaluate(self[PROP_LHS], envPy);
           var rhs = Sk.ffh.evaluate(self[PROP_RHS], envPy);
-          return Sk.ffh.subtract(lhs, rhs);
+          return Sk.ffh.sub(lhs, rhs);
         });
       }
       default: {
@@ -642,7 +642,7 @@ mod[MULTIPLY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Sk.ffi.checkArgType(PROP_ENV, ENVIRONMENT, Sk.ffi.isInstance(envPy, ENVIRONMENT), envPy);
           var lhs = Sk.ffh.evaluate(self[PROP_LHS], envPy);
           var rhs = Sk.ffh.evaluate(self[PROP_RHS], envPy);
-          return Sk.ffh.multiply(lhs, rhs);
+          return Sk.ffh.mul(lhs, rhs);
         });
       }
       default: {

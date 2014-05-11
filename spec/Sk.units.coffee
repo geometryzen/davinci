@@ -114,7 +114,7 @@ describe "units", ->
 
       lhsPy  = Sk.ffi.gattr(module, 'kilogram')
       rhsPy  = Sk.ffi.gattr(module, 'meter')
-      unitPy = Sk.ffh.multiply(lhsPy, rhsPy)
+      unitPy = Sk.ffh.mul(lhsPy, rhsPy)
 
       expect(Sk.ffi.typeName(unitPy)).toBe Sk.ffi.typeName lhsPy
       expect(Sk.ffi.remapToJs Sk.ffh.str unitPy).toBe '1.0 kg m'

@@ -19,45 +19,45 @@ describe "Sk.ffh", ->
 
   describe "subtract", ->
     it "1 - 1", ->
-      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '0'
+      expect(Sk.ffi.typeName Sk.ffh.sub Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.sub Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '0'
     it "1.0 - 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '0.0'
+      expect(Sk.ffi.typeName Sk.ffh.sub Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.sub Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '0.0'
     it "1L - 1L", ->
-      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '0'
+      expect(Sk.ffi.typeName Sk.ffh.sub Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.sub Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '0'
     it "12345678901234567890123456789L - 12345678901234567890123456789L", ->
-      expect(Sk.ffi.typeName Sk.ffh.subtract Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.subtract Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '0'
+      expect(Sk.ffi.typeName Sk.ffh.sub Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.sub Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '0'
   
   describe "multiply", ->
     it "1 * 1", ->
-      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
+      expect(Sk.ffi.typeName Sk.ffh.mul Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mul Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
     it "1.0 * 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
+      expect(Sk.ffi.typeName Sk.ffh.mul Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mul Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
     it "1L * 1L", ->
-      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
+      expect(Sk.ffi.typeName Sk.ffh.mul Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mul Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
     it "12345678901234567890123456789L * 12345678901234567890123456789L", ->
-      expect(Sk.ffi.typeName Sk.ffh.multiply Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.multiply Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '152415787532388367504953515625361987875019051998750190521'
+      expect(Sk.ffi.typeName Sk.ffh.mul Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.mul Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '152415787532388367504953515625361987875019051998750190521'
 
   describe "divide", ->
     it "1 / 1", ->
-      expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
+      expect(Sk.ffi.typeName Sk.ffh.div Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe 'int'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.div Sk.ffi.numberToIntPy(1), Sk.ffi.numberToIntPy(1)).toBe '1'
     it "1.0 / 1.0", ->
-      expect(Sk.ffi.typeName Sk.ffh.divide Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
+      expect(Sk.ffi.typeName Sk.ffh.div Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe 'float'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.div Sk.builtin.numberToPy(1), Sk.builtin.numberToPy(1)).toBe '1.0'
     it "1L / 1L", ->
-      expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
+      expect(Sk.ffi.typeName Sk.ffh.div Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.div Sk.ffi.longFromString('1'), Sk.ffi.longFromString('1')).toBe '1'
     it "12345678901234567890123456789L / 12345678901234567890123456789L", ->
-      expect(Sk.ffi.typeName Sk.ffh.divide Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
-      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.divide Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '1'
+      expect(Sk.ffi.typeName Sk.ffh.div Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe 'long'
+      expect(Sk.ffi.remapToJs Sk.ffh.str Sk.ffh.div Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe '1'
 
   describe "pow", ->
     it "1 ** 1", ->

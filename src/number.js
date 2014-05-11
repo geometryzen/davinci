@@ -197,7 +197,7 @@ Sk.builtin.NumberPy.prototype.nb$add = function(other)
 };
 
 
-Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
+Sk.builtin.NumberPy.prototype.nb$sub = function(other)
 {
   /**
    * @const
@@ -232,7 +232,7 @@ Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
       if (diff > Sk.builtin.NumberPy.threshold$ || diff < -Sk.builtin.NumberPy.threshold$)
       {
         //  Promote to long
-        return new Sk.builtin.lng(selfJs).nb$subtract(otherJs);
+        return new Sk.builtin.lng(selfJs).nb$sub(otherJs);
       }
       else
       {
@@ -251,14 +251,14 @@ Sk.builtin.NumberPy.prototype.nb$subtract = function(other)
     else
     {
       //  int - long --> long
-      return new Sk.builtin.lng(selfJs).nb$subtract(other);
+      return new Sk.builtin.lng(selfJs).nb$sub(other);
     }
   }
 
   return undefined;
 };
 
-Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
+Sk.builtin.NumberPy.prototype.nb$mul = function(other)
 {
   /**
    * @const
@@ -296,7 +296,7 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
       // And self is {float|int}, being a NumberPy, so self must be {int} also.
       if (prodJs > Sk.builtin.NumberPy.threshold$ || prodJs < -Sk.builtin.NumberPy.threshold$)
       {
-        return Sk.ffh.multiply(Sk.ffi.promoteIntToLong(this),Sk.ffi.promoteIntToLong(other));
+        return Sk.ffh.mul(Sk.ffi.promoteIntToLong(this),Sk.ffi.promoteIntToLong(other));
       }
       else
       {
@@ -315,14 +315,14 @@ Sk.builtin.NumberPy.prototype.nb$multiply = function(other)
     else
     {
       //  int - long --> long
-      return new Sk.builtin.lng(selfJs).nb$multiply(other);
+      return new Sk.builtin.lng(selfJs).nb$mul(other);
     }
   }
 
   return undefined;
 };
 
-Sk.builtin.NumberPy.prototype.nb$divide = function(other)
+Sk.builtin.NumberPy.prototype.nb$div = function(other)
 {
   /**
    * @const
@@ -399,7 +399,7 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
       if (flooredJs > Sk.builtin.NumberPy.threshold$ || flooredJs < -Sk.builtin.NumberPy.threshold$)
       {
         //  Promote to long
-        return new Sk.builtin.lng(selfJs).nb$divide(otherJs);
+        return new Sk.builtin.lng(selfJs).nb$div(otherJs);
       }
       else
       {
@@ -446,7 +446,7 @@ Sk.builtin.NumberPy.prototype.nb$divide = function(other)
     else
     {
       //  int - long --> long
-      return new Sk.builtin.lng(selfJs).nb$divide(other);
+      return new Sk.builtin.lng(selfJs).nb$div(other);
     }
   }
 
@@ -889,11 +889,11 @@ Sk.builtin.NumberPy.prototype.nb$rshift = function(other)
 
 Sk.builtin.NumberPy.prototype.nb$inplace_add = Sk.builtin.NumberPy.prototype.nb$add;
 
-Sk.builtin.NumberPy.prototype.nb$inplace_subtract = Sk.builtin.NumberPy.prototype.nb$subtract;
+Sk.builtin.NumberPy.prototype.nb$inplace_subtract = Sk.builtin.NumberPy.prototype.nb$sub;
 
-Sk.builtin.NumberPy.prototype.nb$inplace_multiply = Sk.builtin.NumberPy.prototype.nb$multiply;
+Sk.builtin.NumberPy.prototype.nb$inplace_multiply = Sk.builtin.NumberPy.prototype.nb$mul;
 
-Sk.builtin.NumberPy.prototype.nb$inplace_divide = Sk.builtin.NumberPy.prototype.nb$divide;
+Sk.builtin.NumberPy.prototype.nb$inplace_divide = Sk.builtin.NumberPy.prototype.nb$div;
 
 Sk.builtin.NumberPy.prototype.nb$inplace_remainder = Sk.builtin.NumberPy.prototype.nb$remainder;
 
@@ -1017,7 +1017,7 @@ Sk.builtin.NumberPy.prototype.numberCompare = function(other)
       var tmp = thisAsLong.longCompare(other);
       return tmp;
     }
-    var diff = this.nb$subtract(other);
+    var diff = this.nb$sub(other);
     if (diff instanceof Sk.builtin.NumberPy)
     {
       return diff.v;
@@ -1078,82 +1078,16 @@ Sk.builtin.NumberPy.prototype.str$ = function(radix, sign)
   goog.asserts.assertNumber(radix);
   goog.asserts.assertBoolean(sign);
 
-  var thisJs = Sk.ffi.remapToJs(this);
+  var numberJs = Sk.ffi.remapToJs(this);
 
   if (Sk.ffi.isFloat(this))
   {
-    return Sk.builtin.numberToFloatStringJs(thisJs, radix, sign);
-  }
-
-  if (isNaN(thisJs))
-  {
-    return "nan";
-  }
-
-  if (sign === undefined) sign = true;
-
-  if (thisJs == Infinity)
-    return 'inf';
-  if (thisJs == -Infinity && sign)
-    return '-inf';
-  if (thisJs == -Infinity && !sign)
-    return 'inf';
-
-  var work = sign ? thisJs : Math.abs(thisJs);
-
-  var tmp;
-  if (radix === undefined || radix === 10)
-  {
-    if (Sk.ffi.isFloat(this))
-    {
-      tmp = work.toPrecision(12);
-
-      // transform fractions with 4 or more leading zeroes into exponents
-      var idx = tmp.indexOf('.');
-      var pre = work.toString().slice(0,idx);
-      var post = work.toString().slice(idx);
-      if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
-      {
-        if (tmp.length < 12)
-            tmp = work.toExponential();
-        else
-            tmp = work.toExponential(11);
-      }
-
-      while (tmp.charAt(tmp.length-1) == "0" && tmp.indexOf('e') < 0)
-      {
-        tmp = tmp.substring(0,tmp.length-1)
-      }
-      if (tmp.charAt(tmp.length-1) == ".")
-      {
-        tmp = tmp + "0";
-      }
-      tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
-      // make exponent two digits instead of one (ie e+09 not e+9)
-      tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
-      // remove trailing zeroes before the exponent
-      tmp = tmp.replace(/0+(e.*)/,'$1');
-    }
-    else
-    {
-      tmp = work.toString();
-    }
+    return Sk.builtin.numberToFloatStringJs(numberJs, radix, sign);
   }
   else
   {
-    tmp = work.toString(radix);
+    return Sk.builtin.numberToIntStringJs(numberJs, radix, sign);
   }
-
-  if (!Sk.ffi.isFloat(this))
-  {
-    return tmp;
-  }
-  
-  if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
-  {
-    tmp = tmp + '.0';
-  }
-  return tmp;
 };
 
 /**
@@ -1167,47 +1101,57 @@ Sk.builtin.numberToFloatStringJs = function(numberJs, radix, sign)
   goog.asserts.assertNumber(radix);
   goog.asserts.assertBoolean(sign);
 
-  if (isNaN(numberJs))
-  {
-    return "nan";
-  }
-
-  if (sign === undefined) sign = true;
-
-  if (numberJs == Infinity)
-    return 'inf';
-  if (numberJs == -Infinity && sign)
-    return '-inf';
-  if (numberJs == -Infinity && !sign)
-    return 'inf';
+  if (isNaN(numberJs)) return "nan";
+  if (numberJs == Infinity) return 'inf';
+  if (numberJs == -Infinity && sign) return '-inf';
+  if (numberJs == -Infinity && !sign) return 'inf';
 
   var work = sign ? numberJs : Math.abs(numberJs);
 
   var tmp;
-  if (radix === undefined || radix === 10)
+  if (radix === 10)
   {
     tmp = work.toPrecision(12);
 
     // transform fractions with 4 or more leading zeroes into exponents
     var idx = tmp.indexOf('.');
-    var pre = work.toString().slice(0,idx);
-    var post = work.toString().slice(idx);
-    if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
+    if (idx >= 0)
     {
-      if (tmp.length < 12)
+      var pre = work.toString().slice(0,idx);
+      var post = work.toString().slice(idx);
+      // The first RegEx mathes, at the beginning of the pre string (^), an optional
+      // minus sign (-?) followed by a zero (0) and then asserts the end of the string.
+      // The second RegEx matches, at the beginning of the post string (^), a zero (0)
+      // between 4 and unlimited times.
+      if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
+      {
+        if (tmp.length < 12)
+        {
           tmp = work.toExponential();
-      else
+        }
+        else
+        {
           tmp = work.toExponential(11);
+        }
+      }
+      else
+      {
+        // If we're not in exponential format, cleanup trailing zeros.
+        while (tmp.charAt(tmp.length-1) === "0" && tmp.indexOf('e') < 0)
+        {
+          tmp = tmp.substring(0, tmp.length-1)
+        }
+        if (tmp.charAt(tmp.length-1) == ".")
+        {
+          tmp = tmp + "0";
+        }
+      }
+    }
+    else
+    {
+      tmp = work.toExponential(11);
     }
 
-    while (tmp.charAt(tmp.length-1) == "0" && tmp.indexOf('e') < 0)
-    {
-      tmp = tmp.substring(0,tmp.length-1)
-    }
-    if (tmp.charAt(tmp.length-1) == ".")
-    {
-      tmp = tmp + "0";
-    }
     tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
     // make exponent two digits instead of one (ie e+09 not e+9)
     tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
@@ -1224,7 +1168,31 @@ Sk.builtin.numberToFloatStringJs = function(numberJs, radix, sign)
     tmp = tmp + '.0';
   }
   return tmp;
-}
+};
 goog.exportSymbol("Sk.builtin.numberToFloatStringJs", Sk.builtin.numberToFloatStringJs);
+
+/**
+ * @param {number} numberJs
+ * @param {number} radix
+ * @param {boolean} sign If true, the sign will be retained, otherwise treat as the absolute value.
+ * @return {string}
+ */
+Sk.builtin.numberToIntStringJs = function(numberJs, radix, sign)
+{
+  goog.asserts.assertNumber(radix);
+  goog.asserts.assertBoolean(sign);
+
+  if (isNaN(numberJs)) return "nan";
+  if (numberJs ===  Infinity) return 'inf';
+  if (numberJs === -Infinity)
+  {
+    return sign ? "-inf" : "inf";
+  }
+  else
+  {
+    return (sign ? numberJs : Math.abs(numberJs)).toString(radix);
+  }
+};
+goog.exportSymbol("Sk.builtin.numberToIntStringJs", Sk.builtin.numberToIntStringJs);
 
 goog.exportSymbol("Sk.builtin.NumberPy", Sk.builtin.NumberPy);

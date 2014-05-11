@@ -128,13 +128,13 @@ Sk.builtin.lng.prototype.nb$add = function(other)
 
 Sk.builtin.lng.prototype.nb$inplace_add = Sk.builtin.lng.prototype.nb$add;
 
-Sk.builtin.lng.prototype.nb$subtract = function(other)
+Sk.builtin.lng.prototype.nb$sub = function(other)
 {
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$subtract(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$sub(other);
     }
     else
     {
@@ -155,15 +155,15 @@ Sk.builtin.lng.prototype.nb$subtract = function(other)
   return new Sk.builtin.lng(this.biginteger.subtract(new Sk.builtin.biginteger(other)));
 };
 
-Sk.builtin.lng.prototype.nb$inplace_subtract = Sk.builtin.lng.prototype.nb$subtract;
+Sk.builtin.lng.prototype.nb$inplace_subtract = Sk.builtin.lng.prototype.nb$sub;
 
-Sk.builtin.lng.prototype.nb$multiply = function(other)
+Sk.builtin.lng.prototype.nb$mul = function(other)
 {
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.ffh.multiply(Sk.ffh.promoteLongToFloat(this), other);
+      return Sk.ffh.mul(Sk.ffh.promoteLongToFloat(this), other);
     }
     else
     {
@@ -184,15 +184,15 @@ Sk.builtin.lng.prototype.nb$multiply = function(other)
   return new Sk.builtin.lng(this.biginteger.multiply(new Sk.builtin.biginteger(other)));
 };
 
-Sk.builtin.lng.prototype.nb$inplace_multiply = Sk.builtin.lng.prototype.nb$multiply;
+Sk.builtin.lng.prototype.nb$inplace_multiply = Sk.builtin.lng.prototype.nb$mul;
 
-Sk.builtin.lng.prototype.nb$divide = function(other)
+Sk.builtin.lng.prototype.nb$div = function(other)
 {
   if (Sk.ffi.isFloat(other) || Sk.ffi.isInt(other))
   {
     if (Sk.ffi.isFloat(other))
     {
-      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$divide(other);
+      return Sk.builtin.numberToPy(parseFloat(this.str$(10, true))).nb$div(other);
     }
     else
     {
@@ -249,7 +249,7 @@ Sk.builtin.lng.prototype.nb$divide = function(other)
   }
 };
 
-Sk.builtin.lng.prototype.nb$inplace_divide = Sk.builtin.lng.prototype.nb$divide;
+Sk.builtin.lng.prototype.nb$inplace_divide = Sk.builtin.lng.prototype.nb$div;
 
 Sk.builtin.lng.prototype.nb$floor_divide = function(other)
 {
@@ -259,7 +259,7 @@ Sk.builtin.lng.prototype.nb$floor_divide = function(other)
   }
   else
   {
-    return this.nb$divide(other);
+    return this.nb$div(other);
   }
 };
 

@@ -101,8 +101,8 @@ mod[Sk.matrix.MATRIX_2x1] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
     var rhs = Sk.ffi.remapToJs(otherPy).elements;
-    var onePy = Sk.ffh.subtract(lhs[0], rhs[0]);
-    var twoPy = Sk.ffh.subtract(lhs[1], rhs[1]);
+    var onePy = Sk.ffh.sub(lhs[0], rhs[0]);
+    var twoPy = Sk.ffh.sub(lhs[1], rhs[1]);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
@@ -111,21 +111,21 @@ mod[Sk.matrix.MATRIX_2x1] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
     else {
       var lhs = Sk.ffi.remapToJs(selfPy).elements;
-      var onePy = Sk.ffh.multiply(lhs[0], otherPy);
-      var twoPy = Sk.ffh.multiply(lhs[1], otherPy);
+      var onePy = Sk.ffh.mul(lhs[0], otherPy);
+      var twoPy = Sk.ffh.mul(lhs[1], otherPy);
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
     }
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var rhs = Sk.ffi.remapToJs(selfPy).elements;
-    var onePy = Sk.ffh.multiply(otherPy, rhs[0]);
-    var twoPy = Sk.ffh.multiply(otherPy, rhs[1]);
+    var onePy = Sk.ffh.mul(otherPy, rhs[0]);
+    var twoPy = Sk.ffh.mul(otherPy, rhs[1]);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
   });
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
-    var onePy = Sk.ffh.divide(lhs[0], otherPy);
-    var twoPy = Sk.ffh.divide(lhs[1], otherPy);
+    var onePy = Sk.ffh.div(lhs[0], otherPy);
+    var twoPy = Sk.ffh.div(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
   });
   $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
@@ -208,34 +208,34 @@ mod[Sk.matrix.MATRIX_1x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
     var rhs = Sk.ffi.remapToJs(otherPy).elements;
-    var onePy = Sk.ffh.subtract(lhs[0], rhs[0]);
-    var twoPy = Sk.ffh.subtract(lhs[1], rhs[1]);
+    var onePy = Sk.ffh.sub(lhs[0], rhs[0]);
+    var twoPy = Sk.ffh.sub(lhs[1], rhs[1]);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_2x1)) {
-      return Sk.ffh.add(Sk.ffh.multiply(Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(otherPy, 0)), Sk.ffh.multiply(Sk.ffh.getitem(selfPy, 1), Sk.ffh.getitem(otherPy, 1)));
+      return Sk.ffh.add(Sk.ffh.mul(Sk.ffh.getitem(selfPy, 0), Sk.ffh.getitem(otherPy, 0)), Sk.ffh.mul(Sk.ffh.getitem(selfPy, 1), Sk.ffh.getitem(otherPy, 1)));
     }
     else if (Sk.ffi.isInstance(otherPy, Sk.matrix.MATRIX_1x2)) {
       throw Sk.ffi.assertionError("multiplication with 2x1 is not supported.");
     }
     else {
       var lhs = Sk.ffi.remapToJs(selfPy).elements;
-      var onePy = Sk.ffh.multiply(lhs[0], otherPy);
-      var twoPy = Sk.ffh.multiply(lhs[1], otherPy);
+      var onePy = Sk.ffh.mul(lhs[0], otherPy);
+      var twoPy = Sk.ffh.mul(lhs[1], otherPy);
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
     }
   });
   $loc.__rmul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var rhs = Sk.ffi.remapToJs(selfPy).elements;
-    var onePy = Sk.ffh.multiply(otherPy, rhs[0]);
-    var twoPy = Sk.ffh.multiply(otherPy, rhs[1]);
+    var onePy = Sk.ffh.mul(otherPy, rhs[0]);
+    var twoPy = Sk.ffh.mul(otherPy, rhs[1]);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
   });
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
-    var onePy = Sk.ffh.divide(lhs[0], otherPy);
-    var twoPy = Sk.ffh.divide(lhs[1], otherPy);
+    var onePy = Sk.ffh.div(lhs[0], otherPy);
+    var twoPy = Sk.ffh.div(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_1x2], onePy, twoPy);
   });
   $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
@@ -316,8 +316,8 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__sub__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
     var rhs = Sk.ffi.remapToJs(otherPy).elements;
-    var onePy = Sk.ffh.subtract(lhs[0], rhs[0]);
-    var twoPy = Sk.ffh.subtract(lhs[1], rhs[1]);
+    var onePy = Sk.ffh.sub(lhs[0], rhs[0]);
+    var twoPy = Sk.ffh.sub(lhs[1], rhs[1]);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
   });
   $loc.__mul__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
@@ -331,10 +331,10 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var b10 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 0);
       var b11 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 1);
 
-      var x00 = Sk.ffh.add(Sk.ffh.multiply(a00, b00), Sk.ffh.multiply(a10, b01));
-      var x01 = Sk.ffh.add(Sk.ffh.multiply(a01, b00), Sk.ffh.multiply(a11, b01));
-      var x10 = Sk.ffh.add(Sk.ffh.multiply(a00, b10), Sk.ffh.multiply(a10, b11));
-      var x11 = Sk.ffh.add(Sk.ffh.multiply(a01, b10), Sk.ffh.multiply(a11, b11));
+      var x00 = Sk.ffh.add(Sk.ffh.mul(a00, b00), Sk.ffh.mul(a10, b01));
+      var x01 = Sk.ffh.add(Sk.ffh.mul(a01, b00), Sk.ffh.mul(a11, b01));
+      var x10 = Sk.ffh.add(Sk.ffh.mul(a00, b10), Sk.ffh.mul(a10, b11));
+      var x11 = Sk.ffh.add(Sk.ffh.mul(a01, b10), Sk.ffh.mul(a11, b11));
       var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
       var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
@@ -343,15 +343,15 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var b0 = Sk.ffh.getitem(otherPy, 0);
       var b1 = Sk.ffh.getitem(otherPy, 1);
 
-      var onePy = Sk.ffh.add(Sk.ffh.multiply(a00, b0), Sk.ffh.multiply(a10, b1));
-      var twoPy = Sk.ffh.add(Sk.ffh.multiply(a01, b0), Sk.ffh.multiply(a11, b1));
+      var onePy = Sk.ffh.add(Sk.ffh.mul(a00, b0), Sk.ffh.mul(a10, b1));
+      var twoPy = Sk.ffh.add(Sk.ffh.mul(a01, b0), Sk.ffh.mul(a11, b1));
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], onePy, twoPy);
     }
     else {
-      var x00 = Sk.ffh.multiply(a00, otherPy);
-      var x01 = Sk.ffh.multiply(a01, otherPy);
-      var x10 = Sk.ffh.multiply(a10, otherPy);
-      var x11 = Sk.ffh.multiply(a11, otherPy);
+      var x00 = Sk.ffh.mul(a00, otherPy);
+      var x01 = Sk.ffh.mul(a01, otherPy);
+      var x10 = Sk.ffh.mul(a10, otherPy);
+      var x11 = Sk.ffh.mul(a11, otherPy);
 
       var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
       var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
@@ -369,19 +369,19 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       var b10 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 0);
       var b11 = Sk.ffh.getitem(Sk.ffh.getitem(otherPy, 1), 1);
 
-      var x00 = Sk.ffh.add(Sk.ffh.multiply(a00, b00), Sk.ffh.multiply(a10, b01));
-      var x01 = Sk.ffh.add(Sk.ffh.multiply(a01, b00), Sk.ffh.multiply(a11, b01));
-      var x10 = Sk.ffh.add(Sk.ffh.multiply(a00, b10), Sk.ffh.multiply(a10, b11));
-      var x11 = Sk.ffh.add(Sk.ffh.multiply(a01, b10), Sk.ffh.multiply(a11, b11));
+      var x00 = Sk.ffh.add(Sk.ffh.mul(a00, b00), Sk.ffh.mul(a10, b01));
+      var x01 = Sk.ffh.add(Sk.ffh.mul(a01, b00), Sk.ffh.mul(a11, b01));
+      var x10 = Sk.ffh.add(Sk.ffh.mul(a00, b10), Sk.ffh.mul(a10, b11));
+      var x11 = Sk.ffh.add(Sk.ffh.mul(a01, b10), Sk.ffh.mul(a11, b11));
       var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
       var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
       return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
     }
     else {
-      var x00 = Sk.ffh.multiply(otherPy, a00);
-      var x01 = Sk.ffh.multiply(otherPy, a01);
-      var x10 = Sk.ffh.multiply(otherPy, a10);
-      var x11 = Sk.ffh.multiply(otherPy, a11);
+      var x00 = Sk.ffh.mul(otherPy, a00);
+      var x01 = Sk.ffh.mul(otherPy, a01);
+      var x10 = Sk.ffh.mul(otherPy, a10);
+      var x11 = Sk.ffh.mul(otherPy, a11);
 
       var onePy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x00, x01);
       var twoPy = Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x1], x10, x11);
@@ -390,8 +390,8 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   });
   $loc.__div__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
     var lhs = Sk.ffi.remapToJs(selfPy).elements;
-    var onePy = Sk.ffh.divide(lhs[0], otherPy);
-    var twoPy = Sk.ffh.divide(lhs[1], otherPy);
+    var onePy = Sk.ffh.div(lhs[0], otherPy);
+    var twoPy = Sk.ffh.div(lhs[1], otherPy);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], onePy, twoPy);
   });
   $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {

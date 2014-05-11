@@ -216,7 +216,7 @@ Sk.builtin.StringPy.prototype.sq$repeat = function(n)
     }
     return Sk.builtin.stringToPy(ret);
 };
-Sk.builtin.StringPy.prototype.nb$multiply = Sk.builtin.StringPy.prototype.sq$repeat;
+Sk.builtin.StringPy.prototype.nb$mul = Sk.builtin.StringPy.prototype.sq$repeat;
 Sk.builtin.StringPy.prototype.nb$inplace_multiply = Sk.builtin.StringPy.prototype.sq$repeat;
 Sk.builtin.StringPy.prototype.sq$item = function() { goog.asserts.fail(); };
 Sk.builtin.StringPy.prototype.sq$slice = function(i1, i2)

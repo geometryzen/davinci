@@ -361,14 +361,14 @@
       $loc.__add__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.add));
       $loc.__radd__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.add));
 
-      $loc.__sub__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.subtract));
-      $loc.__rsub__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.subtract));
+      $loc.__sub__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.sub));
+      $loc.__rsub__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.sub));
 
-      $loc.__mul__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.multiply));
-      $loc.__rmul__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.multiply));
+      $loc.__mul__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.mul));
+      $loc.__rmul__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.mul));
 
-      $loc.__div__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.divide));
-      $loc.__rdiv__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.divide));
+      $loc.__div__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.div));
+      $loc.__rdiv__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.div));
 
       $loc.__mod__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.mod));
       $loc.__rmod__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.mod));
@@ -461,11 +461,11 @@
       else {
         retstep = false;
       }
-      var diffPy = Sk.ffh.subtract(stopPy, startPy);
-      var stepPy = endpoint ? Sk.ffh.divide(diffPy, Sk.ffh.subtract(numPy, Sk.ffi.numberToIntPy(1))) : Sk.ffh.divide(diffPy, numPy);
+      var diffPy = Sk.ffh.sub(stopPy, startPy);
+      var stepPy = endpoint ? Sk.ffh.div(diffPy, Sk.ffh.sub(numPy, Sk.ffi.numberToIntPy(1))) : Sk.ffh.div(diffPy, numPy);
       var buffer = [];
       for (var i = 0; i < num; i++) {
-        buffer[i] = Sk.ffh.add(Sk.ffh.multiply(Sk.ffi.numberToFloatPy(i), stepPy), startPy);
+        buffer[i] = Sk.ffh.add(Sk.ffh.mul(Sk.ffi.numberToFloatPy(i), stepPy), startPy);
       }
       var shapeJs = [];
       shapeJs[0] = numPy;
