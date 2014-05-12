@@ -611,8 +611,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var temperature = new BLADE[RATIONAL](-rhs.dimensions.temperature.numer, rhs.dimensions.temperature.denom);
     var amount = new BLADE[RATIONAL](-rhs.dimensions.amount.numer, rhs.dimensions.amount.denom);
     var intensity = new BLADE[RATIONAL](-rhs.dimensions.intensity.numer, rhs.dimensions.intensity.denom);
-    var angle     = new BLADE[RATIONAL](-rhs.dimensions.angle.numer, rhs.dimensions.angle.denom);
-    var dimensions = new BLADE[DIMENSIONS](M, L, T, Q, temperature, amount, intensity, angle);
+    var dimensions = new BLADE[DIMENSIONS](M, L, T, Q, temperature, amount, intensity);
     var labels = rhs.labels;
     return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(scale), Sk.ffi.referenceToPy(dimensions, DIMENSIONS), Sk.ffi.remapToPy(labels));
   });
@@ -642,37 +641,35 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var unitJs = Sk.ffi.remapToJs(unitPy);
     var patterns =
     [
-      [-1,1,-3,1, 2,1, 2,1, 0,1, 0,1, 0,1, 0,1, "F/m"],
-      [-1,1,-2,1, 1,1, 2,1, 0,1, 0,1, 0,1, 0,1, "S"],
-      [-1,1,-2,1, 2,1, 2,1, 0,1, 0,1, 0,1, 0,1, "F"],
-      [-1,1, 3,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "N·m ** 2/kg ** 2"],
-      [ 0,1, 0,1,-2,1, 0,1, 0,1, 0,1, 0,1, 1,1, "rad/s/s"],
-      [ 0,1, 0,1,-1,1, 0,1, 0,1, 0,1, 0,1, 1,1, "rad/s"],
-      [ 0,1, 0,1,-1,1, 0,1, 0,1, 0,1, 0,1, 0,1, "Hz"],
-      [ 0,1, 0,1,-1,1, 1,1, 0,1, 0,1, 0,1, 0,1, "A"],
-      [ 0,1, 1,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "m/s ** 2"],
-      [ 0,1, 1,1,-1,1, 0,1, 0,1, 0,1, 0,1, 0,1, "m/s"],
-      [ 1,1, 1,1,-1,1, 0,1, 0,1, 0,1, 0,1, 0,1, "kg·m/s"],
-      [ 1,1,-1,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "Pa"],
-      [ 1,1,-1,1,-1,1, 0,1, 0,1, 0,1, 0,1, 0,1, "Pa·s"],
-      [ 1,1, 0,1,-3,1, 0,1, 0,1, 0,1, 0,1, 0,1, "W/m ** 2"],
-      [ 1,1, 0,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "N/m"],
-      [ 1,1, 0,1,-1,1,-1,1, 0,1, 0,1, 0,1, 0,1, "T"],
-      [ 1,1, 1,1,-3,1, 0,1,-1,1, 0,1, 0,1, 0,1, "W/(m·K)"],
-      [ 1,1, 1,1,-2,1,-1,1, 0,1, 0,1, 0,1, 0,1, "V/m"],
-      [ 1,1, 1,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "N"],
-      [ 1,1, 1,1, 0,1,-2,1, 0,1, 0,1, 0,1, 0,1, "H/m"],
-      [ 1,1, 2,1,-2,1, 0,1,-1,1, 0,1, 0,1, 0,1, "J/K"],
-      [ 0,1, 2,1,-2,1, 0,1,-1,1, 0,1, 0,1, 0,1, "J/(kg·K)"],
-      [ 1,1, 2,1,-2,1, 0,1,-1,1,-1,1, 0,1, 0,1, "J/(mol·K)"],
-      [ 1,1, 2,1,-2,1, 0,1, 0,1,-1,1, 0,1, 0,1, "J/mol"],
-      [ 1,1, 2,1,-2,1, 0,1, 0,1, 0,1, 0,1, 0,1, "J"],
-      [ 1,1, 2,1,-1,1, 0,1, 0,1, 0,1, 0,1, 0,1, "J·s"],
-      [ 1,1, 2,1,-3,1, 0,1, 0,1, 0,1, 0,1, 0,1, "W"],
-      [ 1,1, 2,1,-2,1,-1,1, 0,1, 0,1, 0,1, 0,1, "V"],
-      [ 1,1, 2,1,-1,1,-2,1, 0,1, 0,1, 0,1, 0,1, "Ω"],
-      [ 1,1, 2,1, 0,1,-2,1, 0,1, 0,1, 0,1, 0,1, "H"],
-      [ 1,1, 2,1,-1,1,-1,1, 0,1, 0,1, 0,1, 0,1, "Wb"]
+      [-1,1,-3,1, 2,1, 2,1, 0,1, 0,1, 0,1, "F/m"],
+      [-1,1,-2,1, 1,1, 2,1, 0,1, 0,1, 0,1, "S"],
+      [-1,1,-2,1, 2,1, 2,1, 0,1, 0,1, 0,1, "F"],
+      [-1,1, 3,1,-2,1, 0,1, 0,1, 0,1, 0,1, "N·m ** 2/kg ** 2"],
+      [ 0,1, 0,1,-1,1, 0,1, 0,1, 0,1, 0,1, "Hz"],
+      [ 0,1, 0,1,-1,1, 1,1, 0,1, 0,1, 0,1, "A"],
+      [ 0,1, 1,1,-2,1, 0,1, 0,1, 0,1, 0,1, "m/s ** 2"],
+      [ 0,1, 1,1,-1,1, 0,1, 0,1, 0,1, 0,1, "m/s"],
+      [ 1,1, 1,1,-1,1, 0,1, 0,1, 0,1, 0,1, "kg·m/s"],
+      [ 1,1,-1,1,-2,1, 0,1, 0,1, 0,1, 0,1, "Pa"],
+      [ 1,1,-1,1,-1,1, 0,1, 0,1, 0,1, 0,1, "Pa·s"],
+      [ 1,1, 0,1,-3,1, 0,1, 0,1, 0,1, 0,1, "W/m ** 2"],
+      [ 1,1, 0,1,-2,1, 0,1, 0,1, 0,1, 0,1, "N/m"],
+      [ 1,1, 0,1,-1,1,-1,1, 0,1, 0,1, 0,1, "T"],
+      [ 1,1, 1,1,-3,1, 0,1,-1,1, 0,1, 0,1, "W/(m·K)"],
+      [ 1,1, 1,1,-2,1,-1,1, 0,1, 0,1, 0,1, "V/m"],
+      [ 1,1, 1,1,-2,1, 0,1, 0,1, 0,1, 0,1, "N"],
+      [ 1,1, 1,1, 0,1,-2,1, 0,1, 0,1, 0,1, "H/m"],
+      [ 1,1, 2,1,-2,1, 0,1,-1,1, 0,1, 0,1, "J/K"],
+      [ 0,1, 2,1,-2,1, 0,1,-1,1, 0,1, 0,1, "J/(kg·K)"],
+      [ 1,1, 2,1,-2,1, 0,1,-1,1,-1,1, 0,1, "J/(mol·K)"],
+      [ 1,1, 2,1,-2,1, 0,1, 0,1,-1,1, 0,1, "J/mol"],
+      [ 1,1, 2,1,-2,1, 0,1, 0,1, 0,1, 0,1, "J"],
+      [ 1,1, 2,1,-1,1, 0,1, 0,1, 0,1, 0,1, "J·s"],
+      [ 1,1, 2,1,-3,1, 0,1, 0,1, 0,1, 0,1, "W"],
+      [ 1,1, 2,1,-2,1,-1,1, 0,1, 0,1, 0,1, "V"],
+      [ 1,1, 2,1,-1,1,-2,1, 0,1, 0,1, 0,1, "Ω"],
+      [ 1,1, 2,1, 0,1,-2,1, 0,1, 0,1, 0,1, "H"],
+      [ 1,1, 2,1,-1,1,-1,1, 0,1, 0,1, 0,1, "Wb"]
     ];
     var M           = unitJs.dimensions.M;
     var L           = unitJs.dimensions.L;
@@ -691,16 +688,15 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           Q.numer           === pattern[6]  && Q.denom           === pattern[7]  &&
           temperature.numer === pattern[8]  && temperature.denom === pattern[9]  &&
           amount.numer      === pattern[10] && amount.denom      === pattern[11] &&
-          intensity.numer   === pattern[12] && intensity.denom   === pattern[13] &&
-          angle.numer       === pattern[14] && angle.denom       === pattern[15])
+          intensity.numer   === pattern[12] && intensity.denom   === pattern[13])
       {
         if (unitJs.scale !== 1)
         {
-          return Sk.builtin.stringToPy(unitJs.scale + " * " + pattern[16]);
+          return Sk.builtin.stringToPy(unitJs.scale + " * " + pattern[14]);
         }
         else
         {
-          return Sk.builtin.stringToPy(pattern[16]);
+          return Sk.builtin.stringToPy(pattern[14]);
         }
       }
     }
