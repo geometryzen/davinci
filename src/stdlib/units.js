@@ -333,7 +333,7 @@ var isQuantityPy = function(valuePy)
  */
 var isAngle = function(uomJs, numer, denom)
 {
-  return uomJs.dimensions.dimensionless() && uomJs.dimensions.angle.numer === numer && uomJs.dimensions.angle.denom === denom;
+  return uomJs.dimensions.dimensionless();
 };
 
 Sk.builtin.defineFractions(mod, RATIONAL, function(n, d) {return new BLADE.Rational(n, d)});
@@ -596,26 +596,15 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
     }
   });
-  $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy) {
+  $loc.__rdiv__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  {
     Sk.ffi.checkLhsOperandType(OP_MUL, NUMBER, Sk.ffi.isNum(otherPy), otherPy);
-    var other = Sk.ffi.remapToJs(otherPy);
-    var rhs = Sk.ffi.remapToJs(selfPy);
-    var scale = other / rhs.scale;
-    // FIXME: This will break when BLADE changes. Push down into BLADE.
-    // TODO: Unary minus or negate() for Rational.
-    // TODO: Reciprocal or inverse() for Dimensions.
-    var M = new BLADE[RATIONAL](-rhs.dimensions.M.numer, rhs.dimensions.M.denom);
-    var L = new BLADE[RATIONAL](-rhs.dimensions.L.numer, rhs.dimensions.L.denom);
-    var T = new BLADE[RATIONAL](-rhs.dimensions.T.numer, rhs.dimensions.T.denom);
-    var Q = new BLADE[RATIONAL](-rhs.dimensions.Q.numer, rhs.dimensions.Q.denom);
-    var temperature = new BLADE[RATIONAL](-rhs.dimensions.temperature.numer, rhs.dimensions.temperature.denom);
-    var amount = new BLADE[RATIONAL](-rhs.dimensions.amount.numer, rhs.dimensions.amount.denom);
-    var intensity = new BLADE[RATIONAL](-rhs.dimensions.intensity.numer, rhs.dimensions.intensity.denom);
-    var dimensions = new BLADE[DIMENSIONS](M, L, T, Q, temperature, amount, intensity);
-    var labels = rhs.labels;
-    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.numberToFloatPy(scale), Sk.ffi.referenceToPy(dimensions, DIMENSIONS), Sk.ffi.remapToPy(labels));
+    var numberJs = Sk.ffi.remapToJs(otherPy);
+    var unitJs   = Sk.ffi.remapToJs(selfPy);
+    return Sk.ffi.callsim(mod[UNIT], Sk.ffi.referenceToPy(unitJs.inverse().mul(numberJs), UNIT));
   });
-  $loc.__pow__ = Sk.ffi.functionPy(function(lhsPy, rhsPy) {
+  $loc.__pow__ = Sk.ffi.functionPy(function(lhsPy, rhsPy)
+  {
     var lhs = Sk.ffi.remapToJs(lhsPy);
     var rhs = Sk.ffi.remapToJs(rhsPy);
     var c = lhs.pow(rhs);
@@ -678,7 +667,6 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var temperature = unitJs.dimensions.temperature;
     var amount      = unitJs.dimensions.amount;
     var intensity   = unitJs.dimensions.intensity;
-    var angle       = unitJs.dimensions.angle;
     for (var i = 0, len = patterns.length; i < len; i++)
     {
       var pattern = patterns[i];
@@ -1089,10 +1077,6 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
   mod[WATT]     = Sk.ffh.div(mod[JOULE], mod[SECOND]);
   mod[VOLT]     = Sk.ffh.div(mod[JOULE], mod[COULOMB]);
   mod[TESLA]    = Sk.ffh.div(mod[SWIRL], Sk.ffh.mul(mod[COULOMB], Sk.ffh.mul(mod[METER], mod[METER])));
-
-  mod[RADIAN]   = makeUnitPy(BLADE.UNIT_RADIAN);
-  mod[TAU]      = makeUnitPy(BLADE.UNIT_TAU);
-  mod[DEGREE]   = makeUnitPy(BLADE.UNIT_DEGREE);
 })();
 
 };

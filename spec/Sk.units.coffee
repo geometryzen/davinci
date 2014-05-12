@@ -93,15 +93,15 @@ describe "units", ->
     it "should have the correct type", -> expectCorrectUnitType('tesla')
     it "should have the symbol T", -> expectUnitString('tesla','1.0 T')
 
-  describe "radian", ->
+  xdescribe "radian", ->
     it "should have the correct type", -> expectCorrectUnitType('radian')
     it "should have the symbol rad", -> expectUnitString('radian','1.0 rad')
 
-  describe "tau", ->
+  xdescribe "tau", ->
     it "should have the correct type", -> expectCorrectUnitType('tau')
     it "should have the symbol rad", -> expectUnitString('tau','6.28318530718 rad')
 
-  describe "degree", ->
+  xdescribe "degree", ->
     it "should have the correct type", -> expectCorrectUnitType('degree')
     it "should have the symbol rad", -> expectUnitString('degree','0.0174532925199 rad')
 
@@ -119,7 +119,7 @@ describe "units", ->
       expect(Sk.ffi.typeName(unitPy)).toBe Sk.ffi.typeName lhsPy
       expect(Sk.ffi.remapToJs Sk.ffh.str unitPy).toBe '1.0 kg m'
 
-  describe "cos(tau)", ->
+  xdescribe "cos(tau)", ->
     it "should be 1.0", ->
 
       code = 
@@ -133,7 +133,7 @@ describe "units", ->
       expect(Sk.ffi.typeName(xPy)).toBe Sk.ffi.typeName xPy
       expect(Sk.ffi.remapToJs Sk.ffh.str xPy).toBe '1.0'
 
-  describe "sin(tau/4)", ->
+  xdescribe "sin(tau/4)", ->
     it "should be 1.0", ->
 
       code = 
@@ -147,7 +147,7 @@ describe "units", ->
       expect(Sk.ffi.typeName(xPy)).toBe Sk.ffi.typeName xPy
       expect(Sk.ffi.remapToJs Sk.ffh.str xPy).toBe '1.0'
 
-  describe "tan(tau/8)", ->
+  xdescribe "tan(tau/8)", ->
     it "should be 1.0", ->
 
       code = 
