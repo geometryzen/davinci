@@ -173,9 +173,13 @@ Sk.builtin.int_ = function(x, base)
     if (x instanceof Sk.builtin.lng)
     {
         if (x.cantBeInt())
+        {
             return new Sk.builtin.lng(x);
+        }
         else
+        {
             return Sk.ffi.numberToIntPy(x.toInt$());
+        }
     }
 
     // sneaky way to do truncate, floor doesn't work < 0, round doesn't work on the .5> side
