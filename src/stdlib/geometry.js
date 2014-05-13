@@ -408,8 +408,8 @@ var MATERIAL_GRID_MINOR = new THREE[LINE_BASIC_MATERIAL]({"color": COLOR_GRID,"o
 var e1 = new THREE[VECTOR_3](1, 0, 0);
 var e2 = new THREE[VECTOR_3](0, 1, 0);
 var e3 = new THREE[VECTOR_3](0, 0, 1);
-var E3  = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 1), new THREE[QUATERNION](0, 0, 0, 0), 0, false);
-var one = new THREE[EUCLIDEAN_3](new THREE[VECTOR_3](0, 0, 0), new THREE[QUATERNION](0, 0, 0, 1), 0, false);
+var E3  = new THREE[EUCLIDEAN_3](false, new THREE[VECTOR_3](0, 0, 1), new THREE[QUATERNION](0, 0, 0, 0), 0, false);
+var one = new THREE[EUCLIDEAN_3](false, new THREE[VECTOR_3](0, 0, 0), new THREE[QUATERNION](0, 0, 0, 1), 0, false);
 
 function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
 function isVector3Py(valuePy) {return Sk.ffi.isInstance(valuePy, VECTOR_3);}

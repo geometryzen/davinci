@@ -1774,7 +1774,7 @@ function isGeometryPy(valuePy) {
 }
 
 function quaternionToEuclidean3Py(quaternion) {
-  var euclidean = new THREE[EUCLIDEAN_3](new THREE.Vector3(0, 0, 0), quaternion, 0);
+  var euclidean = new THREE[EUCLIDEAN_3](false, new THREE.Vector3(0, 0, 0), quaternion, 0);
   return Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(euclidean, EUCLIDEAN_3));
 }
 /**
@@ -1796,7 +1796,7 @@ function setQuaternionProperty(className, targetPy, name, valuePy, aliasName) {
  *
  */
 function vectorToEuclidean3Py(vector) {
-  var euclidean = new THREE[EUCLIDEAN_3](vector, new THREE.Quaternion(0,0,0,0), 0);
+  var euclidean = new THREE[EUCLIDEAN_3](false, vector, new THREE.Quaternion(0,0,0,0), 0);
   return Sk.ffi.callsim(mod[EUCLIDEAN_3], Sk.ffi.referenceToPy(euclidean, EUCLIDEAN_3));
 }
 /**
