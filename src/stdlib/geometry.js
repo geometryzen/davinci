@@ -297,7 +297,7 @@ var MESH_NORMAL_MATERIAL            = "MeshNormalMaterial";
  * @const
  * @type {string}
  */
-var CUBE_GEOMETRY                   = "CubeGeometry";
+var BOX_GEOMETRY                    = "BoxGeometry";
 /**
  * @const
  * @type {string}
@@ -585,20 +585,12 @@ mod[CARTESIAN_SPACE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     var scene;
     var renderer;
     Sk.ffi.checkMethodArgs(CARTESIAN_SPACE, arguments, 0, 2);
-    if (Sk.ffi.isDefined(scenePy))
-    {
-      Sk.ffi.checkArgType(PROP_SCENE, SCENE, Sk.ffi.isInstance(scenePy, SCENE), scenePy);
-    }
-    else
+    if (!Sk.ffi.isDefined(scenePy))
     {
       scenePy = Sk.ffi.callsim(mod[WORLD]);
     }
     scene = Sk.ffi.remapToJs(scenePy);
-    if (Sk.ffi.isDefined(rendererPy))
-    {
-      Sk.ffi.checkArgType(PROP_RENDERER, [CANVAS_RENDERER, WEBGL_RENDERER], Sk.ffi.isInstance(rendererPy, WEBGL_RENDERER) || Sk.ffi.isInstance(rendererPy, CANVAS_RENDERER), rendererPy);
-    }
-    else
+    if (!Sk.ffi.isDefined(rendererPy))
     {
       rendererPy = Sk.ffi.callsim(mod[WEBGL_RENDERER], Sk.ffi.remapToPy({"antialias": true}));
     }
@@ -1023,7 +1015,7 @@ mod[CUBE_BUILDER] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           var height     = Sk.ffi.numberToFloatPy(dimensions[PROP_HEIGHT]);
           var depth      = Sk.ffi.numberToFloatPy(dimensions[PROP_DEPTH]);
           var segments   = Sk.ffi.numberToIntPy(cube[PROP_SEGMENTS] ? cube[PROP_SEGMENTS] : 1);
-          var geometryPy = Sk.ffi.callsim(mod[CUBE_GEOMETRY], width, height, depth, segments, segments, segments);
+          var geometryPy = Sk.ffi.callsim(mod[BOX_GEOMETRY], width, height, depth, segments, segments, segments);
           return completeMesh(geometryPy, cube);
         });
       }

@@ -1120,7 +1120,7 @@ THREE.Geometry.prototype.computeCentroids = function(){};
 THREE.Geometry.prototype.computeFaceNormals = function(){};
 
 /**
-@param {boolean} areaWeighted
+@param {boolean=} areaWeighted
 */
 THREE.Geometry.prototype.computeVertexNormals = function(areaWeighted){};
 
@@ -1166,6 +1166,34 @@ var THREEGeometryAnimation;
 
 /** @type {Array.<THREEGeometryBone>}*/         THREE.Geometry.prototype.bones;
 /** @type {THREEGeometryAnimation} */           THREE.Geometry.prototype.animation;
+
+// ============================================================================
+// THREE.BoxGeometry (r66, incomplete)
+// ============================================================================
+/**
+@constructor
+@param {number} width
+@param {number} height
+@param {number} depth
+@param {number} widthSegments
+@param {number} heightSegments
+@param {number} depthSegments
+@extends {THREE.Geometry}
+*/
+THREE.BoxGeometry = function(width, height, depth, widthSegments, heightSegments, depthSegments) {};
+
+// ============================================================================
+// THREE.CircleGeometry (r66, incomplete)
+// ============================================================================
+/**
+@constructor
+@param {number} radius
+@param {number} segments
+@param {number} thetaStart
+@param {number} thetaLength
+@extends {THREE.Geometry}
+*/
+THREE.CircleGeometry = function (radius, segments, thetaStart, thetaLength) {};
 
 // ============================================================================
 // THREE.Texture
@@ -1403,6 +1431,26 @@ THREE.Scene = function(){};
 /** @type {*} */                         THREE.Scene.prototype.fog;
 /** @type {*} */                         THREE.Scene.prototype.overrideMaterial;
 /** @type {!boolean} */                  THREE.Scene.prototype.matrixAutoUpdate;
+
+// ============================================================================
+// THREE.CanvasRenderer (r66, incomplete)
+// ============================================================================
+
+/**
+@constructor
+@param {Object} parameters
+*/
+THREE.CanvasRenderer = function(parameters){};
+
+// ============================================================================
+// THREE.WebGLRenderer (r66, incomplete)
+// ============================================================================
+
+/**
+@constructor
+@param {Object} parameters
+*/
+THREE.WebGLRenderer = function(parameters){};
 
 // ============================================================================
 // Misc utils

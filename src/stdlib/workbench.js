@@ -88,14 +88,16 @@ mod[WORKBENCH_2D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 /**
  * Workbench3D
  */
-mod[WORKBENCH_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
-  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, canvasPy, rendererPy, cameraPy) {
+mod[WORKBENCH_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc)
+{
+  $loc.__init__ = Sk.ffi.functionPy(function(selfPy, canvasPy, rendererPy, cameraPy)
+  {
     Sk.ffi.checkMethodArgs(WORKBENCH_3D + "(canvas, renderer, camera)", arguments, 3, 3);
-    Sk.ffi.checkArgType(PROP_CANVAS, "Element", Sk.ffi.isInstance(canvasPy), canvasPy);
     var canvas   = Sk.ffi.remapToJs(canvasPy);
     var renderer = Sk.ffi.remapToJs(rendererPy);
     var camera   = Sk.ffi.remapToJs(cameraPy);
-    function onWindowResize(event) {
+    function onWindowResize(event)
+    {
       var width  = window.innerWidth;
       var height = window.innerHeight;
       renderer.setSize(width, height);
@@ -104,18 +106,22 @@ mod[WORKBENCH_3D] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     }
     Sk.ffi.referenceToPy({"canvas": canvas, "renderer": renderer, "camera": camera, "onWindowResize": onWindowResize}, WORKBENCH_3D, undefined, selfPy);
   });
-  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
+  $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name)
+  {
     var workbench = Sk.ffi.remapToJs(selfPy);
     switch(name) {
       case METHOD_SET_UP: {
-        return Sk.ffi.callableToPy(mod, METHOD_SET_UP, function(methodPy) {
+        return Sk.ffi.callableToPy(mod, METHOD_SET_UP, function(methodPy)
+        {
           document.body.insertBefore(workbench.canvas, document.body.firstChild);
           window.addEventListener('resize', workbench.onWindowResize, false);
           workbench.onWindowResize(null);
         });
       }
-      case METHOD_TEAR_DOWN: {
-        return Sk.ffi.callableToPy(mod, METHOD_TEAR_DOWN, function(methodPy) {
+      case METHOD_TEAR_DOWN:
+      {
+        return Sk.ffi.callableToPy(mod, METHOD_TEAR_DOWN, function(methodPy)
+        {
           window.removeEventListener('resize', workbench.onWindowResize, false);
           removeElementsByTagName(TAG_NAME_CANVAS);
         });
