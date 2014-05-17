@@ -81,33 +81,14 @@ if (COMPILED)
 }
 
 /**
- * @param {!Sk.builtin.module} module
- * @param {function((!Sk.builtin.Exception|undefined), !Sk.builtin.module=):(!Sk.builtin.module|undefined)=} callback
- *
- * @return {!Sk.builtin.module|undefined}
- */
-Sk.sendModule_ = function(module, callback)
-{
-    if (typeof callback === 'function')
-    {
-        return callback(undefined, module);
-    }
-    else
-    {
-        return module;
-    }
-}
-
-/**
  * @param {string} name name of module to import
  * @param {boolean} dumpJS whether to output the generated js code
  * @param {string|undefined} overrideName what to call the module after it's imported if it's to be renamed (i.e. __main__)
  * @param {string} body use as the body of the text for the module rather than Sk.read'ing it.
- * @param {function((!Sk.builtin.Exception|undefined), !Sk.builtin.module=):(!Sk.builtin.module|undefined)|undefined} callback
  *
- * @return {!Sk.builtin.module|undefined}
+ * @return {!Sk.builtin.module}
  */
-Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body, callback)
+Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body)
 {
     Sk.importSetUpPath();
     /**
@@ -132,7 +113,7 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body, ca
     {
         try
         {
-            return Sk.sendModule_(Sk.sysmodules.mp$subscript(modNameSplit[0]), callback);
+            return Sk.sysmodules.mp$subscript(modNameSplit[0]);
         }
         catch (x)
         {
@@ -142,21 +123,20 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body, ca
             // all parent packages. so, here we're importing 'a.b', which will in
             // turn import 'a', and then return 'a' eventually.
             var parentModName = modNameSplit.slice(0, modNameSplit.length - 1).join(".");
-            // FIXME: This needs its own callback for the last argument.
-            var parentModule = /** @type {!Sk.builtin.module} */(Sk.importModuleInternalNoBody_(parentModName, dumpJS, undefined, undefined));
+            var parentModule = Sk.importModuleInternalNoBody_(parentModName, dumpJS, undefined);
             var childModule = new Sk.builtin.module();
             Sk.sysmodules.mp$ass_subscript(name, childModule);
             var co = Sk.compile(body, name + ".py", "exec");
             Sk.evaluateModule(childModule, co, dumpJS, modname);
             Sk.storeModuleInParent(childModule, parentModName, modNameSplit);
-            return Sk.sendModule_(parentModule, callback);
+            return parentModule;
         }
     }
     else
     {
         try
         {
-            return Sk.sendModule_(Sk.sysmodules.mp$subscript(modname), callback);
+            return Sk.sysmodules.mp$subscript(modname);
         }
         catch (x)
         {
@@ -165,7 +145,7 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body, ca
             Sk.sysmodules.mp$ass_subscript(name, module);
             var co = Sk.compile(body, name + ".py", "exec");
             Sk.evaluateModule(module, co, dumpJS, modname);
-            return Sk.sendModule_(module, callback);
+            return module;
         }
     }
 };
@@ -174,11 +154,10 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body, ca
  * @param {string} name name of module to import
  * @param {boolean} dumpJS whether to output the generated js code
  * @param {string|undefined} overrideName what to call the module after it's imported if it's to be renamed (i.e. __main__)
- * @param {function((!Sk.builtin.Exception|undefined), !Sk.builtin.module=):(!Sk.builtin.module|undefined)=} callback
  *
- * @return {!Sk.builtin.module|undefined}
+ * @return {!Sk.builtin.module}
  */
-Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
+Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName)
 {
     goog.asserts.assertString(name, "name must be a string, e.g. '<stdin>'");
     goog.asserts.assertBoolean(dumpJS, "dumpJS must be a boolean");
@@ -206,7 +185,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
     {
         try
         {
-            return Sk.sendModule_(Sk.sysmodules.mp$subscript(modNameSplit[0]), callback);
+            return Sk.sysmodules.mp$subscript(modNameSplit[0]);
         }
         catch (x)
         {
@@ -216,8 +195,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
             // all parent packages. so, here we're importing 'a.b', which will in
             // turn import 'a', and then return 'a' eventually.
             var parentModName = modNameSplit.slice(0, modNameSplit.length - 1).join(".");
-            // FIXME: This needs its own callback.
-            var parentModule = /** @type {!Sk.builtin.module} */(Sk.importModuleInternalNoBody_(parentModName, dumpJS, undefined, undefined));
+            var parentModule = Sk.importModuleInternalNoBody_(parentModName, dumpJS, undefined);
             var childModule = new Sk.builtin.module();
             Sk.sysmodules.mp$ass_subscript(name, childModule);
 
@@ -227,7 +205,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
                 var co = { funcname: "$builtinmodule", code: Sk.read(filename) };
                 Sk.evaluateModule(childModule, co, dumpJS, modname);
                 Sk.storeModuleInParent(childModule, parentModName, modNameSplit);
-                return Sk.sendModule_(parentModule, callback);
+                return parentModule;
             }
             else
             {
@@ -235,7 +213,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
                 var co = Sk.compile(Sk.read(filename), filename, "exec");
                 Sk.evaluateModule(childModule, co, dumpJS, modname);
                 Sk.storeModuleInParent(childModule, parentModName, modNameSplit);
-                return Sk.sendModule_(parentModule, callback);
+                return parentModule;
             }
         }
     }
@@ -243,7 +221,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
     {
         try
         {
-            return Sk.sendModule_(Sk.sysmodules.mp$subscript(modname), callback);
+            return Sk.sysmodules.mp$subscript(modname);
         }
         catch (x)
         {
@@ -257,14 +235,14 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName, callback)
             {
                 var co = { funcname: "$builtinmodule", code: Sk.read(filename) };
                 Sk.evaluateModule(module, co, dumpJS, modname);
-                return Sk.sendModule_(module, callback);
+                return module;
             }
             else
             {
                 filename = Sk.importSearchPathForName(name, ".py", false);
                 var co = Sk.compile(Sk.read(filename), filename, "exec");
                 Sk.evaluateModule(module, co, dumpJS, modname);
-                return Sk.sendModule_(module, callback);
+                return module;
             }
         }
     }
@@ -350,21 +328,7 @@ Sk.importModule = function(name, dumpJS)
 {
     goog.asserts.assertString(name, "name must be a string, e.g. '<stdin>'");
     goog.asserts.assertBoolean(dumpJS, "dumpJS must be a boolean");
-    return /** @type {!Sk.builtin.module} */ (Sk.importModuleInternalNoBody_(name, dumpJS, undefined));
-};
-
-/**
- * @param {string} name the module name
- * @param {boolean} dumpJS print out the js code after compilation for debugging
- * @param {function((!Sk.builtin.Exception|undefined), !Sk.builtin.module=):(!Sk.builtin.module|undefined)=} callback
- *
- * @return {undefined}
- */
-Sk.importModuleAsync = function(name, dumpJS, callback)
-{
-    goog.asserts.assertString(name, "name must be a string, e.g. '<stdin>'");
-    goog.asserts.assertBoolean(dumpJS, "dumpJS must be a boolean");
-    Sk.importModuleInternalNoBody_(name, dumpJS, undefined);
+    return Sk.importModuleInternalNoBody_(name, dumpJS, undefined);
 };
 
 /**
@@ -387,7 +351,7 @@ Sk.importMain = function(name, dumpJS)
 
     Sk.resetCompiler();
 
-    return /** @type {!Sk.builtin.module} */ (Sk.importModuleInternalNoBody_(name, (typeof dumpJS === 'boolean' ? dumpJS : false), "__main__"));
+    return Sk.importModuleInternalNoBody_(name, (typeof dumpJS === 'boolean' ? dumpJS : false), "__main__");
 };
 goog.exportSymbol("Sk.importMain", Sk.importMain);
 
@@ -412,35 +376,9 @@ Sk.importMainWithBody = function(name, dumpJS, body)
     
     Sk.resetCompiler();
 
-    return /** @type {!Sk.builtin.module} */ (Sk.importModuleInternalFromBody_(name, dumpJS, "__main__", body, undefined));
+    return Sk.importModuleInternalFromBody_(name, dumpJS, "__main__", body);
 };
 goog.exportSymbol("Sk.importMainWithBody", Sk.importMainWithBody);
-
-/**
- * @param {string} name The name of module to import.
- * @param {boolean} dumpJS Whether to output (to Sk.debugout) the generated JavaScript code.
- * @param {string} body Use as the body of the text for the module.
- * @param {(function((!Sk.builtin.Exception|undefined), !Sk.builtin.module=):(!Sk.builtin.module|undefined))=} callback
- *
- * @return {undefined}
- */
-Sk.importMainWithBodyAsync = function(name, dumpJS, body, callback)
-{
-    goog.asserts.assertString(name, "name must be a string, e.g. '<stdin>'");
-    goog.asserts.assertBoolean(dumpJS, "dumpJS must be a boolean");
-    goog.asserts.assertString(body, "body must be a string");
-
-    Sk.dateSet = false;
-    Sk.filesLoaded = false
-    // Reset imports.
-    Sk.sysmodules = new Sk.builtin.dict([]);
-    Sk.realsyspath = undefined;
-    
-    Sk.resetCompiler();
-
-    Sk.importModuleInternalFromBody_(name, dumpJS, "__main__", body, callback);
-};
-goog.exportSymbol("Sk.importMainWithBodyAsync", Sk.importMainWithBodyAsync);
 
 /**
  * This is used by the compiler.
@@ -454,7 +392,7 @@ Sk.builtin.__import__ = function(name, globals, locals, fromlist)
     var top = Sk.importModuleInternalNoBody_(name, false, undefined);
     if (!fromlist || fromlist.length === 0)
     {
-        return /** @type {!Sk.builtin.module} */(top);
+        return top;
     }
     else
     {
