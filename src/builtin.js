@@ -1156,14 +1156,3 @@ Sk.builtin.apply_ = function apply_() { throw new Sk.builtin.NotImplementedError
 Sk.builtin.buffer = function buffer() { throw new Sk.builtin.NotImplementedError("buffer is not yet implemented")}
 Sk.builtin.coerce = function coerce() { throw new Sk.builtin.NotImplementedError("coerce is not yet implemented")}
 Sk.builtin.intern = function intern() { throw new Sk.builtin.NotImplementedError("intern is not yet implemented")}
-
-
-/*
-Sk.builtinFiles = {};
-Sk.builtin.read = function read(x) {
-    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
-        throw "File not found: '" + x + "'";
-    return Sk.builtinFiles["files"][x];
-};
-Sk.builtinFiles = undefined;
-*/

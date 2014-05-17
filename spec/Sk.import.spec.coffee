@@ -1,4 +1,4 @@
-describe "Sk.importMainWithBody", ->
+describe "Sk.import", ->
 
   beforeEach () ->
     Sk.currLineNo = 12345
@@ -13,8 +13,8 @@ describe "Sk.importMainWithBody", ->
         else
           return Sk.builtinFiles["files"][searchPath]
 
-  describe "basic", ->
-    it "should work", ->
+  describe "MainWithBody", ->
+    it "should work without a callback", ->
       module = Sk.importMainWithBody("<stdin>", false, "x = 23\n")
 
       x = Sk.ffi.gattr(module, 'x')

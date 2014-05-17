@@ -12,6 +12,7 @@ describe "units", ->
 
   expectUnitString = (name, value) ->
     code = "from units import *"
+    debugger;
     module = Sk.importMainWithBody("<stdin>", false, code)
     unitPy = Sk.ffi.gattr(module, name)
     expect(Sk.ffi.remapToJs Sk.ffh.str unitPy).toBe value

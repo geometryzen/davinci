@@ -80,14 +80,18 @@ goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
  */
 Sk.output = function(x) {};
 
-/*
+/**
  * Replacable function to load modules with (called via import, etc.)
  * todo; this should be an async api
+ *
+ * @param {string} searchPath
+ * @return {string}
  */
-Sk.read = function(x) { throw "Sk.read has not been implemented"; };
+Sk.read = function(searchPath) { throw "Sk.read has not been implemented"; };
 
-/*
+/**
  * Setable to emulate arguments to the script. Should be array of JS strings.
+ * @type {Array.<string>}
  */
 Sk.sysargv = [];
 

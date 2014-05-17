@@ -1967,6 +1967,8 @@ Compiler.prototype.cmod = function(mod)
  * @param {string} source the code
  * @param {string} filename where it came from
  * @param {string} mode one of 'exec', 'eval', or 'single'
+ *
+ * @return {{funcname: string, code: string}}
  */
 Sk.compile = function(source, filename, mode)
 {
@@ -1975,12 +1977,7 @@ Sk.compile = function(source, filename, mode)
     var ast = Sk.astFromParse(cst, filename);
     var st = Sk.symboltable(ast, filename);
     var c = new Compiler(filename, st, 0, source); // todo; CO_xxx
-    var funcname = c.cmod(ast);
-    var ret = c.result.join('');
-    return {
-        funcname: funcname,
-        code: ret
-    };
+    return {"funcname": c.cmod(ast), "code": c.result.join('')};
 };
 goog.exportSymbol("Sk.compile", Sk.compile);
 
