@@ -1851,29 +1851,94 @@ THREE.VortexGeometry.prototype = Object.create(THREE.Geometry.prototype );
  * @param {Object} valuePy
  * @return {boolean} The JavaScript value of the Python argument.
  */
-function checkArgBool(name, valuePy) {
+function checkArgBool(name, valuePy)
+{
   Sk.ffi.checkArgType(name, Sk.ffi.PyType.BOOL, Sk.ffi.isBool(valuePy), valuePy);
   return Sk.ffi.remapToJs(valuePy);
 }
-
+/**
+ * @return {boolean}
+ */
 function isBoolean(x)   { return typeof x === 'boolean'; }
+/**
+ * @return {boolean}
+ */
 function isFunction(x)  { return typeof x === 'function'; }
+/**
+ * @return {boolean}
+ */
 function isNumber(x)    { return typeof x === 'number'; }
+/**
+ * @return {boolean}
+ */
 function isObject(x)    { return typeof x === 'object'; }
+/**
+ * @return {boolean}
+ */
 function isString(x)    { return typeof x === 'string'; }
+/**
+ * @return {boolean}
+ */
 function isUndefined(x) { return typeof x === 'undefined'; }
-
+/**
+ * @return {boolean}
+ */
 function isDefined(x)   { return typeof x !== 'undefined'; }
+/**
+ * @return {boolean}
+ */
 function isNull(x)      { return typeof x === 'object' && x === null; }
-
+/**
+ * @return {boolean}
+ */
 function isEuclidean3Py(valuePy) {return Sk.ffi.isInstance(valuePy, EUCLIDEAN_3);}
+/**
+ * @return {boolean}
+ */
 function isQuaternionPy(valuePy) {return Sk.ffi.isInstance(valuePy, QUATERNION);}
+/**
+ * @return {boolean}
+ */
 function isVector3Py(valuePy) {return Sk.ffi.isInstance(valuePy, VECTOR_3);}
-function isGeometryPy(valuePy)
+/**
+ * @return {boolean}
+ */
+var isGeometryPy = function(valuePy)
 {
-  return Sk.ffi.isInstance(valuePy) && Sk.ffi.typeName(valuePy) === GEOMETRY; // TODO: GEOMETRIES
-}
-
+  if (Sk.ffi.isInstance(valuePy) && Sk.ffi.typeName(valuePy).match(GEOMETRY + "$") == GEOMETRY)
+  {
+    return true;
+  }
+  else if (Sk.ffi.isObjectPy(valuePy))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+};
+/**
+ * @return {boolean}
+ */
+var isMaterialPy = function(valuePy)
+{
+  if (Sk.ffi.isInstance(valuePy) && Sk.ffi.typeName(valuePy).match(Sk.three.MATERIAL + "$") == Sk.three.MATERIAL)
+  {
+    return true;
+  }
+  else if (Sk.ffi.isObjectPy(valuePy))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+};
+/**
+ * @param {THREE.Quaternion} quaternion
+ */
 function quaternionToEuclidean3Py(quaternion)
 {
   var euclidean = new THREE[EUCLIDEAN_3](false, new THREE.Vector3(0, 0, 0), quaternion, 0);
@@ -1896,7 +1961,7 @@ function setQuaternionProperty(className, targetPy, name, valuePy, aliasName)
   Sk.ffi.remapToJs(targetPy)[name] = Sk.ffi.remapToJs(quaternionPy);
 }
 /**
- *
+ * @param {THREE.Vector3} vector
  */
 function vectorToEuclidean3Py(vector)
 {
@@ -2377,7 +2442,7 @@ mod[WEBGL_RENDERER] = Sk.ffi.buildClass(mod, function($gbl, $loc)
   {
     if (Sk.ffi.checkMethodArgs(WEBGL_RENDERER, arguments, 0, 1) > 0)
     {
-      Sk.ffi.checkArgType("parameters", [Sk.ffi.PyType.OBJECT, Sk.ffi.PyType.DICT], Sk.ffi.isObject(parametersPy) || Sk.ffi.isDict(parametersPy), parametersPy);
+      Sk.ffi.checkArgType("parameters", [Sk.ffi.PyType.OBJECT, Sk.ffi.PyType.DICT], Sk.ffi.isObjectPy(parametersPy) || Sk.ffi.isDict(parametersPy), parametersPy);
     }
     var parameters = Sk.ffi.remapToJs(parametersPy);
     Sk.ffi.referenceToPy(new THREE.WebGLRenderer(parameters), WEBGL_RENDERER, undefined, selfPy);
@@ -4607,8 +4672,8 @@ Sk.three.meshSetAttr = function(className, meshPy, name, valuePy) {
 mod[Sk.three.MESH] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
     Sk.ffi.checkMethodArgs(Sk.three.MESH, arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isInstance(geometryPy), geometryPy); // TODO: GEOMETRIES
-    Sk.ffi.checkArgType(PROP_MATERIAL, Sk.three.MATERIAL, Sk.ffi.isInstance(materialPy), materialPy); // TODO: MATERIALS
+    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, isGeometryPy(geometryPy), geometryPy);
+    Sk.ffi.checkArgType(PROP_MATERIAL, Sk.three.MATERIAL, isMaterialPy(materialPy), materialPy);
     Sk.ffi.referenceToPy(new THREE[Sk.three.MESH](Sk.ffi.remapToJs(geometryPy), Sk.ffi.remapToJs(materialPy)), Sk.three.MESH, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
@@ -4958,8 +5023,8 @@ mod[MESH_PHONG_MATERIAL] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[Sk.three.PARTICLE_SYSTEM] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, geometryPy, materialPy) {
     Sk.ffi.checkMethodArgs(Sk.three.PARTICLE_SYSTEM, arguments, 0, 2);
-    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, Sk.ffi.isInstance(geometryPy), geometryPy); // TODO: GEOMETRIES
-    Sk.ffi.checkArgType(PROP_MATERIAL, Sk.three.MATERIAL, Sk.ffi.isInstance(materialPy), materialPy); // TODO: MATERIALS
+    Sk.ffi.checkArgType(PROP_GEOMETRY, GEOMETRY, isGeometryPy(geometryPy), geometryPy);
+    Sk.ffi.checkArgType(PROP_MATERIAL, Sk.three.MATERIAL, isMaterialPy(materialPy), materialPy);
     Sk.ffi.referenceToPy(new THREE.ParticleSystem(Sk.ffi.remapToJs(geometryPy), Sk.ffi.remapToJs(materialPy)), Sk.three.PARTICLE_SYSTEM, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {

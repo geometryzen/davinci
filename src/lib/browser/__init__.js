@@ -31,7 +31,7 @@ var $builtinmodule = function(name)
       Sk.ffi.checkArgType("tearDown",  Sk.ffi.PyType.FUNCTION, Sk.ffi.isFunction(tearDownPy));
       if (Sk.ffi.isDefined(windowPy))
       {
-        Sk.ffi.checkArgType("window", [Sk.ffi.PyType.OBJECT,Sk.ffi.PyType.INSTANCE], Sk.ffi.isObject(windowPy) || Sk.ffi.isInstance(windowPy, WINDOW_CLASS), windowPy);
+        Sk.ffi.checkArgType("window", [Sk.ffi.PyType.OBJECT,Sk.ffi.PyType.INSTANCE], Sk.ffi.isObjectPy(windowPy) || Sk.ffi.isInstance(windowPy, WINDOW_CLASS), windowPy);
       }
       var onDocumentKeyDown = function(event)
       {

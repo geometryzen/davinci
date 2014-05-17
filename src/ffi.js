@@ -471,8 +471,8 @@ goog.exportSymbol("Sk.ffi.isInstance", Sk.ffi.isInstance);
 Sk.ffi.isDefined = function(valuePy) {return Sk.ffi.getType(valuePy) !== Sk.ffi.PyType.UNDEFINED;};
 goog.exportSymbol("Sk.ffi.isDefined", Sk.ffi.isDefined);
 
-Sk.ffi.isObject = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.OBJECT;};
-goog.exportSymbol("Sk.ffi.isObject", Sk.ffi.isObject);
+Sk.ffi.isObjectPy = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.OBJECT;};
+goog.exportSymbol("Sk.ffi.isObjectPy", Sk.ffi.isObjectPy);
 
 Sk.ffi.isDict = function(valuePy) {return Sk.ffi.getType(valuePy) === Sk.ffi.PyType.DICT;};
 goog.exportSymbol("Sk.ffi.isDict", Sk.ffi.isDict);

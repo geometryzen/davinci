@@ -714,7 +714,7 @@ mod[SHAPE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
 mod[STAGE] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, canvasPy) {
     Sk.ffi.checkMethodArgs(STAGE, arguments, 1, 1);
-    Sk.ffi.checkArgType(PROP_CANVAS, NODE, Sk.ffi.isObject(canvasPy) || Sk.ffi.isInstance(canvasPy, NODE), canvasPy);
+    Sk.ffi.checkArgType(PROP_CANVAS, NODE, Sk.ffi.isObjectPy(canvasPy) || Sk.ffi.isInstance(canvasPy, NODE), canvasPy);
     var canvas = Sk.ffi.remapToJs(canvasPy);
     Sk.ffi.referenceToPy(new createjs[STAGE](canvas), STAGE, undefined, selfPy);
   });

@@ -121,7 +121,7 @@ mod[WORKBENCH_2D] = Sk.ffi.buildClass(mod, function($gbl, $loc)
 {
   $loc.__init__ = Sk.ffi.functionPy(function(selfPy, canvasPy, windowPy) {
     Sk.ffi.checkMethodArgs(WORKBENCH_2D + "(canvas[, window])", arguments, 1, 2);
-    Sk.ffi.checkArgType(PROP_CANVAS, [Sk.ffi.PyType.OBJECT], Sk.ffi.isObject(canvasPy) || Sk.ffi.isInstance(canvasPy), canvasPy);
+    Sk.ffi.checkArgType(PROP_CANVAS, [Sk.ffi.PyType.OBJECT], Sk.ffi.isObjectPy(canvasPy) || Sk.ffi.isInstance(canvasPy), canvasPy);
     var canvas = Sk.ffi.remapToJs(canvasPy);
     var windowJs = windowFromPy(windowPy);
     function onWindowResize(event)
