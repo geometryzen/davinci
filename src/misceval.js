@@ -463,7 +463,6 @@ Sk.misceval.isTrue = function(x)
 };
 goog.exportSymbol("Sk.misceval.isTrue", Sk.misceval.isTrue);
 
-Sk.misceval.softspace_ = false;
 /**
  * @param {string} x
  */
@@ -471,10 +470,10 @@ Sk.misceval.print_ = function(x)
 {
     goog.asserts.assertString(x);
 
-    if (Sk.misceval.softspace_)
+    if (Sk.softSpace)
     {
         if (x !== "\n") Sk.output(' ');
-        Sk.misceval.softspace_ = false;
+        Sk.softSpace = false;
     }
     Sk.output(x);
     var isspace = function(c)
@@ -483,7 +482,7 @@ Sk.misceval.print_ = function(x)
     };
     if (x.length === 0 || !isspace(x[x.length - 1]) || x[x.length - 1] === ' ')
     {
-        Sk.misceval.softspace_ = true;
+        Sk.softSpace = true;
     }
 };
 goog.exportSymbol("Sk.misceval.print_", Sk.misceval.print_);

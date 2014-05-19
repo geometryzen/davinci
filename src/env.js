@@ -65,10 +65,8 @@ Sk.configure = function(options) {
     // assume that if we're changing syspath we want to force reimports.
     // not sure how valid this is, perhaps a separate api for that.
     Sk.realsyspath = undefined;
-    Sk.sysmodules = new Sk.builtin.dict([]);
+    // Sk.sysmodules = new Sk.builtin.dict([]);
   }
-
-  Sk.misceval.softspace_ = false;
 };
 goog.exportSymbol('Sk.configure', Sk.configure);
 
@@ -199,6 +197,12 @@ goog.exportSymbol('Sk.flyweight', Sk.flyweight);
 
 
 /**
+ * @type {boolean}
+ */
+Sk.softSpace = false;
+
+
+/**
  * The flyweight mode for strings (in development).
  * This is not quite production-ready.
  * Do not use this parameter; it will go away!
@@ -217,7 +221,7 @@ goog.exportSymbol('Sk.python3', Sk.python3);
 
 /**
  * @param {string} args
- * @return {null|string}
+ * @return {?string}
  */
 Sk.inputfun = function(args) {
   return window.prompt(args);
