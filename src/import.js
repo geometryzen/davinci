@@ -11,7 +11,10 @@ Sk.realsyspath = undefined;
  */
 Sk.importSearchPathForName = function(name, ext, failok)
 {
-    var L = Sk.realsyspath;
+    /**
+     * @type {Sk.builtin.list}
+     */
+    var L = Sk.realsyspath ? Sk.realsyspath : new Sk.builtin.list([]);
     for (var it = L.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
     {
         var nameAsPath = name.replace(/\./g, "/");
