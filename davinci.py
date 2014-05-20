@@ -512,6 +512,24 @@ def dist(options):
         print ". Wrote {0}.".format(compfn)
         print ". gzip of compressed: %d bytes" % size
 
+def lint(options):
+    # Linting files one at a time until all done.
+    files  = " src/ffi.js"
+    files += " src/lib/browser/__init__.js"
+    files += " src/lib/geometry/__init__.js"
+    files += " src/stdlib/geometry.js"
+    ret = os.system("gjslint --strict --max_line_length 120 --disable 0110,0233 %s" % (files))
+    if ret != 0:
+        print "Linting was a disaster. What are you doing?"
+        sys.exit(1)
+
+def style(options):
+    files  = " "
+    ret = os.system("fixjsstyle --strict %s" % (files))
+    if ret != 0:
+        print "Linting was a disaster. What are you doing?"
+        sys.exit(1)
+
 def regenparser():
     """regenerate the parser/ast source code"""
     if not os.path.exists("gen"): os.mkdir("gen")
@@ -797,6 +815,8 @@ Commands:
 
     help             Display help information about Skulpt
     host             Start a simple HTTP server for testing
+    lint             Run the Google JavaScript Linter
+    style            Fix the JavaScript style
     upload           Run appcfg.py to upload doc to live GAE site
     doctest          Run the GAE development server for doc testing
     nrt              Generate a file for a new test case
@@ -853,6 +873,10 @@ def main():
         test()
     elif cmd == "dist":
         dist(options)
+    elif cmd == "lint":
+        lint(options)
+    elif cmd == "style":
+        style(options)
     elif cmd == "regengooglocs":
         regengooglocs()
     elif cmd == "regentests":

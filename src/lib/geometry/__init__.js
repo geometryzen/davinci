@@ -4,4 +4,4 @@ var $builtinmodule = function(moduleNamePy) {
   Sk.builtin.defineGeometry(mod, THREE, Sk.ffi.remapToJs(moduleNamePy));
   Sk.builtin.defineProbeE3(mod, THREE);
   return mod;
-}
+};
