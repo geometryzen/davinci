@@ -125,7 +125,6 @@ Files = [
         'src/stdlib/vector3.js',
         'src/stdlib/fractions.js',
         'src/stdlib/workbench.js',
-        "vendor/bladejs/dist/bladejs.js",
         ("support/jsbeautify/beautify.js", FILE_TYPE_TEST),
         ]
 
@@ -143,6 +142,7 @@ TestFiles = [
         'support/threejs/src/math/Quaternion.js',
         'support/threejs/src/math/Euler.js',
         'support/threejs/src/math/Extend.js',
+        "vendor/bladejs/dist/bladejs.js",
         "{0}/sprintf.js".format(TEST_DIR),
         "{0}/json2.js".format(TEST_DIR),
         "{0}/test.js".format(TEST_DIR)
@@ -458,7 +458,7 @@ def dist(options):
     if options.verbose:
         print ". Compressing..."
 
-    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
+    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
     # to disable asserts
     # --define goog.DEBUG=false
     #

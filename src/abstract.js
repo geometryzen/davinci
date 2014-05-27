@@ -333,28 +333,23 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
  * @param {*} obj
  * @param {Sk.abstr.unaryOp} name
  */
- Sk.abstr.uboNameToSlotFunc_ = function(obj, name) {
-  if (obj === null)
-  {
+Sk.abstr.uoNameToSlotFunc_ = function(obj, name) {
+  if (obj === null) {
     return undefined;
-  };
+  }
   switch (name)
   {
-    case Sk.abstr.unaryOp.USub:
-    {
-        return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
+    case Sk.abstr.unaryOp.USub: {
+      return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
     }
-    case Sk.abstr.unaryOp.Invert:
-    {
-        return obj.nb$invert            ? obj.nb$invert          : obj['__invert__'];
+    case Sk.abstr.unaryOp.UAdd: {
+      return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
     }
-    case Sk.abstr.unaryOp.UAdd:
-    {
-        return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
+    case Sk.abstr.unaryOp.Invert: {
+      return obj.nb$invert           ? obj.nb$invert          : obj['__invert__'];
     }
-    default:
-    {
-        throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
+    default: {
+      throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
     }
   }
 };
@@ -396,7 +391,7 @@ Sk.abstr.numberUnaryOp = function(valuePy, op)
     }
     else
     {
-        var uop = Sk.abstr.uboNameToSlotFunc_(valuePy, op);
+        var uop = Sk.abstr.uoNameToSlotFunc_(valuePy, op);
         if (uop != undefined)
         {
             if (uop.call)

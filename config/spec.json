@@ -3,10 +3,11 @@
   "launch_in_dev" : ["Chrome"],
   "launch_in_ci" : ["PhantomJS"],
   "src_files" : [
+    "vendor/threejs/build/three.min.js",
+    "vendor/bladejs/dist/bladejs.min.js",
     "generated/js/app.js",
     "generated/js/spec.js",
     "dist/davinci.js",
-    "dist/davinci-stdlib.js",
-    "vendor/threejs/build/three.min.js"
+    "dist/davinci-stdlib.js"
   ]
 }

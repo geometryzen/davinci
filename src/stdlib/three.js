@@ -1469,7 +1469,7 @@ Sk.stdlib.PlaneGeometry.prototype = Object.create(THREE.Geometry.prototype);
  * @param {number=} phiLength
  * @param {THREE.Quaternion=} attitude
  */
-THREE.RevolutionGeometry = function (points, generator, segments, phiStart, phiLength, attitude) {
+Sk.three.RevolutionGeometry = function (points, generator, segments, phiStart, phiLength, attitude) {
 
   THREE.Geometry.call( this );
 
@@ -1554,13 +1554,13 @@ THREE.RevolutionGeometry = function (points, generator, segments, phiStart, phiL
   this.computeFaceNormals();
   this.computeVertexNormals();
 };
-THREE.RevolutionGeometry.prototype = Object.create(THREE.Geometry.prototype);
+Sk.three.RevolutionGeometry.prototype = Object.create(THREE.Geometry.prototype);
 
 /**
  * ArrowGeometry
  *
  * @constructor
- * @extends THREE.RevolutionGeometry
+ * @extends Sk.three.RevolutionGeometry
  * @param {number=} scale
  * @param {THREE.Quaternion=} attitude
  * @param {number=} segments
@@ -1570,9 +1570,8 @@ THREE.RevolutionGeometry.prototype = Object.create(THREE.Geometry.prototype);
  * @param {number=} lengthCone
  * @param {THREE.Vector3=} axis
  */
-THREE.ArrowGeometry = function(scale, attitude, segments, length, radiusShaft, radiusCone, lengthCone, axis)
+Sk.three.ArrowGeometry = function(scale, attitude, segments, length, radiusShaft, radiusCone, lengthCone, axis)
 {
-  debugger;
   scale        = scale || 1;
   attitude     = attitude || new THREE.Quaternion(0, 0, 0, 1);
   length       = (length || 1) * scale;
@@ -1639,9 +1638,9 @@ THREE.ArrowGeometry = function(scale, attitude, segments, length, radiusShaft, r
     return {"points": points, "generator": generator};
   };
   var arrow = computeArrow(axis);
-  THREE.RevolutionGeometry.call(this, arrow.points, arrow.generator, segments, 0, 2 * Math.PI, attitude);
+  Sk.three.RevolutionGeometry.call(this, arrow.points, arrow.generator, segments, 0, 2 * Math.PI, attitude);
 }
-THREE.ArrowGeometry.prototype = Object.create(THREE.RevolutionGeometry.prototype);
+Sk.three.ArrowGeometry.prototype = Object.create(Sk.three.RevolutionGeometry.prototype);
 
 /**
  * TorusGeometry
@@ -1737,7 +1736,7 @@ Sk.stdlib.TorusGeometry.prototype = Object.create(THREE.Geometry.prototype );
  * @param {number=} arrowSegments
  * @param {number=} radialSegments
  */
-THREE.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments) {
+Sk.three.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments) {
 
   THREE.Geometry.call(this);
 
@@ -1845,7 +1844,7 @@ THREE.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone, len
   }
   this.computeCentroids();
 };
-THREE.VortexGeometry.prototype = Object.create(THREE.Geometry.prototype );
+Sk.three.VortexGeometry.prototype = Object.create(THREE.Geometry.prototype );
 /**
  * @param {string} name
  * @param {Object} valuePy
@@ -3178,7 +3177,7 @@ mod[Sk.three.ARROW_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return {"points": points, "generator": generator};
     };
     var arrow = computeArrow(axis);
-    Sk.ffi.referenceToPy(new THREE.RevolutionGeometry(arrow.points, arrow.generator, segments, 0, 2 * Math.PI, attitude), Sk.three.ARROW_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new Sk.three.RevolutionGeometry(arrow.points, arrow.generator, segments, 0, 2 * Math.PI, attitude), Sk.three.ARROW_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     return geometryGetAttr(Sk.three.ARROW_GEOMETRY, selfPy, name);
@@ -3408,7 +3407,7 @@ mod[LATHE_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     });
     // LatheGeometry assumes that the points are to be rotated about the z-axis.
     var generator = new THREE.Quaternion(0, 0, 1, 0);
-    Sk.ffi.referenceToPy(new THREE.RevolutionGeometry(points, generator, Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
+    Sk.ffi.referenceToPy(new Sk.three.RevolutionGeometry(points, generator, Sk.ffi.remapToJs(segmentsPy), Sk.ffi.remapToJs(phiStartPy), Sk.ffi.remapToJs(phiLengthPy)), LATHE_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     return geometryGetAttr(LATHE_GEOMETRY, selfPy, name);
@@ -3591,7 +3590,7 @@ mod[REVOLUTION_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     });
     var attitude   = Sk.ffi.remapToJs(attitudePy);
     var attitude = Sk.ffi.remapToJs(attitudePy) ? Sk.ffi.remapToJs(attitudePy).quaternion : undefined;
-    Sk.ffi.referenceToPy(new THREE.RevolutionGeometry(
+    Sk.ffi.referenceToPy(new Sk.three.RevolutionGeometry(
       points,
       Sk.ffi.remapToJs(generatorPy).quaternion,
       Sk.ffi.remapToJs(segmentsPy),
@@ -3892,7 +3891,7 @@ mod[Sk.three.VORTEX_GEOMETRY] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     }
     var arrowSegments  = Sk.ffi.remapToJs(arrowSegmentsPy);
     var radialSegments = Sk.ffi.remapToJs(radialSegmentsPy);
-    var vortex = new THREE.VortexGeometry(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments);
+    var vortex = new Sk.three.VortexGeometry(radius, radiusCone, radiusShaft, lengthCone, lengthShaft, arrowSegments, radialSegments);
     Sk.ffi.referenceToPy(vortex, Sk.three.VORTEX_GEOMETRY, undefined, selfPy);
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(vortexPy, name) {
