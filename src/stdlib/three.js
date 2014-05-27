@@ -1043,11 +1043,6 @@ var METHOD_CROSS               = "cross";
  * @const
  * @type {string}
  */
-var METHOD_COMPUTE_CENTROIDS   = "computeCentroids";
-/**
- * @const
- * @type {string}
- */
 var METHOD_COMPUTE_FACE_NORMALS = "computeFaceNormals";
 /**
  * @const
@@ -1374,7 +1369,6 @@ Sk.stdlib.CylinderGeometry = function (radiusTop, radiusBottom, height, radialSe
       this.faceVertexUvs[0].push([uv1, uv2, uv3]);
     }
   }
-  this.computeCentroids();
   this.computeFaceNormals();
 }
 Sk.stdlib.CylinderGeometry.prototype = Object.create(THREE.Geometry.prototype);
@@ -1451,7 +1445,6 @@ Sk.stdlib.PlaneGeometry = function (width, height, widthSegments, heightSegments
       this.faceVertexUvs[0].push([uvb.clone(), uvc, uvd.clone()]);
     }
   }
-  this.computeCentroids();
 };
 Sk.stdlib.PlaneGeometry.prototype = Object.create(THREE.Geometry.prototype);
 
@@ -1549,8 +1542,6 @@ Sk.three.RevolutionGeometry = function (points, generator, segments, phiStart, p
       ]);
     }
   }
-
-  this.computeCentroids();
   this.computeFaceNormals();
   this.computeVertexNormals();
 };
@@ -1719,7 +1710,6 @@ Sk.stdlib.TorusGeometry = function(radius, tube, radialSegments, tubularSegments
       this.faceVertexUvs[0].push([uvs[b].clone(), uvs[c].clone(), uvs[d].clone()]);
     }
   }
-  this.computeCentroids();
 };
 Sk.stdlib.TorusGeometry.prototype = Object.create(THREE.Geometry.prototype );
 
@@ -1842,7 +1832,6 @@ Sk.three.VortexGeometry = function(radius, radiusCone, radiusShaft, lengthCone, 
       this.faceVertexUvs[0].push([uvs[b].clone(), uvs[c].clone(), uvs[d].clone()]);
     }
   }
-  this.computeCentroids();
 };
 Sk.three.VortexGeometry.prototype = Object.create(THREE.Geometry.prototype );
 /**
@@ -3980,12 +3969,6 @@ function geometryGetAttr(className, geometryPy, name) {
         Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
         Sk.ffi.checkArgType("matrix", Sk.three.MATRIX_4, Sk.ffi.isInstance(matrixPy, Sk.three.MATRIX_4), matrixPy);
         geometry.applyMatrix(Sk.ffi.remapToJs(matrixPy));
-      });
-    }
-    case METHOD_COMPUTE_CENTROIDS: {
-      return Sk.ffi.callableToPy(mod, name, function(methodPy) {
-        Sk.ffi.checkMethodArgs(name, arguments, 0, 0);
-        geometry.computeCentroids();
       });
     }
     case METHOD_COMPUTE_FACE_NORMALS: {
