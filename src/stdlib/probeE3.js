@@ -172,6 +172,8 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
          * @param {number} x
          * @param {number} y
          * @param {number} z
+         *
+         * @return {THREE.Quaternion}
          */
         function quaternion(x, y, z) {
           if (z !== -1) {
@@ -227,7 +229,8 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         var grade1 = Sk.ffi.remapToJs(probe[PROP_GRADE_1]);
         if (x !== 0 || y !== 0 || z !== 0) {
           var s1 = Math.sqrt(x * x + y * y + z * z);
-          grade1.quaternion = quaternion(x/s1, y/s1, z/s1);
+          var q = quaternion(x/s1, y/s1, z/s1);
+          grade1.quaternion.set(q.x, q.y, q.z, q.w);
           show(grade1, s1);
         }
         else {
@@ -238,7 +241,8 @@ mod[PROBE_E3] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
         if (xy !== 0 || yz !== 0 || zx !== 0) {
           var norm2 = Math.sqrt(xy * xy + yz * yz + zx * zx);
           var s2 = Math.pow(norm2, 1 / 2);
-          grade2.quaternion = quaternion(yz/norm2, zx/norm2, xy/norm2);
+          var q = quaternion(yz/norm2, zx/norm2, xy/norm2);
+          grade2.quaternion.set(q.x, q.y, q.z, q.w);
           show(grade2, s2);
         }
         else {

@@ -1946,7 +1946,11 @@ function setQuaternionProperty(className, targetPy, name, valuePy, aliasName)
   Sk.ffi.checkArgType(aliasName, EUCLIDEAN_3, isEuclidean3Py(valuePy), valuePy);
   var quaternionPy = Sk.ffi.gattr(valuePy, PROP_QUATERNION);
   Sk.ffi.checkArgType(aliasName, QUATERNION, isQuaternionPy(quaternionPy), quaternionPy);
-  Sk.ffi.remapToJs(targetPy)[name] = Sk.ffi.remapToJs(quaternionPy);
+
+  // Components must be set in order for the change to be reflected (since THREE 0.0.67).  
+  var targetJs = Sk.ffi.remapToJs(targetPy)[name];
+  var sourceJs = Sk.ffi.remapToJs(quaternionPy);
+  targetJs.set(sourceJs.x, sourceJs.y, sourceJs.z, sourceJs.w);
 }
 /**
  * @param {THREE.Vector3} vector
