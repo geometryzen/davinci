@@ -1,4 +1,8 @@
-Sk.abstr = {};
+goog.provide('Sk.abstr');
+
+goog.require('Sk.builtin');
+goog.require('Sk.misceval');
+// goog.require('Sk.ffi');
 
 //
 //
@@ -26,9 +30,9 @@ Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
   switch (name)
   {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
-    case "Sub":      return obj.nb$sub     ? obj.nb$sub :     obj['__sub__'];
-    case "Mult":     return obj.nb$mul     ? obj.nb$mul :     obj['__mul__'];
-    case "Div":      return obj.nb$div       ? obj.nb$div :       obj['__div__'];
+    case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__sub__'];
+    case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__mul__'];
+    case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__div__'];
     case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__floordiv__'];
     case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__mod__'];
     case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__pow__'];
@@ -46,9 +50,9 @@ Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
   };
   switch (name) {
     case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
-    case "Sub":      return obj.nb$sub     ? obj.nb$sub :     obj['__rsub__'];
-    case "Mult":     return obj.nb$mul     ? obj.nb$mul :     obj['__rmul__'];
-    case "Div":      return obj.nb$div       ? obj.nb$div :       obj['__rdiv__'];
+    case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__rsub__'];
+    case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__rmul__'];
+    case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__rdiv__'];
     case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__rfloordiv__'];
     case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__rmod__'];
     case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__rpow__'];
@@ -97,7 +101,6 @@ Sk.abstr.binary_op_ = function(v, w, opname)
         }
         else
         {
-            // assume that vop is an __xxx__ type method
             ret = Sk.misceval.callsim(vop,v,w)
         }
         if (ret !== undefined) return ret;
@@ -111,7 +114,6 @@ Sk.abstr.binary_op_ = function(v, w, opname)
         }
         else
         {
-            // assume that wop is an __xxx__ type method
             ret = Sk.misceval.callsim(wop,w,v)
         }
         if (ret !== undefined) return ret;
@@ -130,7 +132,6 @@ Sk.abstr.binary_iop_ = function(v, w, opname)
         }
         else
         {
-            // assume that vop is an __xxx__ type method
             ret = Sk.misceval.callsim(vop,v,w);
         }
         if (ret !== undefined) return ret;
@@ -144,7 +145,6 @@ Sk.abstr.binary_iop_ = function(v, w, opname)
         }
         else
         {
-            // assume that wop is an __xxx__ type method
             ret = Sk.misceval.callsim(wop,w,v);
         }
         if (ret !== undefined) return ret;
@@ -333,22 +333,28 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
  * @param {*} obj
  * @param {Sk.abstr.unaryOp} name
  */
-Sk.abstr.uoNameToSlotFunc_ = function(obj, name) {
-  if (obj === null) {
+Sk.abstr.uoNameToSlotFunc_ = function(obj, name)
+{
+  if (obj === null)
+  {
     return undefined;
   }
   switch (name)
   {
-    case Sk.abstr.unaryOp.USub: {
+    case Sk.abstr.unaryOp.USub:
+    {
       return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
     }
-    case Sk.abstr.unaryOp.UAdd: {
+    case Sk.abstr.unaryOp.UAdd:
+    {
       return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
     }
-    case Sk.abstr.unaryOp.Invert: {
+    case Sk.abstr.unaryOp.Invert:
+    {
       return obj.nb$invert           ? obj.nb$invert          : obj['__invert__'];
     }
-    default: {
+    default:
+    {
       throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
     }
   }

@@ -1,4 +1,7 @@
-Sk.misceval = {};
+goog.provide('Sk.misceval');
+
+// goog.require('Sk.abstr');
+goog.require('Sk.builtin');
 
 Sk.misceval.isIndex = function(o)
 {

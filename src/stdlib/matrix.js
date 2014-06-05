@@ -47,6 +47,11 @@ var METHOD_CONJUGATE = "conjugate";
  * @const
  * @type {string}
  */
+var METHOD_DETERMINANT = "determinant";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_TRANSPOSE = "transpose";
 /**
  * @const
@@ -397,6 +402,14 @@ mod[Sk.matrix.MATRIX_2x2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
   $loc.__conjugate__ = Sk.ffi.functionPy(function(selfPy) {
     Sk.ffi.checkMethodArgs(METHOD_CONJUGATE, arguments, 0, 0);
     return Sk.ffi.callsim(mod[Sk.matrix.MATRIX_2x2], Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 0)), Sk.ffh.conjugate(Sk.ffh.getitem(selfPy, 1)));
+  });
+  $loc.__determinant__ = Sk.ffi.functionPy(function(selfPy) {
+    Sk.ffi.checkMethodArgs(METHOD_DETERMINANT, arguments, 0, 0);
+    var a00 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 0);
+    var a01 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 0), 1);
+    var a10 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 0);
+    var a11 = Sk.ffh.getitem(Sk.ffh.getitem(selfPy, 1), 1);
+    return Sk.ffh.sub(Sk.ffh.mul(a00, a11), Sk.ffh.mul(a01, a10));
   });
   $loc.__getattr__ = Sk.ffi.functionPy(function(selfPy, name) {
     var matrix = Sk.ffi.remapToJs(selfPy);

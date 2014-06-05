@@ -1,6 +1,5 @@
-// builtins are supposed to come from the __builtin__ module, but we don't do
-// that yet.
-Sk.builtin = {};
+goog.provide('Sk.builtin');
+
 
 // todo; these should all be func objects too, otherwise str() of them won't
 // work, etc.

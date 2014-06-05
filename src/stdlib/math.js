@@ -1,4 +1,8 @@
-Sk.math = Sk.math || {};
+goog.provide('Sk.math');
+
+goog.require('Sk.builtin');
+goog.require('Sk.ffh');
+goog.require('Sk.ffi');
 
 Sk.math.PI_TIMES_1_OVER_4 =     Math.PI / 4;
 Sk.math.PI_TIMES_2_OVER_4 =     Math.PI / 2;
@@ -457,6 +461,15 @@ mod.conjugate = Sk.ffi.functionPy(function(numberPy)
   {
     return Sk.ffh.conjugate(numberPy);
   }
+});
+
+/**
+ * det
+ */
+mod.det = Sk.ffi.functionPy(function(numberPy)
+{
+  Sk.ffi.checkFunctionArgs("det", arguments, 1, 1);
+  return Sk.ffh.determinant(numberPy);
 });
 
 /**

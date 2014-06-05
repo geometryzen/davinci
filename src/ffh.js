@@ -1,8 +1,7 @@
-Sk.ffh = Sk.ffh || {};
+goog.provide('Sk.ffh');
 
 var SPECIAL_METHOD_ADD     = '__add__';
 var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
-var SPECIAL_METHOD_CONJUGATE = '__conjugate__';
 var SPECIAL_METHOD_EQ      = '__eq__';
 var SPECIAL_METHOD_EXP     = '__exp__';
 var SPECIAL_METHOD_GETITEM = '__getitem__';
@@ -156,10 +155,23 @@ Sk.ffh.conjugate = function(numberPy)
   }
   else
   {
-    return Sk.ffh.unaryExec("", SPECIAL_METHOD_CONJUGATE, numberPy);
+    return Sk.ffh.unaryExec("", '__conjugate__', numberPy);
   }
 };
 goog.exportSymbol("Sk.ffh.conjugate", Sk.ffh.conjugate);
+
+Sk.ffh.determinant = function(numberPy)
+{
+  if (Sk.ffi.isNum(numberPy))
+  {
+    return numberPy;
+  }
+  else
+  {
+    return Sk.ffh.unaryExec("determinant", '__determinant__', numberPy);
+  }
+};
+goog.exportSymbol("Sk.ffh.determinant", Sk.ffh.determinant);
 
 Sk.ffh.cos = function(valuePy)
 {
@@ -339,7 +351,7 @@ goog.exportSymbol("Sk.ffh.evaluate", Sk.ffh.evaluate);
  * @param {*} longPy
  * @return {Sk.builtin.NumberPy|number}
  */
-Sk.ffi.promoteLongToFloat = function(longPy)
+Sk.ffh.promoteLongToFloat = function(longPy)
 {
     goog.asserts.assert(Sk.ffi.isLong(longPy));
 
@@ -350,4 +362,4 @@ Sk.ffi.promoteLongToFloat = function(longPy)
     goog.asserts.assertNumber(valueJs);
     return /** @type {Sk.builtin.NumberPy|number} */(Sk.builtin.numberToPy(valueJs));
 };
-goog.exportSymbol("Sk.ffi.promoteLongToFloat", Sk.ffi.promoteLongToFloat);
+goog.exportSymbol("Sk.ffh.promoteLongToFloat", Sk.ffh.promoteLongToFloat);
