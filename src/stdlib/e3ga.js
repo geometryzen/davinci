@@ -1056,10 +1056,9 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc)
         switch(Sk.ffi.typeName(otherPy)) {
           case Sk.e3ga.EUCLIDEAN_3:
           {
-            var s  = Sk.ffi.remapToJs(selfPy);
-            var o = Sk.ffi.remapToJs(otherPy);
-            // FIXME: This should be generalized to the full scalar product between multivectors.
-            return coordsJsToE3Py(false, s.x * o.x + s.y * o.y + s.z * o.z, 0, 0, 0, 0, 0, 0, 0);
+            var a = Sk.ffi.remapToJs(selfPy);
+            var b = Sk.ffi.remapToJs(otherPy);
+            return coordsJsToE3Py(false, a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z - a.xy * b.xy - a.yz * b.yz - a.zx * b.zx - a.xyz * b.xyz, 0, 0, 0, 0, 0, 0, 0);
           }
           default:
           {
@@ -1070,11 +1069,9 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc)
       case Sk.ffi.PyType.INT:
       case Sk.ffi.PyType.FLOAT:
       {
-        var self = Sk.ffi.remapToJs(selfPy);
-        var vector = self.vector;
-        var quaternion = self.quaternion;
+        var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        return coordsJsToE3Py(false, quaternion.w * b, vector.x * b, vector.y * b, vector.z * b, -quaternion.z * b, -quaternion.x * b, -quaternion.y * b, self.xyz * b);
+        return coordsJsToE3Py(false, a.w * b, 0, 0, 0, 0, 0, 0, 0);
       }
       default:
       {

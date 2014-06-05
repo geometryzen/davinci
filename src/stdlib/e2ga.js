@@ -492,15 +492,8 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
           {
             var a = Sk.ffi.remapToJs(selfPy);
             var b = Sk.ffi.remapToJs(otherPy);
-            var a00 = a.w;
-            var a01 = a.x;
-            var a10 = a.y;
-            var a11 = a.xy;
-            var b00 = b.w;
-            var b01 = b.x;
-            var b10 = b.y;
-            var b11 = b.xy;
-            return coordsJsToE2Py(a.w * b.w + a.x * b.x + a.y * b.y + a.xy * b.xy, 0, 0, 0);
+
+            return coordsJsToE2Py(a.w * b.w + a.x * b.x + a.y * b.y - a.xy * b.xy, 0, 0, 0);
           }
           default:
           {
@@ -514,7 +507,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       {
         var a = Sk.ffi.remapToJs(selfPy);
         var b = Sk.ffi.remapToJs(otherPy);
-        return coordsJsToE2Py(a.w * b, a.x * b, a.y * b, a.xy * b);
+        return coordsJsToE2Py(a.w * b, 0, 0, 0);
       }
       default:
       {
@@ -528,7 +521,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
     var lhs = Sk.ffi.remapToJs(otherPy);
     if (isNumber(lhs))
     {
-      return coordsJsToE2Py(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.xy);
+      return coordsJsToE2Py(lhs * rhs.w, 0, 0, 0);
     }
     else
     {
