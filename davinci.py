@@ -121,6 +121,7 @@ Files = [
         'src/stdlib/lorentzian.js',
         'src/stdlib/symbolic.js',
         'src/stdlib/units.js',
+        'src/stdlib/eight.js',
         'src/stdlib/three.js',
         'src/stdlib/vector3.js',
         'src/stdlib/fractions.js',
