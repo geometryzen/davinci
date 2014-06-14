@@ -459,7 +459,7 @@ def dist(options):
     if options.verbose:
         print ". Compressing..."
 
-    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
+    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/eight-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
     # to disable asserts
     # --define goog.DEBUG=false
     #
