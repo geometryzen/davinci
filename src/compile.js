@@ -3,10 +3,21 @@ var out;
 
 Sk.gensymcount = 0;
 
+var astnodes = davinciPy.astnodes;
+var symtable = davinciPy.symtable;
+var parser   = davinciPy.parser;
+var builder  = davinciPy.builder;
+var LOCAL           = symtable.LOCAL;
+var GLOBAL_EXPLICIT = symtable.GLOBAL_EXPLICIT;
+var GLOBAL_IMPLICIT = symtable.GLOBAL_IMPLICIT;
+var FREE            = symtable.FREE;
+var CELL            = symtable.CELL;
+var FunctionBlock   = symtable.FunctionBlock;
+
 /**
  * @constructor
  * @param {string} filename
- * @param {SymbolTable} st
+ * @param {Object} st
  * @param {number} flags
  * @param {string=} sourceCodeForAnnotation used to add original source to listing if desired
  */
@@ -14,7 +25,7 @@ function Compiler(filename, st, flags, sourceCodeForAnnotation)
 {
     this.filename = filename;
     /**
-     * @type {SymbolTable}
+     * @type {Object}
      * @private
      */
     this.st = st;
@@ -54,7 +65,7 @@ function Compiler(filename, st, flags, sourceCodeForAnnotation)
 function CompilerUnit()
 {
     /**
-     * @type {?SymbolTableScope}
+     * @type {?Object}
      */
     this.ste = null;
     this.name = null;
@@ -178,28 +189,29 @@ Sk.mangleName = function(name)
 };
 goog.exportSymbol("Sk.mangleName", Sk.mangleName);
 
-function mangleName(priv, ident)
+/**
+ * @param {string} priv
+ * @param {string} name
+ * @return {string} The mangled name.
+ */
+function mangleName(priv, name)
 {
-    Sk.ffi.checkArgType("ident", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(ident), ident);
-    var name = Sk.builtin.stringToJs(ident);
     var strpriv = null;
 
     if (priv === null || name === null || name.charAt(0) !== '_' || name.charAt(1) !== '_')
-        return ident;
+        return name;
     // don't mangle __id__
     if (name.charAt(name.length - 1) === '_' && name.charAt(name.length - 2) === '_')
-        return ident;
+        return name;
     // don't mangle classes that are all _ (obscure much?)
-    Sk.ffi.checkArgType("priv", Sk.ffi.PyType.STR, Sk.builtin.isStringPy(priv), priv);
-    strpriv = Sk.builtin.stringToJs(priv);
+    strpriv = priv;
     strpriv.replace(/_/g, '');
     if (strpriv === '')
-        return ident;
+        return name;
 
-    strpriv = Sk.builtin.stringToJs(priv);
+    strpriv = priv;
     strpriv.replace(/^_*/, '');
-    strpriv = Sk.builtin.stringToPy('_' + strpriv + name);
-    return strpriv;
+    return '_' + strpriv + name;
 }
 
 /**
@@ -257,14 +269,14 @@ Compiler.prototype._jump = function(block)
 Compiler.prototype.ctupleorlist = function(e, data, tuporlist)
 {
     goog.asserts.assert(tuporlist === 'tuple' || tuporlist === 'list');
-    if (e.ctx === Store)
+    if (e.ctx === astnodes.Store)
     {
         for (var i = 0; i < e.elts.length; ++i)
         {
             this.vexpr(e.elts[i], "Sk.abstr.objectGetItem(" + data + "," + i + ")");
         }
     }
-    else if (e.ctx === Load)
+    else if (e.ctx === astnodes.Load)
     {
         var items = [];
         for (var i = 0; i < e.elts.length; ++i)
@@ -334,14 +346,14 @@ Compiler.prototype.clistcompgen = function(tmpname, generators, genIndex, elt)
 
 Compiler.prototype.clistcomp = function(e)
 {
-    goog.asserts.assert(e instanceof ListComp);
+    goog.asserts.assert(e instanceof astnodes.ListComp);
     var tmp = this._gr("_compr", "new Sk.builtins['list']([])"); // note: _ is impt. for hack in name mangling (same as cpy)
     return this.clistcompgen(tmp, e.generators, 0, e.elt);
 };
 
 Compiler.prototype.cyield = function(e)
 {
-    if (this.u.ste.blockType !== FunctionBlock)
+    if (this.u.ste.blockType !== astnodes.FunctionBlock)
         throw new SyntaxError("'yield' outside function");
     var val = 'null';
     if (e.value)
@@ -404,7 +416,7 @@ Compiler.prototype.ccall = function(e)
 
 Compiler.prototype.cslice = function(s)
 {
-    goog.asserts.assert(s instanceof Slice);
+    goog.asserts.assert(s instanceof astnodes.Slice);
     var low = s.lower ? this.vexpr(s.lower) : 'null';
     var high = s.upper ? this.vexpr(s.upper) : 'null';
     var step = s.step ? this.vexpr(s.step) : 'null';
@@ -421,14 +433,14 @@ Compiler.prototype.vslicesub = function(s)
             // Already compiled, should only happen for augmented assignments
             subs = s;
             break;
-        case Index:
+        case astnodes.Index:
             subs = this.vexpr(s.value);
             break;
-        case Slice:
+        case astnodes.Slice:
             subs = this.cslice(s);
             break;
-        case Ellipsis:
-        case ExtSlice:
+        case astnodes.Ellipsis:
+        case astnodes.ExtSlice:
             goog.asserts.fail("todo;");
             break;
         default:
@@ -445,11 +457,11 @@ Compiler.prototype.vslice = function(s, ctx, obj, dataToStore)
 
 Compiler.prototype.chandlesubscr = function(ctx, obj, subs, data)
 {
-    if (ctx === Load || ctx === AugLoad)
+    if (ctx === astnodes.Load || ctx === astnodes.AugLoad)
         return this._gr('lsubscr', "Sk.abstr.objectGetItem(", obj, ",", subs, ")");
-    else if (ctx === Store || ctx === AugStore)
+    else if (ctx === astnodes.Store || ctx === astnodes.AugStore)
         out("Sk.abstr.objectSetItem(", obj, ",", subs, ",", data, ");");
-    else if (ctx === Del)
+    else if (ctx === astnodes.Del)
         out("Sk.abstr.objectDelItem(", obj, ",", subs, ");");
     else
         goog.asserts.fail("handlesubscr fail");
@@ -457,10 +469,10 @@ Compiler.prototype.chandlesubscr = function(ctx, obj, subs, data)
 
 Compiler.prototype.cboolop = function(e)
 {
-    goog.asserts.assert(e instanceof BoolOp);
+    goog.asserts.assert(e instanceof astnodes.BoolOp);
     var jtype;
     var ifFailed;
-    if (e.op === And)
+    if (e.op === astnodes.And)
         jtype = this._jumpfalse;
     else
         jtype = this._jumptrue;
@@ -505,32 +517,32 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
     //this.annotateSource(e);
     switch (e.constructor)
     {
-        case BoolOp:
+        case astnodes.BoolOp:
             return this.cboolop(e);
-        case BinOp:
+        case astnodes.BinOp:
             return this._gr('binop', "Sk.abstr.numberBinOp(", this.vexpr(e.left), ",", this.vexpr(e.right), ",'", e.op.prototype._astname, "')");
-        case UnaryOp:
+        case astnodes.UnaryOp:
             return this._gr('unaryop', "Sk.abstr.numberUnaryOp(", this.vexpr(e.operand), ",'", e.op.prototype._astname, "')");
-        case Lambda:
+        case astnodes.Lambda:
             return this.clambda(e);
-        case IfExp:
+        case astnodes.IfExp:
             return this.cifexp(e);
-        case Dict:
+        case astnodes.Dict:
             return this.cdict(e);
-        case ListComp:
+        case astnodes.ListComp:
             return this.clistcomp(e);
-        case GeneratorExp:
+        case astnodes.GeneratorExp:
             return this.cgenexp(e);
-        case Yield:
+        case astnodes.Yield:
             return this.cyield(e);
-        case Compare:
+        case astnodes.Compare:
             return this.ccompare(e);
-        case Call:
+        case astnodes.Call:
             var result = this.ccall(e);
             // After the function call, we've returned to this line
             this.annotateSource(e);
             return result;
-        case Num:
+        case astnodes.Num:
         {
             if (typeof e.n === "number")
             {
@@ -550,66 +562,66 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             }
             goog.asserts.fail("unhandled Num type");
         }
-        case Str:
+        case astnodes.Str:
         {
-            return this._gr('str', "Sk.builtin.stringToPy(", Sk.ffi.remapToJs(e.s.tp$repr()), ")");
+            return this._gr('str', "Sk.builtin.stringToPy(", e.s, ")");
         }
-        case Attribute:
+        case astnodes.Attribute:
             var val;
-            if (e.ctx !== AugStore)
+            if (e.ctx !== astnodes.AugStore)
                 val = this.vexpr(e.value);
-            var mangled = Sk.ffi.remapToJs(e.attr.tp$repr());
+            var mangled = e.attr;
             mangled = mangled.substring(1, mangled.length-1);
-            mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, Sk.builtin.stringToPy(mangled)));
+            mangled = mangleName(this.u.private_, mangled);
             mangled = fixReservedWords(mangled);
             mangled = fixReservedNames(mangled);
             switch (e.ctx)
             {
-                case AugLoad:
-                case Load:
+                case astnodes.AugLoad:
+                case astnodes.Load:
                     return this._gr("lattr", "Sk.abstr.gattr(", val, ",'", mangled, "')");
-                case AugStore:
+                case astnodes.AugStore:
                     out("if(", data, "!==undefined){"); // special case to avoid re-store if inplace worked
                     val = this.vexpr(augstoreval || null); // the || null can never happen, but closure thinks we can get here with it being undef
                     out("Sk.abstr.sattr(", val, ",'", mangled, "',", data, ");");
                     out("}");
                     break;
-                case Store:
+                case astnodes.Store:
                     out("Sk.abstr.sattr(", val, ",'", mangled, "',", data, ");");
                     break;
-                case Del:
+                case astnodes.Del:
                     goog.asserts.fail("todo;");
                     break;
-                case Param:
+                case astnodes.Param:
                 default:
                     goog.asserts.fail("invalid attribute expression");
             }
             break;
-        case Subscript:
+        case astnodes.Subscript:
             var val;
             switch (e.ctx)
             {
-                case AugLoad:
-                case Load:
-                case Store:
-                case Del:
+                case astnodes.AugLoad:
+                case astnodes.Load:
+                case astnodes.Store:
+                case astnodes.Del:
                     return this.vslice(e.slice, e.ctx, this.vexpr(e.value), data);
-                case AugStore:
+                case astnodes.AugStore:
                     out("if(", data, "!==undefined){"); // special case to avoid re-store if inplace worked
                     val = this.vexpr(augstoreval || null); // the || null can never happen, but closure thinks we can get here with it being undef
                     this.vslice(e.slice, e.ctx, val, data);
                     out("}");
                     break;
-                case Param:
+                case astnodes.Param:
                 default:
                     goog.asserts.fail("invalid subscript expression");
             }
             break;
-        case Name:
+        case astnodes.Name:
             return this.nameop(e.id, e.ctx, data);
-        case List:
+        case astnodes.List:
             return this.ctupleorlist(e, data, 'list');
-        case Tuple:
+        case astnodes.Tuple:
             return this.ctupleorlist(e, data, 'tuple');
         default:
             goog.asserts.fail("unhandled case in vexpr");
@@ -631,31 +643,31 @@ Compiler.prototype.vseqexpr = function(exprs, data)
 
 Compiler.prototype.caugassign = function(s)
 {
-    goog.asserts.assert(s instanceof AugAssign);
+    goog.asserts.assert(s instanceof astnodes.AugAssign);
     var e = s.target;
     switch (e.constructor)
     {
-        case Attribute:
-            var auge = new Attribute(e.value, e.attr, AugLoad, e.lineno, e.col_offset);
+        case astnodes.Attribute:
+            var auge = new astnodes.Attribute(e.value, e.attr, astnodes.AugLoad, e.lineno, e.col_offset);
             var aug = this.vexpr(auge);
             var val = this.vexpr(s.value);
             var res = this._gr('inplbinopattr', "Sk.abstr.numberInplaceBinOp(", aug, ",", val, ",'", s.op.prototype._astname, "')");
-            auge.ctx = AugStore;
+            auge.ctx = astnodes.AugStore;
             return this.vexpr(auge, res, e.value)
-        case Subscript:
+        case astnodes.Subscript:
             // Only compile the subscript value once
             var augsub = this.vslicesub(e.slice);
-            var auge = new Subscript(e.value, augsub, AugLoad, e.lineno, e.col_offset);
+            var auge = new astnodes.Subscript(e.value, augsub, astnodes.AugLoad, e.lineno, e.col_offset);
             var aug = this.vexpr(auge);
             var val = this.vexpr(s.value);
             var res = this._gr('inplbinopsubscr', "Sk.abstr.numberInplaceBinOp(", aug, ",", val, ",'", s.op.prototype._astname, "')");
-            auge.ctx = AugStore;
+            auge.ctx = astnodes.AugStore;
             return this.vexpr(auge, res, e.value)
-        case Name:
-            var to = this.nameop(e.id, Load);
+        case astnodes.Name:
+            var to = this.nameop(e.id, astnodes.Load);
             var val = this.vexpr(s.value);
             var res = this._gr('inplbinop', "Sk.abstr.numberInplaceBinOp(", to, ",", val, ",'", s.op.prototype._astname, "')");
-            return this.nameop(e.id, Store, res);
+            return this.nameop(e.id, astnodes.Store, res);
         default:
             goog.asserts.fail("unhandled case in augassign");
     }
@@ -668,11 +680,11 @@ Compiler.prototype.exprConstant = function(e)
 {
     switch (e.constructor)
     {
-        case Num:
+        case astnodes.Num:
             return Sk.misceval.isTrue(e.n);
-        case Str:
+        case astnodes.Str:
             return Sk.misceval.isTrue(e.s);
-        case Name:
+        case astnodes.Name:
             // todo; do __debug__ test here if opt
         default:
             return -1;
@@ -789,7 +801,7 @@ Compiler.prototype.outputAllUnits = function()
 
 Compiler.prototype.cif = function(s)
 {
-    goog.asserts.assert(s instanceof If_);
+    goog.asserts.assert(s instanceof astnodes.If_);
     var constant = this.exprConstant(s.test);
     if (constant === 0)
     {
@@ -910,7 +922,7 @@ Compiler.prototype.cfor = function(s)
 
 Compiler.prototype.craise = function(s)
 {
-    if (s && s.type && s.type.id && (Sk.ffi.remapToJs(s.type.id) === "StopIteration"))
+    if (s && s.type && s.type.id && (s.type.id === "StopIteration"))
     {
         // currently, we only handle StopIteration, and all it does it return
         // undefined which is what our iterator protocol requires.
@@ -1039,12 +1051,15 @@ Compiler.prototype.cassert = function(s)
     this.setBlock(end);
 };
 
+/**
+ * @param {string} name
+ * @param {string} asname
+ * @param {string=} mod
+ */
 Compiler.prototype.cimportas = function(name, asname, mod)
 {
-    var src = Sk.ffi.remapToJs(name);
+    var src = name;
     var dotLoc = src.indexOf(".");
-    //print("src", src);
-    //print("dotLoc", dotLoc);
     var cur = mod;
     if (dotLoc !== -1)
     {
@@ -1053,7 +1068,6 @@ Compiler.prototype.cimportas = function(name, asname, mod)
         // getattr'ing up through the names, and then storing the leaf under
         // the name it was to be imported as.
         src = src.substr(dotLoc + 1);
-        //print("src now", src);
         while (dotLoc !== -1)
         {
             dotLoc = src.indexOf(".");
@@ -1062,7 +1076,7 @@ Compiler.prototype.cimportas = function(name, asname, mod)
             src = src.substr(dotLoc + 1);
         }
     }
-    return this.nameop(asname, Store, cur);
+    return this.nameop(asname, astnodes.Store, cur);
 };
 
 Compiler.prototype.cimport = function(s)
@@ -1071,7 +1085,7 @@ Compiler.prototype.cimport = function(s)
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        var mod = this._gr('module', "Sk.builtin.__import__(", Sk.ffi.remapToJs(alias.name.tp$repr()), ",$gbl,$loc,[])");
+        var mod = this._gr('module', "Sk.builtin.__import__(", alias.name, ",$gbl,$loc,[])");
 
         if (alias.asname)
         {
@@ -1079,13 +1093,15 @@ Compiler.prototype.cimport = function(s)
         }
         else
         {
-            var tmp = alias.name;
-            var lastDot = tmp.v.indexOf('.');
+            var lastDot = alias.name.indexOf('.');
             if (lastDot !== -1)
             {
-                tmp = Sk.builtin.stringToPy(Sk.ffi.remapToJs(tmp).substr(0, lastDot));
+                this.nameop(alias.name.substr(0, lastDot), astnodes.Store, mod);
             }
-            this.nameop(tmp, Store, mod);
+            else
+            {
+                this.nameop(alias.name, astnodes.Store, mod);
+            }
         }
     }
 };
@@ -1096,24 +1112,24 @@ Compiler.prototype.cfromimport = function(s)
     var names = [];
     for (var i = 0; i < n; ++i)
     {
-        names[i] = Sk.ffi.remapToJs(s.names[i].name.tp$repr());
+        names[i] = s.names[i].name;
     }
-    var mod = this._gr('module', "Sk.builtin.__import__(", Sk.ffi.remapToJs(s.module.tp$repr()), ",$gbl,$loc,[", names, "])");
+    var mod = this._gr('module', "Sk.builtin.__import__(", s.module, ",$gbl,$loc,[", names, "])");
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        if (i === 0 && Sk.ffi.remapToJs(alias.name) === "*")
+        if (i === 0 && alias.name === "*")
         {
             goog.asserts.assert(n === 1);
             out("Sk.importStar(", mod,  ",$loc, $gbl);");
             return;
         }
 
-        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", Sk.ffi.remapToJs(alias.name.tp$repr()), ")");
+        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", alias.name, ")");
         var storeName = alias.name;
         if (alias.asname)
             storeName = alias.asname;
-        this.nameop(storeName, Store, got);
+        this.nameop(storeName, astnodes.Store, got);
     }
 };
 
@@ -1130,9 +1146,9 @@ Compiler.prototype.cfromimport = function(s)
  * - setup and modification for generators
  *
  * @param {Object} n ast node to build for
- * @param {Sk.builtin.StringPy} coname name of code object to build
+ * @param {string} coname name of code object to build
  * @param {Array} decorator_list ast of decorators if any
- * @param {arguments_} args arguments to function, if any
+ * @param {*} args arguments to function, if any
  * @param {Function} callback called after setup to do actual work of function
  *
  * @returns the name of the newly created function or generator object.
@@ -1198,18 +1214,18 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // the header of the function, and arguments
     //
-    this.u.prefixCode = "var " + scopename + "=(function " + this.niceName(Sk.ffi.remapToJs(coname)) + "$(";
+    this.u.prefixCode = "var " + scopename + "=(function " + this.niceName(coname) + "$(";
 
     var funcArgs = [];
     if (isGenerator)
     {
         if (kwarg)
         {
-            throw new SyntaxError(Sk.ffi.remapToJs(coname) + "(): keyword arguments in generators not supported");
+            throw new SyntaxError(coname + "(): keyword arguments in generators not supported");
         }
         if (vararg)
         {
-            throw new SyntaxError(Sk.ffi.remapToJs(coname) + "(): variable number of arguments in generators not supported");    
+            throw new SyntaxError(coname + "(): variable number of arguments in generators not supported");    
         }
         funcArgs.push("$gen");
     }
@@ -1218,7 +1234,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         if (kwarg)
             funcArgs.push("$kwa");
         for (var i = 0; args && i < args.args.length; ++i)
-            funcArgs.push(this.nameop(args.args[i].id, Param));
+            funcArgs.push(this.nameop(args.args[i].id, astnodes.Param));
     }
     if (descendantOrSelfHasFree)
     {
@@ -1260,7 +1276,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var id = args.args[i].id;
         if (this.isCell(id))
         {
-            this.u.varDeclsCode += "$cell." + Sk.ffi.remapToJs(id) + "=" + Sk.ffi.remapToJs(id) + ";";
+            this.u.varDeclsCode += "$cell." + id + "=" + id + ";";
         }
     }
 
@@ -1271,7 +1287,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var minargs = args ? args.args.length - defaults.length : 0;
         var maxargs = vararg ? Infinity : (args ? args.args.length : 0);
         var kw = kwarg ? true : false;
-        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + Sk.ffi.remapToJs(coname) + 
+        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname + 
             "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
             ", " + descendantOrSelfHasFree + ");";
     }
@@ -1288,7 +1304,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var offset = args.args.length - defaults.length;
         for (var i = 0; i < defaults.length; ++i)
         {
-            var argname = this.nameop(args.args[i + offset].id, Param);
+            var argname = this.nameop(args.args[i + offset].id, astnodes.Param);
             this.u.varDeclsCode += "if(" + argname + "===undefined)" + argname +"=" + scopename+".$defaults[" + i + "];";
         }
     }
@@ -1299,7 +1315,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     if (vararg)
     {
         var start = funcArgs.length;
-        this.u.varDeclsCode += Sk.ffi.remapToJs(vararg) + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
+        this.u.varDeclsCode += vararg + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
     }
 
     //
@@ -1307,7 +1323,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     if (kwarg)
     {
-        this.u.varDeclsCode += Sk.ffi.remapToJs(kwarg) + "=new Sk.builtins['dict']($kwa);";
+        this.u.varDeclsCode += kwarg + "=new Sk.builtins['dict']($kwa);";
     }
 
     //
@@ -1337,7 +1353,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var argnamesarr = [];
         for (var i = 0; i < args.args.length; ++i)
         {
-            argnamesarr.push(Sk.ffi.remapToJs(args.args[i].id));
+            argnamesarr.push(args.args[i].id);
         }
 
         argnames = argnamesarr.join("', '");
@@ -1405,12 +1421,12 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         if (args && args.args.length > 0)
         {
             return this._gr("gener", "new Sk.builtins['function']((function(){var $origargs=Array.prototype.slice.call(arguments);Sk.builtin.pyCheckArgs(\"", 
-                                     Sk.ffi.remapToJs(coname), "\",arguments,", args.args.length - defaults.length, ",", args.args.length, 
+                                     coname, "\",arguments,", args.args.length - defaults.length, ",", args.args.length, 
                                      ");return new Sk.builtins['generator'](", scopename, ",$gbl,$origargs", frees, ");}))");
         }
         else
         {
-            return this._gr("gener", "new Sk.builtins['function']((function(){Sk.builtin.pyCheckArgs(\"", Sk.ffi.remapToJs(coname), 
+            return this._gr("gener", "new Sk.builtins['function']((function(){Sk.builtin.pyCheckArgs(\"", coname, 
                                      "\",arguments,0,0);return new Sk.builtins['generator'](", scopename, ",$gbl,[]", frees, ");}))");
         }
     else
@@ -1421,7 +1437,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
 
 Compiler.prototype.cfunction = function(s)
 {
-    goog.asserts.assert(s instanceof FunctionDef);
+    goog.asserts.assert(s instanceof astnodes.FunctionDef);
     var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, 
         function(scopename)
         {
@@ -1429,12 +1445,12 @@ Compiler.prototype.cfunction = function(s)
             out("return Sk.builtin.none.none$;"); // if we fall off the bottom, we want the ret to be None
         }
     );
-    this.nameop(s.name, Store, funcorgen);
+    this.nameop(s.name, astnodes.Store, funcorgen);
 };
 
 Compiler.prototype.clambda = function(e)
 {
-    goog.asserts.assert(e instanceof Lambda);
+    goog.asserts.assert(e instanceof astnodes.Lambda);
     var func = this.buildcodeobj(e, Sk.builtin.stringToPy("<lambda>"), null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
@@ -1544,7 +1560,7 @@ Compiler.prototype.cgenexp = function(e)
 
 Compiler.prototype.cclass = function(s)
 {
-    goog.asserts.assert(s instanceof ClassDef);
+    goog.asserts.assert(s instanceof astnodes.ClassDef);
     var decos = s.decorator_list;
 
     // decorators and bases need to be eval'd out here
@@ -1559,8 +1575,8 @@ Compiler.prototype.cclass = function(s)
     var scopename = this.enterScope(s.name, s, s.lineno);
     var entryBlock = this.newBlock('class entry');
 
-    this.u.prefixCode = "var " + scopename + "=(function $" + Sk.ffi.remapToJs(s.name) + "$class_outer($globals,$locals,$rest){var $gbl=$globals,$loc=$locals;";
-    this.u.switchCode += "return(function " + Sk.ffi.remapToJs(s.name) + "(){";
+    this.u.prefixCode = "var " + scopename + "=(function $" + s.name + "$class_outer($globals,$locals,$rest){var $gbl=$globals,$loc=$locals;";
+    this.u.switchCode += "return(function " + s.name + "(){";
     this.u.switchCode += "var $blk=" + entryBlock + ",$exc=[];while(true){switch($blk){";
     this.u.suffixCode = "}break;}}).apply(null,$rest);});";
 
@@ -1576,10 +1592,10 @@ Compiler.prototype.cclass = function(s)
     this.exitScope();
 
     // todo; metaclass
-    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", Sk.ffi.remapToJs(s.name.tp$repr()), ",[", bases, "])");
+    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name, ",[", bases, "])");
 
     // store our new class under the right name
-    this.nameop(s.name, Store, wrapped);
+    this.nameop(s.name, astnodes.Store, wrapped);
 };
 
 Compiler.prototype.ccontinue = function(s)
@@ -1602,65 +1618,65 @@ Compiler.prototype.vstmt = function(s)
 
     switch (s.constructor)
     {
-        case FunctionDef:
+        case astnodes.FunctionDef:
             this.cfunction(s);
             break;
-        case ClassDef:
+        case astnodes.ClassDef:
             this.cclass(s);
             break;
-        case Return_:
-            if (this.u.ste.blockType !== FunctionBlock)
+        case astnodes.Return_:
+            if (this.u.ste.blockType !== astnodes.FunctionBlock)
                 throw new SyntaxError("'return' outside function");
             if (s.value)
                 out("return ", this.vexpr(s.value), ";");
             else
                 out("return null;");
             break;
-        case Delete_:
+        case astnodes.Delete_:
             this.vseqexpr(s.targets);
             break;
-        case Assign:
+        case astnodes.Assign:
             var n = s.targets.length;
             var val = this.vexpr(s.value);
             for (var i = 0; i < n; ++i)
                 this.vexpr(s.targets[i], val);
             break;
-        case AugAssign:
+        case astnodes.AugAssign:
             return this.caugassign(s);
-        case Print:
+        case astnodes.Print:
             this.cprint(s);
             break;
-        case For_:
+        case astnodes.For_:
             return this.cfor(s);
-        case While_:
+        case astnodes.While_:
             return this.cwhile(s);
-        case If_:
+        case astnodes.If_:
             return this.cif(s);
-        case Raise:
+        case astnodes.Raise:
             return this.craise(s);
-        case TryExcept:
+        case astnodes.TryExcept:
             return this.ctryexcept(s);
-        case TryFinally:
+        case astnodes.TryFinally:
             return this.ctryfinally(s);
-        case Assert:
+        case astnodes.Assert:
             return this.cassert(s);
-        case Import_:
+        case astnodes.Import_:
             return this.cimport(s);
-        case ImportFrom:
+        case astnodes.ImportFrom:
             return this.cfromimport(s);
-        case Global:
+        case astnodes.Global:
             break;
-        case Expr:
+        case astnodes.Expr:
             this.vexpr(s.value);
             break;
-        case Pass:
+        case astnodes.Pass:
             break;
-        case Break_:
+        case astnodes.Break_:
             if (this.u.breakBlocks.length === 0)
                 throw new SyntaxError("'break' outside loop");
             this._jump(this.u.breakBlocks[this.u.breakBlocks.length - 1]);
             break;
-        case Continue_:
+        case astnodes.Continue_:
             this.ccontinue(s);
             break;
         default:
@@ -1683,35 +1699,35 @@ var D_CELLVARS = 2;
 
 Compiler.prototype.isCell = function(name)
 {
-    var mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, name));
+    var mangled = mangleName(this.u.private_, name);
     var scope = this.u.ste.getScope(mangled);
     var dict = null;
-    if (scope === CELL)
+    if (scope === symtable.CELL)
         return true;
     return false;
 };
 
 /**
- * @param {Sk.builtin.StringPy} name
+ * @param {string} name
  * @param {Object} ctx
  * @param {string=} dataToStore
  */
 Compiler.prototype.nameop = function(name, ctx, dataToStore)
 {
-    if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "__debug__")
+    if ((ctx === astnodes.Store || ctx === astnodes.AugStore || ctx === astnodes.Del) && name === "__debug__")
     {
         throw new Sk.builtin.SyntaxError("can not assign to __debug__");
     }
-    if ((ctx === Store || ctx === AugStore || ctx === Del) && Sk.ffi.remapToJs(name) === "None")
+    if ((ctx === astnodes.Store || ctx === astnodes.AugStore || ctx === astnodes.Del) && name === "None")
     {
         throw new Sk.builtin.SyntaxError("can not assign to None");
     }
 
-    if (Sk.ffi.remapToJs(name) === "None")  return "Sk.builtin.none.none$";
-    if (Sk.ffi.remapToJs(name) === "True")  return "Sk.ffi.bool.True";
-    if (Sk.ffi.remapToJs(name) === "False") return "Sk.ffi.bool.False";
+    if (name === "None")  return "Sk.builtin.none.none$";
+    if (name === "True")  return "Sk.ffi.bool.True";
+    if (name === "False") return "Sk.ffi.bool.False";
 
-    var mangled = Sk.ffi.remapToJs(mangleName(this.u.private_, name));
+    var mangled = mangleName(this.u.private_, name);
     // Have to do this before looking it up in the scope
     mangled = fixReservedNames(mangled);
     var op = 0;
@@ -1730,11 +1746,11 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
             break;
         case LOCAL:
             // can't do FAST in generators or at module/class scope
-            if (this.u.ste.blockType === FunctionBlock && !this.u.ste.generator)
+            if (this.u.ste.blockType === astnodes.FunctionBlock && !this.u.ste.generator)
                 optype = OP_FAST;
             break;
         case GLOBAL_IMPLICIT:
-            if (this.u.ste.blockType === FunctionBlock)
+            if (this.u.ste.blockType === astnodes.FunctionBlock)
                 optype = OP_GLOBAL;
             break;
         case GLOBAL_EXPLICIT:
@@ -1748,12 +1764,12 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
 
     //print("mangled", mangled);
     // TODO TODO TODO todo; import * at global scope failing here
-    goog.asserts.assert(scope || Sk.ffi.remapToJs(name).charAt(1) === '_');
+    goog.asserts.assert(scope || name.charAt(1) === '_');
 
     // in generator or at module scope, we need to store to $loc, rather that
     // to actual JS stack variables.
     var mangledNoPre = mangled;
-    if (this.u.ste.generator || this.u.ste.blockType !== FunctionBlock)
+    if (this.u.ste.generator || this.u.ste.blockType !== astnodes.FunctionBlock)
         mangled = "$loc." + mangled;
     else if (optype === OP_FAST || optype === OP_NAME)
         this.u.localnames.push(mangled);
@@ -1763,15 +1779,15 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
         case OP_FAST:
             switch (ctx)
             {
-                case Load:
-                case Param:
+                case astnodes.Load:
+                case astnodes.Param:
                     // Need to check that it is bound!
                     out("if (", mangled, " === undefined) { throw new Error('local variable \\\'", mangled, "\\\' referenced before assignment'); }\n");
                     return mangled;
-                case Store:
+                case astnodes.Store:
                     out(mangled, "=", dataToStore, ";");
                     break;
-                case Del:
+                case astnodes.Del:
                     out("delete ", mangled, ";");
                     break;
                 default:
@@ -1781,18 +1797,18 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
         case OP_NAME:
             switch (ctx)
             {
-                case Load:
+                case astnodes.Load:
                     var v = this.gensym('loadname');
                     // can't be || for loc.x = 0 or null
                     out("var ", v, "=", mangled, "!==undefined?",mangled,":Sk.misceval.loadname('",mangledNoPre,"',$gbl);");
                     return v;
-                case Store:
+                case astnodes.Store:
                     out(mangled, "=", dataToStore, ";");
                     break;
-                case Del:
+                case astnodes.Del:
                     out("delete ", mangled, ";");
                     break;
-                case Param:
+                case astnodes.Param:
                     return mangled;
                 default:
                     goog.asserts.fail("unhandled");
@@ -1801,12 +1817,12 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
         case OP_GLOBAL:
             switch (ctx)
             {
-                case Load:
+                case astnodes.Load:
                     return this._gr("loadgbl", "Sk.misceval.loadname('", mangledNoPre, "',$gbl)");
-                case Store:
+                case astnodes.Store:
                     out("$gbl.", mangledNoPre, "=", dataToStore, ';');
                     break;
-                case Del:
+                case astnodes.Del:
                     out("delete $gbl.", mangledNoPre);
                     break;
                 default:
@@ -1816,12 +1832,12 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
         case OP_DEREF:
             switch (ctx)
             {
-                case Load:
+                case astnodes.Load:
                     return dict + "." + mangledNoPre;
-                case Store:
+                case astnodes.Store:
                     out(dict, ".", mangledNoPre, "=", dataToStore, ";");
                     break;
-                case Param:
+                case astnodes.Param:
                     return mangledNoPre;
                 default:
                     goog.asserts.fail("unhandled case in name op_deref");
@@ -1833,7 +1849,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
 };
 
 /**
- * @param {Sk.builtin.StringPy} name
+ * @param {string} name
  * @return {string} The generated name of the scope, usually $scopeN.
  */
 Compiler.prototype.enterScope = function(name, key, lineno)
@@ -1870,10 +1886,10 @@ Compiler.prototype.exitScope = function()
     if (this.u)
         this.u.activateScope();
 
-    if (Sk.ffi.remapToJs(prev.name) !== "<module>")
+    if (prev.name !== "<module>")
     {
         // todo; hacky
-        var mangled = Sk.ffi.remapToJs(prev.name.tp$repr());
+        var mangled = prev.name;
         mangled = mangled.substring(1, mangled.length-1);
         mangled = fixReservedWords(mangled);
         mangled = fixReservedNames(mangled);
@@ -1891,7 +1907,7 @@ Compiler.prototype.cbody = function(stmts)
 
 Compiler.prototype.cprint = function(s)
 {
-    goog.asserts.assert(s instanceof Print);
+    goog.asserts.assert(s instanceof astnodes.Print);
     var dest = 'null';
     if (s.dest)
         dest = this.vexpr(s.dest);
@@ -1911,13 +1927,11 @@ Compiler.prototype.cprint = function(s)
 
 Compiler.prototype.cmod = function(mod)
 {
-    //print("-----");
-    //print(Sk.astDump(mod));
     /**
      * @const
      * @type {string}
      */
-    var modf = this.enterScope(Sk.builtin.stringToPy("<module>"), mod, 0);
+    var modf = this.enterScope("<module>", mod, 0);
 
     var entryBlock = this.newBlock('module entry');
     this.u.prefixCode = "var " + modf + "=(function($modname){";
@@ -1950,7 +1964,7 @@ Compiler.prototype.cmod = function(mod)
 
     switch (mod.constructor)
     {
-        case Module:
+        case astnodes.Module:
             this.cbody(mod.body);
             out("return $loc;");
             break;
@@ -1972,11 +1986,10 @@ Compiler.prototype.cmod = function(mod)
  */
 Sk.compile = function(source, filename, mode)
 {
-    //print("FILE:", filename);
-    var cst = Sk.parse(filename, source);
-    var ast = Sk.astFromParse(cst, filename);
-    var st = Sk.symboltable(ast, filename);
-    var c = new Compiler(filename, st, 0, source); // todo; CO_xxx
+    var cst = parser.parse(filename, source);
+    var ast = builder.astFromParse(cst, filename);
+    var st = symtable.symbolTable(ast, filename);
+    var c = new Compiler(filename, st, 0, source);
     return {"funcname": c.cmod(ast), "code": c.result.join('')};
 };
 goog.exportSymbol("Sk.compile", Sk.compile);

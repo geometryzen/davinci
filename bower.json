@@ -26,6 +26,7 @@
   ],
   "dependencies":
   {
+    "davinci-py": "~0.0.6",
     "bladejs": "~0.9.72",
     "EaselJS": "latest",
     "threejs": "latest",

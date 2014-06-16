@@ -24,3 +24,6 @@ libpeerconnection.log
 
 # Ignore iOS junk.
 .DS_Store
+
+# Ignore compiled Python files.
+**/*.pyc

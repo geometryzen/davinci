@@ -64,6 +64,8 @@ Files = [
         ('support/closure-library/closure/goog/string/string.js',   FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/debug/error.js',     FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/asserts/asserts.js', FILE_TYPE_DIST),
+#       'vendor/davinci-py/dist/davinci-py.js',
+        '../davinci-py/dist/davinci-py.js',
         'src/env.js',
         'src/builtin.js',
         'src/errors.js',
@@ -94,12 +96,12 @@ Files = [
         'src/ffi.js',
         'src/ffh.js',
         'src/enumerate.js',
-        'src/tokenize.js',
-        'gen/parse_tables.js',
-        'src/parser.js',
-        'gen/astnodes.js',
-        'src/ast.js',
-        'src/symtable.js',
+#       'src/tokenize.js',
+#       'gen/parse_tables.js',
+#       'src/parser.js',
+#       'gen/astnodes.js',
+#       'src/ast.js',
+#       'src/symtable.js',
         'src/compile.js',
         'src/import.js',
         'src/timsort.js',
@@ -459,7 +461,7 @@ def dist(options):
     if options.verbose:
         print ". Compressing..."
 
-    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/eight-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
+    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/davinci-py-exports.js --externs src/externs/eight-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
     # to disable asserts
     # --define goog.DEBUG=false
     #
