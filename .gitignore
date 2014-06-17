@@ -2,7 +2,12 @@
 support/tmp/
 
 # Ignore ALL distribution files.
-dist/
+dist/davinci-linemap.txt
+dist/davinci-stdlib.js
+dist/davinci-tools.js
+dist/davinci-tools.min.js
+dist/davinci.js
+dist/davinci.min.js
 
 # Ignore distribution that is copied into the samples location.
 doc/static/davinci.js
