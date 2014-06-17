@@ -5,18 +5,6 @@ var SPECIAL_METHOD_CLIFFORD_CONJUGATE = '__cliffordConjugate__';
 var SPECIAL_METHOD_EQ      = '__eq__';
 var SPECIAL_METHOD_EXP     = '__exp__';
 var SPECIAL_METHOD_GETITEM = '__getitem__';
-var SPECIAL_METHOD_INVERT  = '__invert__';
-var SPECIAL_METHOD_LSHIFT  = '__lshift__';
-var SPECIAL_METHOD_MUL     = '__mul__';
-var SPECIAL_METHOD_NEG     = '__neg__';
-var SPECIAL_METHOD_NONZERO = '__nonzero__';
-var SPECIAL_METHOD_POS     = '__pos__';
-var SPECIAL_METHOD_REPR    = '__repr__';
-var SPECIAL_METHOD_RMUL    = '__rmul__';
-var SPECIAL_METHOD_RSHIFT  = '__rshift__';
-var SPECIAL_METHOD_STR     = '__str__';
-var SPECIAL_METHOD_SUB     = '__sub__';
-var SPECIAL_METHOD_XOR     = '__xor__';
 
 /**
  * @param {string} name
@@ -86,10 +74,20 @@ Sk.ffh.mod = function(lhsPy, rhsPy) {
 };
 goog.exportSymbol("Sk.ffh.mod", Sk.ffh.mod);
 
-Sk.ffh.xor = function(lhsPy, rhsPy) {
+Sk.ffh.bitOr = function(lhsPy, rhsPy) {
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "BitOr");
+};
+goog.exportSymbol("Sk.ffh.bitOr", Sk.ffh.bitOr);
+
+Sk.ffh.bitXor = function(lhsPy, rhsPy) {
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "BitXor");
 };
-goog.exportSymbol("Sk.ffh.xor", Sk.ffh.xor);
+goog.exportSymbol("Sk.ffh.bitXor", Sk.ffh.bitXor);
+
+Sk.ffh.bitAnd = function(lhsPy, rhsPy) {
+  return Sk.abstr.numberBinOp(lhsPy, rhsPy, "BitAnd");
+};
+goog.exportSymbol("Sk.ffh.bitAnd", Sk.ffh.bitAnd);
 
 Sk.ffh.lshift = function(lhsPy, rhsPy) {
   return Sk.abstr.numberBinOp(lhsPy, rhsPy, "LShift");
@@ -239,7 +237,7 @@ goog.exportSymbol("Sk.ffh.negative", Sk.ffh.negative);
 Sk.ffh.invert = function(valuePy)
 {
   // TODO: Make like others?
-  return Sk.ffh.unaryExec("~", SPECIAL_METHOD_INVERT, valuePy, "nb$invert");
+  return Sk.ffh.unaryExec("~", '__invert__', valuePy, "nb$invert");
 };
 goog.exportSymbol("Sk.ffh.invert", Sk.ffh.invert);
 
@@ -250,7 +248,7 @@ Sk.ffh.nonzero = function(valuePy)
     var valueJs = Sk.ffi.remapToJs(valuePy);
     return Sk.ffi.booleanToPy(valueJs !== 0);
   }
-  return Sk.ffh.unaryExec("", SPECIAL_METHOD_NONZERO, valuePy, "nb$nonzero");
+  return Sk.ffh.unaryExec("", '__nonzero__', valuePy, "nb$nonzero");
 };
 goog.exportSymbol("Sk.ffh.nonzero", Sk.ffh.nonzero);
 
@@ -285,9 +283,9 @@ Sk.ffh.str = function(valuePy)
     return Sk.builtin.stringToPy(Sk.builtin.numberToFloatStringJs(valuePy, 10, true));
   }
 
-  if (valuePy[SPECIAL_METHOD_STR])
+  if (valuePy['__str__'])
   {
-    return Sk.ffi.callsim(valuePy[SPECIAL_METHOD_STR], valuePy);
+    return Sk.ffi.callsim(valuePy['__str__'], valuePy);
   }
   else if (valuePy["tp$str"])
   {
@@ -305,7 +303,7 @@ Sk.ffh.str = function(valuePy)
 /* FIXME: Apparently, not everything distinguishes str and repr.
 Sk.ffh.str = function(valuePy)
 {
-  return Sk.ffh.unaryExec("str", SPECIAL_METHOD_STR, valuePy, "tp$str");
+  return Sk.ffh.unaryExec("str", '__str__', valuePy, "tp$str");
 };
 */
 goog.exportSymbol("Sk.ffh.str", Sk.ffh.str);
@@ -317,9 +315,9 @@ Sk.ffh.repr = function(valuePy)
     return Sk.builtin.stringToPy(Sk.builtin.numberToFloatStringJs(valuePy, 10, true));
   }
 
-  if (valuePy[SPECIAL_METHOD_REPR])
+  if (valuePy['__repr__'])
   {
-    return Sk.ffi.callsim(valuePy[SPECIAL_METHOD_REPR], valuePy);
+    return Sk.ffi.callsim(valuePy['__repr__'], valuePy);
   }
   else if (valuePy["tp$repr"])
   {

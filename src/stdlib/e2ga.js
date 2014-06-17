@@ -480,7 +480,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return selfPy;
     }
   });
-  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  $loc.__or__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
     switch(Sk.ffi.getType(otherPy))
     {
@@ -515,7 +515,7 @@ mod[EUCLIDEAN_2] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       }
     }
   });
-  $loc.__rmod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  $loc.__ror__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
     var rhs = Sk.ffi.remapToJs(selfPy);
     var lhs = Sk.ffi.remapToJs(otherPy);

@@ -529,7 +529,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       throw Sk.ffi.assertionError(e.message)
     }
   });
-  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  $loc.__or__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
     var selfJs = Sk.ffi.remapToJs(selfPy);
     if (isMeasurePy(otherPy))
@@ -548,7 +548,7 @@ mod[UNIT] = Sk.ffi.buildClass(mod, function($gbl, $loc) {
       return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
     }
   });
-  $loc.__rmod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  $loc.__ror__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
     // TODO: How to check that otherPy is a reasonable quantity.
     return Sk.ffi.callsim(mod[MEASURE], otherPy, selfPy);
@@ -871,7 +871,6 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.sub(self[QTY_PY], other[QTY_PY]), Sk.ffi.callsim(Sk.ffi.gattr(self[UOM_PY], METHOD_COMPATIBLE), other[UOM_PY]));
   });
 
-  // FIXME: Now that I look at these, I think I prefer the duplication and clarity of unrolling them.
   $loc.__mod__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.mod));
   $loc.__rmod__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.mod));
 
@@ -903,8 +902,14 @@ mod[MEASURE] = Sk.ffi.buildClass(mod, function($gbl, $loc)
     return Sk.ffi.callsim(mod[MEASURE], Sk.ffh.div(otherPy, self[QTY_PY]), Sk.ffh.div(Sk.ffi.numberToFloatPy(1.0),self[UOM_PY]));
   });
 
-  $loc.__xor__     = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.xor));
-  $loc.__rxor__    = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.xor));
+  $loc.__or__      = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.bitOr));
+  $loc.__ror__     = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.bitOr));
+
+  $loc.__xor__     = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.bitXor));
+  $loc.__rxor__    = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.bitXor));
+
+  $loc.__and__     = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.bitAnd));
+  $loc.__rand__    = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.bitAnd));
 
   $loc.__lshift__  = Sk.ffi.functionPy(makeMeasureLhsBinary(Sk.ffh.lshift));
   $loc.__rlshift__ = Sk.ffi.functionPy(makeMeasureRhsBinary(Sk.ffh.lshift));

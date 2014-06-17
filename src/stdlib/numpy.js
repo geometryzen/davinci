@@ -373,8 +373,14 @@
       $loc.__mod__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.mod));
       $loc.__rmod__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.mod));
 
-      $loc.__xor__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.xor));
-      $loc.__rxor__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.xor));
+      $loc.__or__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.bitOr));
+      $loc.__ror__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.bitOr));
+
+      $loc.__xor__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.bitXor));
+      $loc.__rxor__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.bitXor));
+
+      $loc.__and__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.bitAnd));
+      $loc.__rand__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.bitAnd));
 
       $loc.__lshift__  = Sk.ffi.functionPy(makeNumericBinaryOpLhs(Sk.ffh.lshift));
       $loc.__rlshift__ = Sk.ffi.functionPy(makeNumericBinaryOpRhs(Sk.ffh.lshift));

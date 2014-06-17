@@ -525,17 +525,6 @@ def style(options):
         print "Linting was a disaster. What are you doing?"
         sys.exit(1)
 
-def regenparser():
-    """regenerate the parser/ast source code"""
-    if not os.path.exists("gen"): os.mkdir("gen")
-    os.chdir("src/pgen/parser")
-    os.system("python main.py ../../../gen/parse_tables.js")
-    os.chdir("../ast")
-    os.system("python asdl_js.py Python.asdl ../../../gen/astnodes.js")
-    os.chdir("../../..")
-    # sanity check that they at least parse
-    #os.system(jsengine + " support/closure-library/closure/goog/base.js src/env.js src/tokenize.js gen/parse_tables.js gen/astnodes.js")
-
 def regenasttests(togen="{0}/run/*.py".format(TEST_DIR)):
     """regenerate the ast test files by running our helper script via real python"""
     for f in glob.glob(togen):
@@ -546,7 +535,6 @@ def regenasttests(togen="{0}/run/*.py".format(TEST_DIR)):
             shutil.copy(forcename, transname)
         if crlfprog:
             os.system("python {0} {1}".format(crlfprog, transname))
-
 
 def regenruntests(togen="{0}/run/*.py".format(TEST_DIR)):
     """regenerate the test data by running the tests on real python"""
@@ -565,8 +553,6 @@ def regenruntests(togen="{0}/run/*.py".format(TEST_DIR)):
             shutil.copy(forcename, "%s.real" % f)
         if crlfprog:
             os.system("python %s %s.real" % (crlfprog, f))
-
-
 
 def symtabdump(fn):
     if not os.path.exists(fn):
@@ -802,7 +788,6 @@ Commands:
     dist             Build core and library distribution files
     docbi            Build library distribution file only and copy to doc/static
 
-    regenparser      Regenerate parser tests
     regenasttests    Regen abstract symbol table tests
     regenruntests    Regenerate runtime unit tests
     regensymtabtests Regenerate symbol table tests
@@ -893,8 +878,6 @@ def main():
         run3(sys.argv[2])
     elif cmd == "vmwareregr":
         vmwareregr()
-    elif cmd == "regenparser":
-        regenparser()
     elif cmd == "regenasttests":
         regenasttests()
     elif cmd == "regenruntests":

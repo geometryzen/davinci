@@ -1047,7 +1047,7 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc)
       return selfPy;
     }
   });
-  $loc.__mod__ = Sk.ffi.functionPy(function(selfPy, otherPy)
+  $loc.__or__ = Sk.ffi.functionPy(function(selfPy, otherPy)
   {
     switch(Sk.ffi.getType(otherPy))
     {
