@@ -45,12 +45,11 @@ DIST_DIR        = 'dist'
 TEST_DIR        = 'test'
 
 # Symbolic constants for the naming of distribution files.
-STANDARD_NAMING = True
 PRODUCT_NAME    = bowerProperty("name")
-OUTFILE_REG     = "{0}.js".format(PRODUCT_NAME) if STANDARD_NAMING else "skulpt-uncomp.js"
-OUTFILE_MIN     = "{0}.min.js".format(PRODUCT_NAME) if STANDARD_NAMING else "skulpt.js"
-OUTFILE_LIB     = "{0}-stdlib.js".format(PRODUCT_NAME) if STANDARD_NAMING else "builtin.js"
-OUTFILE_MAP     = "{0}-linemap.txt".format(PRODUCT_NAME) if STANDARD_NAMING else "linemap.txt"
+OUTFILE_REG     = "{0}.js".format(PRODUCT_NAME)
+OUTFILE_MIN     = "{0}.min.js".format(PRODUCT_NAME)
+OUTFILE_LIB     = "{0}-stdlib.js".format(PRODUCT_NAME)
+OUTFILE_MAP     = "{0}-linemap.txt".format(PRODUCT_NAME)
 
 # Symbolic constants for file types.
 FILE_TYPE_DIST = 'dist'
@@ -64,8 +63,7 @@ Files = [
         ('support/closure-library/closure/goog/string/string.js',   FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/debug/error.js',     FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/asserts/asserts.js', FILE_TYPE_DIST),
-#       'vendor/davinci-py/dist/davinci-py.js',
-        '../davinci-py/dist/davinci-py.js',
+        'vendor/davinci-py/dist/davinci-py.js', # Can't use minified to satisfy Google closure-compiler!
         'src/env.js',
         'src/builtin.js',
         'src/errors.js',
