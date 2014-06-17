@@ -1,8 +1,3 @@
-/** @param {...*} x */
-var out;
-
-Sk.gensymcount = 0;
-
 var astnodes = davinciPy.astnodes;
 var symtable = davinciPy.symtable;
 var parser   = davinciPy.parser;
@@ -13,6 +8,11 @@ var GLOBAL_IMPLICIT = symtable.GLOBAL_IMPLICIT;
 var FREE            = symtable.FREE;
 var CELL            = symtable.CELL;
 var FunctionBlock   = symtable.FunctionBlock;
+
+/** @param {...*} x */
+var out;
+
+Sk.gensymcount = 0;
 
 /**
  * @constructor
@@ -332,7 +332,7 @@ Compiler.prototype.clistcompgen = function(tmpname, generators, genIndex, elt)
     if (genIndex >= generators.length)
     {
         var velt = this.vexpr(elt);
-        out(tmpname, ".v.push(", velt, ");"); // todo;
+        out(tmpname, ".v.push(", velt, ");");
         this._jump(skip);
         this.setBlock(skip);
     }
@@ -347,13 +347,13 @@ Compiler.prototype.clistcompgen = function(tmpname, generators, genIndex, elt)
 Compiler.prototype.clistcomp = function(e)
 {
     goog.asserts.assert(e instanceof astnodes.ListComp);
-    var tmp = this._gr("_compr", "new Sk.builtins['list']([])"); // note: _ is impt. for hack in name mangling (same as cpy)
+    var tmp = this._gr("_compr", "new Sk.builtins['list']([])");
     return this.clistcompgen(tmp, e.generators, 0, e.elt);
 };
 
 Compiler.prototype.cyield = function(e)
 {
-    if (this.u.ste.blockType !== astnodes.FunctionBlock)
+    if (this.u.ste.blockType !== FunctionBlock)
         throw new SyntaxError("'yield' outside function");
     var val = 'null';
     if (e.value)
@@ -390,13 +390,13 @@ Compiler.prototype.ccall = function(e)
 {
     var func = this.vexpr(e.func);
     var args = this.vseqexpr(e.args);
-    //print(JSON.stringify(e, null, 2));
+
     if (e.keywords.length > 0 || e.starargs || e.kwargs)
     {
         var kwarray = [];
         for (var i = 0; i < e.keywords.length; ++i)
         {
-            kwarray.push("'" + e.keywords[i].arg.v + "'");
+            kwarray.push("'" + e.keywords[i].arg + "'");
             kwarray.push(this.vexpr(e.keywords[i].value));
         }
         var keywords = "[" + kwarray.join(",") + "]";
@@ -495,6 +495,39 @@ Compiler.prototype.cboolop = function(e)
     return retval;
 };
 
+var toStringLiteralJS = function(value)
+{
+    // single is preferred
+    var quote = "'";
+    if (value.indexOf("'") !== -1 && value.indexOf('"') === -1)
+    {
+        quote = '"';
+    }
+    var len = value.length;
+    var ret = quote;
+    for (var i = 0; i < len; ++i)
+    {
+        var c = value.charAt(i);
+        if (c === quote || c === '\\')
+            ret += '\\' + c;
+        else if (c === '\t')
+            ret += '\\t';
+        else if (c === '\n')
+            ret += '\\n';
+        else if (c === '\r')
+            ret += '\\r';
+        else if (c < ' ' || c >= 0x7f)
+        {
+            var ashex = c.charCodeAt(0).toString(16);
+            if (ashex.length < 2) ashex = "0" + ashex;
+            ret += "\\x" + ashex;
+        }
+        else
+            ret += c;
+    }
+    ret += quote;
+    return ret;
+};
 
 /**
  *
@@ -544,33 +577,29 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             return result;
         case astnodes.Num:
         {
-            if (typeof e.n === "number")
+            if (e.n.isFloat())
             {
-                return e.n;
+                return 'Sk.builtin.numberToPy(' + e.n.value + ')';
             }
-            else if (Sk.ffi.isFloat(e.n))
+            else if (e.n.isInt())
             {
-                return "Sk.builtin.numberToPy(" + Sk.ffi.remapToJs(e.n) + ")";
+                return "Sk.ffi.numberToIntPy(" + e.n.value + ")";
             }
-            else if (Sk.ffi.isInt(e.n))
+            else if (e.n.isLong())
             {
-                return "Sk.ffi.numberToIntPy(" + Sk.ffi.remapToJs(e.n) + ")";
-            }
-            else if (Sk.ffi.isLong(e.n))
-            {
-                return "Sk.ffi.longFromString('" + Sk.ffi.remapToJs(e.n.tp$str()) + "')";
+                return "Sk.ffi.longFromString('" + e.n.text + "', " + e.n.radix + ")";
             }
             goog.asserts.fail("unhandled Num type");
         }
         case astnodes.Str:
         {
-            return this._gr('str', "Sk.builtin.stringToPy(", e.s, ")");
+            return this._gr('str', 'Sk.builtin.stringToPy(', toStringLiteralJS(e.s), ')');
         }
         case astnodes.Attribute:
             var val;
             if (e.ctx !== astnodes.AugStore)
                 val = this.vexpr(e.value);
-            var mangled = e.attr;
+            var mangled = toStringLiteralJS(e.attr);
             mangled = mangled.substring(1, mangled.length-1);
             mangled = mangleName(this.u.private_, mangled);
             mangled = fixReservedWords(mangled);
@@ -995,9 +1024,6 @@ Compiler.prototype.ctryexcept = function(s)
             var handlertype = this.vexpr(handler.type);
             var next = (i == n-1) ? unhandled : handlers[i+1];
 
-            // var isinstance = this.nameop(Sk.builtin.stringToPy("isinstance"), Load));
-            // var check = this._gr('call', "Sk.misceval.callsim(", isinstance, ", $err, ", handlertype, ")");
-
             // this check is not right, should use isinstance, but exception objects
             // are not yet proper Python objects
             var check = this._gr('instance', "$err instanceof ", handlertype);
@@ -1085,7 +1111,7 @@ Compiler.prototype.cimport = function(s)
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
-        var mod = this._gr('module', "Sk.builtin.__import__(", alias.name, ",$gbl,$loc,[])");
+        var mod = this._gr('module', 'Sk.builtin.__import__(', toStringLiteralJS(alias.name), ',$gbl,$loc,[])');
 
         if (alias.asname)
         {
@@ -1114,7 +1140,8 @@ Compiler.prototype.cfromimport = function(s)
     {
         names[i] = s.names[i].name;
     }
-    var mod = this._gr('module', "Sk.builtin.__import__(", s.module, ",$gbl,$loc,[", names, "])");
+    var namesString = names.map(function(name) {return toStringLiteralJS(name);}).join(', ');
+    var mod = this._gr('module', 'Sk.builtin.__import__(', toStringLiteralJS(s.module), ',$gbl,$loc,[', namesString, '])');
     for (var i = 0; i < n; ++i)
     {
         var alias = s.names[i];
@@ -1125,7 +1152,7 @@ Compiler.prototype.cfromimport = function(s)
             return;
         }
 
-        var got = this._gr('item', "Sk.abstr.gattr(", mod, ",", alias.name, ")");
+        var got = this._gr('item', 'Sk.abstr.gattr(', mod, ',', toStringLiteralJS(alias.name), ')');
         var storeName = alias.name;
         if (alias.asname)
             storeName = alias.asname;
@@ -1225,7 +1252,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         }
         if (vararg)
         {
-            throw new SyntaxError(coname + "(): variable number of arguments in generators not supported");    
+            throw new SyntaxError(coname + "(): variable number of arguments in generators not supported");
         }
         funcArgs.push("$gen");
     }
@@ -1451,7 +1478,7 @@ Compiler.prototype.cfunction = function(s)
 Compiler.prototype.clambda = function(e)
 {
     goog.asserts.assert(e instanceof astnodes.Lambda);
-    var func = this.buildcodeobj(e, Sk.builtin.stringToPy("<lambda>"), null, e.args, function(scopename)
+    var func = this.buildcodeobj(e, "<lambda>", null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
                 out("return ", val, ";");
@@ -1539,7 +1566,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
 
 Compiler.prototype.cgenexp = function(e)
 {
-    var gen = this.buildcodeobj(e, Sk.builtin.stringToPy("<genexpr>"), null, null,
+    var gen = this.buildcodeobj(e, "<genexpr>", null, null,
         function(scopename)
         {
             this.cgenexpgen(e.generators, 0, e.elt);
@@ -1591,8 +1618,7 @@ Compiler.prototype.cclass = function(s)
 
     this.exitScope();
 
-    // todo; metaclass
-    var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name, ",[", bases, "])");
+    var wrapped = this._gr('built', 'Sk.misceval.buildClass($gbl,', scopename, ',', toStringLiteralJS(s.name), ',[', bases, '])');
 
     // store our new class under the right name
     this.nameop(s.name, astnodes.Store, wrapped);
@@ -1625,7 +1651,7 @@ Compiler.prototype.vstmt = function(s)
             this.cclass(s);
             break;
         case astnodes.Return_:
-            if (this.u.ste.blockType !== astnodes.FunctionBlock)
+            if (this.u.ste.blockType !== FunctionBlock)
                 throw new SyntaxError("'return' outside function");
             if (s.value)
                 out("return ", this.vexpr(s.value), ";");
@@ -1727,9 +1753,8 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
     if (name === "True")  return "Sk.ffi.bool.True";
     if (name === "False") return "Sk.ffi.bool.False";
 
-    var mangled = mangleName(this.u.private_, name);
     // Have to do this before looking it up in the scope
-    mangled = fixReservedNames(mangled);
+    var mangled = mangleName(this.u.private_, name);
     var op = 0;
     var optype = OP_NAME;
     var scope = this.u.ste.getScope(mangled);
@@ -1746,11 +1771,11 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
             break;
         case LOCAL:
             // can't do FAST in generators or at module/class scope
-            if (this.u.ste.blockType === astnodes.FunctionBlock && !this.u.ste.generator)
+            if (this.u.ste.blockType === FunctionBlock && !this.u.ste.generator)
                 optype = OP_FAST;
             break;
         case GLOBAL_IMPLICIT:
-            if (this.u.ste.blockType === astnodes.FunctionBlock)
+            if (this.u.ste.blockType === FunctionBlock)
                 optype = OP_GLOBAL;
             break;
         case GLOBAL_EXPLICIT:
@@ -1760,6 +1785,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
     }
 
     // have to do this after looking it up in the scope
+    mangled = fixReservedNames(mangled);
     mangled = fixReservedWords(mangled);
 
     //print("mangled", mangled);
@@ -1769,7 +1795,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
     // in generator or at module scope, we need to store to $loc, rather that
     // to actual JS stack variables.
     var mangledNoPre = mangled;
-    if (this.u.ste.generator || this.u.ste.blockType !== astnodes.FunctionBlock)
+    if (this.u.ste.generator || this.u.ste.blockType !== FunctionBlock)
         mangled = "$loc." + mangled;
     else if (optype === OP_FAST || optype === OP_NAME)
         this.u.localnames.push(mangled);
@@ -1888,9 +1914,7 @@ Compiler.prototype.exitScope = function()
 
     if (prev.name !== "<module>")
     {
-        // todo; hacky
         var mangled = prev.name;
-        mangled = mangled.substring(1, mangled.length-1);
         mangled = fixReservedWords(mangled);
         mangled = fixReservedNames(mangled);
         out(prev.scopename, ".co_name=Sk.builtin.stringToPy('", mangled, "');");
