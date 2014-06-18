@@ -267,18 +267,6 @@ Sk.evaluateModule = function(module, co, dumpJS, modname)
     {
         if (dumpJS)
         {
-            var withLineNumbers = function(code)
-            {
-                var lines = code.split('\n');
-                for (var i = 1; i <= lines.length; ++i)
-                {
-                    var width = ("" + i).length;
-                    var pad = "";
-                    for (var j = width; j < 5; ++j) pad += " ";
-                    lines[i - 1] = "/* " + pad + i + " */ " + lines[i - 1];
-                }
-                return lines.join('\n');
-            };
             var options =
             {
                 indent_size: 2,
@@ -287,7 +275,6 @@ Sk.evaluateModule = function(module, co, dumpJS, modname)
             };
             var beautifulCode = js_beautify(co.code, options);
             finalCode = beautifulCode;
-//          finalCode = withLineNumbers(beautifulCode);
             Sk.debugout(finalCode);
         }
     }

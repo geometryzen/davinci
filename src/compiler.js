@@ -16,14 +16,14 @@ Sk.gensymcount = 0;
 
 /**
  * @constructor
- * @param {string} filename
+ * @param {string} fileName
  * @param {Object} st
  * @param {number} flags
  * @param {string=} sourceCodeForAnnotation used to add original source to listing if desired
  */
-function Compiler(filename, st, flags, sourceCodeForAnnotation)
+function Compiler(fileName, st, flags, sourceCodeForAnnotation)
 {
-    this.filename = filename;
+    this.fileName = fileName;
     /**
      * @type {Object}
      * @private
@@ -133,7 +133,7 @@ Compiler.prototype.annotateSource = function(ast)
         out("\n//");
 
         out('\nSk.currLineNo = ', lineno, ';Sk.currColNo = ', col_offset, ';');
-        out("\nSk.currFilename = '", this.filename, "';\n\n");
+        out("\nSk.currFilename = '", this.fileName, "';\n\n");
     }
 };
 
@@ -2012,17 +2012,17 @@ Compiler.prototype.cmod = function(mod)
 
 /**
  * @param {string} source the code
- * @param {string} filename where it came from
+ * @param {string} fileName where it came from
  * @param {string} mode one of 'exec', 'eval', or 'single'
  *
  * @return {{funcname: string, code: string}}
  */
-Sk.compile = function(source, filename, mode)
+Sk.compile = function(source, fileName, mode)
 {
-    var cst = parser.parse(filename, source);
-    var ast = builder.astFromParse(cst, filename);
-    var st = symtable.symbolTable(ast, filename);
-    var c = new Compiler(filename, st, 0, source);
+    var cst = parser.parse(fileName, source);
+    var ast = builder.astFromParse(cst, fileName);
+    var st = symtable.symbolTable(ast, fileName);
+    var c = new Compiler(fileName, st, 0, source);
     return {"funcname": c.cmod(ast), "code": c.result.join('')};
 };
 goog.exportSymbol("Sk.compile", Sk.compile);

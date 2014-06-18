@@ -63,6 +63,7 @@ Files = [
         ('support/closure-library/closure/goog/string/string.js',   FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/debug/error.js',     FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/asserts/asserts.js', FILE_TYPE_DIST),
+#       '../davinci-py/dist/davinci-py.js',
         'vendor/davinci-py/dist/davinci-py.js', # Can't use minified to satisfy Google closure-compiler!
         'src/env.js',
         'src/builtin.js',
