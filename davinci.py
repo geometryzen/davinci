@@ -120,7 +120,7 @@ Files = [
         'src/stdlib/vector3.js',
         'src/stdlib/fractions.js',
         'src/stdlib/workbench.js',
-        ("support/jsbeautify/beautify.js", FILE_TYPE_TEST),
+        ('vendor/js-beautify/js/lib/beautify.js', FILE_TYPE_TEST),
         ]
 
 TestFiles = [
@@ -130,7 +130,7 @@ TestFiles = [
         'support/closure-library/closure/goog/math/coordinate.js',
         'support/closure-library/closure/goog/math/vec2.js',
         'support/closure-library/closure/goog/json/json.js',
-        'support/jsbeautify/beautify.js',
+        'vendor/js-beautify/js/lib/beautify.js',
         'support/threejs/src/Three.js',
         'support/threejs/src/math/Math.js',
         'support/threejs/src/math/Vector3.js',
@@ -453,7 +453,7 @@ def dist(options):
     if options.verbose:
         print ". Compressing..."
 
-    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/davinci-py-exports.js --externs src/externs/eight-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
+    ret = os.system("java -jar support/closure-compiler/compiler.jar --language_in=ECMASCRIPT5 --define goog.DEBUG=false --output_wrapper \"(function(){%%output%%}());\" --compilation_level SIMPLE_OPTIMIZATIONS --jscomp_error accessControls --jscomp_error checkRegExp --jscomp_error checkTypes --jscomp_error checkVars --jscomp_error deprecated --jscomp_off fileoverviewTags --jscomp_error invalidCasts --jscomp_error missingProperties --jscomp_error nonStandardJsDocs --jscomp_error strictModuleDepCheck --jscomp_error undefinedVars --jscomp_error unknownDefines --jscomp_error visibility %s --externs src/externs/blade-exports.js --externs src/externs/davinci-py-exports.js --externs src/externs/eight-exports.js --externs src/externs/js-beautify-exports.js --externs src/externs/three-exports.js --js_output_file %s" % (uncompfiles, compfn))
     # to disable asserts
     # --define goog.DEBUG=false
     #

@@ -78,11 +78,6 @@ Sk.importSetUpPath = function()
     }
 };
 
-if (COMPILED)
-{
-    var js_beautify = function(x) { return x; };
-}
-
 /**
  * @param {string} name name of module to import
  * @param {boolean} dumpJS whether to output the generated js code
@@ -262,10 +257,10 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName)
 Sk.evaluateModule = function(module, co, dumpJS, modname)
 {
     module.$js = co.code; // todo; only in DEBUG?
-    var finalcode = co.code;
+    var finalCode = co.code;
     if (Sk.dateSet == null || !Sk.dateSet)
     {
-        finalcode = 'Sk.execStart = new Date();\n' + co.code;
+        finalCode = 'Sk.execStart = new Date();\n' + co.code;
         Sk.dateSet = true;
     }
 
@@ -274,8 +269,7 @@ Sk.evaluateModule = function(module, co, dumpJS, modname)
         {
             var withLineNumbers = function(code)
             {
-                var beaut = js_beautify(co.code);
-                var lines = beaut.split("\n");
+                var lines = code.split('\n');
                 for (var i = 1; i <= lines.length; ++i)
                 {
                     var width = ("" + i).length;
@@ -283,17 +277,25 @@ Sk.evaluateModule = function(module, co, dumpJS, modname)
                     for (var j = width; j < 5; ++j) pad += " ";
                     lines[i - 1] = "/* " + pad + i + " */ " + lines[i - 1];
                 }
-                return lines.join("\n");
+                return lines.join('\n');
             };
-            finalcode = withLineNumbers(co.code);
-            Sk.debugout(finalcode);
+            var options =
+            {
+                indent_size: 2,
+                preserve_newlines: false,
+                brace_style: 'expand'
+            };
+            var beautifulCode = js_beautify(co.code, options);
+            finalCode = beautifulCode;
+//          finalCode = withLineNumbers(beautifulCode);
+            Sk.debugout(finalCode);
         }
     }
 
     var namestr = "Sk.builtin.stringToPy('" + modname + "')";
-    finalcode += "\n" + co.funcname + "(" + namestr + ");";
+    finalCode += "\n" + co.funcname + "(" + namestr + ");";
 
-    var modlocs = goog.global['eval'](finalcode);
+    var modlocs = goog.global['eval'](finalCode);
 
     // pass in __name__ so the module can set it (so that the code can access
     // it), but also set it after we're done so that builtins don't have to

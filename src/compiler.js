@@ -118,12 +118,22 @@ Compiler.prototype.annotateSource = function(ast)
     {
         var lineno = ast.lineno;
         var col_offset = ast.col_offset;
-        out("\n//\n// line ", lineno, ":\n// ", this.getSourceLine(lineno), "\n// ");
-        for (var i = 0; i < col_offset; ++i) out(" ");
-        out("^\n//\n");
+        out('\n//');
+        out('\n// line ', lineno, ':');
+        out('\n// ', this.getSourceLine(lineno));
 
-        out("\nSk.currLineNo = ",lineno, ";\nSk.currColNo = ",col_offset,"\n\n");
-        out("\nSk.currFilename = '",this.filename,"';\n\n");
+        //
+        out('\n// ');
+        for (var i = 0; i < col_offset; ++i)
+        {
+            out(" ");
+        }
+        out("^");
+
+        out("\n//");
+
+        out('\nSk.currLineNo = ', lineno, ';Sk.currColNo = ', col_offset, ';');
+        out("\nSk.currFilename = '", this.filename, "';\n\n");
     }
 };
 
@@ -820,7 +830,6 @@ Compiler.prototype.outputAllUnits = function()
         {
             ret += "case " + i + ": /* --- " + blocks[i]._name + " --- */";
             ret += blocks[i].join('');
-
             ret += "throw new Sk.builtin.SystemError('internal error: unterminated block');";
         }
         ret += unit.suffixCode;
@@ -1934,18 +1943,18 @@ Compiler.prototype.cprint = function(s)
     goog.asserts.assert(s instanceof astnodes.Print);
     var dest = 'null';
     if (s.dest)
+    {
         dest = this.vexpr(s.dest);
+    }
 
     var n = s.values.length;
-    // todo; dest disabled
     for (var i = 0; i < n; ++i)
     {
-        // TODO: This is performing a dictionary lookup. We need to go through a gateway function.
-        out('Sk.misceval.print_(', /*dest, ',',*/ "Sk.ffi.remapToJs(new Sk.builtins['str'](", this.vexpr(s.values[i]), ')));');
+        out("Sk.misceval.print_(Sk.ffi.remapToJs(new Sk.builtins['str'](", this.vexpr(s.values[i]), ")));");
     }
     if (s.nl)
     {
-        out('Sk.misceval.print_(', /*dest, ',*/ '"\\n");');
+        out("Sk.misceval.print_('\\n');");
     }
 };
 
