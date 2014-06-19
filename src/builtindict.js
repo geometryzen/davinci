@@ -42,7 +42,6 @@ Sk.builtins = {
 'ZeroDivisionError' : Sk.builtin.ZeroDivisionError,
 'AssertionError' : Sk.builtin.AssertionError,
 'ImportError' : Sk.builtin.ImportError,
-'IndentationError' : Sk.builtin.IndentationError,
 'IndexError' : Sk.builtin.IndexError,
 'KeyError' : Sk.builtin.KeyError,
 'TypeError' : Sk.builtin.TypeError,

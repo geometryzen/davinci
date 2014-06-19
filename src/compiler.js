@@ -1751,11 +1751,11 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
 {
     if ((ctx === astnodes.Store || ctx === astnodes.AugStore || ctx === astnodes.Del) && name === "__debug__")
     {
-        throw new Sk.builtin.SyntaxError("can not assign to __debug__");
+        throw new SyntaxError("can not assign to __debug__");
     }
     if ((ctx === astnodes.Store || ctx === astnodes.AugStore || ctx === astnodes.Del) && name === "None")
     {
-        throw new Sk.builtin.SyntaxError("can not assign to None");
+        throw new SyntaxError("can not assign to None");
     }
 
     if (name === "None")  return "Sk.builtin.none.none$";

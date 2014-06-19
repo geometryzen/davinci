@@ -41,7 +41,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
     # build davinci at this tag
     cd $HOME/davinci-dev
     git checkout tags/$TAG
-    ./davinci.py dist -u
+    ./build.py dist -u
     # create zip and tarbals
     cd dist
     tar -czf davinci-latest.tar.gz *.js
@@ -72,7 +72,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "0" ]]; then
   cd $HOME/davinci-dev
   git reset HEAD --hard
 
-  ./davinci.py dist -u
+  ./build.py dist -u
 
   cd dist
   cp *.js ../../davinci/
