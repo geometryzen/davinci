@@ -1,12 +1,4 @@
 #!/usr/bin/env python2.7
-
-#
-#   Note:  python2.6 is specified because that is what the skulpt parser
-#          used as a reference.  This is only important when you are doing
-#          things like regenerating tests and/or regenerating symtabs
-#          If you do not have python 2.6 and you ARE NOT creating new tests
-#          then all should be well for you to use 2.7 or whatever you have around
-
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 import os
@@ -56,14 +48,12 @@ FILE_TYPE_DIST = 'dist'
 FILE_TYPE_TEST = 'test'
 
 # Order is important!
-# TODO: With a module system, ordering would be managed.
 Files = [
         'support/closure-library/closure/goog/base.js',
         'support/closure-library/closure/goog/deps.js',
         ('support/closure-library/closure/goog/string/string.js',   FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/debug/error.js',     FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/asserts/asserts.js', FILE_TYPE_DIST),
-#       '../davinci-py/dist/davinci-py.js',
         'vendor/davinci-py/dist/davinci-py.js', # Can't use minified to satisfy Google closure-compiler!
         'src/env.js',
         'src/builtin.js',
@@ -95,7 +85,6 @@ Files = [
         'src/ffi.js',
         'src/ffh.js',
         'src/enumerate.js',
-        'src/compiler.js',
         'src/import.js',
         'src/timsort.js',
         'src/builtindict.js',

@@ -124,7 +124,7 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body)
             var parentModule = Sk.importModuleInternalNoBody_(parentModName, dumpJS, undefined);
             var childModule = new Sk.builtin.module();
             Sk.sysmodules.mp$ass_subscript(name, childModule);
-            var co = Sk.compile(body, name + ".py", "exec");
+            var co = davinciPy.skCompiler.compile(body, name + ".py", "exec");
             Sk.evaluateModule(childModule, co, dumpJS, modname);
             Sk.storeModuleInParent(childModule, parentModName, modNameSplit);
             return parentModule;
@@ -141,7 +141,7 @@ Sk.importModuleInternalFromBody_ = function(name, dumpJS, overrideName, body)
             // not in sys.modules, continue
             var module = new Sk.builtin.module();
             Sk.sysmodules.mp$ass_subscript(name, module);
-            var co = Sk.compile(body, name + ".py", "exec");
+            var co = davinciPy.skCompiler.compile(body, name + ".py", "exec");
             Sk.evaluateModule(module, co, dumpJS, modname);
             return module;
         }
@@ -208,7 +208,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName)
             else
             {
                 filename = Sk.importSearchPathForName(name, ".py", false);
-                var co = Sk.compile(Sk.read(filename), filename, "exec");
+                var co = davinciPy.skCompiler.compile(Sk.read(filename), filename, "exec");
                 Sk.evaluateModule(childModule, co, dumpJS, modname);
                 Sk.storeModuleInParent(childModule, parentModName, modNameSplit);
                 return parentModule;
@@ -238,7 +238,7 @@ Sk.importModuleInternalNoBody_ = function(name, dumpJS, overrideName)
             else
             {
                 filename = Sk.importSearchPathForName(name, ".py", false);
-                var co = Sk.compile(Sk.read(filename), filename, "exec");
+                var co = davinciPy.skCompiler.compile(Sk.read(filename), filename, "exec");
                 Sk.evaluateModule(module, co, dumpJS, modname);
                 return module;
             }
@@ -341,7 +341,7 @@ Sk.importMain = function(name, dumpJS)
     Sk.sysmodules = new Sk.builtin.dict([]);
     Sk.realsyspath = undefined;
 
-    Sk.resetCompiler();
+    davinciPy.skCompiler.resetCompiler();
 
     return Sk.importModuleInternalNoBody_(name, (typeof dumpJS === 'boolean' ? dumpJS : false), "__main__");
 };
@@ -365,8 +365,8 @@ Sk.importMainWithBody = function(name, dumpJS, body)
     // Reset imports.
     Sk.sysmodules = new Sk.builtin.dict([]);
     Sk.realsyspath = undefined;
-    
-    Sk.resetCompiler();
+
+    davinciPy.skCompiler.resetCompiler();
 
     return Sk.importModuleInternalFromBody_(name, dumpJS, "__main__", body);
 };
