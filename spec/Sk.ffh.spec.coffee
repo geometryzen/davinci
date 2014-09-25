@@ -169,10 +169,10 @@ describe "Sk.ffh", ->
        expect(Sk.ffi.remapToJs Sk.ffh.ge Sk.ffi.longFromString('12345678901234567890123456789'), Sk.ffi.longFromString('12345678901234567890123456789')).toBe true
 
   describe "xor", -> 
-    it "(0, 0) should be 0", -> expect(Sk.ffi.remapToJs Sk.ffh.xor Sk.ffi.numberToFloatPy(0), Sk.ffi.numberToFloatPy(0)).toBe 0
-    it "(0, 1) should be 1", -> expect(Sk.ffi.remapToJs Sk.ffh.xor Sk.ffi.numberToFloatPy(0), Sk.ffi.numberToFloatPy(1)).toBe 1
-    it "(1, 0) should be 1", -> expect(Sk.ffi.remapToJs Sk.ffh.xor Sk.ffi.numberToFloatPy(1), Sk.ffi.numberToFloatPy(0)).toBe 1
-    it "(1, 1) should be 0", -> expect(Sk.ffi.remapToJs Sk.ffh.xor Sk.ffi.numberToFloatPy(1), Sk.ffi.numberToFloatPy(1)).toBe 0
+    it "(0, 0) should be 0", -> expect(Sk.ffi.remapToJs Sk.ffh.bitXor Sk.ffi.numberToFloatPy(0), Sk.ffi.numberToFloatPy(0)).toBe 0
+    it "(0, 1) should be 1", -> expect(Sk.ffi.remapToJs Sk.ffh.bitXor Sk.ffi.numberToFloatPy(0), Sk.ffi.numberToFloatPy(1)).toBe 1
+    it "(1, 0) should be 1", -> expect(Sk.ffi.remapToJs Sk.ffh.bitXor Sk.ffi.numberToFloatPy(1), Sk.ffi.numberToFloatPy(0)).toBe 1
+    it "(1, 1) should be 0", -> expect(Sk.ffi.remapToJs Sk.ffh.bitXor Sk.ffi.numberToFloatPy(1), Sk.ffi.numberToFloatPy(1)).toBe 0
 
   describe "lshift", -> 
     it "(2, 0) should be 2", -> expect(Sk.ffi.remapToJs Sk.ffh.lshift Sk.ffi.numberToFloatPy(2), Sk.ffi.numberToFloatPy(0)).toBe 2

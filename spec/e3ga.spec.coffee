@@ -321,7 +321,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e12 = new Euclidean3(Sk.ffh.xor(e1Py,e2Py));
+      e12 = new Euclidean3(Sk.ffh.bitXor(e1Py,e2Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e1.cross(e12)
@@ -373,7 +373,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e23 = new Euclidean3(Sk.ffh.xor(e2Py,e3Py));
+      e23 = new Euclidean3(Sk.ffh.bitXor(e2Py,e3Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e1.cross(e23)
@@ -425,7 +425,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e31 = new Euclidean3(Sk.ffh.xor(e3Py,e1Py));
+      e31 = new Euclidean3(Sk.ffh.bitXor(e3Py,e1Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e1.cross(e31)
@@ -477,7 +477,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e23 = new Euclidean3(Sk.ffh.xor(e2Py,e3Py));
+      e23 = new Euclidean3(Sk.ffh.bitXor(e2Py,e3Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e2.cross(e23)
@@ -529,7 +529,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e31 = new Euclidean3(Sk.ffh.xor(e3Py,e1Py));
+      e31 = new Euclidean3(Sk.ffh.bitXor(e3Py,e1Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e2.cross(e31)
@@ -581,7 +581,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e12 = new Euclidean3(Sk.ffh.xor(e1Py,e2Py));
+      e12 = new Euclidean3(Sk.ffh.bitXor(e1Py,e2Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e2.cross(e12)
@@ -633,7 +633,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e12 = new Euclidean3(Sk.ffh.xor(e1Py,e2Py));
+      e12 = new Euclidean3(Sk.ffh.bitXor(e1Py,e2Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e3.cross(e12)
@@ -685,7 +685,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e23 = new Euclidean3(Sk.ffh.xor(e2Py,e3Py));
+      e23 = new Euclidean3(Sk.ffh.bitXor(e2Py,e3Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e3.cross(e23)
@@ -737,7 +737,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e31 = new Euclidean3(Sk.ffh.xor(e3Py,e1Py));
+      e31 = new Euclidean3(Sk.ffh.bitXor(e3Py,e1Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e3.cross(e31)
@@ -789,7 +789,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e23 = new Euclidean3(Sk.ffh.xor(e2Py,e3Py));
+      e23 = new Euclidean3(Sk.ffh.bitXor(e2Py,e3Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e23.cross(e1)
@@ -841,7 +841,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e31 = new Euclidean3(Sk.ffh.xor(e3Py,e1Py));
+      e31 = new Euclidean3(Sk.ffh.bitXor(e3Py,e1Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e31.cross(e1)
@@ -893,7 +893,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e12 = new Euclidean3(Sk.ffh.xor(e1Py,e2Py));
+      e12 = new Euclidean3(Sk.ffh.bitXor(e1Py,e2Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e12.cross(e1)
@@ -945,7 +945,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e12 = new Euclidean3(Sk.ffh.xor(e1Py,e2Py));
+      e12 = new Euclidean3(Sk.ffh.bitXor(e1Py,e2Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e12.cross(e2)
@@ -997,7 +997,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e23 = new Euclidean3(Sk.ffh.xor(e2Py,e3Py));
+      e23 = new Euclidean3(Sk.ffh.bitXor(e2Py,e3Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e23.cross(e2)
@@ -1049,7 +1049,7 @@ describe "e3ga", ->
 
       e1 = new Euclidean3(e1Py);
       e2 = new Euclidean3(e2Py);
-      e31 = new Euclidean3(Sk.ffh.xor(e3Py,e1Py));
+      e31 = new Euclidean3(Sk.ffh.bitXor(e3Py,e1Py));
       e3 = new Euclidean3(e3Py);
 
       actual = e31.cross(e2)
