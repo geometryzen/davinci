@@ -11,7 +11,7 @@
 2. Verify that the project builds, passes all tests, and update the build artifacts.
 
    ```
-   ./m dist -u
+   ./build.py dist -t -u -v
    ```
 
 3. Update the version number in bower.json
@@ -19,7 +19,7 @@
 4. Verify again that the project builds, passes all tests, and update the build artifacts.
 
    ```
-   ./m dist -u
+   ./build.py dist -t -u -v
    ```
 
 4. Add the changed files.
