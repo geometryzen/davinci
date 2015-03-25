@@ -15,3 +15,5 @@ after_script:
 env:
   global:
     secure: LdMLsA8jRSaDaRD9YNhre0fmDdlREPTjzluD/VhcW5OvKJAbAfQLi4hciueHe970TsunWMT4J7GV5VZ2uZbRrTpR+/svwmgF9AhszjIOjV75zCGA/3uNrETmzXZqwgtI5qZk+ucbLj9lPVWQiV7GutMdYxKDdn+Z1GkRWpJr5i8=
+email:
+  - david.geo.holmes@gmail.com
