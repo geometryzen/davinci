@@ -499,7 +499,7 @@ def dist(options):
         if ret != 0:
             print "Tests failed on compressed version."
             sys.exit(1)
-        ret = rununits(opt=True)
+        #ret = rununits(opt=True)
         if ret != 0:
             print "Tests failed on compressed unit tests"
             sys.exit(1)
