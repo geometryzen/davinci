@@ -190,7 +190,7 @@ Sk.builtin.round = function round(number, ndigits)
 
     Sk.builtin.pyCheckArgs("round", arguments, 1, 2);
     if (!Sk.builtin.checkNumber(number)) {
-    throw new Sk.builtin.TypeError("a float is required");
+        throw new Sk.builtin.TypeError("a float is required");
     }
     if ((ndigits !== undefined) && !Sk.misceval.isIndex(ndigits))
     {
@@ -404,7 +404,7 @@ Sk.builtin.zip = function zip()
 
 Sk.builtin.abs = function abs(xPy)
 {
-  return Sk.ffh.abs(xPy);
+    return Sk.ffh.abs(xPy);
 };
 
 Sk.builtin.ord = function ord(x)
@@ -449,26 +449,26 @@ Sk.builtin.int2str_ = function helper_(x, radix, prefix)
     var str = '';
     if (Sk.ffi.isLong(x))
     {
-    var suffix = '';
-    if (radix !== 2)
-        suffix = 'L';
+        var suffix = '';
+        if (radix !== 2)
+            suffix = 'L';
 
-    str = x.str$(radix, false);
-    if (x.nb$isnegative())
-    {
-        return Sk.builtin.stringToPy('-'+prefix+str+suffix);
-    }
-    return Sk.builtin.stringToPy(prefix+str+suffix);
+        str = x.str$(radix, false);
+        if (x.nb$isnegative())
+        {
+            return Sk.builtin.stringToPy('-'+prefix+str+suffix);
+        }
+        return Sk.builtin.stringToPy(prefix+str+suffix);
     }
     else
     {
-    x = Sk.misceval.asIndex(x);
-    str = x.toString(radix);
-    if (x < 0)
-    {
-        return Sk.builtin.stringToPy('-'+prefix+str.slice(1));
-    }
-    return Sk.builtin.stringToPy(prefix+str);
+        x = Sk.misceval.asIndex(x);
+        str = x.toString(radix);
+        if (x < 0)
+        {
+            return Sk.builtin.stringToPy('-'+prefix+str.slice(1));
+        }
+        return Sk.builtin.stringToPy(prefix+str);
     }
 };
 
@@ -722,15 +722,15 @@ Sk.builtin.hash = function hash(value)
     }
     else if (value === null)
     {
-    return 0;  // what should this be?
+        return 0;  // what should this be?
     }
     else if (value === true)
     {
-    return 1;
+        return 1;
     }
     else if (value === false)
     {
-    return 0;
+        return 0;
     }
 
     return (typeof value) + ' ' + String(value);

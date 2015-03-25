@@ -9,7 +9,7 @@ Sk.builtin.list = function(L)
 
     if (L === undefined)
     {
-            this.v = [];
+        this.v = [];
     }
     else if (Object.prototype.toString.apply(L) === '[object Array]')
     {
@@ -242,10 +242,9 @@ Sk.builtin.list.prototype.list_subscript_ = function(index)
     else if (index instanceof Sk.builtin.slice)
     {
         var ret = [];
-        index.sssiter$(this, function(i, wrt)
-                {
-                    ret.push(wrt.v[i]);
-                });
+        index.sssiter$(this, function(i, wrt) {
+            ret.push(wrt.v[i]);
+        });
         return new Sk.builtin.list(ret);
     }
 
@@ -309,11 +308,10 @@ Sk.builtin.list.prototype.list_del_subscript_ = function(index)
             var dec = 0; // offset of removal for next index (because we'll have removed, but the iterator is giving orig indices)
             var step = index.step === null ? 1 : index.step;
             var offdir = step > 0 ? 1 : 0;
-            index.sssiter$(this, function(i, wrt)
-                           {
-                               self.v.splice(i - dec, 1);
-                               dec += offdir;
-                           });
+            index.sssiter$(this, function(i, wrt) {
+                self.v.splice(i - dec, 1);
+                dec += offdir;
+            });
         }
         return;
     }

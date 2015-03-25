@@ -15,12 +15,13 @@ Sk.builtin.enumerate = function(iterable, start)
     if (start !== undefined) {
         if (!Sk.misceval.isIndex(start)) {
             throw new Sk.builtin.TypeError("'" + Sk.ffi.typeName(start) + "' object cannot be interpreted as an index");
-        } else {
-	    start = Sk.misceval.asIndex(start);
-	}
+        }
+        else {
+            start = Sk.misceval.asIndex(start);
+        }
     }
     else {
-	start = 0;
+        start = 0;
     }
 
     var it = iterable.tp$iter();
@@ -47,9 +48,9 @@ Sk.builtin.enumerate.prototype.tp$getattr = Sk.builtin.object.prototype.GenericG
 Sk.builtin.enumerate.prototype['__iter__'] = new Sk.builtin.func(function(self)
 {
     return self.tp$iter();
-});								 
+});
 
 Sk.builtin.enumerate.prototype['next'] = new Sk.builtin.func(function(self)
 {
     return self.tp$iternext();
-});								 
+});

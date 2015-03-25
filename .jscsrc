@@ -1,0 +1,14 @@
+{
+    "fileExtensions": [ ".js", "jscs" ],
+    "disallowMixedSpacesAndTabs": true,
+    "validateIndentation": 4,
+
+    "excludeFiles": [
+        "src/biginteger.js",
+        "src/env.js",
+        "src/ffh.js",
+        "src/ffi.js",
+        "src/long.js",
+        "src/number.js"
+    ]
+}

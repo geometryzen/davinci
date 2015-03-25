@@ -11,7 +11,7 @@
  */
 Sk.mergeSort = function(arr, cmp, key, reverse) //  Replaced by quicksort
 {
-  Sk.quickSort(arr, cmp, key, reverse)
+    Sk.quickSort(arr, cmp, key, reverse)
 }
 
 Sk.quickSort = function(arr, cmp, key, reverse)
@@ -24,51 +24,52 @@ Sk.quickSort = function(arr, cmp, key, reverse)
     }
 
     var partition = function(arr, begin, end, pivot, reverse)
-  {
-    var tmp;
-    var piv=arr[pivot];
-    
-//    swap pivot, end-1
-    tmp=arr[pivot];
-    arr[pivot]=arr[end-1];
-    arr[end-1]=tmp;
+    {
+        var tmp;
+        var piv=arr[pivot];
 
-    var store=begin;
-    var ix;
-    for(ix=begin; ix<end-1; ++ix) {
+        //    swap pivot, end-1
+        tmp=arr[pivot];
+        arr[pivot]=arr[end-1];
+        arr[end-1]=tmp;
+
+        var store=begin;
+        var ix;
+        for(ix=begin; ix<end-1; ++ix) {
             if ( reverse ) {
-        var cmpresult = Sk.misceval.callsim(cmp, piv, arr[ix]);
-            } else {
-        var cmpresult = Sk.misceval.callsim(cmp, arr[ix], piv);
+                var cmpresult = Sk.misceval.callsim(cmp, piv, arr[ix]);
+            }
+            else {
+                var cmpresult = Sk.misceval.callsim(cmp, arr[ix], piv);
             }
             if( Sk.builtin.asnum$(cmpresult) < 0 ) {
-//        swap store, ix
-        tmp=arr[store];
-        arr[store]=arr[ix];
-        arr[ix]=tmp;
-        ++store;
-      }
+                //        swap store, ix
+                tmp=arr[store];
+                arr[store]=arr[ix];
+                arr[ix]=tmp;
+                ++store;
+            }
+        }
+
+        //    swap end-1, store
+        tmp=arr[end-1];
+        arr[end-1]=arr[store];
+        arr[store]=tmp;
+
+        return store;
     }
-    
-//    swap end-1, store
-    tmp=arr[end-1];
-    arr[end-1]=arr[store];
-    arr[store]=tmp;
-  
-    return store;
-  }
-  
-  var qsort = function(arr, begin, end, reverse)
-  {
-    if(end-1>begin) {
-      var pivot=begin+Math.floor(Math.random()*(end-begin));
-  
-      pivot=partition(arr, begin, end, pivot, reverse);
-  
-      qsort(arr, begin, pivot, reverse);
-      qsort(arr, pivot+1, end, reverse);
+
+    var qsort = function(arr, begin, end, reverse)
+    {
+        if(end-1>begin) {
+            var pivot=begin+Math.floor(Math.random()*(end-begin));
+
+            pivot=partition(arr, begin, end, pivot, reverse);
+
+            qsort(arr, begin, pivot, reverse);
+            qsort(arr, pivot+1, end, reverse);
+        }
     }
-  }
 
     qsort(arr, 0, arr.length, reverse);
     return null;

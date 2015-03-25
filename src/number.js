@@ -772,119 +772,120 @@ Sk.builtin.NumberPy.prototype.nb$power = function(other)
 
 Sk.builtin.NumberPy.prototype.nb$and = function(other)
 {
-  var tmp;
-        other = Sk.builtin.asnum$(other);
-        tmp = this.v & other;
-        if ((tmp !== undefined) && (tmp < 0)) {
-            tmp = tmp + 4294967296; // convert back to unsigned
-        }
+    var tmp;
+    other = Sk.builtin.asnum$(other);
+    tmp = this.v & other;
+    if ((tmp !== undefined) && (tmp < 0)) {
+        tmp = tmp + 4294967296; // convert back to unsigned
+    }
 
-  if (tmp !== undefined)
-    return Sk.builtin.numberPy(tmp, undefined);
+    if (tmp !== undefined) {
+        return Sk.builtin.numberPy(tmp, undefined);
+    }
 
-  return undefined;
+    return undefined;
 }
 
 Sk.builtin.NumberPy.prototype.nb$or = function(other)
 {
-  var tmp;
-  other = Sk.builtin.asnum$(other);
-  tmp = this.v | other;
-  if ((tmp !== undefined) && (tmp < 0))
-  {
-      tmp = tmp + 4294967296; // convert back to unsigned
-  }
+    var tmp;
+    other = Sk.builtin.asnum$(other);
+    tmp = this.v | other;
+    if ((tmp !== undefined) && (tmp < 0))
+    {
+        tmp = tmp + 4294967296; // convert back to unsigned
+    }
 
-  if (tmp !== undefined)
-  {
-    // Has to be undefined so as not to break tests!
-    return Sk.builtin.numberPy(tmp, undefined);
-  }
-  return undefined;
+    if (tmp !== undefined)
+    {
+        // Has to be undefined so as not to break tests!
+        return Sk.builtin.numberPy(tmp, undefined);
+    }
+    return undefined;
 }
 
 Sk.builtin.NumberPy.prototype.nb$xor = function(other)
 {
-  var tmp;
-  other = Sk.builtin.asnum$(other);
-  tmp = this.v ^ other;
-  if ((tmp !== undefined) && (tmp < 0))
-  {
-      tmp = tmp + 4294967296; // convert back to unsigned
-  }
+    var tmp;
+    other = Sk.builtin.asnum$(other);
+    tmp = this.v ^ other;
+    if ((tmp !== undefined) && (tmp < 0))
+    {
+        tmp = tmp + 4294967296; // convert back to unsigned
+    }
 
-  if (tmp !== undefined)
-  {
-    return Sk.builtin.numberPy(tmp, undefined);
-  }
+    if (tmp !== undefined)
+    {
+        return Sk.builtin.numberPy(tmp, undefined);
+    }
 
-  return undefined;
+    return undefined;
 }
 
 Sk.builtin.NumberPy.prototype.nb$lshift = function(other)
 {
-  var shift = Sk.builtin.asnum$(other);
+    var shift = Sk.builtin.asnum$(other);
 
-  if (shift !== undefined)
-  {
-    if (shift < 0)
+    if (shift !== undefined)
     {
-      throw new Sk.builtin.ValueError("negative shift count");
-    }
-    /**
-     * @const
-     * @type {number}
-     */
-    var tmp = this.v << shift;
-    if (tmp <= this.v)
-    {
-      // Fail, recompute with longs
-      return Sk.builtin.lng.fromInt$(this.v).nb$lshift(shift);
+        if (shift < 0)
+        {
+            throw new Sk.builtin.ValueError("negative shift count");
+        }
+        /**
+         * @const
+         * @type {number}
+         */
+        var tmp = this.v << shift;
+        if (tmp <= this.v)
+        {
+            // Fail, recompute with longs
+            return Sk.builtin.lng.fromInt$(this.v).nb$lshift(shift);
+        }
+        else
+        {
+            return Sk.builtin.numberPy(tmp, this.skType);
+        }
     }
     else
     {
-      return Sk.builtin.numberPy(tmp, this.skType);
+        return undefined;
     }
-  }
-  else
-  {
-    return undefined;
-  }
 };
 
 Sk.builtin.NumberPy.prototype.nb$rshift = function(other)
 {
-  /**
-   * @const
-   * @type {number}
-   */
-  var shift = Sk.builtin.asnum$(other);
-
-  if (shift !== undefined)
-  {
-    if (shift < 0)
-    {
-      throw new Sk.builtin.ValueError("negative shift count");
-    }
     /**
      * @const
      * @type {number}
      */
-    var tmp = this.v >> shift;
-    if ((this.v > 0) && (tmp < 0))
+    var shift = Sk.builtin.asnum$(other);
+
+    if (shift !== undefined)
     {
-      // Fix incorrect sign extension.
-      return Sk.builtin.numberPy(tmp & (Math.pow(2, 32-shift) - 1), this.skType);
+        if (shift < 0)
+        {
+            throw new Sk.builtin.ValueError("negative shift count");
+        }
+        /**
+         * @const
+         * @type {number}
+         */
+        var tmp = this.v >> shift;
+        if ((this.v > 0) && (tmp < 0))
+        {
+            // Fix incorrect sign extension.
+            return Sk.builtin.numberPy(tmp & (Math.pow(2, 32-shift) - 1), this.skType);
+        }
+        else
+        {
+            return Sk.builtin.numberPy(tmp, this.skType);
+        }
     }
     else
     {
-      return Sk.builtin.numberPy(tmp, this.skType);
+        return undefined;
     }
-  }
-  else
-  {
-    return undefined;
-  }
 };
 
 Sk.builtin.NumberPy.prototype.nb$inplace_add = Sk.builtin.NumberPy.prototype.nb$add;
@@ -978,7 +979,7 @@ Sk.builtin.NumberPy.prototype.u$sqrt = function()
 
 Sk.builtin.NumberPy.prototype.nb$nonzero = function()
 {
-  return this.v !== 0 ? Sk.builtin.bool.true$ : Sk.builtin.bool.false$;
+    return this.v !== 0 ? Sk.builtin.bool.true$ : Sk.builtin.bool.false$;
 };
 
 Sk.builtin.NumberPy.prototype.nb$isnegative = function() { return this.v < 0 };
@@ -987,73 +988,73 @@ Sk.builtin.NumberPy.prototype.nb$ispositive = function() { return this.v >= 0 };
 
 Sk.builtin.NumberPy.prototype.numberCompare = function(other)
 {
-  if (other instanceof Sk.builtin.bool)
-  {
-      other = Sk.builtin.asnum$(other);
-  }
-
-  if (other === Sk.builtin.none.none$)
-  {
-    other = 0;
-  }
-
-  if (typeof other === "number")
-  {
-    return this.v - other;
-  }
-
-  if (other instanceof Sk.builtin.NumberPy)
-  {
-    if (this.v == Infinity && other.v == Infinity) return 0;
-    if (this.v == -Infinity && other.v == -Infinity) return 0;
-    return this.v - other.v;
-  }
-
-  if (other instanceof Sk.builtin.lng)
-  {
-    if (this.skType === Sk.builtin.NumberPy.int$ || this.v % 1 == 0)
+    if (other instanceof Sk.builtin.bool)
     {
-      var thisAsLong = new Sk.builtin.lng(this.v);
-      var tmp = thisAsLong.longCompare(other);
-      return tmp;
+        other = Sk.builtin.asnum$(other);
     }
-    var diff = this.nb$sub(other);
-    if (diff instanceof Sk.builtin.NumberPy)
-    {
-      return diff.v;
-    }
-    else if (diff instanceof Sk.builtin.lng)
-    {
-      return diff.longCompare(Sk.builtin.biginteger.ZERO);
-    }
-  }
 
-  return undefined;
+    if (other === Sk.builtin.none.none$)
+    {
+        other = 0;
+    }
+
+    if (typeof other === "number")
+    {
+        return this.v - other;
+    }
+
+    if (other instanceof Sk.builtin.NumberPy)
+    {
+        if (this.v == Infinity && other.v == Infinity) return 0;
+        if (this.v == -Infinity && other.v == -Infinity) return 0;
+        return this.v - other.v;
+    }
+
+    if (other instanceof Sk.builtin.lng)
+    {
+        if (this.skType === Sk.builtin.NumberPy.int$ || this.v % 1 == 0)
+        {
+            var thisAsLong = new Sk.builtin.lng(this.v);
+            var tmp = thisAsLong.longCompare(other);
+            return tmp;
+        }
+        var diff = this.nb$sub(other);
+        if (diff instanceof Sk.builtin.NumberPy)
+        {
+            return diff.v;
+        }
+        else if (diff instanceof Sk.builtin.lng)
+        {
+            return diff.longCompare(Sk.builtin.biginteger.ZERO);
+        }
+    }
+
+    return undefined;
 }
 
 Sk.builtin.NumberPy.prototype.__eq__ = function(me, other)
 {
-  return (me.numberCompare(other) == 0) && !(other === Sk.builtin.none.none$);
+    return (me.numberCompare(other) == 0) && !(other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.NumberPy.prototype.__ne__ = function(me, other) {
-  return (me.numberCompare(other) != 0) || (other === Sk.builtin.none.none$);
+    return (me.numberCompare(other) != 0) || (other === Sk.builtin.none.none$);
 };
 
 Sk.builtin.NumberPy.prototype.__lt__ = function(me, other) {
-  return me.numberCompare(other) < 0;
+    return me.numberCompare(other) < 0;
 };
 
 Sk.builtin.NumberPy.prototype.__le__ = function(me, other) {
-  return me.numberCompare(other) <= 0;
+    return me.numberCompare(other) <= 0;
 };
 
 Sk.builtin.NumberPy.prototype.__gt__ = function(me, other) {
-  return me.numberCompare(other) > 0;
+    return me.numberCompare(other) > 0;
 };
 
 Sk.builtin.NumberPy.prototype.__ge__ = function(me, other) {
-  return me.numberCompare(other) >= 0;
+    return me.numberCompare(other) >= 0;
 };
 
 Sk.builtin.NumberPy.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
@@ -1075,19 +1076,19 @@ Sk.builtin.NumberPy.prototype.tp$str = function()
  */
 Sk.builtin.NumberPy.prototype.str$ = function(radix, sign)
 {
-  goog.asserts.assertNumber(radix);
-  goog.asserts.assertBoolean(sign);
+    goog.asserts.assertNumber(radix);
+    goog.asserts.assertBoolean(sign);
 
-  var numberJs = Sk.ffi.remapToJs(this);
+    var numberJs = Sk.ffi.remapToJs(this);
 
-  if (Sk.ffi.isFloat(this))
-  {
-    return Sk.builtin.numberToFloatStringJs(numberJs, radix, sign);
-  }
-  else
-  {
-    return Sk.builtin.numberToIntStringJs(numberJs, radix, sign);
-  }
+    if (Sk.ffi.isFloat(this))
+    {
+        return Sk.builtin.numberToFloatStringJs(numberJs, radix, sign);
+    }
+    else
+    {
+        return Sk.builtin.numberToIntStringJs(numberJs, radix, sign);
+    }
 };
 
 /**
@@ -1098,76 +1099,76 @@ Sk.builtin.NumberPy.prototype.str$ = function(radix, sign)
  */
 Sk.builtin.numberToFloatStringJs = function(numberJs, radix, sign)
 {
-  goog.asserts.assertNumber(radix);
-  goog.asserts.assertBoolean(sign);
+    goog.asserts.assertNumber(radix);
+    goog.asserts.assertBoolean(sign);
 
-  if (isNaN(numberJs)) return "nan";
-  if (numberJs == Infinity) return 'inf';
-  if (numberJs == -Infinity && sign) return '-inf';
-  if (numberJs == -Infinity && !sign) return 'inf';
+    if (isNaN(numberJs)) return "nan";
+    if (numberJs == Infinity) return 'inf';
+    if (numberJs == -Infinity && sign) return '-inf';
+    if (numberJs == -Infinity && !sign) return 'inf';
 
-  var work = sign ? numberJs : Math.abs(numberJs);
+    var work = sign ? numberJs : Math.abs(numberJs);
 
-  var tmp;
-  if (radix === 10)
-  {
-    tmp = work.toPrecision(12);
-
-    // transform fractions with 4 or more leading zeroes into exponents
-    var idx = tmp.indexOf('.');
-    if (idx >= 0)
+    var tmp;
+    if (radix === 10)
     {
-      var pre = work.toString().slice(0,idx);
-      var post = work.toString().slice(idx);
-      // The first RegEx mathes, at the beginning of the pre string (^), an optional
-      // minus sign (-?) followed by a zero (0) and then asserts the end of the string.
-      // The second RegEx matches, at the beginning of the post string (^), a zero (0)
-      // between 4 and unlimited times.
-      if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
-      {
-        if (tmp.length < 12)
+        tmp = work.toPrecision(12);
+
+        // transform fractions with 4 or more leading zeroes into exponents
+        var idx = tmp.indexOf('.');
+        if (idx >= 0)
         {
-          tmp = work.toExponential();
+            var pre = work.toString().slice(0,idx);
+            var post = work.toString().slice(idx);
+            // The first RegEx mathes, at the beginning of the pre string (^), an optional
+            // minus sign (-?) followed by a zero (0) and then asserts the end of the string.
+            // The second RegEx matches, at the beginning of the post string (^), a zero (0)
+            // between 4 and unlimited times.
+            if (pre.match(/^-?0$/) && post.slice(1).match(/^0{4,}/))
+            {
+                if (tmp.length < 12)
+                {
+                    tmp = work.toExponential();
+                }
+                else
+                {
+                    tmp = work.toExponential(11);
+                }
+            }
+            else
+            {
+                // If we're not in exponential format, cleanup trailing zeros.
+                while (tmp.charAt(tmp.length-1) === "0" && tmp.indexOf('e') < 0)
+                {
+                    tmp = tmp.substring(0, tmp.length-1)
+                }
+                if (tmp.charAt(tmp.length-1) == ".")
+                {
+                    tmp = tmp + "0";
+                }
+            }
         }
         else
         {
-          tmp = work.toExponential(11);
+            tmp = work.toExponential(11);
         }
-      }
-      else
-      {
-        // If we're not in exponential format, cleanup trailing zeros.
-        while (tmp.charAt(tmp.length-1) === "0" && tmp.indexOf('e') < 0)
-        {
-          tmp = tmp.substring(0, tmp.length-1)
-        }
-        if (tmp.charAt(tmp.length-1) == ".")
-        {
-          tmp = tmp + "0";
-        }
-      }
+
+        tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
+        // make exponent two digits instead of one (ie e+09 not e+9)
+        tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
+        // remove trailing zeroes before the exponent
+        tmp = tmp.replace(/0+(e.*)/,'$1');
     }
     else
     {
-      tmp = work.toExponential(11);
+        tmp = work.toString(radix);
     }
 
-    tmp = tmp.replace(new RegExp('\\.0+e'),'e',"i");
-    // make exponent two digits instead of one (ie e+09 not e+9)
-    tmp = tmp.replace(/(e[-+])([1-9])$/, "$10$2");
-    // remove trailing zeroes before the exponent
-    tmp = tmp.replace(/0+(e.*)/,'$1');
-  }
-  else
-  {
-    tmp = work.toString(radix);
-  }
-
-  if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
-  {
-    tmp = tmp + '.0';
-  }
-  return tmp;
+    if (tmp.indexOf('.') < 0 && tmp.indexOf('E') < 0 && tmp.indexOf('e') < 0)
+    {
+        tmp = tmp + '.0';
+    }
+    return tmp;
 };
 goog.exportSymbol("Sk.builtin.numberToFloatStringJs", Sk.builtin.numberToFloatStringJs);
 
@@ -1179,19 +1180,19 @@ goog.exportSymbol("Sk.builtin.numberToFloatStringJs", Sk.builtin.numberToFloatSt
  */
 Sk.builtin.numberToIntStringJs = function(numberJs, radix, sign)
 {
-  goog.asserts.assertNumber(radix);
-  goog.asserts.assertBoolean(sign);
+    goog.asserts.assertNumber(radix);
+    goog.asserts.assertBoolean(sign);
 
-  if (isNaN(numberJs)) return "nan";
-  if (numberJs ===  Infinity) return 'inf';
-  if (numberJs === -Infinity)
-  {
-    return sign ? "-inf" : "inf";
-  }
-  else
-  {
-    return (sign ? numberJs : Math.abs(numberJs)).toString(radix);
-  }
+    if (isNaN(numberJs)) return "nan";
+    if (numberJs ===  Infinity) return 'inf';
+    if (numberJs === -Infinity)
+    {
+        return sign ? "-inf" : "inf";
+    }
+    else
+    {
+        return (sign ? numberJs : Math.abs(numberJs)).toString(radix);
+    }
 };
 goog.exportSymbol("Sk.builtin.numberToIntStringJs", Sk.builtin.numberToIntStringJs);
 

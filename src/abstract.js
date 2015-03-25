@@ -5,13 +5,7 @@ goog.require('Sk.misceval');
 // goog.require('Sk.ffi');
 
 //
-//
-//
-//
 // Number
-//
-//
-//
 //
 
 Sk.abstr.binop_type_error = function(lhsPy, rhsPy, name)
@@ -23,70 +17,73 @@ Sk.abstr.binop_type_error = function(lhsPy, rhsPy, name)
 };
 
 Sk.abstr.boNameToSlotFuncLhs_ = function(obj, name) {
-  if (obj === null)
-  {
-    return undefined;
-  };
-  switch (name)
-  {
-    case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
-    case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__sub__'];
-    case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__mul__'];
-    case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__div__'];
-    case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__floordiv__'];
-    case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__mod__'];
-    case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__pow__'];
-    case "LShift":   return obj.nb$lshift       ? obj.nb$lshift :       obj['__lshift__'];
-    case "RShift":   return obj.nb$rshift       ? obj.nb$rshift :       obj['__rshift__'];
-    case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__and__'];
-    case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__xor__'];
-    case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__or__'];
-  }
+    if (obj === null)
+    {
+        return undefined;
+    }
+
+    switch (name)
+    {
+        case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__add__'];
+        case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__sub__'];
+        case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__mul__'];
+        case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__div__'];
+        case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__floordiv__'];
+        case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__mod__'];
+        case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__pow__'];
+        case "LShift":   return obj.nb$lshift       ? obj.nb$lshift :       obj['__lshift__'];
+        case "RShift":   return obj.nb$rshift       ? obj.nb$rshift :       obj['__rshift__'];
+        case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__and__'];
+        case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__xor__'];
+        case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__or__'];
+    }
 };
 
 Sk.abstr.boNameToSlotFuncRhs_ = function(obj, name) {
-  if (obj === null) {
-    return undefined;
-  };
-  switch (name) {
-    case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
-    case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__rsub__'];
-    case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__rmul__'];
-    case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__rdiv__'];
-    case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__rfloordiv__'];
-    case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__rmod__'];
-    case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__rpow__'];
-    case "LShift":   return obj.nb$lshift       ? obj.nb$lshift :       obj['__rlshift__'];
-    case "RShift":   return obj.nb$rshift       ? obj.nb$rshift :       obj['__rrshift__'];
-    case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__rand__'];
-    case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__rxor__'];
-    case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__ror__'];
-  }
+    if (obj === null) {
+        return undefined;
+    }
+
+    switch (name) {
+        case "Add":      return obj.nb$add          ? obj.nb$add :          obj['__radd__'];
+        case "Sub":      return obj.nb$sub          ? obj.nb$sub :          obj['__rsub__'];
+        case "Mult":     return obj.nb$mul          ? obj.nb$mul :          obj['__rmul__'];
+        case "Div":      return obj.nb$div          ? obj.nb$div :          obj['__rdiv__'];
+        case "FloorDiv": return obj.nb$floor_divide ? obj.nb$floor_divide : obj['__rfloordiv__'];
+        case "Mod":      return obj.nb$remainder    ? obj.nb$remainder :    obj['__rmod__'];
+        case "Pow":      return obj.nb$power        ? obj.nb$power :        obj['__rpow__'];
+        case "LShift":   return obj.nb$lshift       ? obj.nb$lshift :       obj['__rlshift__'];
+        case "RShift":   return obj.nb$rshift       ? obj.nb$rshift :       obj['__rrshift__'];
+        case "BitAnd":   return obj.nb$and          ? obj.nb$and :          obj['__rand__'];
+        case "BitXor":   return obj.nb$xor          ? obj.nb$xor :          obj['__rxor__'];
+        case "BitOr":    return obj.nb$or           ? obj.nb$or :           obj['__ror__'];
+    }
 };
 
 /**
  * In-place operations (+=, -=, *=, /=, //=, %=, **=, <<=, >>=, &=, ^=, |=)
  */
- Sk.abstr.iboNameToSlotFunc_ = function(obj, name)
- {
-  if (obj === null) {
-    return undefined;
-  };
-  switch (name)
-  {
-    case "Add":      return obj.nb$inplace_add          ? obj.nb$inplace_add          : obj['__iadd__'];
-    case "Sub":      return obj.nb$inplace_subtract     ? obj.nb$inplace_subtract     : obj['__isub__'];
-    case "Mult":     return obj.nb$inplace_multiply     ? obj.nb$inplace_multiply     : obj['__imul__'];
-    case "Div":      return obj.nb$inplace_divide       ? obj.nb$inplace_divide       : obj['__idiv__'];
-    case "FloorDiv": return obj.nb$inplace_floor_divide ? obj.nb$inplace_floor_divide : obj['__ifloordiv__'];
-    case "Mod":      return obj.nb$inplace_remainder;
-    case "Pow":      return obj.nb$inplace_power;
-    case "LShift":   return obj.nb$inplace_lshift       ? obj.nb$inplace_lshift       : obj['__ilshift__'];
-    case "RShift":   return obj.nb$inplace_rshift       ? obj.nb$inplace_rshift       : obj['__irshift__'];
-    case "BitAnd":   return obj.nb$inplace_and;
-    case "BitOr":    return obj.nb$inplace_or;
-    case "BitXor":   return obj.nb$inplace_xor          ? obj.nb$inplace_xor          : obj['__ixor__'];
-  }
+Sk.abstr.iboNameToSlotFunc_ = function(obj, name)
+{
+    if (obj === null) {
+        return undefined;
+    }
+
+    switch (name)
+    {
+        case "Add":      return obj.nb$inplace_add          ? obj.nb$inplace_add          : obj['__iadd__'];
+        case "Sub":      return obj.nb$inplace_subtract     ? obj.nb$inplace_subtract     : obj['__isub__'];
+        case "Mult":     return obj.nb$inplace_multiply     ? obj.nb$inplace_multiply     : obj['__imul__'];
+        case "Div":      return obj.nb$inplace_divide       ? obj.nb$inplace_divide       : obj['__idiv__'];
+        case "FloorDiv": return obj.nb$inplace_floor_divide ? obj.nb$inplace_floor_divide : obj['__ifloordiv__'];
+        case "Mod":      return obj.nb$inplace_remainder;
+        case "Pow":      return obj.nb$inplace_power;
+        case "LShift":   return obj.nb$inplace_lshift       ? obj.nb$inplace_lshift       : obj['__ilshift__'];
+        case "RShift":   return obj.nb$inplace_rshift       ? obj.nb$inplace_rshift       : obj['__irshift__'];
+        case "BitAnd":   return obj.nb$inplace_and;
+        case "BitOr":    return obj.nb$inplace_or;
+        case "BitXor":   return obj.nb$inplace_xor          ? obj.nb$inplace_xor          : obj['__ixor__'];
+    }
 };
 
 Sk.abstr.binary_op_ = function(v, w, opname)
@@ -101,7 +98,7 @@ Sk.abstr.binary_op_ = function(v, w, opname)
         }
         else
         {
-            ret = Sk.misceval.callsim(vop,v,w)
+            ret = Sk.misceval.callsim(vop,v,w);
         }
         if (ret !== undefined) return ret;
     }
@@ -203,14 +200,22 @@ Sk.abstr.boNumPromote_ = {
     "Mult": function(a, b) { return a * b; },
     "Mod": function(a, b) { 
         if (b === 0)
+        {
             throw new Sk.builtin.ZeroDivisionError("division or modulo by zero");
-        var m = a % b; return ((m * b) < 0 ? (m + b) : m); 
+        }
+        var m = a % b;
+        return ((m * b) < 0 ? (m + b) : m); 
     },
-    "Div": function(a, b) {
+    "Div": function(a, b)
+    {
         if (b === 0)
+        {
             throw new Sk.builtin.ZeroDivisionError("division or modulo by zero");
+        }
         else
+        {
             return a / b;
+        }
     },
     "FloorDiv": function(a, b) { 
         if (b === 0)
@@ -240,25 +245,31 @@ Sk.abstr.boNumPromote_ = {
         }
         return m;
     },
-    "LShift": function(a, b) { 
-        if (b < 0) {
+    "LShift": function(a, b)
+    { 
+        if (b < 0)
+        {
             throw new Sk.builtin.ValueError("negative shift count");
         }
         var m = a << b;
-        if (m > a) {
+        if (m > a)
+        {
             return m; 
         }
-        else {
-        // Fail, this will get recomputed with longs
-        return a * Math.pow(2, b);
-    }
-},
-"RShift": function(a, b) { 
-    if (b < 0) {
-        throw new Sk.builtin.ValueError("negative shift count");
-    }
-    var m = a >> b;
-    if ((a > 0) && (m < 0)) {
+        else
+        {
+            // Fail, this will get recomputed with longs
+            return a * Math.pow(2, b);
+        }
+    },
+    "RShift": function(a, b)
+    { 
+        if (b < 0)
+        {
+            throw new Sk.builtin.ValueError("negative shift count");
+        }
+        var m = a >> b;
+        if ((a > 0) && (m < 0)) {
             // fix incorrect sign extension
             m = m & (Math.pow(2, 32-b) - 1);
         }
@@ -335,29 +346,29 @@ goog.exportSymbol("Sk.abstr.numberInplaceBinOp", Sk.abstr.numberInplaceBinOp);
  */
 Sk.abstr.uoNameToSlotFunc_ = function(obj, name)
 {
-  if (obj === null)
-  {
-    return undefined;
-  }
-  switch (name)
-  {
-    case Sk.abstr.unaryOp.USub:
+    if (obj === null)
     {
-      return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
+        return undefined;
     }
-    case Sk.abstr.unaryOp.UAdd:
+    switch (name)
     {
-      return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
+        case Sk.abstr.unaryOp.USub:
+        {
+            return obj.u$negative          ? obj.u$negative        : obj['__neg__'];
+        }
+        case Sk.abstr.unaryOp.UAdd:
+        {
+            return obj.u$positive          ? obj.u$positive        : obj['__pos__'];
+        }
+        case Sk.abstr.unaryOp.Invert:
+        {
+            return obj.nb$invert           ? obj.nb$invert          : obj['__invert__'];
+        }
+        default:
+        {
+            throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
+        }
     }
-    case Sk.abstr.unaryOp.Invert:
-    {
-      return obj.nb$invert           ? obj.nb$invert          : obj['__invert__'];
-    }
-    default:
-    {
-      throw new Sk.builtin.AssertionError("7fb8237f-879b-4192-89ce-13ad6fa3b2d8 " + name);
-    }
-  }
 };
 
 /**
@@ -542,16 +553,8 @@ Sk.abstr.sequenceSetSlice = function(seq, i1, i2, x)
     }
 };
 
-
-
-//
-//
-//
 //
 // Object
-//
-//
-//
 //
 
 Sk.abstr.objectDelItem = function(o, key)
@@ -582,24 +585,24 @@ goog.exportSymbol("Sk.abstr.objectDelItem", Sk.abstr.objectDelItem);
 
 Sk.abstr.objectGetItem = function(o, key)
 {
-  if (o !== null) 
-  {
-    if (o.mp$subscript)
+    if (o !== null) 
     {
-      return o.mp$subscript(key);
+        if (o.mp$subscript)
+        {
+            return o.mp$subscript(key);
+        }
+        else if (Sk.misceval.isIndex(key) && o.sq$item)
+        {
+            return Sk.abstr.sequenceGetItem(o, Sk.misceval.asIndex(key));
+        }
+        else if (o.tp$getitem)
+        {
+            return o.tp$getitem(key);
+        }
     }
-    else if (Sk.misceval.isIndex(key) && o.sq$item)
-    {
-      return Sk.abstr.sequenceGetItem(o, Sk.misceval.asIndex(key));
-    }
-    else if (o.tp$getitem)
-    {
-      return o.tp$getitem(key);
-    }
-  }
 
-  var otypename = Sk.ffi.typeName(o);
-  throw new Sk.builtin.TypeError("'" + otypename + "' does not support indexing");
+    var otypename = Sk.ffi.typeName(o);
+    throw new Sk.builtin.TypeError("'" + otypename + "' does not support indexing");
 };
 goog.exportSymbol("Sk.abstr.objectGetItem", Sk.abstr.objectGetItem);
 

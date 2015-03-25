@@ -20,7 +20,7 @@ goog.exportSymbol('Sk.ffi.AssertionError', Sk.ffi.AssertionError);
  * @return {Sk.ffi.AssertionError} The AssertionError.
  */
 Sk.ffi.assertionError = function(message) {
-  return new Sk.builtin.AssertionError(message);
+    return new Sk.builtin.AssertionError(message);
 };
 goog.exportSymbol('Sk.ffi.assertionError', Sk.ffi.assertionError);
 
@@ -39,7 +39,7 @@ goog.exportSymbol('Sk.ffi.AttributeError', Sk.ffi.AttributeError);
  * @return {Sk.ffi.AttributeError}
  */
 Sk.ffi.attributeError = function(message) {
-  return new Sk.builtin.AttributeError(message);
+    return new Sk.builtin.AttributeError(message);
 };
 goog.exportSymbol('Sk.ffi.attributeError', Sk.ffi.attributeError);
 
@@ -58,7 +58,7 @@ goog.exportSymbol('Sk.ffi.NotImplementedError', Sk.ffi.NotImplementedError);
  * @return {Sk.ffi.NotImplementedError} The NotImplementedError.
  */
 Sk.ffi.notImplementedError = function(message) {
-  return new Sk.builtin.NotImplementedError(message);
+    return new Sk.builtin.NotImplementedError(message);
 };
 goog.exportSymbol('Sk.ffi.notImplementedError', Sk.ffi.notImplementedError);
 
@@ -76,7 +76,7 @@ goog.exportSymbol('Sk.ffi.TypeError', Sk.ffi.TypeError);
  * @return {Sk.ffi.TypeError} The TypeError.
  */
 Sk.ffi.typeError = function(message) {
-  return new Sk.builtin.TypeError(message);
+    return new Sk.builtin.TypeError(message);
 };
 goog.exportSymbol('Sk.ffi.typeError', Sk.ffi.typeError);
 
@@ -89,25 +89,25 @@ goog.exportSymbol('Sk.ffi.typeError', Sk.ffi.typeError);
  */
 Sk.ffi.type = function(valuePy) {
 
-  if (Sk.flyweight)
-  {
-    if (typeof valuePy === Sk.builtin.JsType.NUMBER)
+    if (Sk.flyweight)
     {
-      return Sk.builtin.float_.prototype.ob$type;
+        if (typeof valuePy === Sk.builtin.JsType.NUMBER)
+        {
+            return Sk.builtin.float_.prototype.ob$type;
+        }
     }
-  }
-  if (valuePy.constructor === Sk.builtin.NumberPy)
-  {
-    if (valuePy.skType === Sk.builtin.NumberPy.int$)
+    if (valuePy.constructor === Sk.builtin.NumberPy)
     {
-      return Sk.builtin.int_.prototype.ob$type;
+        if (valuePy.skType === Sk.builtin.NumberPy.int$)
+        {
+            return Sk.builtin.int_.prototype.ob$type;
+        }
+        else
+        {
+            return Sk.builtin.float_.prototype.ob$type;
+        }
     }
-    else
-    {
-      return Sk.builtin.float_.prototype.ob$type;
-    }
-  }
-  return valuePy.ob$type;
+    return valuePy.ob$type;
 };
 goog.exportSymbol('Sk.ffi.type', Sk.ffi.type);
 

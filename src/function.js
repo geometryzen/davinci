@@ -29,7 +29,7 @@ Sk.builtin.pyCheckArgs = function (name, args, minargs, maxargs, kwargs, free) {
         }
         msg += " (" + nargs + " given)";
         throw new Sk.builtin.TypeError(msg);
-    };
+    }
 };
 goog.exportSymbol("Sk.builtin.pyCheckArgs", Sk.builtin.pyCheckArgs);
 
@@ -44,7 +44,7 @@ goog.exportSymbol("Sk.builtin.pyCheckArgs", Sk.builtin.pyCheckArgs);
 Sk.builtin.pyCheckType = function (name, exptype, check) {
     if (!check) {
         throw new Sk.builtin.TypeError(name + " must be a " + exptype);
-    };
+    }
 };
 goog.exportSymbol("Sk.builtin.pyCheckType", Sk.builtin.pyCheckType);
 
@@ -59,9 +59,7 @@ Sk.builtin.checkIterable = function (arg) {
 goog.exportSymbol("Sk.builtin.checkIterable", Sk.builtin.checkIterable);
 
 Sk.builtin.checkNumber = function (arg) {
-    return (arg !== null && (typeof arg === "number"
-                 || arg instanceof Sk.builtin.NumberPy
-                 || arg instanceof Sk.builtin.lng));
+    return (arg !== null && (typeof arg === "number" || arg instanceof Sk.builtin.NumberPy || arg instanceof Sk.builtin.lng));
 };
 goog.exportSymbol("Sk.builtin.checkNumber", Sk.builtin.checkNumber);
 
@@ -150,7 +148,7 @@ goog.exportSymbol("Sk.builtin.func", Sk.builtin.func);
 Sk.builtin.func.prototype.tp$name = "function";
 Sk.builtin.func.prototype.tp$descr_get = function(obj, objtype)
 {
-    goog.asserts.assert(obj !== undefined && objtype !== undefined)
+    goog.asserts.assert(obj !== undefined && objtype !== undefined);
     if (obj == null) return this;
     return new Sk.builtin.method(this, obj);
 };
@@ -217,10 +215,11 @@ Sk.builtin.func.prototype.tp$call = function(args, kw)
 
 Sk.builtin.func.prototype.tp$getattr = function(key) {
     return this[key];
-}
+};
+
 Sk.builtin.func.prototype.tp$setattr = function(key,value) {
     this[key] = value;
-}
+};
 
 //todo; investigate why the other doesn't work
 //Sk.builtin.type.makeIntoTypeObj('function', Sk.builtin.func);

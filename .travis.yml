@@ -2,9 +2,14 @@ language: python
 python:
 - '2.7'
 install:
-- pip install GitPython --use-mirrors
+- pip install "GitPython>=0.2.0-beta1" --use-mirrors
+- mkdir -p vendors
+- npm install git://github.com/jshint/jshint/
+- npm install jscs
 script:
 - ./build.py dist -t -u -v
+- jshint src/*.js
+- jscs src/*.js
 after_script:
 - ./deploy.sh
 env:

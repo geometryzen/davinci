@@ -63,23 +63,22 @@ Sk.builtin.tuple.prototype.mp$subscript = function(index)
 {
     if (Sk.misceval.isIndex(index))
     {
-    var i = Sk.misceval.asIndex(index);
-    if (i !== undefined)
-    {
+        var i = Sk.misceval.asIndex(index);
+        if (i !== undefined)
+        {
             if (i < 0) i = this.v.length + i;
             if (i < 0 || i >= this.v.length) {
-        throw new Sk.builtin.IndexError("tuple index out of range");
-        }
+                throw new Sk.builtin.IndexError("tuple index out of range");
+            }
             return this.v[i];
-    }
+        }
     }
     else if (index instanceof Sk.builtin.slice)
     {
         var ret = [];
-        index.sssiter$(this, function(i, wrt)
-                {
-                    ret.push(wrt.v[i]);
-                });
+        index.sssiter$(this, function(i, wrt) {
+            ret.push(wrt.v[i]);
+        });
         return new Sk.builtin.tuple(ret);
     }
 

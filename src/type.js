@@ -112,11 +112,11 @@ Sk.builtin.type = function(name, bases, dict)
             var tname = Sk.ffi.typeName(this);
             if (iterf)
             {
-                 var ret = Sk.misceval.callsim(iterf);
-                 // This check does not work for builtin iterators 
-                 // if (ret.tp$getattr("next") === undefined)
-                 //    throw new Sk.builtin.TypeError("iter() return non-iterator of type '" + tname + "'");
-                 return ret;
+                var ret = Sk.misceval.callsim(iterf);
+                // This check does not work for builtin iterators 
+                // if (ret.tp$getattr("next") === undefined)
+                //    throw new Sk.builtin.TypeError("iter() return non-iterator of type '" + tname + "'");
+                return ret;
             }
             throw new Sk.builtin.TypeError("'" + tname + "' object is not iterable");
         };
@@ -183,9 +183,10 @@ Sk.builtin.type.makeIntoTypeObj = function(name, t)
         var mod = t.__module__;
         var cname = "";
         if (mod) cname = mod.v + ".";
-	var ctype = "class";
-	if (!mod && !t.sk$klass)
-	    ctype = "type";
+        var ctype = "class";
+        if (!mod && !t.sk$klass) {
+            ctype = "type";
+        }
         return Sk.builtin.stringToPy("<" + ctype + " '" + cname + t.tp$name + "'>");
     };
     t.tp$str = undefined;
@@ -352,7 +353,7 @@ Sk.builtin.type.buildMRO_ = function(klass)
     return Sk.builtin.type.mroMerge_(all);
 };
 
-/*
+/**
  * C3 MRO (aka CPL) linearization. Figures out which order to search through
  * base classes to determine what should override what. C3 does the "right
  * thing", and it's what Python has used since 2.3.
@@ -367,7 +368,7 @@ Sk.builtin.type.buildMRO_ = function(klass)
  * This implementation is based on a post by Samuele Pedroni on python-dev
  * (http://mail.python.org/pipermail/python-dev/2002-October/029176.html) when
  * discussing its addition to Python.
- */ 
+ */
 Sk.builtin.type.buildMRO = function(klass)
 {
     return new Sk.builtin.tuple(Sk.builtin.type.buildMRO_(klass));
@@ -375,14 +376,16 @@ Sk.builtin.type.buildMRO = function(klass)
 
 Sk.builtin.type.prototype.tp$richcompare = function(other, op)
 {
-	if (other.ob$type != Sk.builtin.type)
-		return undefined;
+    if (other.ob$type != Sk.builtin.type) {
+        return undefined;
+    }
 
-	if (!this.tp$repr || !other.tp$repr)
-		return undefined;
+    if (!this.tp$repr || !other.tp$repr) {
+        return undefined;
+    }
 
-	var r1 = this.tp$repr();
-	var r2 = other.tp$repr();
+    var r1 = this.tp$repr();
+    var r2 = other.tp$repr();
 
-	return r1.tp$richcompare(r2, op);
+    return r1.tp$richcompare(r2, op);
 };
