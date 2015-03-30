@@ -73,7 +73,17 @@ var INT                        = Sk.ffi.PyType.INT;
  * @const
  * @type {string}
  */
+var EULER                      = "Euler";
+/**
+ * @const
+ * @type {string}
+ */
 var QUATERNION                 = "Quaternion";
+/**
+ * @const
+ * @type {string}
+ */
+var METHOD_APPLY_EULER         = "applyEuler";
 /**
  * @const
  * @type {string}
@@ -152,6 +162,11 @@ var OP_EQ                      = "equal";
 
 Sk.builtin.defineVector3 = function(mod, THREE) {
   Sk.ffi.checkFunctionArgs("defineVector3", arguments, 2, 2);
+  /**
+   * @param {Object} valuePy
+   * @return {boolean} true if the thing is an Euler rotation, otherwise false.
+   */
+  var isEulerPy = function(valuePy) {return Sk.ffi.isInstance(valuePy, EULER);};
   /**
    * @param {Object} valuePy
    * @return {boolean} true if the thing is a quaternion, otherwise false.
@@ -288,7 +303,17 @@ Sk.builtin.defineVector3 = function(mod, THREE) {
         case PROP_Z: {
           return Sk.ffi.numberToFloatPy(vector[name]);
         }
-        case METHOD_APPLY_QUATERNION: {
+        case METHOD_APPLY_EULER:
+        {
+          return Sk.ffi.callableToPy(mod, METHOD_APPLY_EULER, function(methodPy, eulerPy) {
+            Sk.ffi.checkMethodArgs(METHOD_APPLY_EULER, arguments, 1, 1);
+            Sk.ffi.checkArgType("euler", EULER, isEulerPy(eulerPy), eulerPy);
+            vector[METHOD_APPLY_EULER](Sk.ffi.remapToJs(eulerPy));
+            return vectorPy;
+          });
+        }
+        case METHOD_APPLY_QUATERNION:
+        {
           return Sk.ffi.callableToPy(mod, METHOD_APPLY_QUATERNION, function(methodPy, qPy) {
             Sk.ffi.checkMethodArgs(METHOD_APPLY_QUATERNION, arguments, 1, 1);
             Sk.ffi.checkArgType("q", QUATERNION, isQuaternionPy(qPy), qPy);

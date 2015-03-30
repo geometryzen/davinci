@@ -118,6 +118,11 @@ var METHOD_ADD                 = "add";
  * @const
  * @type {string}
  */
+var METHOD_APPLY_EULER         = "applyEuler";
+/**
+ * @const
+ * @type {string}
+ */
 var METHOD_APPLY_MATRIX_3      = "applyMatrix3";
 /**
  * @const
@@ -1493,6 +1498,14 @@ mod[Sk.e3ga.EUCLIDEAN_3] = Sk.ffi.buildClass(mod, function($gbl, $loc)
           quaternion.y += other.quaternion.y;
           quaternion.z += other.quaternion.z;
           self.xyz += other.xyz;
+          return selfPy;
+        });
+      }
+      case METHOD_APPLY_EULER: {
+        return Sk.ffi.callableToPy(mod, name, function(methodPy, mPy) {
+          Sk.ffi.checkMethodArgs(name, arguments, 1, 1);
+          Sk.ffi.checkArgType("m", Sk.three.MATRIX_3, Sk.ffi.isInstance(mPy, Sk.three.MATRIX_3), mPy);
+          vector[name](Sk.ffi.remapToJs(mPy));
           return selfPy;
         });
       }
